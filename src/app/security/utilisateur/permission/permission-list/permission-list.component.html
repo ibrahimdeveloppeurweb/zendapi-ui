@@ -1,0 +1,35 @@
+<!-- LISTE DES PERMISSIONS -->
+<div class="col-md-12">
+  <span class="badge badge-info my-2 f-14 width ">
+    LISTE DES PERMISSIONS
+  </span>
+</div>
+<div class="col-md-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of permissions">
+            <td>{{ item?.nom }}</td>
+            <td>{{ item?.description }}</td>
+            <td class="table-action">
+              <button *ngxPermissionsOnly="'ROLE:AGENCY:SHOW'" (click)="editPermission(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                <i class="feather icon-edit-2"></i>
+              </button>
+              <button *ngxPermissionsOnly="'ROLE:AGENCY:DELETE'" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                <i class="feather icon-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>

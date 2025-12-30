@@ -1,0 +1,69 @@
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-4" *ngFor="let item of folders">
+            <app-card [hidHeader]="true">
+                <div class="row my-2 p-2">
+                  <div class="text-left">
+                      <i class="fas fa-folder-open f-60 text-secondary"></i>
+                  </div>
+                  <h5>{{ item.customer?.nom }} - {{ item.customer?.code }}</h5>
+                  <div class="text-right">
+                    <span class="mr-2 badge" [ngClass]="{
+                      'badge-light-danger' : item?.invoice?.etat === 'IMPAYE',
+                      'badge-light-primary' : item?.invoice?.etat === 'ATTENTE',
+                      'badge-light-warning' : item?.invoice?.etat === 'EN COURS',
+                      'badge-light-success' : item?.invoice?.etat === 'SOLDE'
+                      }" title="Etat de la facture">Facture {{PAYMENT(item?.invoice?.etat)}}
+                    </span>
+                    <span class="badge badge-{{item.etat === 'VALIDE' ? 'success' : 'danger'}}" title="Etat du dossier">
+                      {{VALIDATION(item.etat)}}
+                    </span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                      <tbody>
+                        <tr><td class="bold">Code : N°{{ item.code }}</td></tr>
+                        <tr>
+                          <td class="bold">Montant : <span class="text-danger font-weight-bold"><b>{{ item.montant | number }} {{global.device}} </b></span></td>
+                        </tr>
+                        <tr>
+                          <td class="bold">Date : {{ item.date|date: "d MMMM y" : '' : 'fr-FR'}} </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <button (click)="showFolder(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="FOLDER:EDIT">
+                    <button *ngIf="item?.etat ==='INVALIDE'" (click)="editFolder(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                      <i class="feather icon-edit-2"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template ngxPermissionsOnly="FOLDER:ACTIVATE">
+                    <button *ngIf="item?.etat === 'INVALIDE'" (click)="activateFolder(item)" type="button" class="btn btn-icon ml-1 btn-success" ngbTooltip="Activer">
+                      <i class="fas fa-check"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template ngxPermissionsOnly="FOLDER:PRINTER:SHOW">
+                    <button *ngIf="item?.etat === 'VALIDE'" (click)="printerFolder(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                      <i class="feather icon-printer"></i>
+                    </button>
+                  </ng-template>
+                  <button *ngIf="item?.invoice?.etat === 'SOLDE'" (click)="certificateFolder(item)" type="button" class="btn btn-icon btn-info ml-1" ngbTooltip="Attestation de solde">
+                    <i class="feather icon-file"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="FOLDER:DELETE">
+                    <button *ngIf="item?.etat === 'INVALIDE'" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

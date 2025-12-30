@@ -1,0 +1,58 @@
+
+<div class="card mb-3">
+    <div class="card-header d-flex">
+      <div class="p-2">
+        <h4><i class="fa fa-cog"></i> Famille de Ressource</h4>
+      </div>
+      <div class="ml-auto p-2">
+        <button class="btn btn-msg-send btn-primary ml-auto"
+            (click)="add()" type="button"> Ajouter <i class="fa fa-plus"></i>
+        </button>
+      </div>
+    </div>
+    <div class="card-body p-3">
+        <div class="table-responsive" *ngIf="familles && familles.length > 0">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Codification</th>
+                <th>Libellé</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of familles">
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="">{{item?.codification}}</span>
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="">{{item?.libelle}}</span>
+                  </p>
+                </td>
+                <td>
+                  <p>
+                    <span>Par: </span>
+                    <span> {{item?.create}}</span>
+                  </p>
+                  
+                </td>
+                <td class="table-action">
+                  <button (click)="show(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button (click)="edit(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+    </div>
+  </div>

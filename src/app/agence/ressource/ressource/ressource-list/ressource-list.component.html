@@ -1,0 +1,250 @@
+
+<div class="row">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="width"><app-filter class="width"
+    [user]="true"
+    [userTitle]="userTitle"
+
+    [name]="name"
+    [nameTitle]="nameTitle"
+    [nameType]="nameType"
+    [nameClass]="nameClass"
+    [nameNamespace]="nameNamespace"
+    [nameGroups]="nameGroups"
+
+    [autre]="autre"
+    [autreTitle]="autreTitle"
+    [autreType]="autreType"
+    [autreClass]="autreClass"
+    [autreNamespace]="autreNamespace"
+    [autreGroups]="autreGroups"
+
+    [bien]="bien"
+    [bienTitle]="bienTitle"
+    [bienType]="bienType"
+    [bienClass]="bienClass"
+    [bienNamespace]="bienNamespace"
+    [bienGroups]="bienGroups"
+
+    [libelle]="libelle"
+    [libelleTitle]="libelleTitle"
+    [libelleType]="libelleType"
+    [libelleClass]="libelleClass"
+    [libelleNamespace]="libelleNamespace"
+    [libelleGroups]="libelleGroups"
+
+    [etat]="true"
+    [etatRow]="etatRow"
+    [etatTitle]="etatTitle"
+
+    [exercice]="true"
+    [exerciceRow]="annees"
+    [currentYear]="currentYear"
+    [exerciceTitle]="anneesTitle"
+
+    [categorie]="true"
+    [categorieRow]="categorieRow"
+    [categorieTitle]="categorieTitle"
+    [dateD]="true"
+    [dateF]="true"
+    [create]="true"
+    [min]="min"
+    [minTitle]="minTitle"
+    [max]="max"
+    [maxTitle]="maxTitle"
+    [ordre]="true"
+    [code]="true"
+    [count]="true"
+    [type]="true"
+    [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+  </app-filter>
+  </div>
+  <!-- BOUTON SOUS LE FILTRE -->
+  <div class="col-12 mb-2 text-right">
+    <div class="btn-outil-configuration" ngbDropdown>
+      <button class="btn btn-primary mr-1"  (click)="add()" type="button">
+        <i class="fas fa-plus"></i> Ajouter une ressource
+      </button>
+      <button class="btn btn-warning" ngbDropdownToggle type="button">
+        Outils <i class="fas fa-tools"></i>
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+        <a class="dropdown-item" ngbTooltip="Cliquez ici pour imprimer le listing">
+          Imprimer <i class="feather icon-printer"></i>
+        </a>
+        <a class="dropdown-item" ngbTooltip="Cliquez ici pour exporter le listing">
+          Exporter <i class="fa fa-file-excel"></i>
+        </a>
+        <a class="dropdown-item" ngbTooltip="Cliquez ici pour importer un fichier">
+          Importer <i class="feather icon-download"></i>
+        </a>
+        <a class="dropdown-item" ngbTooltip="Cliquez ici pour générer un modèle">
+          Générer <i class="feather icon-upload"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <!-- BOUTON FIN -->
+
+
+
+  <div class="col-xl-3 col-md-6">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">Total resources</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-hammer"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <h5 class="m-0 text-white">{{ ressources ? ressources.length : 0 }}</h5>
+<!--            <p class="text-white m-b-0">{{ ressources ? ressources.length : 0 }}</p>-->
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+
+  <div class="col-xl-3 col-md-6">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">En stock</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-home f-30 text-c-yellow"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+<!--            <p class="text-white m-b-0">{{ stocks ? stocks : 0 }}</p>-->
+            <h5 class="m-0 text-white">{{ stocks ? stocks : 0 }}</h5>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-xl-3 col-md-6">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">En utilisation</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-hammer"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <p class="text-white m-b-0">{{ useA ? useA : 0}}  {{useA > 1 ? 'Actifs' : 'Actif' }}</p>
+          </div>
+          <div class="col-5 text-right">
+            <p class="text-white m-b-0">{{ useI ? useI : 0}} {{ useI > 1 ? 'Actifs' : 'Actif' }}</p>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-xl-3 col-md-6">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">Hors d'usage</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="feather icon-x-circle f-30 text-c-red"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <p class="text-white m-b-0">{{ hors ? hors : 0}}</p>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <!-- WIDGET DES NOMBRES end-->
+
+
+  <div class="col-md-12">
+    <span class="badge badge-primary my-4 f-14 width"> LISTE DES RESSOURCES</span>
+    <app-card [hidHeader]="true" cardClass="card-datatable" *ngIf="ressources && ressources.length > 0">
+      <div class="row">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Reference</th>
+                <th>Designation</th>
+                <th>Catégorie</th>
+                <th>Etat</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+              <tbody>
+                <tr *ngFor="let item of ressources">
+                  <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                      code de gestion : <b>{{ item?.codeGestion }}</b><br />
+                      Référence système : <b>{{ item?.code }}</b><br />
+                    </p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                      {{ item?.libelle }}
+                    </p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                      Famille : {{ item?.famille }}<br />
+                      Sous Famille : {{ item?.sousFamille?.libelle }}<br />
+                    </p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                      <span class="badge badge-warning">{{item?.etat}}</span>
+                    </p>
+                  </td>
+                  
+                  <td  class="table-action">
+                    <button (click)="show(item)" type="button" class="btn btn-icon btn-secondary ml-1"
+                      ngbTooltip="Détails">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button (click)="edit(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier la ressource">
+                      <i class="feather icon-edit-2"></i>
+                    </button>
+                    <button (click)="assigner(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="assinger la ressource a un bien">
+                      <i class="feather icon-share-2"></i>
+                    </button>
+                    <button *ngIf="item.etat != 'HORS SERVICE'" (click)="hs(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Mettre en Hors Service">
+                      <i class="feather icon-x-circle"></i>
+                    </button>
+                    <button *ngIf="item.etat === 'HORS SERVICE'" (click)="utilisation(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Mettre en  Service">
+                      <i class="fas fa-spinner"></i>
+                    </button>
+                    <!-- <button   (click)="activateUtilisation(item, 'ACTIF')" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Activer">
+                      <i class="fas fa-check"></i>
+                    </button> -->
+                    <!-- *ngIf="item?.etat === 'EN UTILISATION'" -->
+                  </td>
+                </tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </app-card>
+    <app-no-data [title]="'Aucune ressource trouvé'" *ngIf="ressources && ressources?.length === 0"></app-no-data>
+
+  </div>
+</div>

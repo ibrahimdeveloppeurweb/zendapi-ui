@@ -1,0 +1,57 @@
+import { SousFamille } from "./sous-famille";
+import { Famille } from "./famille";
+
+export interface Ressource {
+  id?: any,
+  ref?: any,
+  uuid?: any,
+  file?: any,
+  folder?: any,
+  tva?: number,
+  prix?: number,
+  taux?: number,
+  duree?: number,
+  stockAlert?: number,
+  stockPhysique?: number,
+  code?: string,
+  actif?: string,
+  inactif?: string,
+  etat?: string,
+  statut?: string,
+  unite?: string,
+  usure?: string,
+  libelle?: string,
+  conditionnement?: string,
+  methode?: string,
+  periode?: string,
+  prorata?: string,
+  description?: string,
+  codeGestion?: string,
+  immobilisation?: string,
+  type?: any,
+  famille?: Famille,
+  categorie?: any,
+  sousFamille?: SousFamille,
+  sousClasse?:any,
+  element?:any,
+  classe?:any,
+  composants?:any,
+  createdAt?: string,
+  updatedAt?: string,
+  update?: string,
+  create?: string,
+  serviceProduit?: string
+  evaluation?: string,
+  comptableVente?: string,
+  comptableExport?: string,
+  comptableAchat?: string,
+  comptableImport?: string
+  recuperation?: number,
+  livre?: string
+  residuelle?: number
+  periodicite?: any
+  data?: any,
+  origin?: any,
+  photo?: any,
+  photoSrc?: any,
+}

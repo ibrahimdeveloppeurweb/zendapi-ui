@@ -1,0 +1,185 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-primary my-2 f-14 width"> INFORMATIONS SUR LE SYNDIC </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="nom">Nom du syndic <span class="asterix">*</span></label>
+                            <input (ngModelChange)="onLibelleSyndic($event)" type="text" class="form-control" formControlName="nom" id="nom" (change)="onNomChange()"
+                            [ngClass]="{'is-invalid': submit && f.nom.errors,'is-valid': submit && f.nom.valid}" placeholder="Nom du syndic">
+                            <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+                                <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="pays">Pays <span class="asterix">*</span></label>
+                            <select class="form-control" id="pays" formControlName="pays"
+                                [ngClass]="{'is-invalid': submit && f.pays.errors,'is-valid': submit && f.pays.valid}">
+                                <option *ngFor="let item of countrys" [ngValue]="item.uuid">{{item.nom}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.pays.errors">
+                                <div *ngIf="f.pays.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="debutExercice">Mois de début de l'exercice comptable <span class="asterix">*</span></label>
+                            <select class="form-control" id="debutExercice" formControlName="debutExercice"
+                                [ngClass]="{'is-invalid': submit && f.debutExercice.errors,'is-valid': submit && f.debutExercice.valid}">
+                                <option *ngFor="let item of mois" [ngValue]="item.value">{{item.label}} {{currentYear}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.debutExercice.errors">
+                                <div *ngIf="f.debutExercice.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="position-relative form-group">
+                          <label for="mode">Type de cotisation <span class="asterix">*</span></label>
+                          <select (ngModelChange)="onChangeTypeCotisation($event)" class="form-control" id="mode" formControlName="mode">
+                              <option *ngFor="let item of mode" [ngValue]="item?.value">{{item?.label}}</option>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+                              <div *ngIf="f.mode.errors.required">{{required.novide}}</div>
+                          </div>
+                      </div>
+                    </div>
+                    <div *ngIf="!modeTantieme" class="col-md-4">
+                      <label for="numero">Montant cotisation </label>
+                      <input type="number" min="0" formControlName="cotisation" class="form-control" id="cotisation" />
+                      <div class="invalid-feedback" *ngIf="submit && f.cotisation.errors">
+                        <div *ngIf="f.cotisation.errors.required">{{ required.novide }}</div>
+                      </div>
+                    </div>
+                    <div *ngIf="modeTantieme" class="col-md-4">
+                        <label for="tantieme">Types de Millièmes</label><br>
+                        <span *ngIf="edit" style="font-size: 11px;line-height: 0.5;height: 7px;" class="text-danger">Attention: Les modifications appliquées aux types de millièmes impactera les lots existants. La liste des tantièmes de chaque lot sera actualisée et les nouveaux tantièmes seront ajoutés avec la valeur zéro (0) par défaut. De plus, vous devrez actualiser le budget pour le rendre conforme à cette modification et actualiser les appels de charges.</span>
+                        <ng-select [multiple]="true" id="tantieme" formControlName="tantieme" [(ngModel)]="tantiemeSelected" >
+                            <ng-option *ngFor="let item of tantiemes" [value]="item.uuid">{{item?.libelle}} {{item?.statut}}</ng-option>
+                        </ng-select>
+                        <div class="invalid-feedback" *ngIf="submit && f.tantieme.errors">
+                            <div *ngIf="f.tantieme.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                  
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="ville">Ville <span class="asterix">*</span></label>
+                            <input type="text" class="form-control" formControlName="ville" id="ville"
+                            [ngClass]="{'is-invalid': submit && f.ville.errors,'is-valid': submit && f.ville.valid}" placeholder="Ville du syndic">
+                            <div class="invalid-feedback" *ngIf="submit && f.ville.errors">
+                                <div *ngIf="f.ville.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="commune">Commune <span class="asterix">*</span></label>
+                            <input type="text" class="form-control" formControlName="commune" id="commune"
+                            [ngClass]="{'is-invalid': submit && f.commune.errors,'is-valid': submit && f.commune.valid}" placeholder="Commune du syndic">
+                            <div class="invalid-feedback" *ngIf="submit && f.commune.errors">
+                                <div *ngIf="f.commune.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="quartier">Quartier</label>
+                            <input type="text" class="form-control" formControlName="quartier" id="quartier"
+                            [ngClass]="{'is-invalid': submit && f.quartier.errors,'is-valid': submit && f.quartier.valid}" placeholder="Quartier du syndic">
+                            <div class="invalid-feedback" *ngIf="submit && f.quartier.errors">
+                                <div *ngIf="f.quartier.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                      <label for="prix">Compte comptable </label>
+                      <app-entity-finder [namespace]="'Accounting'" [class]="'Account'" [groups]="['family']" [required]="true"
+                        [selected]="accountSelected" (uuid)="setAccountUuid($event)" [placeholder]="'Selectionez un compte comptable'">
+                      </app-entity-finder>
+                    </div>
+                    <div class="col-md-4">
+                      <label for="numero">Numéro compte auxiliaire </label>
+                      <input formControlName="numero" class="form-control" id="numero" [ngClass]="{
+                          'is-invalid': submit && f.numero.errors,
+                          'is-valid': submit && f.numero.valid
+                        }" [placeholder]="'Numéro compte auxiliaire'" />
+                      <div class="invalid-feedback" *ngIf="submit && f.numero.errors">
+                        <div *ngIf="f.numero.errors.required">{{ required.novide }}</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="cheque">Les chèques doivent être à l'ordre de <span class="asterix">*</span></label>
+                            <select class="form-control" id="cheque" formControlName="cheque"
+                                [ngClass]="{'is-invalid': submit && f.cheque.errors,'is-valid': submit && f.cheque.valid}">
+                                <option [ngValue]="'AICI'">AICI</option>
+                                <option *ngIf="libelleSyndic" [ngValue]="libelleSyndic">{{libelleSyndic}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.cheque.errors">
+                                <div *ngIf="f.cheque.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="badge badge-primary my-2 f-14 width"> LOCALISATION DU SYNDIC </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label for="lng">Longitude</label>
+                        <input type="text" class="form-control" formControlName="lng" id="lng" placeholder="Longitude">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lat">Latitude</label>
+                        <input type="text" class="form-control" formControlName="lat" id="lat" placeholder="Latitude">
+                    </div>
+                </div>
+            </div>
+            <agm-map [draggableCursor]="'default'" [mapTypeId]="'hybrid'" [latitude]="lat" [longitude]="lng" [zoom]="zoom"
+                (mapClick)="updateGeo($event)" (zoomChange)="updateZoom($event)">
+                <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+            </agm-map>
+            <div class="row">
+                <span class="badge badge-primary my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLÉMENTAIRES</span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="flex-grow-0" style="min-width: 30%">
+                        <app-image-uploader (filesd)="loadfile($event)" (imageUploaded)="setParam('photoUuid',$event)"
+                        [photo]="edit && syndic ? syndic.photo : null"></app-image-uploader>
+                    </div>
+                    <div class="col-md">
+                        <label>Pièces et documents à joindre</label>
+                        <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                        [path]="'syndic'" [etat]="edit ? 'edit': 'add'" [folder]="edit && syndic ? syndic?.folder : null">
+                        </app-folder-uploader>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+        Enregistrer <i class="feather icon-save p-1"></i>
+        </button>
+    </div>
+</form>

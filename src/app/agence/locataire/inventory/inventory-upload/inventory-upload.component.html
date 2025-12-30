@@ -1,0 +1,22 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <app-folder-uploader (filesd)="files($event)" [maxSize]="3" (filesUploaded)="setParam('folderUuid',$event)"
+      [path]="'signe/etat_lieu'" [etat]="inventory?.signed ? 'edit': 'add'" [folder]="inventory ? inventory?.signed : null">
+    </app-folder-uploader>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

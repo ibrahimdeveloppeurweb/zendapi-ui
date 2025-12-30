@@ -1,0 +1,485 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS RESERVES AU CLIENT -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width">
+          DETAILS RESERVES AU CLIENT
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="customer">Client <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Customer'" [groups]="['customer']" [required]="true"
+              (uuid)="setCustomerUuid($event)" [selected]="customerSelected" [disabled]="edit"
+              [placeholder]="'Selectionez un client'">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-3">
+            <label>Forme juridique</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+              [value]="customer?.type" readonly>
+          </div>
+          <div class="col-md-3">
+            <label>Contact</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+              [value]="customer?.telephone" readonly>
+          </div>
+          <div class="col-md-3">
+            <label>Email</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+              [value]="customer?.user?.email" readonly>
+          </div>
+        </div>
+      </div>
+      <!-- DETAILS RESERVER AUX BIENS -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width">
+          DETAILS RESERVES AUX BIENS
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="date">Date d'ouverture <span class="asterix">*</span></label>
+            <input type="date"  (ngModelChange)="addEcheanceFolder()" formControlName="date" class="form-control" id="date" [ngClass]="{
+              'is-invalid': submit && f.date.errors,
+              'is-valid': submit && f.date.valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+              <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="motif">Motif d'ouverture <span class="asterix">*</span></label>
+            <select (change)="onChangeMotif($event)" class="form-control" id="motif" formControlName="motif" [ngClass]="{
+                'is-invalid': submit && f.motif.errors,
+                'is-valid': submit && f.motif.valid
+              }">
+              <option *ngFor="let item of motifRow" [value]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.motif.errors">
+              <div *ngIf="f.motif.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="charge">Chargé d'affaire</label>
+            <select class="form-control" id="charge" formControlName="charge">
+              <option *ngFor="let item of users" [value]="item.uuid">{{ item.libelle }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="isSigned">Signature numérique du dossier ? <span class="asterix">*</span></label>
+            <select class="form-control" id="isSigned" formControlName="isSigned" [ngClass]="{
+                'is-invalid': submit && f.isSigned.errors,
+                'is-valid': submit && f.isSigned.valid
+              }">
+              <option *ngFor="let item of booleanRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.isSigned.errors">
+              <div *ngIf="f.isSigned.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div (change)="onChangePromotion($event)" *ngIf="f.motif.value === 'MAISON'" class="col-md-3">
+            <label for="type">
+              Promotion <span class="asterix"></span>
+            </label>
+            <ng-select [disabled]="edit" [(ngModel)]="selectedPromotion" class="form-control custom-ng-select"  [items]="promotions" bindLabel="libelle"
+                bindValue="uuid" class="form-control" id="promotion" (change)="onChangePromotion($event)">
+                <ng-option *ngFor="let item of promotions" [value]="item.uuid"></ng-option>
+            </ng-select>
+          </div>
+          <div *ngIf="f.motif.value === 'MAISON'" class="col-md-3">
+            <label for="type">
+              Sous Promotion <span class="asterix"></span>
+            </label>
+            <ng-select [disabled]="edit"  [(ngModel)]="selectedSousPromotion" class="form-control custom-ng-select"   [items]="sousPromotions" bindLabel="libelle"
+                bindValue="uuid" class="form-control" id="souspromotion" (change)="onChangeSousPromotion($event)">
+                <ng-option *ngFor="let item of sousPromotions" [value]="item.uuid"></ng-option>
+            </ng-select>
+          </div>
+          <div (change)="onChangeLotissement($event)" *ngIf="f.motif.value === 'LOT'" class="col-md-3">
+            <label for="type">
+              Lotissement <span class="asterix"></span>
+            </label>
+            <ng-select [disabled]="edit" [(ngModel)]="selectedLotissement" class="form-control custom-ng-select"  [items]="lotissements" bindLabel="nom"
+                bindValue="uuid" class="form-control" id="promotion" (change)="onChangeLotissement($event)">
+                <ng-option *ngFor="let item of lotissements" [value]="item.uuid"></ng-option>
+            </ng-select>
+          </div>
+          <div *ngIf="f.motif.value === 'LOT'" class="col-md-3">
+            <label for="type">
+              Ilots <span class="asterix"></span>
+            </label>
+            <ng-select [disabled]="edit"  [(ngModel)]="selectedIlot" class="form-control custom-ng-select"   [items]="ilots" bindLabel="numero"
+                bindValue="uuid" class="form-control" id="ilots" (change)="onChangeIlot($event)">
+                <ng-option *ngFor="let item of ilots" [value]="item.uuid"></ng-option>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTIONS DES BIENS -->
+      <div formArrayName="optionHouses" *ngIf="optionHouses.length > 0">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-3">
+              <label>Désignation </label>
+            </div>
+            <div class="col-md-2">
+              <label>Prix unitaire</label>
+            </div>
+            <div class="col-md-1">
+              <label>Quantité</label>
+            </div>
+            <div class="col-md-1">
+              <label>TVA</label>
+            </div>
+            <div class="col-md-2">
+              <label>Remise</label>
+            </div>
+            <div class="col-md-2">
+              <label>Total</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" *ngFor="let item of optionHouses.controls; let i=index" [formGroupName]="i">
+          <div class="row">
+            <div class="col-md-3">
+              <app-entity-finder *ngIf="f.motif.value === 'PROPRIETAIRE' && !edit" [class]="'House'" id="houseH{{i}}"
+                [params]="[{ type: [{disponible : 'VENTE'}], etat: [{etat : 'DISPONIBLE'}] }]" [groups]="['house']"
+                [required]="true" (uuid)="setHouseUuid($event, item)" [placeholder]="'Selectionez un Désignation'">
+              </app-entity-finder>
+              <ng-select class="form-control custom-ng-select" *ngIf="f.motif.value === 'MAISON' && !edit" [items]="homes" bindLabel="searchableTitle"
+                bindValue="uuid" class="form-control" id="promotion" (change)="setHomeUuid($event, item)">
+                <ng-option *ngFor="let item of homes" [value]="item.uuid"></ng-option>
+              </ng-select>
+              <ng-select class="form-control custom-ng-select" *ngIf="f.motif.value === 'LOT' && !edit" [items]="lots" bindLabel="searchableTitle"
+                bindValue="uuid" class="form-control" id="lot" (change)="setLotUuid($event, item)">
+                <ng-option *ngFor="let item of lots" [value]="item.uuid"></ng-option>
+              </ng-select>
+              <input *ngIf="edit" type="text" class="form-control p-2" formControlName="label" id="labelH{{i}}"
+                readonly>
+            </div>
+            <div class="col-md-2">
+              <input type="number" class="form-control p-2" formControlName="prix" id="prixH{{i}}"
+                placeholder="Prix unitaire" readonly>
+            </div>
+            <div class="col-md-1">
+              <input type="number" class="form-control p-2" formControlName="qte" id="qteH{{i}}" placeholder="Quantité"
+                readonly>
+            </div>
+            <div class="col-md-1">
+              <input type="number" (change)="onChangeTotalOption(item)" class="form-control" formControlName="tva"
+                id="tvaH{{i}}" placeholder="TVA">
+            </div>
+            <div class="col-md-2">
+              <input type="number" (change)="onChangeTotalOption(item)" class="form-control" formControlName="remise"
+                id="remiseH{{i}}" placeholder="Remise">
+            </div>
+            <div class="col-md-2">
+              <input type="number" class="form-control p-2 text-danger font-weight-bold" formControlName="total"
+                id="totalH{{i}}" step="0.01" placeholder="Montant du bien" readonly>
+            </div>
+            <div class="col-md-1">
+              <button [disabled]="edit" (click)="onDeleteOptionHouse(i)" type="button" class="btn btn-danger">
+                <i class="feather icon-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!edit" class="row mb-2">
+        <button class="btn btn-msg-send btn-primary ml-auto" (click)="addOptionHouse()" type="button"> Ajouter <i
+            class="fa fa-plus"></i></button>
+      </div>
+      <!-- FIN OPTIONS DES BIENS -->
+
+      <!-- DETAILS SUR LE SUPLEMENT -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width">
+          DETAILS SUR LE SUPLEMENT
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <label for="modalite">Modalité <span class="asterix">*</span></label>
+            <select (ngModelChange)="onChangeModalite()" class="form-control" id="modalite" formControlName="modalite"
+              [ngClass]="{
+                'is-invalid': submit && f.modalite.errors,
+                'is-valid': submit && f.modalite.valid
+              }">
+              <option [value]="'ECHEANCE'">Etat de paiement échéancier</option>
+              <option [value]="'AVANCEMENT'">Taux de progression financier VFA</option>
+              <option [value]="'COMPTANT'">COMPTANT</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.modalite.errors">
+              <div *ngIf="f.modalite.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="montantFrais">Frais d'ouverture <span class="asterix">*</span></label>
+            <input (ngModelChange)="onChangeTotal()" type="number" formControlName="montantFrais" class="form-control"
+              id="montantFrais" [ngClass]="{
+              'is-invalid': submit && f.montantFrais.errors,
+              'is-valid': submit && f.montantFrais .valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.montantFrais.errors">
+              <div *ngIf="f.montantFrais.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.montantFrais.errors.pattern">{{required.nolettre}}</div>
+              <div *ngIf="f.montantFrais.errors.pattern">{{required.positive}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="montantAvance">Montant de l'avance <span class="asterix">*</span></label>
+            <input (ngModelChange)="onChangeTotal()" type="number" formControlName="montantAvance" class="form-control"
+              id="montantAvance" [ngClass]="{
+              'is-invalid': submit && f.montantAvance.errors,
+              'is-valid': submit && f.montantAvance .valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.montantAvance.errors">
+              <div *ngIf="f.montantAvance.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.montantAvance.errors.pattern">{{required.nolettre}}</div>
+              <div *ngIf="f.montantAvance.errors.pattern">{{required.positive}}</div>
+            </div>
+          </div>
+          <div class="col-md-4" *ngIf="f.modalite.value === 'ECHEANCE'">
+            <label for="nbrMois">Nombre de mois </label>
+            <input (ngModelChange)="addEcheanceFolder()" type="number" formControlName="nbrMois" class="form-control"
+              id="nbrMois" [ngClass]="{
+              'is-invalid': submit && f.nbrMois.errors,
+              'is-valid': submit && f.nbrMois .valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.nbrMois.errors">
+              <div *ngIf="f.nbrMois.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.nbrMois.errors.pattern">{{required.nolettre}}</div>
+              <div *ngIf="f.nbrMois.errors.pattern">{{required.positive}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTION DU DOSSIER -->
+      <div class="row">
+        <span *ngIf="options.length > 0" class="badge badge-secondary my-2 f-14 width">
+          OPTION SUPLEMENTAIRE AU DOSSIER
+        </span>
+      </div>
+      <div formArrayName="optionFolders" *ngIf="options.length > 0">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-3">
+              <label>Désignation </label>
+            </div>
+            <div class="col-md-2">
+              <label>Prix unitaire</label>
+            </div>
+            <div class="col-md-1">
+              <label>Quantité</label>
+            </div>
+            <div class="col-md-1">
+              <label>TVA</label>
+            </div>
+            <div class="col-md-2">
+              <label>Remise</label>
+            </div>
+            <div class="col-md-2">
+              <label>Total</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" *ngFor="let item of options.controls; let i=index" [formGroupName]="i">
+          <div class="row">
+            <div class="col-md-3">
+              <input type="text" class="form-control p-2" formControlName="libelle" id="libelle{{i}}" [ngClass]="{
+                  'is-invalid': submit && item.get('libelle').errors,
+                  'is-valid': submit && item.get('libelle').valid
+                }" placeholder="Désignation">
+              <div class="invalid-feedback" *ngIf="submit && item.get('libelle').errors">
+                <div *ngIf="item.get('libelle').errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <input type="number" (change)="onChangeTotalOption(item)" class="form-control" formControlName="prix"
+                [ngClass]="{
+                  'is-invalid': submit && item.get('prix').errors,
+                  'is-valid': submit && item.get('prix').valid
+                }" id="prix{{i}}" placeholder="Prix unitaire">
+              <div class="invalid-feedback" *ngIf="submit && item.get('prix').errors">
+                <div *ngIf="item.get('prix').errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-1">
+              <input type="number" (change)="onChangeTotalOption(item)" class="form-control" formControlName="qte"
+                id="qte{{i}}" placeholder="Quantité">
+            </div>
+            <div class="col-md-1">
+              <input type="number" (change)="onChangeTotalOption(item)" class="form-control" formControlName="tva"
+                id="tva{{i}}" placeholder="TVA">
+            </div>
+            <div class="col-md-2">
+              <input type="number" (change)="onChangeTotalOption(item)" class="form-control" formControlName="remise"
+                id="remise{{i}}" placeholder="Remise">
+            </div>
+            <div class="col-md-2">
+              <input type="text" class="form-control p-2 text-danger font-weight-bold" formControlName="total"
+                id="total{{i}}" readonly>
+            </div>
+            <div class="col-md-1">
+              <button (click)="onDeleteOptions(i)" type="button" class="btn btn-danger">
+                <i class="feather icon-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <button class="btn btn-msg-send btn-primary ml-auto" (click)="addOption()" type="button"> Ajouter <i
+            class="fa fa-plus"></i></button>
+      </div>
+      <!-- FIN OPTION DU DOSSIER -->
+
+      <!-- DEBUT L'ECHEANCIER -->
+      <div class="row" *ngIf="f.nbrMois.value > 0 && f.montant.value > 0 && echeanceFolders.length > 0">
+        <span class="badge badge-secondary my-2 f-14 width">
+          DETAILS SUR DE L'ETAT DE PAIEMENT ECHEANCIER
+        </span>
+      </div>
+      <div formArrayName="echeanceFolders" *ngIf="echeanceFolders.length > 0">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-3">
+              <label>Date </label>
+            </div>
+            <div class="col-md-3">
+              <label>Montant</label>
+            </div>
+            <div class="col-md-6">
+              <label>Description</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" *ngFor="let item of echeanceFolders.controls; let i=index" [formGroupName]="i">
+          <div class="row">
+            <div class="col-md-3">
+              <input type="text" class="form-control p-2 text-secondary font-weight-bold" formControlName="date"
+                id="date{{i}}" placeholder="Date" readonly>
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control p-2 text-secondary font-weight-bold" formControlName="montant"
+                id="montant{{i}}" placeholder="Montant" readonly>
+            </div>
+            <div class="col-md-6">
+              <input type="text" class="form-control" formControlName="description" id="description{{i}}">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- FIN L'ECHEANCIER -->
+
+      <!-- DEBUT L'AVANCEMENT -->
+      <div class="row" *ngIf="avanceFolders.length > 0">
+        <span class="badge badge-secondary my-2 f-14 width">
+          DETAILS SUR LE TAUX DE PROGRESSION FINANCIER VFA
+        </span>
+      </div>
+      <div formArrayName="avanceFolders" *ngIf="avanceFolders.length > 0">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-3">
+              <label>Libelle </label>
+            </div>
+            <div class="col-md-3">
+              <label>Pourcentage (%)</label>
+            </div>
+            <div class="col-md-6">
+              <label>Montant</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" *ngFor="let item of avanceFolders.controls; let i=index" [formGroupName]="i">
+          <div class="row">
+            <div class="col-md-3">
+              <input type="text" class="form-control p-2 text-secondary font-weight-bold" formControlName="libelle"
+                id="libelle{{i}}" placeholder="Libelle">
+            </div>
+            <div class="col-md-3">
+              <input type="number" (change)="setPourcentage(item)"
+                class="form-control p-2 text-secondary font-weight-bold" formControlName="prc" id="prc{{i}}"
+                placeholder="Pourcentage (%)">
+            </div>
+            <div class="col-md-6">
+              <input type="text" class="form-control" formControlName="montant" id="montant{{i}}">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- FIN L'ECHEANCIER -->
+
+      <!-- RESUME DES MONTANTS -->
+      <div class="row">
+        <div class="col-sm-12">
+          <table class="table table-responsive invoice-table invoice-total">
+            <tbody>
+              <tr>
+                <th>TOTAL HT :</th>
+                <td>{{ totalHt| number}}</td>
+              </tr>
+              <tr>
+                <th>TOTAL REMISE :</th>
+                <td>{{ totalRemise| number}}</td>
+              </tr>
+              <tr>
+                <th>TOTAL TVA :</th>
+                <td>{{ totalTva| number}}</td>
+              </tr>
+              <tr class="text-info">
+                <td>
+                  <hr />
+                  <h2 class="text-primary m-r-10">TOTAL TTC A VERSER :</h2>
+                </td>
+                <td>
+                  <hr />
+                  <h2 class="text-success">{{ totalTtc|number}}</h2>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLEMENTAIRES </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md">
+            <label>Pièces et documents à joindre</label>
+            <app-folder-uploader (filesd)="files($event)" [maxSize]="3" (filesUploaded)="setParam('folderUuid',$event)"
+              [path]="'dossier'" [etat]="edit ? 'edit': 'add'" [folder]="edit && folder ? folder?.folder : null">
+            </app-folder-uploader>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button [disabled]="edit" (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="date">Date <span class="asterix">*</span></label>
+                <input class="form-control" type="date"formControlName="date"  id="date"/>
+                <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                  <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="montant">Montant <span class="asterix">*</span></label>
+                <input class="form-control" type="number" step="0.01" [min]="0" formControlName="montant"
+                 id="montant" placeholder="Montant"/>
+                <div class="invalid-feedback" *ngIf="submit && f.montant.errors">
+                  <div *ngIf="f.montant.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

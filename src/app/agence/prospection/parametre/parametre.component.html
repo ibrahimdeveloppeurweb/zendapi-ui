@@ -1,0 +1,337 @@
+<div class="row">
+    <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+      <div class="col-md-3">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4>Paramètres</h4>
+          </div>
+          <div class="card-body p-3">
+            <div class="cat-list">
+              <div class="border-bottom pb-3 ">
+                <a class="btn btn-light width" (click)="onDisplay('CONFIGURATION')">
+                  <i class="fa fa-user-check"></i> Confuguration générale
+                </a>
+              </div>
+              <div class="border-bottom pb-3 ">
+                <a class="btn btn-light width" (click)="onDisplay('VENTE')">
+                  <i class="fa fa-cog"></i> Tunnel de prospection vente
+                </a>
+              </div>
+              <div class="border-bottom pb-3 ">
+                <a class="btn btn-light width" (click)="onDisplay('LOCATION')">
+                  <i class="fa fa-cog"></i> Tunnel de prospection location
+                </a>
+              </div>
+              <div class="border-bottom pb-3 pt-3">
+                <a class="btn btn-light width" (click)="onDisplay('ETAPE')">
+                  <i class="fas fa-comment-alt"></i> Etape de prospection
+                </a>
+              </div>
+              <div class="border-bottom pb-3 pt-3">
+                <a class="btn btn-light width" (click)="onDisplay('FRAIS')">
+                  <i class="fas fa-coins"></i> Frais
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-9">
+        <!-- LISTE DES PARAMETRES GENERAUX -->
+        <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+          <div class="card mb-3" *ngIf="type === 'VENTE'" >
+            <div class="card-header d-flex">
+              <div class="p-2">
+                <h4><i class="fa fa-cog"></i> Tunnel de prospetion vente</h4>
+              </div>
+              <div class="ml-auto p-2">
+                <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+                  <button (click)="editTunnel(true)" *ngIf="!edit" type="button"
+                    class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button (click)="editTunnel(false)" *ngIf="edit" type="button"
+                    class="btn btn-icon btn-danger ml-1" ngbTooltip="Fermer">
+                    <i class="feather icon-x-circle"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </div>
+            <div class="card-body p-3">
+              <form [formGroup]="form" (ngSubmit)="onSubmit('TUNNEL')">
+                <div class="row mb-2">
+                  <div class="col-md-12">
+                    <div class="width alert alert-warning" role="alert">
+                      <span>Le tunnel de prospection débutera par le premier élément défini dans la liste. Cela signifie que lors de la prospection,
+                        l'attention sera d'abord portée sur le premier élément de la liste, puis elle se déplacera progressivement vers les éléments suivants.
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 text-right" *ngIf="edit">
+                    <button class="btn btn-msg-send btn-primary ml-auto"
+                    (click)="onAddEtape(i, 'VENTE')" type="button"> Ajouter <i class="fa fa-plus"></i></button>
+                  </div>
+                </div>
+                <div formArrayName="etapes">
+                  <!-- LIBELLE DES CHAMPS EQUIPEMENT -->
+                  <div class="row" *ngIf="etapes.length > 0">
+                    <div class="col-md-1">
+                      <label>N° <span class="asterix">*</span></label>
+                    </div>
+                    <div class="col-md-3">
+                      <label>Etape <span class="asterix">*</span></label>
+                    </div>
+                    <div class="col-md-2">
+                      <label>Dure traitement(jour) <span class="asterix">*</span></label>
+                    </div>
+                    <div class="col-md-5">
+                      <label>Actions commerçiales <span class="asterix">*</span></label>
+                    </div>
+                  </div>
+                  <div class="form-group" *ngFor="let item of etapes.controls; let i=index" [formGroupName]="i">
+                    <div class="row">
+                      <div class="col-md-1">
+                        <input type="text" formControlName="numero" class="form-control" id="numero{{i}}" placeholder="numero" readonly>
+                      </div>
+                      <div class="col-md-3">
+                        <select formControlName="etape" class="form-control" id="house{{i}}">
+                          <option *ngFor="let item of etapesRow" [value]="item.uuid">{{item.libelle}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && item.get('etape').errors">
+                          <div *ngIf="item.get('etape').errors.required">{{required.novide}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <input type="number" formControlName="dure" class="form-control" id="dure{{i}}" placeholder="Dure"  >
+                      </div>
+                      <div class="col-md-5">
+                        <ng-select  [multiple]="true"  formControlName="action" class="form-control" id="action{{i}}"  (change)="onChangeAction(i)" >
+                          <ng-option *ngFor="let item of commercialRow" [value]="item.value">{{item.label}}</ng-option>
+                        </ng-select>
+                      </div>
+                      <div class="col-md-1" *ngIf="edit">
+                        <button (click)="onDelete(i, item.get('etape').value)" type="button" class="btn btn-danger">
+                          <i class="feather icon-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+                    <button *ngIf="edit" type="submit" class="btn btn-primary">
+                      Enregistrer <i class="feather icon-save"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </form>
+            </div>
+          </div>
+
+
+          <div class="card mb-3" *ngIf="type === 'LOCATION'" >
+            <div class="card-header d-flex">
+              <div class="p-2">
+                <h4><i class="fa fa-cog"></i> Tunnel de prospetion location</h4>
+              </div>
+              <div class="ml-auto p-2">
+                <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+                  <button (click)="editTunnel(true)" *ngIf="!edit" type="button"
+                    class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button (click)="editTunnel(false)" *ngIf="edit" type="button"
+                    class="btn btn-icon btn-danger ml-1" ngbTooltip="Fermer">
+                    <i class="feather icon-x-circle"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </div>
+            <div class="card-body p-3">
+              <form [formGroup]="form" (ngSubmit)="onSubmit('TUNNEL')">
+                <div class="row mb-2">
+                  <div class="col-md-12">
+                    <div class="width alert alert-warning" role="alert">
+                      <span>Le tunnel de prospection débutera par le premier élément défini dans la liste. Cela signifie que lors de la prospection,
+                        l'attention sera d'abord portée sur le premier élément de la liste, puis elle se déplacera progressivement vers les éléments suivants.
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-md-12 text-right" *ngIf="edit">
+                    <button class="btn btn-msg-send btn-primary ml-auto"
+                    (click)="onAddEtape(i, 'LOCATION')" type="button"> Ajouter <i class="fa fa-plus"></i></button>
+                  </div>
+                </div>
+                <div formArrayName="etapes">
+                  <!-- LIBELLE DES CHAMPS EQUIPEMENT -->
+                  <div class="row" *ngIf="etapes.length > 0">
+                    <div class="col-md-1">
+                      <label>N° <span class="asterix">*</span></label>
+                    </div>
+                    <div class="col-md-3">
+                      <label>Etape <span class="asterix">*</span></label>
+                    </div>
+                    <div class="col-md-2">
+                      <label>Dure traitement(jour) <span class="asterix">*</span></label>
+                    </div>
+                    <div class="col-md-5">
+                      <label>Actions commerçiales <span class="asterix">*</span></label>
+                    </div>
+                  </div>
+                  <div class="form-group" *ngFor="let item of etapes.controls; let i=index" [formGroupName]="i">
+                    <div class="row">
+                      <div class="col-md-1">
+                        <input type="text" formControlName="numero" class="form-control" id="numero{{i}}" placeholder="numero" readonly>
+                      </div>
+                      <div class="col-md-3">
+                        <select formControlName="etape" class="form-control" id="house{{i}}">
+                          <option *ngFor="let item of etapesRow" [value]="item.uuid">{{item.libelle}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && item.get('etape').errors">
+                          <div *ngIf="item.get('etape').errors.required">{{required.novide}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <input type="number" formControlName="dure" class="form-control" id="dure{{i}}" placeholder="Dure"  >
+                      </div>
+                      <div class="col-md-5">
+                        <ng-select  [multiple]="true"  formControlName="action" class="form-control" id="action{{i}}" [(ngModel)]="gestSelected" >
+                          <ng-option *ngFor="let item of commercialRow" [value]="item.value">{{item.label}}</ng-option>
+                        </ng-select>
+                      </div>
+                      <div class="col-md-1" *ngIf="edit">
+                        <button (click)="onDelete(i, item.get('etape').value)" type="button" class="btn btn-danger">
+                          <i class="feather icon-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+                    <button *ngIf="edit" type="submit" class="btn btn-primary">
+                      Enregistrer <i class="feather icon-save"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card mb-3" *ngIf="type === 'CONFIGURATION'" >
+            <div class="card-header d-flex">
+              <div class="p-2">
+                <h4><i class="fa fa-user-check"></i> Configuration générale</h4>
+              </div>
+
+            </div>
+            <div class="card-body p-3">
+              <form autocomplete="off" [formGroup]="commercialForm" (ngSubmit)="onSubmitCommercial()" >
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <label for="user">Chef commerçial</label>
+                      <ng-select  id="user" formControlName="user"  [(ngModel)]="chefSelected" >
+                        <ng-option [value]="null">Selectionner le chef commercial </ng-option>
+                        <ng-option *ngFor="let item of users" [value]="item?.uuid">{{item?.nom}}</ng-option>
+                      </ng-select>
+                    </div>
+                    <div class="col-md-12 text-right" >
+                      <button [disabled]="commercialForm.invalid" type="submit" class="btn btn-msg-send btn-primary ml-auto">
+                        Enregistrer <i class="feather icon-save"></i>
+                      </button>
+                    </div>
+                  </div>
+
+              </form>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngxPermissionsExcept="SETTING:AGENCY">
+          <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'VENTE' || type === 'LOCATION'" [title]="'Liste tunnel de prospection'"></app-no-droit>
+          </div>
+        </ng-template>
+
+        <!-- LISTE DES ÉPATES DE PROSPECTION -->
+        <ng-template ngxPermissionsOnly="SETTING:TEMPLATE:AGENCY">
+          <app-etape-list *ngIf="type === 'ETAPE'" class="width" [etapes]="etapesRow"></app-etape-list>
+        </ng-template>
+        <ng-template ngxPermissionsExcept="SETTING:TEMPLATE:AGENCY">
+          <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'ETAPE'" [title]="'Liste des etapes de prospection'"></app-no-droit>
+          </div>
+        </ng-template>
+
+        <!-- LISTE DES TEMPLATE -->
+        <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+          <div class="card mb-3" *ngIf="type === 'FRAIS'" >
+            <div class="card-header d-flex">
+              <div class="p-2">
+                <h4><i class="fa fa-coins"></i> {{ fraisTitle }}</h4>
+              </div>
+              <div class="ml-auto p-2">
+                <button (click)="editFrais(true)" *ngIf="!editFrai" type="button"
+                  class="btn btn-primary ml-1" ngbTooltip="Modifier">
+                  <i class="feather icon-edit-2"></i> Modifier
+                </button>
+                <button (click)="editFrais(false)" *ngIf="editFrai" type="button"
+                  class="btn btn-danger ml-1" ngbTooltip="Fermer">
+                  <i class="feather icon-x-circle"></i> Fermer
+                </button>
+              </div>
+            </div>
+            <div class="card-body p-3">
+              <form [formGroup]="fraisForm" (ngSubmit)="onSubmit('FRAIS')">
+                <div class="row mb-2">
+                  <div class="col-md-8">
+                    <label for="fraisVente">Est-ce que vous imposez des frais pour la pré-réservation d'une vente ? </label>
+                    <select  [attr.disabled]="!editFrai ? editFrai : null"  class="form-control" id="vente" formControlName="vente">
+                      <option [value]="'OUI'">OUI</option>
+                      <option [value]="'NON'">NON</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4"  *ngIf="fraisForm.get('vente').value === 'OUI'">
+                    <label for="fraisVente">Frais de pré-reservation vente</label>
+                    <input [attr.disabled]="!editFrai ? editFrai : null" type="number" formControlName="fraisVente"
+                      id="fraisVente" placeholder="Frais de préreservation vente" [class]="!editFrai ? 'form-control p-2' : 'form-control'">
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-8">
+                    <label for="fraisVente">Est-ce que vous imposez des frais pour la pré-réservation d'une location ? </label>
+                    <select  [attr.disabled]="!editFrai ? editFrai : null"  class="form-control" id="location" formControlName="location">
+                      <option [value]="'OUI'">OUI</option>
+                      <option [value]="'NON'">NON</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4" *ngIf="fraisForm.get('location').value === 'OUI'">
+                    <label for="fraisLocation">Frais de préreservation location</label>
+                    <input [attr.disabled]="!editFrai ? editFrai : null" type="number" formControlName="fraisLocation"
+                      id="fraisLocation" placeholder="Frais de préreservation location" [class]="!editFrai ? 'form-control p-2' : 'form-control'">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+                    <button *ngIf="editFrai" type="submit" class="btn btn-primary">
+                      Enregistrer <i class="feather icon-save"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </form>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngxPermissionsExcept="SETTING:AGENCY">
+          <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'FRAIS'" [title]="'Frais de prospection'"></app-no-droit>
+          </div>
+        </ng-template>
+      </div>
+    </ng-template>
+    <!-- <ng-template ngxPermissionsExcept="SETTING:AGENCY">
+      <div class="col-md-12">
+        <app-no-droit [title]="'Paramètre P'"></app-no-droit>
+      </div>
+    </ng-template> -->
+  </div>

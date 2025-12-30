@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <p>
+      <span class="title-show">Libellé : </span>
+      <span class="title-result-show">{{ equipment?.libelle }}</span>
+    </p>
+    <p>
+      <span class="title-show">Description : </span>
+      <span class="title-result-show">{{ equipment?.description }}</span>
+    </p>
+    <p>
+      <span class="title-show">Crée le : </span>
+      <span class="title-result-show">{{ equipment?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+      <span class="title-show ml-5"> Par : </span>
+      <span class="title-result-show">{{ equipment?.create }}</span>
+    </p>
+    <p>
+      <span class="title-show">Modifié le : </span>
+      <span class="title-result-show">{{ equipment?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+      <span class="title-show ml-5"> Par : </span>
+      <span class="title-result-show">{{ equipment?.update }}</span>
+    </p>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <button (click)="editEquipment(equipment)" class="btn btn-primary">
+    Modifier <i class="feather icon-edit-2"></i>
+  </button>
+</div>

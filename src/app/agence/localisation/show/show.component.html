@@ -1,0 +1,116 @@
+<div class="row justify-content-center">
+    <!-- FILTRE DE RECHERCHE -->
+    <div class="width btn-filter-promotion">
+        <div class="col-md-12">
+            <app-card [hidHeader]="true" blockClass="">
+                <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="mb-2 col-md">
+                                <label for="type">Type</label>
+                                <select (change)="onChangeType()" formControlName="type" class="form-control" id="type">
+                                    <option *ngFor="let item of typeRow" [value]="item.value">{{ item.label }}</option>
+                                </select>
+                            </div>
+                            <div class="mb-2 col-md">
+                                <label for="pays">Pays</label>
+                                <select formControlName="pays" class="form-control" id="pays">
+                                    <option *ngFor="let item of paysRow" [value]="item.value">{{ item.label }}</option>
+                                </select>
+                            </div>
+                            <div class="mb-2 col-md">
+                                <label for="ville">Ville</label>
+                                <select formControlName="ville" class="form-control" id="ville">
+                                    <option *ngFor="let item of villeRow" [value]="item.value">{{ item.label }}</option>
+                                </select>
+                            </div>
+                            <div class="mb-2 col-md">
+                                <label for="lotissement">Lotissement</label>
+                                <input formControlName="lotissement" type="text" id="lotissement" class="form-control"
+                                    id="lotissement" [placeholder]="'Lotissement'">
+                            </div>
+                        </div>
+                        <hr class="border-primary" [ngbCollapse]="advance">
+                        <div class="row" id="filterForm" [ngbCollapse]="advance">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="d-flex flex-row-reverse">
+                        <a class="btn btn-primary text-white ml-2" (click)="advance = !advance"
+                            ngbTooltip="Filtre avancé" [attr.aria-expanded]="!advance" aria-controls="filterForm">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Filtrer <i class="feather icon-filter"></i>
+                        </button>
+                    </div>
+                </form>
+            </app-card>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="card card-box">
+            <div id="map">
+                <div>
+                    <app-card cardTitle="Liste des lotissements" cardClass="task-board-left" blockClass="p-0">
+                        <div class="p-20">  
+                            <div class="input-group mb-0">
+                                <input type="text" class="form-control add_task_todo" placeholder="Rechercher..."
+                                    required="">
+                                <div class="input-group-append">
+                                    <button class="btn waves-effect waves-light btn-primary btn-msg-send"
+                                        type="button"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item border-top-0">
+                                <div class="d-flex align-items-center"> <i
+                                        class="fas fa-city mr-2"></i> Lotissement 1782-3838 </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"> <i
+                                        class="fas fa-city mr-2"></i>Lotissement 1782-3838  </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"> <i
+                                        class="fas fa-city mr-2"></i>Lotissement 1782-3838  </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"><i
+                                        class="fas fa-city mr-2"></i>Lotissement 1782-3838 </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"> <i
+                                        class="fas fa-city mr-2"></i> Lotissement 1782-3838  </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"> <i class="fas fa-city mr-2"></i>Lotissement 1782-3838  </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"> <i
+                                        class="fas fa-city mr-2"></i>Lotissement 1782-3838  </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"><i
+                                        class="fas fa-city mr-2"></i>Lotissement 1782-3838 </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"> <i
+                                        class="fas fa-city mr-2"></i>Lotissement 1782-3838  </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center"> <i
+                                        class="fas fa-city mr-2"></i>Lotissement 1782-3838  </div>
+                            </li>
+                            <li class="list-group-item border-bottom-0">
+                                <div class="d-flex align-items-center"><i
+                                        class="fas fa-city mr-2"></i>Lotissement 1782-3838 </div>
+                            </li>
+                        </ul>
+                    </app-card>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,202 @@
+.notification-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &.notification-danger {
+    border-left-color: #dc3545;
+    background-color: #fff5f5;
+
+    .notification-icon {
+      color: #dc3545;
+    }
+  }
+
+  &.notification-warning {
+    border-left-color: #ffc107;
+    background-color: #fffbf0;
+
+    .notification-icon {
+      color: #ffc107;
+    }
+  }
+
+  &.notification-info {
+    border-left-color: #17a2b8;
+    background-color: #f0f9fa;
+
+    .notification-icon {
+      color: #17a2b8;
+    }
+  }
+}
+
+.notification-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 5px;
+
+  i {
+    font-size: 24px;
+  }
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.notification-message {
+  margin: 0 0 12px 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notification-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    i {
+      font-size: 14px;
+      color: #999;
+    }
+  }
+}
+
+.notification-details {
+  .badge {
+    margin-right: 8px;
+    padding: 4px 8px;
+    font-weight: 500;
+    font-size: 12px;
+
+    i {
+      font-size: 12px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.notification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+
+  .btn {
+    min-width: 36px;
+    padding: 6px 10px;
+  }
+}
+
+.empty-state {
+  i {
+    font-size: 64px;
+    color: #28a745;
+  }
+
+  h4 {
+    color: #333;
+    margin-top: 15px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #999;
+    font-size: 14px;
+  }
+}
+
+// Scrollbar personnalisée
+.notification-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+
+  &:hover {
+    background: #555;
+  }
+}
+
+// Modal header
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+
+  .modal-title {
+    color: #333;
+    font-weight: 600;
+
+    i {
+      color: #007bff;
+      margin-right: 8px;
+    }
+  }
+}
+
+// Tabs
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+
+  .nav-link {
+    border: none;
+    color: #666;
+    font-weight: 500;
+    padding: 10px 20px;
+
+    &:hover {
+      color: #007bff;
+      border-bottom: 2px solid #007bff;
+    }
+
+    &.active {
+      color: #007bff;
+      border-bottom: 2px solid #007bff;
+      background-color: transparent;
+    }
+
+    i {
+      margin-right: 5px;
+    }
+  }
+}

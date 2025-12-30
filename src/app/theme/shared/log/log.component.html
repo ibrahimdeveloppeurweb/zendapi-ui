@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-12">
+                <label>
+                  Journal comptable <span class="asterix">*</span> 
+                </label>
+                <!-- <app-entity-finder [class]="'Log'" [namespace]="'Accounting'" [groups]="['log']"
+                  [required]="true" [params]="[{ etat: [{etat : 'ACTIF'}] }]" 
+                  (uuid)="setLogUuid($event)" [selected]="selectedLog">
+                </app-entity-finder> -->
+                <select class="form-control" id="log" formControlName="log" [ngClass]="{ 'is-invalid': submit && f.log.errors, 'is-valid': submit && f.log.valid }">
+                  <option *ngFor="let item of logs" [value]="item.uuid">{{item.libelle}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.log.errors">
+                  <div *ngIf="f.log.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,158 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR L'ENTREPRISE -->
+      <div class="row">
+        <span class="badge badge-info my-2 f-14 width">
+          DETAILS SUR L'UTILISATEUR
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <label for="civilite">Civilité <span class="asterix">*</span></label>
+            <select (change)="onSexe()" class="form-control" id="civilite" formControlName="civilite"
+              [ngClass]="{ 'is-invalid': submit && f.civilite.errors, 'is-valid': submit && f.civilite.valid }">
+              <option *ngFor="let item of civilityRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.civilite.errors">
+              <div *ngIf="f.civilite.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="sexe">Sexe <span class="asterix">*</span></label>
+            <input type="text" formControlName="sexe" class="form-control" id="sexe"
+              [ngClass]="{'is-invalid': submit && f.sexe.errors,'is-valid': submit && f.sexe.valid}"
+              placeholder="Ex: Masculin"
+            >
+            <div class="invalid-feedback" *ngIf="submit && f.sexe.errors">
+              <div *ngIf="f.sexe.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="nom">Nom et prénoms <span class="asterix">*</span></label>
+            <input type="text" formControlName="nom" class="form-control" id="nom"
+              [ngClass]="{
+                'is-invalid': submit && f.nom.errors,
+                'is-valid': submit && f.nom.valid
+              }" placeholder="Nom et prénoms">
+            <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+              <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="username">Login utilisateur <span class="asterix">*</span></label>
+            <input type="email" formControlName="username" class="form-control" id="username"
+              [ngClass]="{
+                'is-invalid': submit && f.username.errors,
+                'is-valid': submit && f.username.valid
+              }" placeholder="Login utilisateur">
+            <div class="invalid-feedback" *ngIf="submit && f.username.errors">
+              <div *ngIf="f.username.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.username.errors.pattern">{{required.noemail}}</div>
+            </div>
+          </div>
+          <div *ngIf="!edit" class="col-md-4">
+            <label for="password">Mot de passe <span class="asterix">*</span></label>
+            <input type="password" formControlName="password" class="form-control" id="password"
+              [ngClass]="{
+                'is-invalid': submit && f.password.errors,
+                'is-valid': submit && f.password.valid
+              }" placeholder="Mot de passe">
+            <div class="invalid-feedback" *ngIf="submit && f.password.errors">
+              <div *ngIf="f.password.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="email">E-mail <span class="asterix">*</span></label>
+            <input type="email" formControlName="email" class="form-control" id="email"
+              [ngClass]="{
+                'is-invalid': submit && f.email.errors,
+                'is-valid': submit && f.email.valid
+              }" placeholder="E-mail">
+            <div class="invalid-feedback" *ngIf="submit && f.email.errors">
+              <div *ngIf="f.email.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.email.errors.pattern">{{required.noemail}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="contact">Contact <span class="asterix">*</span></label>
+            <input type="text" formControlName="contact" class="form-control" id="contact"
+              [ngClass]="{
+                'is-invalid': submit && f.contact.errors,
+                'is-valid': submit && f.contact.valid
+              }" placeholder="Ex: +2250000000000">
+            <div class="invalid-feedback" *ngIf="submit && f.contact.errors">
+              <div *ngIf="f.contact.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="service">Service <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Service'" [namespace]="'ADMIN'" [groups]="['service']" [required]="true"
+            [selected]="serviceSelected" (uuid)="setServiceUuid($event)">
+            </app-entity-finder>
+            <div class="invalid-feedback" *ngIf="submit && f.service.errors">
+              <div *ngIf="f.service.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ATTRIBUTION DES DROITS D'ACCES -->
+      <div class="row">
+        <span class="badge badge-info my-2 f-14 width">
+          ATTRIBUTION DES DROITS D'ACCES
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md mt-4">
+            <dual-list (destinationChange)="setData()" [sort]="keepSorted" [source]="source" [key]="key" [display]="display" [filter]="true"
+              [(destination)]="confirmed" height="265px" [format]="format" [disabled]="disabled">
+            </dual-list>
+          </div>
+        </div>
+      </div>
+      <!-- SUPPLEMENT -->
+      <div class="row">
+        <span class="badge badge-info my-2 f-14 width">
+          SUPPLEMENT
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="flex-grow-0" style="min-width: 30%">
+            <app-image-uploader (filesd)="loadfile($event)" [maxSize]="2" (imageUploaded)="setParam('photoUuid',$event)" [photo]="user ? user?.photo : null"></app-image-uploader>
+          </div>
+          <div class="col-md">
+            <label>Pièces et documents à joindre</label>
+            <app-folder-uploader
+              [maxSize]="3"
+              (filesd)="files($event)"
+              (filesUploaded)="setParam('folderUuid',$event)"
+              [path]="'utilisateur'"
+              [etat]="edit ? 'edit': 'add'"
+              [folder]="edit && user ? user?.folder : null">
+            </app-folder-uploader>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

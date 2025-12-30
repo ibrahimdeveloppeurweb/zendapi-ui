@@ -1,0 +1,120 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+      <div class="col-md-12">
+        <div class="row">
+          <span class="badge badge-primary my-2 f-14 formBadge width">
+            INFORMATION SUR LA TRESORERIE
+          </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <label for="type">Type de trésorerie <span class="asterix">*</span></label>
+              <select class="form-control" id="type" formControlName="type" [ngClass]="{
+                  'is-invalid': submit && f.type.errors,
+                  'is-valid': submit && f.type.valid
+                }">
+                <option *ngFor="let item of typeRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="nom">{{f.type.value === 'BANQUE'? 'Banque' : 'Libellé'}} <span class="asterix">*</span></label>
+              <input type="text" formControlName="nom" class="form-control" id="nom" [ngClass]="{
+                'is-invalid': submit && f.nom.errors,
+                'is-valid': submit && f.nom.valid
+              }" placeholder="{{f.type.value === 'BANQUE'? 'Banque' : 'Libellé'}}">
+              <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+                <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div *ngIf="f.type.value === 'BANQUE'" class="col-md-4">
+              <label for="compte">N° Compte </label>
+              <input type="text" formControlName="compte" class="form-control" id="compte" [ngClass]="{
+                'is-invalid': submit && f.compte.errors,
+                'is-valid': submit && f.compte.valid
+              }" placeholder="N° Compte">
+              <div class="invalid-feedback" *ngIf="submit && f.compte.errors">
+                <div *ngIf="f.compte.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="seuilMin">Seuil minimum <span class="asterix">*</span></label>
+              <input type="number" formControlName="seuilMin" step="1000" min="0" class="form-control" id="seuilMin" [ngClass]="{
+                'is-invalid': submit && f.seuilMin.errors,
+                'is-valid': submit && f.seuilMin.valid
+              }" placeholder="Seuil minimum">
+              <div class="invalid-feedback" *ngIf="submit && f.seuilMin.errors">
+                <div *ngIf="f.seuilMin.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="seuilMax">Seuil maximum</label>
+              <input type="number" formControlName="seuilMax" min="0" step="1000" class="form-control" id="seuilMax" [ngClass]="{
+                'is-invalid': submit && f.seuilMax.errors,
+                'is-valid': submit && f.seuilMax.valid
+              }" placeholder="Seuil maximum">
+              <div class="invalid-feedback" *ngIf="submit && f.seuilMax.errors">
+                <div *ngIf="f.seuilMax.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="gerant">Gérant <span class="asterix">*</span></label>
+              <select class="form-control" id="gerant" formControlName="gerant" [ngClass]="{
+                  'is-invalid': submit && f.gerant.errors,
+                  'is-valid': submit && f.gerant.valid
+                }">
+                <option *ngFor="let item of users" [value]="item.uuid">{{ item.libelle }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.gerant.errors">
+                <div *ngIf="f.gerant.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md">
+              <label for="commentaire">Commentaire </label>
+              <textarea class="form-control b-2" id="exampleFormControlTextarea5" formControlName="commentaire"
+                rows="2" placeholder="Commentaire"></textarea>
+            </div>
+          </div>
+        </div>
+        <!-- ATTRIBUTION DES VALIDATEURS -->
+        <div class="row">
+          <span class="badge badge-primary my-2 f-14 width">
+            ATTRIBUTION DES VALIDATEURS
+          </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md mt-4">
+              <dual-list (destinationChange)="setData()" [sort]="keepSorted" [source]="source" [key]="key" [display]="display" [filter]="true"
+                [(destination)]="confirmed" height="265px" [format]="format" [disabled]="disabled">
+              </dual-list>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+</form>

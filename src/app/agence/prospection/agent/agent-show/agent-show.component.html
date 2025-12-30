@@ -1,0 +1,216 @@
+<div class="user-profile user-card mb-4" *ngIf="agent">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img class="img-radius img-fluid wid-80 hei-80"
+                      [src]="'assets/images/avatar-default.png'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                    </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+            <div>
+              <b>{{ agent?.nom }}</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-9 mt-md-4">
+          <!-- <div class="row">
+            <div class="col">
+              <hr class="my-2">
+              <div>Nom : {{ agent?.nom }}</div>
+              <hr class="my-2">
+              <div>Téléphone : {{ agent?.telephone }}</div>
+              <hr class="my-2">
+            </div>
+            <div class="col">
+              <hr class="my-2">
+              <div>Email : {{ agent?.email }}</div>
+              <hr class="my-2">
+              <div>Boîte postal : {{ agent?.codePostal }}</div>
+              <hr class="my-2">
+            </div>
+          </div> -->
+
+          <!-- MENU TABS PROPRIETAIRE -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowAgent" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'DETAIL'}"
+                (click)="onChangeLoad(false,'DETAIL')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="far fa-user"></i> Profil
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'PROSPECT'}"
+                (click)="onChangeLoad(false,'PROSPECT')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="far fa-user"></i> Prospects
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'ACTIVITE'}"
+                (click)="onChangeLoad(false,'ACTIVITE')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="feather icon-message-square"></i> Activité
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div *ngIf="activeTab === 'DETAIL'">
+  <div class="row">
+    <div class="col">
+      <app-card [hidHeader]="true" cardClass="user-card user-card-1">
+        <div class="row">
+          <div class="col">
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Référence: </div>
+              <b>{{ agent?.code }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Nom et prénom: </div>
+              <b>{{ agent?.civilite + ' ' + agent?.nom }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Domicile: </div>
+              <b>{{ agent?.domicile }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Email: </div>
+              <b>{{ agent?.email }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Nature pièce: </div>
+              <b>{{ agent?.naturePiece }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Numéro de pièce: </div>
+              <b>{{ agent?.numPiece }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Téléphone: </div>
+              <b>{{ agent?.telephone }}</b>
+            </div>
+            <hr class="my-2">
+          </div>
+
+          <div class="col">
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Boîte postal: </div>
+              <b>{{ agent?.codePostal }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Crée le: </div>
+              <b>{{ agent?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR' }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Crée par: </div>
+              <b>{{ agent?.create }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Modifiter le: </div>
+              <b>{{ agent?.updatedAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR' }}</b>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Modifiter par: </div>
+              <b>{{ agent?.update }}</b>
+            </div>
+            <hr class="my-2">
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>
+
+<!-- LISTE DES PROSPECTS -->
+<div class="width list-prospect" *ngIf="activeTab === 'PROSPECT'">
+  <div class="row" *ngIf="prospects && prospects.length > 0">
+    <div class="col-md-4" *ngFor="let item of prospects">
+      <app-card [hidHeader]="true" cardClass="user-card user-card-1 mt-4" blockClass="pt-0" >
+        <div (click)="showProspect(item)" class="cursor-pointer">
+          <div class="user-about-block text-center">
+            <div class="d-flex justify-content-center">
+              <div>
+                <img class="img-radius img-fluid wid-80 hei-80"
+                  [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'"
+                  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="text-center">
+            <h4 class="mb-1 mt-3">{{item?.nom}}</h4>
+          </div>
+          <div class="text-center mt-2">
+            <span class="mb-1">Téléphone : {{ item?.telephone }}</span><br/>
+            <span class="mb-1">Adresse : {{ item?.adresse }}</span><br/>
+            <span class="mb-1">Email : {{ item?.email }}</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <button (click)="showProspect(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button (click)="etapeProspect(item)" type="button"class="btn btn-icon btn-dark ml-1" ngbTooltip="Assigner">
+            <i class="feather icon-share-2 mr-1"></i>
+          </button>
+          <button (click)="editProspect(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+            <i class="feather icon-edit-2"></i>
+          </button>
+          <button (click)="deleteProspect(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+            <i class="feather icon-trash"></i>
+          </button>
+        </div>
+      </app-card>
+    </div>
+  </div>
+  <app-no-data [title]="'Aucun prospect trouvé'" *ngIf="prospects && prospects.length === 0"></app-no-data>
+</div>
+
+<!-- ACTIVITE -->
+<div class="width list-pre-reservation" *ngIf="activeTab === 'ACTIVITE'">
+  <app-activity-list [activites]="activites"></app-activity-list>
+</div>

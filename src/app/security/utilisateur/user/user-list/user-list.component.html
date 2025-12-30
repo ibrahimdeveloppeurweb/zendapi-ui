@@ -1,0 +1,144 @@
+<div class="row">
+  <!-- FILTRE DE RECHERCHE -->
+  <ng-template [ngxPermissionsOnly]="['USER:AGENCY:LIST', 'ROLE:AGENCY:LIST', 'SERVICE:AGENCY:LIST']">
+    <app-filter class="width" [name]="true" [nameTitle]="nameTitle" [etat]="true" [etatRow]="etatRow" [etatTitle]="etatTitle" [categorie]="true" [categorieRow]="categorieRow" [categorieTitle]="categorieTitle" [dateD]="true" [dateF]="true" [create]="true"
+      [min]="true" [minTitle]="minTitle" [max]="true" [maxTitle]="maxTitle" [ordre]="true" [code]="true" [count]="true" [type]="true" [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+    </app-filter>
+  </ng-template>
+  <ng-template [ngxPermissionsExcept]="['USER:AGENCY:LIST', 'ROLE:AGENCY:LIST', 'SERVICE:AGENCY:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'utilisateur'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- BOUTONS DE GESTION -->
+  <div class="col-sm-12 mb-4">
+    <button *ngxPermissionsOnly="'USER:AGENCY:NEW'" (click)="addUser()" type="button" class="btn btn-info m-1" ngbTooltip="Ajouter un utilisateur">
+      Utilisateur <i class="feather icon-user"></i>
+    </button>
+    <button *ngxPermissionsOnly="'ROLE:AGENCY:NEW'" (click)="addPermission()" type="button" class="btn btn-primary m-1" ngbTooltip="Ajouter une permission">
+      Permission <i class="feather icon-layers"></i>
+    </button>
+    <button *ngxPermissionsOnly="'SERVICE:AGENCY:NEW'" (click)="addService()" type="button" class="btn btn-success m-1" ngbTooltip="Ajouter un service">
+      Service <i class="fas fa-briefcase"></i>
+    </button>
+    <div class="btn-group m-1" [hidden]="visibilite" ngbDropdown>
+      <button class="btn btn-warning" ngbDropdownToggle type="button">
+        Reinitialiser <i class="fas fa-key"></i>
+      </button>
+      <div class="dropdown-menu-right" ngbDropdownMenu>
+        <a class="dropdown-item" (click)="restPassword()" ngbTooltip="Reinitialiser mot de passe">
+          Mot de passe <i class="feather icon-key"></i>
+        </a>
+        <a class="dropdown-item" (click)="resetAccess()" ngbTooltip="Reinitialiser les accès utilisateur">
+          Actualiser les accès <i class="fa fa-file-key"></i>
+        </a>
+      </div>
+    </div>
+    <div class="btn-group float-right m-1" [hidden]="visibilite" ngbDropdown>
+      <button class="btn btn-warning" ngbDropdownToggle type="button">
+        Outils <i class="fas fa-tools"></i>
+      </button>
+      <div class="dropdown-menu-right" ngbDropdownMenu>
+        <a *ngxPermissionsOnly="['CONSTRUCTION:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer le listing">
+          Imprimer <i class="feather icon-printer"></i>
+        </a>
+        <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+          Exporter <i class="fa fa-file-excel"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTE DES UTILISATEURS -->
+  <ng-template ngxPermissionsOnly="USER:AGENCY:LIST">
+    <div *ngIf="type === 'USER' && users && users.length > 0" class="col-md-12">
+      <span class="badge badge-info my-2 f-14 width">
+        LISTE DES UTILISATEURS
+      </span>
+    </div>
+    <div *ngIf="type === 'USER' && users && users.length > 0" class="col-md-12">
+      <app-card [hidHeader]="true" cardClass="card-datatable">
+        <div class="table-responsive">
+          <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Nom et prénoms</th>
+                <th>Contact</th>
+                <th>Service</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of users">
+                <td class="align-middle">
+                  <img *ngIf="item?.sexe === 'Masculin'" class="rounded mr-3" height="48" title="{{item?.libelle}}" [src]="item?.photoSrc ? publicUrl +'/' + item.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                  <img *ngIf="item?.sexe === 'Féminin'" class="rounded mr-3" height="48" title="{{item?.libelle}}" [src]="item?.photoSrc ? publicUrl +'/' + item.photoSrc : 'assets/images/avatar-mlle.jpeg'"  onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-body mb-2">{{ item?.libelle }} ({{ item?.email }})</span><br />
+                    <br/>
+                    <span *ngIf="item?.type === 'ADMIN'" class="badge badge-info badge-pill"> Administrateur </span>
+                    <span *ngIf="item?.type === 'USER'" class="badge badge-primary badge-pill"> Utilisateur </span>
+                    <span class="text-right">
+                        {{item?.isOnline ? "En ligne" : 'hors ligne'}}<i class="fas fa-circle text-{{item?.isOnline ? 'success' : 'danger'}} ml-1"></i>
+                    </span>
+                  </p>
+                </td>
+                <td class="align-middle">{{ item?.telephone }}</td>
+                <td class="align-middle text-primary">{{ item?.service?.nom ? item?.service?.nom : 'NON DEFINI'}}</td>
+                <td class="table-action">
+                  <button *ngxPermissionsOnly="'USER:AGENCY:SHOW'" (click)="showUser(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="'USER:AGENCY:EDIT'" (click)="editUser(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="'USER:AGENCY:DELETE'" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </app-card>
+    </div>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="USER:AGENCY:LIST" [ngxPermissionsOnly]="['ROLE:AGENCY:LIST', 'SERVICE:AGENCY:LIST']">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'USER'" [title]="'liste utilisateur'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES PERMISSIONS -->
+  <ng-template ngxPermissionsOnly="ROLE:AGENCY:LIST">
+    <div class="col-md-12" *ngIf="type === 'PERMISSION' && permissions && permissions.length === 0">
+      <span class="badge badge-primary my-2 f-14 formBadge width">
+        LISTE DES PERMISSIONS
+      </span>
+      <app-no-data class="width" [title]="'Aucune permission trouvé'" *ngIf="type === 'PERMISSION' && permissions && permissions.length === 0"></app-no-data>
+    </div>
+    <app-permission-list [permissions]="permissions" *ngIf="type === 'PERMISSION' && permissions && permissions.length > 0" class="width"></app-permission-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="ROLE:AGENCY:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'PERMISSION'" [title]="'liste permission'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES SERVICES -->
+  <ng-template ngxPermissionsOnly="SERVICE:AGENCY:LIST">
+    <div class="col-md-12" *ngIf="type === 'SERVICE' && services && services.length === 0">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES SERVICES
+      </span>
+      <app-no-data class="width" [title]="'Aucun service trouvé'" *ngIf="type === 'SERVICE' && services && services.length === 0"></app-no-data>
+    </div>
+    <app-service-list [services]="services" *ngIf="type === 'SERVICE' && services && services.length > 0" class="width"></app-service-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="SERVICE:AGENCY:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'SERVICE'" [title]="'liste service'"></app-no-droit>
+    </div>
+  </ng-template>
+</div>

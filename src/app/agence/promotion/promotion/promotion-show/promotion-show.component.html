@@ -1,0 +1,608 @@
+<div class="user-profile user-card mb-4" *ngIf="promotion">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/promotion-default.jpg'"
+                      alt="{{ item?.libelle }}" title="{{ item?.libelle }}"
+                      class="img-radius img-fluid wid-100 hei-100">
+                    <img class="img-radius img-fluid wid-100 hei-100"
+                      [src]="promotion.photoSrc ? publicUrl+'/'+promotion.photoSrc : 'assets/images/promotion-default.jpg'"
+                      alt="" onerror="this.onerror=null; this.src='assets/images/promotion-default.jpg'">
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 *ngIf="promotion?.parent == null" class="mb-1">{{ promotion?.libelle }}</h5>
+          <div *ngIf="promotion?.parent != null">
+            <h5 class="mb-1">Sous promotion: {{ promotion?.libelle }} </h5>
+            <h5 class="mb-1">Promotion Parent: {{ promotion?.parent?.libelle }} </h5>
+          </div>
+        </div>
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="media">
+                <i class="feather icon-map-pin mr-2 mt-1 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{promotion?.localisation}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- MENU TABS PROMOTION -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowsubdivision" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'PROMOTION'}"
+                (click)="onChangeLoad('PROMOTION')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="fas fa-building"></i> <span *ngIf="promotion?.parent != null"> Sous Promotion</span>
+                <span *ngIf="promotion?.parent == null"> Promotion</span>
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="promotion?.parent == null">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'SOUS_PROMOTION'}"
+                (click)="onChangeLoad('SOUS_PROMOTION')" id="bien-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="souspromoton" aria-selected="true">
+                <i class="fas fa-building"></i> Sous promotions
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'BUILDING'}"
+                (click)="onChangeLoad('BUILDING')" id="bien-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="bien" aria-selected="true">
+                <i class="fas fa-home"></i> Batiment
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'MAISON'}"
+                (click)="onChangeLoad('MAISON')" id="bien-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="bien" aria-selected="true">
+                <i class="fas fa-home"></i> Maison
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'TRAVAUX'}"
+                (click)="onChangeLoad('TRAVAUX')" id="task-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="task" aria-selected="true">
+                <i class="fa fa-building"></i> Travaux
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="col-sm-12 mb-4 btn-all-promotion">
+  <div class="first">
+    <div class="second">
+      <div class="btn-promotion">
+        <button (click)="back()" type="button" class="btn btn-secondary m-1">
+          <i class="fa fa-arrow-alt-circle-left"></i> Retour
+        </button>
+      </div>
+      <div class="btn-building">
+        <button class="btn btn-warning m-1" (click)="addTask()" type="button"
+          ngbTooltip="Cliquez ici pour faire la planification des travaux">
+          Planification des travaux <i class="fa fa-calendar"></i>
+        </button>
+      </div>
+      <!-- <div class="btn-building">
+        <button class="btn btn-success" (click)="visite3D()" type="button"
+          ngbTooltip="Effectuer une visite 3d de la promotion">
+          Visite 3D <i class="fa fa-cube"></i>
+        </button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="row" *ngIf="activeTab !== 'PROMOTION'">
+  <!-- <app-filter class="width" [name]="false" [nameTitle]="nameTitle" [user]="true" [userTitle]="userTitle" [etat]="true"
+    [bien]="ilot" [bienTitle]="ilotTitle" [autre]="lot" [autreTitle]="lotTitle" [etatRow]="etatRow"
+    [etatTitle]="etatTitle" [categorie]="true" [categorieRow]="categorieRow" [categorieTitle]="categorieTitle"
+    [dateD]="true" [dateF]="true" [create]="true" [min]="true" [minTitle]="minTitle" [max]="true" [maxTitle]="maxTitle"
+    [ordre]="true" [code]="true" [count]="true" [type]="true" [typeRow]="typeRow" [uuid]="promotion.uuid"
+    (filterEvent)="onFilter($event)">
+  </app-filter> -->
+  <div class="width btn-filter-promotion">
+    <app-search class="width" [type]="true" [typeRow]="typeRow" [inputs]="inputs" (typeEvent)="onChangeLoad($event)"
+      (filterEvent)="onFilter($event)"></app-search>
+  </div>
+</div>
+<div class="row" *ngIf="activeTab == 'SOUS_PROMOTION'">
+  <div class="width btn-filter-promotion">
+    <!-- <app-filter class="width" [name]="true" [nameTitle]="nameTitle" [user]="true" [userTitle]="userTitle" [bien]="ilot"
+      [bienTitle]="ilotTitle" [autre]="lot" [autreTitle]="lotTitle" [etat]="true" [etatRow]="etatRow"
+      [etatTitle]="etatTitle" [categorie]="false" [dateD]="true" [dateF]="true" [create]="true" [min]="mtnFiltre"
+      [minTitle]="minTitle" [max]="mtnFiltre" [maxTitle]="maxTitle" [ordre]="true" [code]="true" [count]="true"
+      [type]="true" [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+    </app-filter> -->
+
+
+  </div>
+</div>
+
+<!-- DIAGRAMME CIRCULAIRE -->
+<div class="row" *ngIf="activeTab !== 'TRAVAUX'">
+  <div class="col-md-6">
+    <div class="row">
+      <!-- CHIFFRE AFFAITRE  -->
+      <div class="col-md-6">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">Chiffre d'affaire</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="fas fa-piggy-bank f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-12 text-right">
+                <p class="text-white m-b-0">{{ promotion?.montantCa }} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- CHIFFRE AFFAITRE END -->
+      <!-- MAISON OCCUPE -->
+      <div class="col-md-6">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ promotion?.nbrMaisonV > 1 ? 'Maisons vendues' : 'Maison vendue' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ promotion?.nbrMaisonV }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ promotion?.valeurMaisonV |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON OCCUPE END -->
+      <!-- MAISON RESERVER -->
+      <div class="col-md-6">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ promotion?.nbrMaisonR > 1 ? 'Maisons reservées' : 'Maison reservée' }}
+              </h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-sm-4">
+                <p class="text-white m-b-0">{{ promotion?.nbrMaisonR }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ promotion?.valeurMaisonR |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON RESERVER END -->
+      <!-- MAISON DISPONIBLE -->
+      <div class="col-md-6">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ promotion?.nbrMaisonD > 1 ? 'Maisons disponibles' : 'Maison disponible' }}
+              </h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-sm-4">
+                <p class="text-white m-b-0">{{ promotion?.nbrMaisonD }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ promotion?.valeurMaisonD |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON DISPONIBLE END -->
+    </div>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="DIAGRAMME CIRCULAIRE DE PROGRESSION" [options]="false" class="text-center">
+      <div class="row">
+        <div class="col-md-4">
+          <circle-progress
+            [percent]="promotion?.prcEcheancier"
+            [radius]="50"
+            [toFixed]="1"
+            [titleFontSize]="10"
+            [outerStrokeWidth]="5"
+            [innerStrokeWidth]="3"
+            [outerStrokeColor]="promotion?.prcEcheancier >= 65 ? '#3FBD0D' : promotion?.prcEcheancier > 35 ? '#F0DD35' : '#EC0F0F'"
+            [innerStrokeColor]="'#95cde4'" [animation]="true" [showSubtitle]="false"
+            [animationDuration]="300"></circle-progress>
+          <p class="mt-2">ETAT DE PAIEMENT ECHEANCIER</p>
+        </div>
+        <div class="col-md-4">
+          <circle-progress
+            [percent]="promotion?.prcEtatA"
+            [radius]="50"
+            [toFixed]="1"
+            [titleFontSize]="10"
+            [outerStrokeWidth]="5"
+            [innerStrokeWidth]="3"
+            [outerStrokeColor]="promotion?.prcEtatA >= 65 ? '#3FBD0D' : promotion?.prcEtatA > 35 ? '#F0DD35' : '#EC0F0F'"
+            [innerStrokeColor]="'#95cde4'" [animation]="true" [showSubtitle]="false"
+            [animationDuration]="300"></circle-progress>
+          <p class="mt-2">TAUX DE PROGRESSION FINANCIER VFA</p>
+        </div>
+        <div class="col-md-4">
+          <circle-progress
+            [percent]="promotion?.prcTravaux"
+            [radius]="50"
+            [toFixed]="1"
+            [titleFontSize]="10"
+            [outerStrokeWidth]="5"
+            [innerStrokeWidth]="3"
+            [outerStrokeColor]="promotion?.prcTravaux >= 65 ? '#3FBD0D' : promotion?.prcTravaux > 35 ? '#F0DD35' : '#EC0F0F'"
+            [innerStrokeColor]="'#95cde4'"
+            [animation]="true"
+            [showSubtitle]="false"
+            [animationDuration]="300"
+          ></circle-progress>
+          <p class="mt-2">TAUX DE PROGRESSION TRAVAUX</p>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'PROMOTION'}" id="promotion" role="tabpanel"
+        aria-labelledby="promotion-tab">
+        <div class="card">
+          <div class="col-md-12 mt-2 text center">
+            <div class="d-flex">
+              <!-- COL DROITE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Code : </span>
+                  <span class="title-result-show">{{promotion?.code}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Libelle : </span>
+                  <span class="title-result-show">{{promotion?.libelle}}</span>
+                </p>
+                <p *ngIf="promotion?.parent != null">
+                  <span class="title-show">Promotion Parent : </span>
+                  <span class="title-result-show">{{promotion?.parent?.libelle}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Date : </span>
+                  <span class="title-result-show">{{promotion?.date}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Superficie : </span>
+                  <span class="title-result-show">{{promotion?.superficie}} m²</span>
+                </p>
+                <p>
+                  <span class="title-show">Nombre de maison : </span>
+                  <span class="title-result-show">{{promotion?.nbrMaison}} Maison(s)</span>
+                </p>
+                <p>
+                  <span class="title-show">Ville : </span>
+                  <span class="title-result-show">{{promotion?.ville}}</span>
+                </p>
+              </div>
+              <!-- COL MILLIEU -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Chiffre d'affaire : </span>
+                  <span class="title-result-show text-warning">{{ promotion?.montantCa| number }}
+                    {{global.device}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Marge : </span>
+                  <span class="title-result-show text-warning">{{ promotion?.montantMarge| number }}
+                    {{global.device}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Coût deconstruction : </span>
+                  <span class="title-result-show text-warning">{{promotion?.montantCc| number}} {{global.device}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Coût de revient : </span>
+                  <span class="title-result-show text-warning">{{promotion?.montantCr| number}} {{global.device}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Commune : </span>
+                  <span class="title-result-show">{{promotion?.commune}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Quartier : </span>
+                  <span class="title-result-show">{{promotion?.quartier}}</span>
+                </p>
+              </div>
+              <!-- COL GAUCHE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Etat : </span>
+                  <span class="badge title-show" [ngClass]="{
+                    'badge-danger' : promotion?.etat === 'INDISPONIBLE',
+                    'badge-success' : promotion?.etat ===  'DISPONIBLE'
+                    }">{{ promotion?.etat}}
+                  </span>
+                </p>
+                <p>
+                  <span class="title-show">Longitude : </span>
+                  <span class="title-result-show">{{promotion?.lng}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Latitude : </span>
+                  <span class="title-result-show">{{promotion?.lat}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Crée le : </span>
+                  <span class="title-result-show">{{ promotion?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ promotion?.create }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Modifié le : </span>
+                  <span class="title-result-show">{{ promotion?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ promotion?.update }}</span>
+                </p>
+              </div>
+            </div>
+            <div class="col-md mb-2" *ngIf="promotion">
+              <span class="badge badge-primary mb-4 f-14 width">FICHER TÉLÉCHARGÉ</span>
+              <div class="row">
+                <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                  <app-folder-uploader (click)="showFile(promotion.folder)" [maxSize]="3" [folder]="promotion.folder"
+                    [allowFileUpload]="false" [allowDownload]="true">
+                  </app-folder-uploader>
+                </div>
+                <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                  <div class="row">
+                    <div class="col-sm-12 mb-2">
+                      <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                        <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                      </button>
+                    </div>
+                  </div>
+                  <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 34vh;">
+                  </ngx-doc-viewer>
+                </div>
+              </div>
+
+            </div>
+            <div class="mb-3">
+              <agm-map [draggableCursor]="'default'" [mapTypeId]="'hybrid'" [latitude]="lat" [longitude]="lng"
+                [zoom]="zoom" (mapClick)="updateGeo($event)" (zoomChange)="updateZoom($event)">
+                <agm-marker [latitude]="promotion?.lat" [longitude]="promotion?.lng" [iconUrl]="icon">
+                  <agm-info-window [disableAutoPan]="true" [maxWidth]="500">
+                    <!-- <p></p> -->
+                    <div class="d-flex">
+                      <div class="flex-fill">
+                        <b>Libelle : </b> {{ promotion?.libelle}}<br />
+                        <b>Etat :</b> <span
+                          class="badge badge-{{ promotion?.etat ==='DISPONIBLE' ?  'success' : 'danger' }}"> {{
+                          promotion?.etat }} </span><br />
+                        <b>Superficie</b> : {{ promotion?.superficie }} <br />
+                      </div>
+                      <div class="flex-fill">
+                        <b>Ville : </b> {{ promotion?.ville }} <br />
+                        <b>Commune : </b> {{ promotion?.commune }} <br />
+                        <b>Quartier : </b> {{ promotion?.quartier }} <br />
+                      </div>
+                    </div>
+                    <hr>
+                    <div>
+                      <b>Maisons: </b>{{ promotion?.nbrMaison }} - <b>Valeur :</b>{{ promotion?.valeurMaison |number }}
+                      {{global.device}}<br />
+                      <b>Maisons disponible: </b>{{ promotion?.nbrMaisonD }} - <b>Valeur :</b> {{
+                      promotion?.valeurMaisonD |number }} {{global.device}}<br />
+                      <b>Maisons reserve: </b>{{ promotion?.nbrMaisonR }} - <b>Valeur :</b> {{ promotion?.valeurMaisonR
+                      |number}} {{global.device}}<br />
+                      <b>Maisons vendu: </b>{{ promotion?.nbrMaisonV }} - <b>Valeur :</b> {{ promotion?.valeurMaisonV
+                      |number}} {{global.device}}<br />
+                    </div>
+                  </agm-info-window>
+                </agm-marker>
+              </agm-map>
+            </div>
+            <div class="modal-footer">
+              <button *ngxPermissionsOnly="'PROMOTION:EDIT'" (click)="editPromotion(promotion)" type="button"
+                class="btn btn-primary" ngbTooltip="Modifier">
+                Modifier <i class="feather icon-edit-2"></i>
+              </button>
+              <button *ngxPermissionsOnly="'PROMOTION:PRINTER:SHOW'" (click)="printerPromotion(promotion)" type="submit"
+                class="btn btn-warning" ngbTooltip="Imprimer">
+                Imprimer <i class="feather icon-printer"></i>
+              </button>
+              <ng-template ngxPermissionsOnly="PROMOTION:DELETE">
+                <button *ngIf="promotion?.isDelete" (click)="delete(promotion)" type="button"
+                  class="btn btn-danger text-left" data-dismiss="modal" ngbTooltip="Supprimer">
+                  Supprimer <i class="feather icon-trash"></i>
+                </button>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'MAISON'}" id="home" role="tabpanel"
+        aria-labelledby="home-tab">
+        <div class="row">
+          <!-- LISTE DES MAISONS-->
+          <div class="col-md-12" *ngIf="homes && homes.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES MAISONS
+            </span>
+            <app-no-data [title]="'Aucune maison trouvée'" *ngIf="islets && islets.length === 0"></app-no-data>
+          </div>
+          <app-home-list [homes]="homes" *ngIf="homes && homes.length > 0" class="width"></app-home-list>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'BUILDING'}" id="home" role="tabpanel"
+        aria-labelledby="home-tab">
+        <div class="row">
+          <!-- LISTE DES BATIMENTS-->
+          <div class="col-md-12" *ngIf="buildings && buildings.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES BATIMENTS
+            </span>
+            <app-no-data [title]="'Aucun batiment trouvé'"></app-no-data>
+          </div>
+          <app-building-list [buildings]="buildings" *ngIf="buildings && buildings.length > 0" class="width"></app-building-list>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'TRAVAUX'}" id="task" role="tabpanel"
+        aria-labelledby="task-tab">
+        <div class="row">
+          <!-- LISTE DES MAISONS-->
+          <div class="col-md-12" *ngIf="homes && homes.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES TRAVAUX
+            </span>
+            <app-no-data [title]="'Aucun travaux trouvée'" *ngIf="homes && homes.length === 0"></app-no-data>
+          </div>
+          <app-task-list [homes]="homes" *ngIf="homes && homes.length > 0" class="width"></app-task-list>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'SOUS_PROMOTION'}" id="souspromoton"
+        role="tabpanel" aria-labelledby="souspromoton-tab">
+        <div class="width list-promotion">
+          <div class="col-md-12">
+            <span class="badge badge-primary mb-4 f-14 width">
+              LISTE DES SOUS PROMOTIONS
+            </span>
+            <app-no-data [title]="'Aucune sous promotion trouvée'" *ngIf="sousPromotions.length === 0"></app-no-data>
+            <div class="row">
+              <div class="col-lg-4 col-md-4" *ngFor="let item of sousPromotions">
+                <app-card [customHeader]="true" headerClass="border-0 p-2 pb-0" [options]="false"
+                  cardClass="user-card user-card-1" blockClass="pt-0 users-contact">
+                  <div class="app-card-header">
+                    <div class="row align-items-end">
+                      <div class="col text-left pb-3"></div>
+                      <div class="col text-right pb-3">
+                        <span class="badge" [ngClass]="{
+                      'badge-success' : item?.etat === 'DISPONIBLE',
+                      'badge-danger' : item?.etat === 'INDISPONIBLE'
+                      }">
+                          {{ item?.etat }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="cover-img-block">
+                      <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/promotion-default.jpg'"
+                        alt="{{ item?.libelle }}" title="{{ item?.libelle }}" class="img-fluid size-img-house"
+                        onerror="this.onerror=null; this.src='assets/images/promotion-default.jpg'">
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <p>
+                      <span class="text-xs fs">Etat de paiement échéancier.</span>
+                      <ngb-progressbar type="primary" [showValue]="true" [value]="item?.prcEcheancier"
+                        ngbTooltip="Etat de paiement échéancier"></ngb-progressbar>
+                    </p>
+                    <p>
+                      <span class="text-xs fs">Taux de progression financier VFA.</span>
+                      <ngb-progressbar type="primary" [showValue]="true" [value]="item?.prcEtatA"
+                        ngbTooltip="Taux de progression financier VFA"></ngb-progressbar>
+                    </p>
+                    <h5 class="mb-1 mt-3" *ngIf="item.parent == null">{{ item?.libelle }}</h5>
+                    <h5 class="mb-1 mt-3" *ngIf="item.parent != null"> Sous promotion: {{ item?.libelle }}</h5>
+                    <h5 class="mb-1 mt-3" *ngIf="item.parent != null"> Promotion: {{ item?.parent?.libelle }}</h5>
+                    <h6 class="mb-1 mt-3">Situé: {{ item?.quartier + ' - ' + item?.commune+ ' - ' + item?.ville }}</h6>
+                    <h6 class="mb-1 mt-3">Valeur Maison: {{ item?.valeurMaisson}} {{global.device}}</h6>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col text-left">
+                      <p class="mb-0">{{ item?.code }}</p>
+                    </div>
+                    <div class="col text-right text-primary">
+                      <p class="mb-0">{{ item?.nbrMaison }} Maison(s) </p>
+                    </div>
+                  </div>
+                  <div class="row align-content">
+                    <div class="col text-right">
+                      <button (click)="showPromotion(item)" type="button" class="btn btn-icon btn-secondary"
+                        ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button (click)="editPromotion(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                        ngbTooltip="Modifier">
+                        <i class="feather icon-edit-2"></i>
+                      </button>
+                      <button (click)="printerPromotion(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                        ngbTooltip="Imprimer">
+                        <i class="feather icon-printer"></i>
+                      </button>
+                      <ng-template>
+                        <button *ngIf="item?.isDelete" (click)="delete(item)" type="button"
+                          class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                          <i class="feather icon-trash"></i>
+                        </button>
+                      </ng-template>
+                    </div>
+                  </div>
+                </app-card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- LISTE DES SOUS PROMOTIONS -->
+
+      <ng-template ngxPermissionsExcept="PROMOTION:LIST" [ngxPermissionsOnly]="['HOME:LIST', 'HOME:TYPE:LIST']">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="type === 'SOUS_PROMOTION'" [title]="'liste sous promotion'"></app-no-droit>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- AFFICHAGE DU COMPOSANT DE TACHE-->
+<app-task-add class="width" *ngIf="showTask"></app-task-add>

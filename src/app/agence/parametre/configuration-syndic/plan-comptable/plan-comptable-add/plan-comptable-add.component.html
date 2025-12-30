@@ -1,0 +1,76 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row"> 
+                <span class="badge badge-primary my-2 f-14 width"> INFORMATIONS SUR PLAN COMPTABLE </span> 
+            </div>
+            <div class="form-group">
+                <div class="row mb-2"> 
+                    <div class="col-md-6">
+                        <label>Model <span class="asterix">*</span></label>
+                        <app-entity-finder [class]="'PlanModel'" [namespace]="'Accounting'" [groups]="['planModel']"
+                        [required]="true" [selected]="currentModel"
+                        (uuid)="setModelUuid($event)">
+                        </app-entity-finder>
+                    </div>                   
+                    <div class="col-md-6">
+                        <label for="numero">Numéro du compte <span class="asterix">*</span></label>
+                        <input type="number" class="form-control" formControlName="numero" id="numero"
+                        [ngClass]="{'is-invalid': submit && f.numero.errors,'is-valid': submit && f.numero.valid}" placeholder="Numéro du compte">
+                        <div class="invalid-feedback" *ngIf="submit && f.numero.errors">
+                        <div *ngIf="f.numero.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2"> 
+                    <div class="col-md-4">
+                        <label for="libelle">Libellé <span class="asterix">*</span></label>
+                        <input type="text" class="form-control" formControlName="libelle" id="libelle"
+                        [ngClass]="{'is-invalid': submit && f.libelle.errors,'is-valid': submit && f.libelle.valid}" placeholder="Libellé">
+                        <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                        <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="libelleCourt">Libellé court </label>
+                        <input type="text" class="form-control" formControlName="libelleCourt" id="libelleCourt"
+                        [ngClass]="{'is-invalid': submit && f.libelleCourt.errors,'is-valid': submit && f.libelleCourt.valid}" placeholder="Libellé court">
+                        <div class="invalid-feedback" *ngIf="submit && f.libelleCourt.errors">
+                        <div *ngIf="f.libelleCourt.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="classeParent">Compte du père </label>
+                        <!-- <select class="form-control" id="classeParent" formControlName="classeParent"
+                            [ngClass]="{'is-invalid': submit && f.classeParent.errors,'is-valid': submit && f.classeParent.valid}">
+                            <option *ngFor="let item of plans" [ngValue]="item.uuid">{{item.numero}} - {{item.libelle}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.classeParent.errors">
+                            <div *ngIf="f.classeParent.errors.required">{{required.novide}}</div>
+                        </div> -->
+                        <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                            [required]="true" [selected]="currentClasseParent"
+                            [params]="[{ etat: [{etat : 'ACTIF'}] }]" (uuid)="setClasseParentUuid($event)">
+                        </app-entity-finder>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+        Enregistrer <i class="feather icon-save p-1"></i>
+        </button>
+    </div>
+</form>

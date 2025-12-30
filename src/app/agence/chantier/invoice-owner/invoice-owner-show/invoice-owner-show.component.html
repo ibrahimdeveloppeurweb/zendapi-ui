@@ -1,0 +1,414 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <div class="d-flex">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p *ngIf="invoiceOwner?.trustee">
+          <span class="title-show">Syndic : </span>
+          <span class="title-result-show">
+            <span class="badg badge-light-warninge" >{{ invoiceOwner?.trustee?.nom}}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Référence : </span>
+          <span class="title-result-show">{{ invoiceOwner?.code }}</span>
+        </p>
+        <p>
+          <span class="title-show">Numéro : </span>
+          <span class="title-result-show">{{ invoiceOwner?.numero }}</span>
+        </p>
+        <p>
+          <span class="title-show">Libellé : </span>
+          <span class="title-result-show">{{ invoiceOwner?.libelle }}</span>
+        </p>
+        <p>
+          <span class="title-show">Intervention : </span>
+          <span class="title-result-show">{{ invoiceOwner?.construction?.nom }}</span>
+        </p>
+
+        <p>
+          <span class="title-show">Montant Payé: </span>
+          <span class="title-result-show">
+            <span class="badge badge-success">{{invoiceOwner?.montantPaye | number}} {{global.device}}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Reste à Payer: </span>
+          <span class="title-result-show">
+            <span class="badge badge-warning">{{(invoiceOwner?.montant - invoiceOwner?.montantPaye) | number}} {{global.device}} 
+            </span>
+          </span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p *ngIf="invoiceOwner?.houseCo || invoiceOwner?.homeCo || invoiceOwner?.house">
+          <span class="title-show">Lot : </span>
+          <span class="title-result-show">{{ invoiceOwner?.houseCo?.nom }} {{ invoiceOwner?.homeCo?.nom }} {{ invoiceOwner?.house?.nom }}</span>
+        </p>
+        <p *ngIf="invoiceOwner?.infrastructure">
+          <span class="title-show">Infrastructure : </span>
+          <span class="title-result-show">{{ invoiceOwner?.infrastructure?.nom }}</span>
+        </p>
+        <p>
+          <span class="title-show">ETAT: </span>
+          <span class="title-result-show">
+            <span class="badge" [ngClass]="{
+              'badge-danger' : invoiceOwner?.etat === 'INVALIDE',
+              'badge-success' : invoiceOwner?.etat === 'VALIDE'
+              }">{{ validation(invoiceOwner?.etat)}}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{ invoiceOwner?.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ invoiceOwner?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ invoiceOwner?.updatedAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ invoiceOwner?.update }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- SECTION DES PAIEMENTS -->
+    <div *ngIf="invoiceOwner?.payments?.length > 0">
+      <span class="badge badge-primary mb-4 f-14 width">PAIEMENTS</span>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Montant</th>
+              <th>Mode de paiement</th>
+              <th>Etat</th>
+              <th>Date de paiement</th>
+              <th>Crée le</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of invoiceOwner?.payments">
+              <td><span class="text-warning">{{item?.montant | number}} {{global.device}}</span></td>
+              <td><span class="text-warning">{{item?.mode}}</span></td>
+              <td>
+                <span class="badge" [ngClass]="{
+                'badge-success' : item?.etat === 'VALIDE',
+                'badge-danger' : item?.etat === 'INVALIDE'
+                }">{{validation(item?.etat)}}</span> <br />
+                <span class="badge " [ngClass]="{
+                'badge-light-success' : item?.status === 'CONFIRMER',
+                'badge-light-danger' : item?.status === 'ATTENTE'
+                }"><small>{{item?.status}}</small></span>
+              </td>
+              <td>{{item?.date | date: "d MMMM y h:mm:ss" : '' : 'fr-FR'}}</td>
+              <td>{{item?.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION DES PRESTATAIRES/FOURNISSEURS -->
+    <div *ngIf="invoiceOwner?.quoteProviders && invoiceOwner?.quoteProviders.length > 0" class="mt-4">
+      <div *ngFor="let prestataire of invoiceOwner?.quoteProviders; let prestataireIndex = index" class="mb-4">
+        
+        <!-- CARD BOOTSTRAP -->
+        <div class="card shadow-sm">
+          <!-- EN-TÊTE DE LA CARD -->
+          <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-0 text-white">
+                  <i class="feather icon-file-text mr-2"></i>
+                  Prestataire #{{ prestataireIndex + 1 }} - {{ prestataire?.provider?.nom || 'Non défini' }}
+                </h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <!-- INFORMATIONS DU PRESTATAIRE -->
+            <div class="alert alert-light border-left border-primary border-5">
+              <!-- LIGNE 1 -->
+              <div class="row mb-2">
+                <div class="col-md-6">
+                  <p class="mb-2">
+                    <strong class="text-uppercase">Libellé :</strong> 
+                    <span class="text-muted font-italic ml-2">{{ prestataire?.libelle || invoiceOwner?.libelle }}</span>
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-2">
+                    <strong class="text-uppercase">Echéance :</strong> 
+                    <span class="text-muted font-italic ml-2">{{ prestataire?.echeance | date:'d MMMM yyyy à HH:mm:ss' }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- LIGNE 2 -->
+              <div class="row mb-2">
+                <div class="col-md-6">
+                  <p class="mb-2">
+                    <strong class="text-uppercase">Intervention :</strong> 
+                    <span class="text-muted font-italic ml-2">{{ invoiceOwner?.construction?.nom }}</span>
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-2">
+                    <strong class="text-uppercase">Date :</strong> 
+                    <span class="text-muted font-italic ml-2">{{ prestataire?.date | date:'d MMMM yyyy' }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- LIGNE 3 -->
+              <div class="row mb-2">
+                <div class="col-md-6">
+                  <p class="mb-2">
+                    <strong class="text-uppercase">Fournisseur :</strong> 
+                    <span class="text-muted font-italic ml-2">{{ prestataire?.provider?.nom }}</span>
+                  </p>
+                  <p *ngIf="prestataire?.provider?.job" class="mb-2">
+                    <strong class="text-uppercase">Corps de métier :</strong> 
+                    <span class="text-muted font-italic ml-2">{{ prestataire?.provider?.job?.libelle }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- LIGNE 4 -->
+              <div class="row">
+                <div class="col-md-6">
+                  <p class="mb-0">
+                    <strong class="text-uppercase">Type :</strong> 
+                    <span class="badge badge-info badge-pill text-uppercase ml-2 px-3 py-2" [ngClass]="{
+                      'badge-light-warning': prestataire?.type === 'PRESTATION',
+                      'badge-light-primary': prestataire?.type === 'FOURNITURE'
+                    }">
+                      <i class="feather icon-tag mr-1"></i>{{ prestataire?.type }}
+                    </span>
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-0">
+                    <strong class="text-uppercase">Montant Total :</strong> 
+                    <span class="text-success font-weight-bold h5 ml-2">
+                      {{ prestataire?.montant | number }} {{global.device}}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION OPTIONS -->
+            <div class="mt-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">
+                  <i class="feather icon-list text-primary mr-2"></i>
+                  <strong>Options de la facture</strong>
+                  <span class="badge badge-secondary ml-2">{{ prestataire?.options?.length || 0 }}</span>
+                </h6>
+              </div>
+
+              <!-- TABLEAU DES OPTIONS AVEC TOUTES LES COLONNES -->
+              <div class="table-responsive" *ngIf="prestataire?.options && prestataire.options.length > 0">
+                <table class="table table-bordered table-hover table-sm">
+                  <thead class="thead-light">
+                    <tr class="text-center">
+                      <th style="width: 18%;">
+                        <i class="feather icon-package mr-1"></i>Ressource
+                      </th>
+                      <th style="width: 10%;">
+                        <i class="feather icon-dollar-sign mr-1"></i>Prix unitaire
+                      </th>
+                      <th style="width: 10%;">
+                        <i class="feather icon-trending-up mr-1"></i>Prix majoré
+                      </th>
+                      <th style="width: 7%;">
+                        <i class="feather icon-hash mr-1"></i>Qté
+                      </th>
+                      <th style="width: 11%;">
+                        <i class="feather icon-calculator mr-1"></i>Total Unitaire
+                      </th>
+                      <th style="width: 11%;">
+                        <i class="feather icon-shopping-cart mr-1"></i>Total Majoré
+                      </th>
+                      <th style="width: 7%;">
+                        <i class="feather icon-percent mr-1"></i>TVA
+                      </th>
+                      <th style="width: 10%;">
+                        <i class="feather icon-scissors mr-1"></i>Remise
+                      </th>
+                      <th style="width: 16%;">
+                        <i class="feather icon-trending-up mr-1"></i>Différence
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of prestataire?.options">
+                      <!-- Ressource -->
+                      <td>
+                        <p class="m-0 d-inline-block align-middle font-16">{{item?.product?.libelle || item?.libelle}}</p>
+                      </td>
+                      
+                      <!-- Prix unitaire -->
+                      <td class="text-right bg-light">
+                        <span class="font-weight-bold">{{item?.prix | number}} {{global.device}}</span>
+                      </td>
+                      
+                      <!-- Prix majoré -->
+                      <td class="text-right">
+                        <span class="font-weight-bold">{{item?.prixMajore | number}} {{global.device}}</span>
+                      </td>
+                      
+                      <!-- Quantité -->
+                      <td class="text-center">{{item?.qte}}</td>
+                      
+                      <!-- Total Unitaire (Prix unitaire × Qté) -->
+                      <td class="text-right bg-light">
+                        <span class="font-weight-bold">{{(item?.prix * item?.qte) | number}} {{global.device}}</span>
+                      </td>
+                      
+                      <!-- Total Majoré (Prix majoré × Qté) -->
+                      <td class="text-right bg-light">
+                        <span class="font-weight-bold">{{(item?.prixMajore * item?.qte) | number}} {{global.device}}</span>
+                      </td>
+                      
+                      <!-- TVA -->
+                      <td class="text-center">{{item?.tva}} %</td>
+                      
+                      <!-- Remise -->
+                      <td class="text-right">
+                        <span class="font-weight-bold">{{item?.remise | number}} {{global.device}}</span>
+                      </td>
+                      
+                      <!-- Différence (Total Majoré - Total Unitaire) -->
+                      <td class="text-right">
+                        <span class="font-weight-bold">{{((item?.prixMajore * item?.qte) - (item?.prix * item?.qte)) | number}} {{global.device}}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                  
+                  <!-- SOUS-TOTAUX PAR PRESTATAIRE -->
+                  <tfoot class="font-weight-bold">
+                    <tr>
+                      <td colspan="8" class="text-right">MONTANT INITIAL :</td>
+                      <td class="text-right">{{ (prestataire?.montantInitialPrestataire || calculatePrestataireInitial(prestataire)) | number }} {{global.device}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="8" class="text-right">SOUS-TOTAL HT :</td>
+                      <td class="text-right">{{ prestataire?.montantHt | number }} {{global.device}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="8" class="text-right">DIFFÉRENCE TOTALE :</td>
+                      <td class="text-right">{{ (prestataire?.montantDifference !== undefined && prestataire?.montantDifference !== null ? prestataire.montantDifference : calculatePrestataireDifference(prestataire)) | number }} {{global.device}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="8" class="text-right">TOTAL REMISE :</td>
+                      <td class="text-right">{{ prestataire?.montantRemise | number }} {{global.device}}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="8" class="text-right">TVA :</td>
+                      <td class="text-right">{{ prestataire?.montantTva | number }} {{global.device}}</td>
+                    </tr>
+                    <tr class="table-success">
+                      <td colspan="8" class="text-right h6 mb-0">SOUS-TOTAL TTC :</td>
+                      <td class="text-right h6 mb-0 text-success">{{ prestataire?.montant | number }} {{global.device}}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOTAL GENERAL COMPLET -->
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-responsive invoice-table invoice-total">
+          <tbody>
+            <tr>
+              <th>MONTANT INITIAL :</th>
+              <td>{{ calculateTotalInitial() | number }} {{global.device}}</td>
+            </tr>
+            <tr>
+              <th>TOTAL HT :</th>
+              <td>{{ invoiceOwner?.montantHt | number }} {{global.device}}</td>
+            </tr>
+            <tr>
+              <th>TOTAL DIFFÉRENCE :</th>
+              <td>{{ calculateTotalDifference() | number }} {{global.device}}</td>
+            </tr>
+            <tr>
+              <th>TOTAL REMISE :</th>
+              <td>{{ invoiceOwner?.montantRemise | number }} {{global.device}}</td>
+            </tr>
+            <tr>
+              <th>TOTAL TVA :</th>
+              <td>{{ invoiceOwner?.montantTva | number }} {{global.device}}</td>
+            </tr>
+            <tr class="text-info">
+              <td>
+                <hr />
+                <h2 class="text-primary m-r-10">TOTAL TTC :</h2>
+              </td>
+              <td>
+                <hr />
+                <h2 class="text-success">{{ invoiceOwner?.montant | number }} {{global.device}}</h2>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PIECES JOINTES -->
+    <div class="col-md" *ngIf="invoiceOwner">
+      <span class="badge badge-primary mb-4 f-14 width">PIECES JOINTES</span>
+      <div class="row">
+        <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+          <app-folder-uploader (click)="showFile(invoiceOwner.folder)" [folder]="invoiceOwner.folder"
+            [allowFileUpload]="false" [allowDownload]="true">
+          </app-folder-uploader>
+        </div>
+        <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+          <div class="row">
+            <div class="col-sm-12 mb-2">
+              <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+              </button>
+            </div>
+          </div>
+          <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+          </ngx-doc-viewer>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template *ngxPermissionsOnly="'INVOICE:CO:OWNER:EDIT'">
+    <button *ngIf="invoiceOwner?.etat === 'INVALIDE'" (click)="editInvoice(invoiceOwner)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <button *ngxPermissionsOnly="'INVOICE:CO:OWNER:PRINTER:SHOW'" (click)="printerInvoice(invoiceOwner)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

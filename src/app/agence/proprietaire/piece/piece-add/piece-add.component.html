@@ -1,0 +1,76 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="activeModal" aria-label="Close" (click)="onClose()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <!-- DETAILS SUR LE BIEN CONCERNE -->
+            <div class="row">
+                <span class="badge badge-secondary my-2 f-14 width">
+                    INFORMATION SUR LA PIECE
+                </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <label for="numero">Code de Gestion <span class="asterix">*</span></label>
+                        <input type="text" formControlName="numero" class="form-control" id="numero"
+                            [ngClass]="{'is-invalid': submit && f.numero.errors,'is-valid': submit && f.numero.valid}"
+                            placeholder="numéro">
+                        <div class="invalid-feedback" *ngIf="submit && f.numero.errors">
+                            <div *ngIf="f.numero.errors.pattern">{{required.nonumber}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="libelle">Libellé <span class="asterix">*</span></label>
+                        <input type="text" formControlName="libelle" class="form-control" id="libelle"
+                            [ngClass]="{'is-invalid': submit && f.libelle.errors,'is-valid': submit && f.libelle.valid}"
+                            placeholder="Libellé">
+                        <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                            <div *ngIf="f.libelle.errors.pattern">{{required.nonumber}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="Description">Description </label>
+                        <input type="text" formControlName="description" class="form-control" id="description"
+                            placeholder="Description">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="badge badge-secondary my-2 f-14 width"> IMAGES DE LA PIÈCE </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label class="ml-2">Pièces et documents à joindre</label>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <app-folder-uploader (filesd)="files($event)" [maxSize]="3"
+                                    (filesUploaded)="setParam('folderUuid',$event)" [path]="'piece-locative'"
+                                    [etat]="edit ? 'edit': 'add'" [folder]="edit && piece ? piece?.folder : null">
+                                </app-folder-uploader>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="activeModal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="onReset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+    </div>
+</form>
+
+<div id="second-modal-container"></div>

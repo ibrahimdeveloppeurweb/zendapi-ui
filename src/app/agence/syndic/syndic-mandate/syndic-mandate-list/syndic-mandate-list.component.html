@@ -1,0 +1,137 @@
+<ng-template [ngxPermissionsOnly]="['MANDATE:TRUSTEE:LIST']">
+    <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+        <div *ngIf="validate && dataSelected.length>0" class="btn-rental float-right mb-2">
+          <button (click)="onConfirme()"  type="submit" class="btn btn-success m-1">
+            Valider <i class="feather icon-check-square"></i>
+          </button>
+        </div>
+<div class="table-responsive m-0">
+    <table datatable [dtOptions]="dtOptions" class="table table-striped m-0">
+        <thead class="thead-light">
+        <tr>
+            <th>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input id="selectAll" class="form-check-input" formControlName="valueOne" type="checkbox" id="checkAll"
+                    (change)="onCheckAll($event)">
+                  </div>
+                </div>
+              </th> 
+            <th>Syndic</th>
+            <th>Honoraires/Periodicité</th>
+            <th>Date de signature</th>
+            <th>Date</th>
+            <th>Etat</th>
+            <th class="text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of mandats; let i = index">
+                <td>
+                    <div class="form-group">
+                      <div class="form-check">
+                        <input formControlName="checked" class="form-check-input"  type="checkbox" id="check{{i}}"
+                        (change)="onCheckItem(item)">
+                      </div>
+                    </div>
+                  </td> 
+                <td>
+                    <span class="text-black">
+                        <div class="d-flex align-items-center">
+                        <div>
+                            <span class="text-black d-block">
+                                Code : {{item?.trustee?.code}}
+                            </span>
+                            <span class="text-black d-block">
+                                Syndic : {{item?.trustee?.nom}}
+                            </span>
+                        </div>
+                        </div>
+                    </span>
+                </td>
+                <td>
+                    <span class="text-black">
+                    <div class="d-flex align-items-center">
+                      <div>
+                        <span class="text-black d-block">
+                            Honoraires : {{item?.honoraires | number}}
+                        </span>
+                        <span class="text-black d-block">
+                            Périodicité :
+                            <span *ngIf="item?.periodicite === 'MENSUEL'">Mensuel</span>
+                            <span *ngIf="item?.periodicite === 'TRIMESTRIEL'">Trimestriel</span>
+                            <span *ngIf="item?.periodicite === 'ANNUEL'">Annuel</span>
+                        </span>
+                      </div>
+                    </div>
+                  </span>
+                </td>
+                <td>
+                    <span class="text-black">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <span class="text-black d-block">
+                                    Signature : {{item?.date | date: "d MMMM y" : '' : 'fr-FR'}}
+                                </span>
+                            </div>
+                        </div>
+                    </span>
+                </td>
+                <td>
+                    <span class="text-black">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <span class="text-black d-block">
+                                    Début : {{item?.dateD| date: "d MMMM y" : '' : 'fr-FR'}}
+                                </span>
+                                <span class="text-black d-block">
+                                    Fin : {{item?.dateF| date: "d MMMM y" : '' : 'fr-FR'}}
+                                </span>
+                            </div>
+                        </div>
+                    </span>
+                </td>
+                <td>
+                    <span *ngIf="item?.etat === 'BROUILLON'" class="badge badge-info">Brouillon</span>
+                    <span *ngIf="item?.etat === 'VALIDE'" class="badge badge-success">Validé</span>
+                    <span *ngIf="item?.etat === 'RESILIE'" class="badge badge-danger">Résilié</span>
+                </td>
+                <td class="text-center">
+                  <ng-template [ngxPermissionsOnly]="['MANDATE:TRUSTEE:VALIDATE']">
+                    <button *ngIf="item && item.etat == 'BROUILLON'" (click)="onValidate(item)" type="button" class="btn btn-icon btn-success" ngbTooltip="Valider">
+                      <i class="fas fa-check"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template [ngxPermissionsOnly]="['MANDATE:TRUSTEE:SHOW']">
+                    <button (click)="showMandate(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template [ngxPermissionsOnly]="['MANDATE:TRUSTEE:EDIT']">
+                    <button *ngIf="item?.etat !== 'VALIDE'" (click)="editMandate(item)" type="button"class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                        <i class="feather icon-edit-2"></i>
+                    </button>
+                  </ng-template>
+
+                  <button *ngIf="item?.etat == 'VALIDE'" (click)="printMandate(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                      <i class="feather icon-printer"></i>
+                  </button>
+                  
+                  <ng-template [ngxPermissionsOnly]="['MANDATE:TRUSTEE:DELETE']">
+                    <button (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                        <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</form>
+</ng-template>
+
+<ng-template [ngxPermissionsExcept]="['MANDATE:TRUSTEE:LIST']">
+  <div class="col-md-12">
+    <app-no-droit [title]="'liste des mandats syndic'"></app-no-droit>
+  </div>
+</ng-template>

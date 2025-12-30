@@ -1,0 +1,373 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12 mb-2">
+    <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowOwner" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'INFORMATION'}"
+          (click)="onChangeLoad('INFORMATION')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+          aria-controls="profil" aria-selected="true">
+          <i class="far fa-user"></i> Informations
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'PIECE'}"
+          (click)="onChangeLoad('PIECE')" id="bien-tab" data-toggle="tab" href="javascript:" role="tab"
+          aria-controls="bien" aria-selected="true">
+          <i class="fas fa-ticket-alt"></i> Pieces
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'RESSOURCE'}"
+          (click)="onChangeLoad('RESSOURCE')" id="locative-tab" data-toggle="tab" href="javascript:" role="tab"
+          aria-controls="locative" aria-selected="false">
+          <i class="fas fa-tag"></i> Ressources
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'TICKET'}"
+          (click)="onChangeLoad('TICKET')" id="locative-tab" data-toggle="tab" href="javascript:" role="tab"
+          aria-controls="locative" aria-selected="false">
+          <i class="fas fa-ticket-alt"></i> Tickets
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'INFORMATION'}" id="profil" role="tabpanel"  aria-labelledby="profil-tab">
+        <div class="col-md-12">
+          <div class="d-flex">
+            <!-- COL GAUCHE -->
+            <div class="flex-fill">
+              <p>
+                <span class="title-show">Code : </span>
+                <span class="title-result-show">{{ rental?.code }}</span>
+              </p>
+              <p>
+                <span class="title-show">N° Porte : </span>
+                <span class="title-result-show">{{ rental?.porte }}</span>
+              </p>
+              <p>
+                <span class="title-show">Numérotation : </span>
+                <span class="title-result-show">{{ rental ? rental?.house?.numerotation == 1 ? 'ALPHABET' : 'LIBRE SAISIE' : ''}}</span>
+              </p>
+              <p>
+                <span class="title-show">Type de locative : </span>
+                <span class="title-result-show">{{ rental?.type }}</span>
+              </p>
+              <p>
+                <span class="title-show">Au : </span>
+                <span class="title-result-show">{{ rental?.etage }}</span>
+              </p>
+              <p>
+                <span class="title-show">Proprietaire : </span>
+                <span class="title-result-show">{{ rental?.house?.owner?.nom }}</span>
+              </p>
+              <p>
+                <span class="title-show">Bien concerné : </span>
+                <span class="title-result-show">{{ rental?.house?.nom }}</span>
+              </p>
+              <p>
+                <span class="title-show">Etat : </span>
+                <span class="title-result-show">
+                  <span class="badge" [ngClass]="{
+                    'badge-success' : rental?.etat === 'DISPONIBLE',
+                    'badge-warning' : rental?.etat === 'RESERVE',
+                    'badge-danger' : rental?.etat === 'OCCUPE'
+                    }">{{rental?.etat}}
+                  </span>
+                </span>
+              </p>
+            </div>
+            <!-- COL DROITE -->
+            <div class="flex-fill">
+              <p>
+                <span class="title-show">Occupant : </span>
+                <span class="title-result-show">{{rental?.occupant}}</span>
+              </p>
+              <p>
+                <span class="title-show text-warning">Loyer net : </span>
+                <span class="title-result-show text-warning">{{rental?.montant | number}} {{global.device}}</span>
+              </p>
+              <p>
+                <span class="title-show text-warning">Charge locative : </span>
+                <span class="title-result-show text-warning">{{rental?.charge | number}} {{global.device}}</span>
+              </p>
+              <p>
+                <span class="title-show">Nombre de pièce(s) : </span>
+                <span class="title-result-show">{{ rental?.piece }} pièce(s)</span>
+              </p>
+              <p>
+                <span class="title-show">Superficie : </span>
+                <span class="title-result-show">{{ rental?.superficie }} m²</span>
+              </p>
+              <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{ rental?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ rental?.create }}</span>
+              </p>
+              <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ rental?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ rental?.update }}</span>
+              </p>
+            </div>
+          </div>
+          <table class="width mb-2">
+            <tbody>
+              <tr class="border-bottom-success">
+                <td></td>
+                <td colspan="4" class="text-right font-weight-bold"></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="border border-success">
+                <td colspan="4" class="font-weight-bold font-size-default">TOTAL</td>
+                <td class="font-weight-bold font-size-default text-right">{{ rental?.total | number }} {{global.device}}</td>
+              </tr>
+            </tfoot>
+          </table>
+      
+          <div *ngIf="rental?.contracts" class="row mt-2">
+            <div class="col-md">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Occupant</th>
+                    <th>Période</th>
+                    <th>Loyer</th>
+                    <th>Charge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of rental?.contracts; last as isLast">
+                    <td>{{ item?.tenant?.nom }} <span *ngIf="isLast" class="badge badge-success">Occupant actuel <i class="fa fa-star"></i></span></td>
+                    <td>
+                      <span class="badge badge-{{ item?.duree === 0 ? 'warning' : 'success' }}">
+                        {{ item?.duree === 0 ? 'Expiré' : item?.duree + ' Jour(s)' }}
+                      </span>
+                    </td>
+                    <td>{{ item?.loyer|number }}</td>
+                    <td>{{ item?.charge|number }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+      
+          <div *ngIf="file" class="row mb-2 mt-2">
+            <div class="col-md">
+              <span class="badge badge-info mb-2 f-14 width">FICHE DE DOSSIER</span>
+              <div class="row">
+                <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                  <app-folder-uploader (click)="showFile(rental?.folder)"
+                    [maxSize]="3"
+                    [folder]="rental?.folder"
+                    [etat]="'show'"
+                    [allowFileUpload]="false" [allowDownload]="true">
+                  </app-folder-uploader>
+                </div>
+                <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                  <div class="row">
+                    <div class="col-sm-12 mb-2">
+                      <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                        <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                      </button>
+                    </div>
+                  </div>
+                  <ngx-doc-viewer
+                    [url]="file"
+                    viewer="url" style="width:100%;height: 64vh;">
+                  </ngx-doc-viewer>
+      
+                </div>
+              </div>
+      
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'PIECE'}" id="pieces" role="tabpanel"
+        aria-labelledby="bien-tab">
+        <div class="row">
+          <div class="col-sm-12 mb-2 text-right">
+            <button (click)="addPiece()" type="button" class="btn btn-primary m-1">
+              <i class="fa fa-plus"></i> Ajouter
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <!-- LISTE DES PIECE -->
+          <div class="col-md-12" *ngIf="type === 'PIECE' && pieces && pieces.length === 0">
+            <span class="badge badge-primary mb-4 f-14 width">
+              LISTE DES PIECES
+            </span>
+            <app-no-data [title]="'Aucune pieces trouvé'" *ngIf="type === 'PIECE' && pieces && pieces.length === 0"> </app-no-data>
+          </div>
+          <div class="col-md-12" *ngIf="type === 'PIECE' && pieces && pieces.length > 0">
+            <span class="badge badge-primary mb-4 f-14 width"> LISTE DES PIECES </span>
+            <div class="table-responsive">
+              <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead>
+                  <tr>
+                    <th>Référence</th>
+                    <th>Désignation</th>
+                    <th>Crée Le</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of pieces; last as isLast">
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        code de gestion : <b>{{ item?.numero }}</b><br />
+                        code systeme : <b>{{ item?.code }}</b><br />
+                      </p>
+                    </td>
+                    <td>{{ item?.libelle }}</td>
+                    <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                    <td class="table-action">
+                      <button (click)="showPiece(item)" type="button" class="btn btn-icon btn-secondary"
+                        ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'RESSOURCE'}" id="ressources" role="tabpanel"
+        aria-labelledby="bien-tab">
+        <!-- <div class="row">
+          <div class="col-sm-12 mb-2 text-right">
+            <button (click)="addRessource()" type="button" class="btn btn-primary m-1">
+              <i class="fa fa-plus"></i> Ajouter
+            </button>
+          </div>
+        </div> -->
+        <div class="row">
+          <!-- LISTE DES RESSOURCE -->
+          <div class="col-md-12" *ngIf="type === 'RESSOURCE' && ressources && ressources.length === 0">
+            <span class="badge badge-primary mb-4 f-14 width">
+              LISTE DES RESSOURCES
+            </span>
+            <app-no-data [title]="'Aucune ressource trouvé'" *ngIf="type === 'RESSOURCE' && ressources && ressources.length === 0"> </app-no-data>
+          </div>
+          <div class="col-md-12" *ngIf="type === 'RESSOURCE' && ressources && ressources.length > 0">
+            <span class="badge badge-primary mb-4 f-14 width"> LISTE DES RESSOURCES </span>
+            <div class="table-responsive">
+              <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Designation</th>
+                    <th>Catégorie</th>
+                    <th>Etat</th>
+                    <th>Date de Creation</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of ressources">
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        code de gestion : <b>{{ item?.codeGestion }}</b><br />
+                        code systeme : <b>{{ item?.code }}</b><br />
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        {{ item?.libelle }}
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        Famille : {{ item?.famille }}<br />
+                        Sous Famille : {{ item?.sousFamille?.libelle }}<br />
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="badge badge-warning">{{item?.etat}}</span> 
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span >Crée Le : 15 janvier 2024 à 12h45</span> <br />
+                        <span >Par :  Kader  Mondesir</span> <br />
+                      </p>
+                    </td>
+                    <td  class="table-action">
+                      <button (click)="showRessource(item)" type="button" class="btn btn-icon btn-secondary ml-1"
+                        ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button (click)="editRessource(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier la ressource">
+                        <i class="feather icon-edit-2"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'TICKET'}" id="tickets" role="tabpanel"
+        aria-labelledby="bien-tab">
+        <div class="row">
+          <div class="col-sm-12 mb-2 text-right">
+            <button (click)="addTicket()" type="button" class="btn btn-primary m-1">
+              <i class="fa fa-plus"></i> Ajouter
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <!-- LISTE DES TICKETS -->
+          <div class="col-md-12" *ngIf="type === 'TICKET' && tickets && tickets.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES TICKETS
+            </span>
+
+            <app-no-data [title]="'Aucun ticket trouvé'" *ngIf="type === 'TICKET' && tickets && tickets.length === 0"> </app-no-data>
+          </div>
+
+          <div class="col-md-12" *ngIf="type === 'TICKET' && tickets && tickets.length > 0">
+            <span class="badge badge-primary mb-4 f-14 width"> LISTE DES TICKETS </span>
+            <div class="table-responsive">
+              <app-ticket-table [tickets]="tickets"  class="width"></app-ticket-table>
+            </div>
+          </div>
+          <div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <button *ngxPermissionsOnly="'RENTAL:EDIT'" (click)="editRental(rental)" class="btn btn-primary">
+    Modifier <i class="feather icon-edit-2"></i>
+  </button>
+  <button *ngxPermissionsOnly="'RENTAL:PRINTER:SHOW'" (click)="printerRental(rental)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

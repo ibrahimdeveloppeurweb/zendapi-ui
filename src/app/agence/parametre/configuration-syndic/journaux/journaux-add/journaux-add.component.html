@@ -1,0 +1,71 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row"> 
+                <span class="badge badge-primary my-2 f-14 width"> INFORMATIONS SUR PLAN COMPTABLE </span> 
+            </div>
+            <div class="form-group">
+                <div class="row mb-2"> 
+                    <div class="col-md-3">
+                        <label for="code">Syndic <span class="asterix">*</span></label>
+                        <select class="form-control" id="trustee" formControlName="trustee"
+                            [ngClass]="{'is-invalid': submit && f.trustee.errors,'is-valid': submit && f.trustee.valid}">
+                            <option *ngFor="let item of trustees" [ngValue]="item.uuid">{{item.nom}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.trustee.errors">
+                            <div *ngIf="f.trustee.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="code">Code <span class="asterix">*</span></label>
+                        <input type="text" class="form-control" formControlName="code" id="code"
+                        [ngClass]="{'is-invalid': submit && f.code.errors,'is-valid': submit && f.code.valid}" placeholder="Code">
+                        <div class="invalid-feedback" *ngIf="submit && f.code.errors">
+                            <div *ngIf="f.code.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div> 
+                    <div class="col-md-3">
+                        <label for="libelle">libellé <span class="asterix">*</span></label>
+                        <input type="text" class="form-control" formControlName="libelle" id="libelle"
+                        [ngClass]="{'is-invalid': submit && f.libelle.errors,'is-valid': submit && f.libelle.valid}" placeholder="Libellé">
+                        <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                            <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="nature">Nature </label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <select *ngIf="advance === false" class="form-control" id="nature" formControlName="nature"
+                                    [ngClass]="{'is-invalid': submit && f.nature.errors,'is-valid': submit && f.nature.valid}">
+                                    <option *ngFor="let item of natures" [ngValue]="item.uuid">{{item.libelle}}</option>
+                                </select>
+                                <input *ngIf="advance === true" type="text" class="form-control" formControlName="nature" id="nature"
+                                [ngClass]="{'is-invalid': submit && f.nature.errors,'is-valid': submit && f.nature.valid}" placeholder="Nature">
+                                <div class="input-group-append bg-default" (click)="natureChange()">
+                                    <span class="input-group-text">
+                                        <i class="feather icon-edit-2"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+        Enregistrer <i class="feather icon-save p-1"></i>
+        </button>
+    </div>
+</form>

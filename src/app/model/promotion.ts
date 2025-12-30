@@ -1,0 +1,52 @@
+import { Home } from '@model/home';
+import { Worksite } from '@model/worksite';
+import { FolderFiles } from '@model/folder-files';
+
+export interface Promotion {
+    uuid?: any;
+    id?: any;
+    code?: string;
+    localisation?: string;
+    homes?: Home[];
+    libelle?: string;
+    type?: string;
+    etat?: string;
+    date?: string;
+    parent?: Promotion;
+    worksite?: Worksite;
+    superficie?: number;
+    nbrMaison?: number;
+    surfaceBati?: number;
+    montantCa?: number;
+    montantMarge?: number;
+    montantCr?: number;
+    montantCc?: number;
+    montantAdmin?: number;
+    montantVrd?: number;
+    prcEcheancier?: number;
+    prcEtatA?: number;
+    nbrMaisonV?: number;
+    valeurMaison?: number;
+    valeurMaisonV?: number;
+    nbrMaisonR?: number;
+    valeurMaisonR?: number;
+    nbrMaisonD?: number;
+    valeurMaisonD?: number;
+    nbrSousPromotion?: number;
+    ville?: string;
+    commune?: string;
+    homeType?: string;
+    quartier?: string;
+    lng?: number;
+    lat?: number;
+    photoUuid?: string;
+    folderUuid?: string;
+    photo?: string;
+    folder?: FolderFiles,
+    createdAt?: string;
+    updatedAt?: string;
+    create?: string;
+    update?: string;
+    searchableTitle?: string;
+    searchableDetail?: string;
+}

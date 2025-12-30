@@ -1,0 +1,69 @@
+<perfect-scrollbar *ngIf="this.nextConfig['layout'] === 'vertical'" (clickOutside)="navMob()" [excludeBeforeClick]="true" [exclude]="'#mobile-collapse'" id="nav-ps-next" ngClass="able-pro-scroll" [style.max-width]="'300px'" [style.max-height]="'calc(100vh - 60px)'" [usePSClass]="'next'" [disabled]="null">
+  <div class="navbar-content">
+    <div class="">
+      <div class="main-menu-header">
+        <img *ngIf="user?.sexe === 'Masculin'" class="img-radius" alt="User-Profile-Image" [src]="user.photo ? publicUrl +'/' + user.photo : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+        <img *ngIf="user?.sexe === 'Féminin'" class="img-radius" alt="User-Profile-Image" [src]="user.photo ? publicUrl +'/' + user.photo : 'assets/images/avatar-mlle.jpeg'"  onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+        <div class="user-details" (click)="isNavProfile = !isNavProfile">
+          <div id="more-details">{{ user?.civilite }} {{ user?.nom }} <i class="fa fa-caret-down" [ngClass]="{'fa-caret-up': isNavProfile }"></i></div>
+        </div>
+      </div>
+      <div class="collapse" id="nav-user-link" *ngIf="isNavProfile" [style.display]="'block'">
+        <ul class="list-unstyled">
+          <li class="list-group-item"><a (click)="profilUser()"><i class="feather icon-user m-r-5"></i>Mon Profil</a></li>
+          <li class="list-group-item"><a (click)="editPassword()"><i class="fas fa-key"></i> Modifier mot de passe</a></li>
+          <li class="list-group-item"><a [routerLink]="'/admin/parametre'"><i class="feather icon-settings m-r-5"></i>Paramètre</a></li>
+          <li class="list-group-item"><a (click)="logout()"><i class="feather icon-log-out m-r-5"></i>Se déconnecter</a></li>
+        </ul>
+      </div>
+    </div>
+    <ul class="nav pcoded-inner-navbar" (clickOutside)="fireOutClick()">
+      <!-- <ng-container>
+        <li class="nav-item pcoded-hasmenu" [routerLinkActive]="['active']" (click)="onZen360()">
+          <a href="javascript:" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="fas fa-cube"></i>
+            </span>
+            <span class="pcoded-mtext"> ZEN 360  </span>
+          </a>
+        </li>
+      </ng-container> -->
+      <ng-container *ngFor="let item of navigation">
+        <app-nav-group *ngIf="item.type=='group'" [item]="item"></app-nav-group>
+        <app-nav-collapse *ngIf="item.type=='collapse'" [item]="item"></app-nav-collapse>
+        <app-nav-item *ngIf="item.type=='item'" [item]="item"></app-nav-item>
+      </ng-container>
+    </ul>
+
+    <app-card [hidHeader]="true" cardClass="text-center">
+      <i class="feather icon-sunset f-40"></i>
+      <h6 class="mt-3">Centre d'aide <i class="fas fa-help"></i></h6>
+      <p>Veuillez créer un ticket si vous avez besoin d'aide.</p>
+      <a href="https://support.zenapi.net/customer/login" target="_blank" class="btn btn-primary btn-sm text-white m-0">Créer un ticket</a>
+    </app-card>
+  </div>
+</perfect-scrollbar>
+
+<div *ngIf="this.nextConfig['layout'] === 'horizontal'" #navbarWrapper class="navbar-content sidenav-horizontal" id="layout-sidenav">
+  <a href="javascript:" class="sidenav-horizontal-prev" [ngClass]="prevDisabled" (click)="scrollMinus()"></a>
+  <div  class="sidenav-horizontal-wrapper"><!-- add 14-4 viral -->
+    <ul #navbarContent id="side-nav-horizontal" class="nav pcoded-inner-navbar sidenav-inner" (clickOutside)="fireLeave()" (mouseleave)="fireLeave()">
+      <!-- <ng-container>
+        <li class="nav-item pcoded-hasmenu" [routerLinkActive]="['active']" (click)="onZen360()">
+          <a href="javascript:" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="fas fa-cube"></i>
+            </span>
+            <span class="pcoded-mtext"> ZEN 360  </span>
+          </a>
+        </li>
+      </ng-container> -->
+      <ng-container *ngFor="let item of navigation">
+        <app-nav-group *ngIf="item.type=='group'" [item]="item"></app-nav-group>
+        <app-nav-collapse *ngIf="item.type=='collapse'" [item]="item"></app-nav-collapse>
+        <app-nav-item *ngIf="item.type=='item'" [item]="item"></app-nav-item>
+      </ng-container>
+    </ul>
+  </div>
+  <a href="javascript:" class="sidenav-horizontal-next" [ngClass]="nextDisabled" (click)="scrollPlus()"></a>
+</div>

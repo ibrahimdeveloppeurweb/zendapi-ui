@@ -1,0 +1,12 @@
+
+<div id="map">
+    <div class="buttons-container">
+        <button (click)="back()" type="button" class="mr-1 btn btn-dark"> Retour <i class="fa fa-arrow-alt-circle-left"></i> </button>
+        <button *ngIf="mode !== 'LIST'" (click)="edit()" type="button" class="mr-1 btn btn-primary">Dessiner <i class="feather icon-edit-2"></i></button>
+        <button *ngIf="mode !== 'LIST'" (click)="onSubmit()" type="button" [disabled]="!isSubmit" class="mr-1 btn btn-success">Enregistrer <i class="feather icon-save"></i></button>
+    </div>
+</div>
+<ng-container *ngIf="mode == 'LIST'">
+    <app-items (zoom)="zooms($event)"></app-items>
+    <app-filtre></app-filtre>
+</ng-container>

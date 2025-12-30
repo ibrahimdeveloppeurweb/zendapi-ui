@@ -1,0 +1,256 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LE TYPE D' APPROVISIONNEMNT </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-{{f.type.value == 'INTERNE' ? '5' : '4' }} ">
+            <label for="type">Compte à approvisionner <span class="asterix">*</span></label>
+            <select  formControlName="type" class="form-control" id="type"[ngClass]="{
+              'is-invalid': submit && f.type.errors,
+              'is-valid': submit && f.type.valid
+            }">
+              <option [value]="null">Selectionner</option>
+              <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+              <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value && f.type.value == 'EXTERNE'" class="col-md-4">
+            <label for="type">Type externe proprietaire</label>
+            <select  formControlName="type_externe" class="form-control" id="type"[ngClass]="{
+              'is-invalid': submit && f.type_externe.errors,
+              'is-valid': submit && f.type_externe.valid
+            }">
+              <option [value]="null">Selectionner</option>
+              <option  [value]="'OUI'">OUI</option>
+              <option  [value]="'NON'">NON</option>
+
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.type_externe.errors">
+              <div *ngIf="f.type_externe.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+
+          <div class="col-md-8" *ngIf="f.type.value && f.type.value == 'EXTERNE'">
+            <label for="mode">Source de revenue <span class="asterix">*</span></label>
+            <input type="text" formControlName="description" class="form-control p-2 " placeholder="Source de revenue">
+            <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+              <div *ngIf="f.description.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4" *ngIf="f.type.value == 'EXTERNE' && f.type_externe.value && f.type_externe.value == 'OUI'">
+            <app-entity-finder [class]="'Owner'" [groups]="'owner'"
+              [label]="'Propriétaire'" (uuid)="setOwnerUuid($event)"
+              [selected]="ownerSelected"
+              [disabled]="edit" [placeholder]="'Selectionez un Propriétaire'">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-4" *ngIf="f.type.value == 'EXTERNE' && f.type_externe.value && f.type_externe.value == 'OUI'">
+            <label for="house">Bien concerné </label>
+            <select [attr.disabled]="edit || !f.owner.value ? true : null"
+               formControlName="house" class="form-control"
+              id="house" [ngClass]="{
+                'is-invalid': submit && f.house.errors,
+                'is-valid': submit && f.house.valid
+              }">
+              <option [value]="null" selected>Selectionnez un bien</option>
+              <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+              <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="f.type.value && f.type.value == 'INTERNE'" >
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LA TRESORERIE EMETTRICE </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <app-entity-finder [class]="'Treasury'" [groups]="['treasury']" [required]="true"
+              [label]="'Trésorerie'" (uuid)="setTreasuryEmetteurUuid($event)"
+              [selected]="emetteurSelected"
+              [disabled]="edit" [placeholder]="'Selectionez une tresorerie'">
+            </app-entity-finder>
+            <div class="invalid-feedback" *ngIf="submit && f.emetteur.errors">
+              <div *ngIf="f.emetteur.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label >Gerant <span class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 font-weight-bold text-success text-uppercase" readonly :value="{{ treasuryE ? treasuryE?.gerant?.libelle : ''}}">
+          </div>
+          <div class="col-md-4">
+            <label >Solde <span class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 font-weight-bold text-success text-uppercase" readonly :value="{{ treasuryE ? treasuryE?.solde : ''}}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="f.type.value">
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LA TRESORERIE RECEPTRICE </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <app-entity-finder [class]="'Treasury'" [groups]="['treasury']" [required]="true"
+              [label]="'Trésorerie'" (uuid)="setTreasuryRecepteurUuid($event)"
+              [selected]="recepteurSelected"
+              [disabled]="edit" [placeholder]="'Selectionez une tresorerie'">
+            </app-entity-finder>
+            <div class="invalid-feedback" *ngIf="submit && f.recepteur.errors">
+              <div *ngIf="f.recepteur.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label >Gerant <span class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 font-weight-bold text-success text-uppercase" readonly :value="{{ treasuryR ? treasuryR?.gerant?.libelle : ''}}">
+          </div>
+          <div class="col-md-4">
+            <label >Solde <span class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 font-weight-bold text-success text-uppercase" readonly :value="{{ treasuryR ? treasuryR?.solde : ''}}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="f.type.value">
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width">
+          INFORMATION SUR L'APPROVISSIONEMENT
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-8">
+            <label for="libelle">Libellé <span class="asterix">*</span></label>
+            <input type="text" formControlName="libelle" class="form-control" id="libelle" [ngClass]="{
+              'is-invalid': submit && f.libelle.errors,
+              'is-valid': submit && f.libelle.valid
+            }" placeholder="Libellé">
+            <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+              <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="date">Date <span class="asterix">*</span></label>
+            <input type="date" formControlName="date" class="form-control" id="date" [ngClass]="{
+              'is-invalid': submit && f.date.errors,
+              'is-valid': submit && f.date.valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+              <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="mode">Mode <span class="asterix">*</span></label>
+            <select  formControlName="mode" (change)="onChangeLibelle()"class="form-control" id="mode"[ngClass]="{
+              'is-invalid': submit && f.mode.errors,
+              'is-valid': submit && f.mode.valid
+            }">
+            <option *ngFor="let item of modeRow" [value]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+              <div *ngIf="f.mode.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4"  *ngIf="f.mode.value !== 'ESPECE'">
+            <label for="source">{{ sourceTitle }}</label>
+            <input type="text" formControlName="source" class="form-control" id="source" [placeholder]="sourceTitle">
+          </div>
+          <div class="col-md-4" *ngIf="f.mode.value !== 'ESPECE'">
+            <label for="numero">{{ numeroTitle }}</label>
+            <input type="text" formControlName="numero" class="form-control" id="numero"
+              [placeholder]="numeroTitle">
+          </div>
+          <div class="col-md-4">
+            <label for="montant">Montant <span class="asterix">*</span></label>
+            <input type="number" formControlName="montant" step="1000" class="form-control" id="montant" [ngClass]="{
+              'is-invalid': submit && f.montant.errors,
+              'is-valid': submit && f.montant.valid
+            }" placeholder="Montant">
+            <div class="invalid-feedback" *ngIf="submit && f.montant.errors">
+              <div *ngIf="f.montant.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="effectue">Effectué par <span class="asterix">*</span></label>
+            <select (change)="onChangeEffectue()"class="form-control" formControlName="effectue" id="effectue" [ngClass]="{
+              'is-invalid': submit && f.effectue.errors,
+              'is-valid': submit && f.effectue.valid
+            }">
+              <option [value]="'AUTRE'">AUTRE</option>
+            </select>
+          </div>
+          <div class="col-md-4" *ngIf="f.effectue.value === 'AUTRE'">
+            <label for="tiers">Tiers <span class="asterix">*</span></label>
+            <input type="text" formControlName="tiers" class="form-control" id="tiers"
+              placeholder="Nom du tiers">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLEMENTAIRES </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md">
+            <label class="ml-2">Pièces et documents à joindre</label>
+            <div class="row">
+              <div [ngClass]="fileO ? 'col-md-4' : 'col-md-12'">
+                <app-folder-uploader
+                  [maxSize]="3"
+                  (click)="showFile(supply?.folder)"
+                  (filesd)="files($event)"
+                  (filesUploaded)="setParam('folderUuid',$event)"
+                  [type]="['application/pdf']"
+                  [path]="'proprietaire'"
+                  [etat]="edit ? 'edit': 'add'"
+                  [folder]="edit && supply ? supply.folder : null">
+                </app-folder-uploader>
+              </div>
+
+              <div [ngClass]="fileO ? 'col-md-8' : ''" *ngIf="fileO">
+                <div class="row">
+                  <div class="col-sm-12 mb-2">
+                    <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                      <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                    </button>
+                  </div>
+                </div>
+                <ngx-doc-viewer [url]="fileO" viewer="url" style="width:100%;height: 64vh;">
+                </ngx-doc-viewer>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

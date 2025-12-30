@@ -1,0 +1,341 @@
+<div class="user-profile user-card mb-4" *ngIf="prospect">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img class="img-radius img-fluid wid-80 hei-80" [src]="'assets/images/avatar-default.png'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+            <h5 class="mb-1">{{ prospect?.code }}</h5>
+            <hr>
+            <h5 class="mb-1">{{ prospect?.nom }}</h5>
+            <hr>
+            <h6 class="mb-1">Crée le {{ prospect?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}} par
+              {{prospect?.create}}</h6>
+            <hr>
+          </div>
+        </div>
+
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+              <div class="alert-warning mb-1">
+                <div class="col-md-12 mt-2 text-center p-2">
+                  <span class="bold">
+                    Niveau de traitement  :
+                    <span> <h5>{{prospect?.etape}} </h5></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3"></div>
+          </div>
+          <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+              <div class="text-center">
+                <span class="bold">
+                  Temps de traitement écoulé : <h4> {{getTimeDifference(prospect?.current?.debut)}} </h4>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-3"></div>
+          </div>
+          <hr class="border-1">
+          <div class="row">
+            <div class="avatar-group" *ngIf="prospect?.commerciaux?.length > 0">
+              <a href="javascript: void(0);" class="avatar-group-item" placement="top"
+                *ngFor="let item of prospect?.commerciaux" ngbTooltip="{{item?.nom}}">
+                <img [src]="item?.photoSrc ? publicUrl+'/'+item?.photoSrc : 'assets/images/avatar-default.png'" alt=""
+                  class="rounded-circle avatar-sm"
+                  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'">
+              </a>
+            </div>
+            <div class="col-md-4" *ngIf="prospect?.commerciaux?.length === 0"></div>
+            <div class="col-md-4" *ngIf="prospect?.commerciaux?.length === 0"> <span class="badge badge-primary"> AUCUN
+                COMMERCIAL ASSIGNER</span> </div>
+            <div class="col-md-4" *ngIf="prospect?.commerciaux?.length === 0"></div>
+          </div>
+
+          <!-- MENU TABS Profil -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowProspect" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'DETAIL'}"
+                (click)="onChangeLoad(false,'DETAIL')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="far fa-user"></i> Profil
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'RESERVATION'}"
+                (click)="onChangeLoad(false,'RESERVATION')" id="profil-tab" data-toggle="tab" href="javascript:"
+                role="tab" aria-controls="profil" aria-selected="true">
+                pré-réservation
+
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'ACTIVITE'}"
+                (click)="onChangeLoad(false,'ACTIVITE')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                 Action commerçiale 
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2" btn-all-owner>
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+    <button (click)="assigner()" type="button" class="btn btn-success m-1">
+      <i class="feather icon-share-2 ml-1"></i> Assigner a un commercial
+    </button>
+    <button (click)="abonner()" type="button" class="btn btn-info m-1">
+      <i class="feather icon-share-2 ml1"></i> S'Abonner
+    </button>
+    <button type="button" class="btn btn-dark m-1" (click)="action()"
+        ngbTooltip="Cliquez ici pour ajouter un type d'offre">
+        ACTION COMMERÇIALE
+    </button>
+  </div>
+</div>
+
+<div>
+  <div *ngIf="activeTab === 'DETAIL'" class="card p-3">
+    <div class="card-body">
+      <div class="row">
+        <span class="badge badge-primary mb-4 f-14 width">Identification du Prospect</span>
+        <div class="col-md-6">
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Civilité: </div>
+            <div class="col-md-7"><b>{{prospect?.civilite}}</b></div>
+          </div>
+          <div class="row py-2">
+            <div class="col-md-5">Nom et Prénom: </div>
+            <div class="col-md-7"><b>{{prospect?.nom}}</b></div>
+          </div>
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Source du Prospect: </div>
+            <div class="col-md-7"><b>{{prospect?.source}}</b></div>
+          </div>
+
+          <div class="row py-2">
+            <div class="col-md-5">Type de Prospect: </div>
+            <div class="col-md-7"><b>{{prospect?.status}}</b></div>
+          </div>
+
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Statut Matrimonial: </div>
+            <div class="col-md-7"><b>{{prospect?.statutM}}</b></div>
+          </div>
+          <div class="row py-2">
+            <div class="col-md-5">Adresse E-mail: </div>
+            <div class="col-md-7"><b>{{prospect?.email}}</b></div>
+          </div>
+
+          <div class="row py-2">
+            <div class="col-md-5">Créer Le: </div>
+            <div class="col-md-7"><b>{{prospect?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</b></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Téléphone: </div>
+            <div class="col-md-7"><b>{{prospect?.telephone}}</b></div>
+          </div>
+          <div class="row py-2">
+            <div class="col-md-5">contact whatsapp: </div>
+            <div class="col-md-7"><b>{{prospect?.telephone}}</b></div>
+          </div>
+
+          <div class="row py-2">
+            <div class="col-md-5">Enfants: </div>
+            <div class="col-md-7"><b>{{prospect?.enfant}}</b></div>
+          </div>
+
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Nombre d'enfant: </div>
+            <div class="col-md-7"><b>{{prospect?.nbEnfant}}</b></div>
+          </div>
+
+          <div class="row py-2">
+            <div class="col-md-5">Profession: </div>
+            <div class="col-md-7"><b>{{prospect?.profession}}</b></div>
+          </div>
+
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Modifier Le: </div>
+            <div class="col-md-7"><b>{{prospect?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <span class="badge badge-primary mb-4 f-14 width">Informations sur le besoin</span>
+        <div class="col-md-6">
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Type de Besoin: </div>
+            <div class="col-md-7"><b>{{prospect?.besoin}}</b></div>
+          </div>
+          <div class="row py-2">
+            <div class="col-md-5">Type de Bien: </div>
+            <div class="col-md-7"><b>{{prospect?.bien}}</b></div>
+          </div>
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Nombre de Pièce: </div>
+            <div class="col-md-7"><b>{{prospect?.nbrPiece}}</b></div>
+          </div>
+          <div class="row py-2">
+            <div class="col-md-5">Nombre d'etage: </div>
+            <div class="col-md-7"><b>{{prospect?.niveau}}</b></div>
+          </div>
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Nombre de locative ?: </div>
+            <div class="col-md-7"><b>{{prospect?.nbrLocative}}</b></div>
+          </div>
+
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Est-il-meuble?: </div>
+            <div class="col-md-7"><b>{{prospect?.bienM}}</b></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row py-2">
+            <div class="col-md-5">Superfice (m²): </div>
+            <div class="col-md-7"><b>{{prospect?.superfice}}</b></div>
+          </div>
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Revenu Locatif: </div>
+            <div class="col-md-7"><b>{{prospect?.revenueL}}</b></div>
+          </div>
+          <div class="row py-2">
+            <div class="col-md-5">Pourcentage de Gestion (%) : </div>
+            <div class="col-md-7"><b>{{prospect?.pourcentage}}</b></div>
+          </div>
+
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Budget Minimum: </div>
+            <div class="col-md-7"><b>{{prospect?.budgetMin}}</b></div>
+          </div>
+          <div class="row py-2">
+            <div class="col-md-5">Budget Maximum: </div>
+            <div class="col-md-7"><b>{{prospect?.budgetMax}}</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <span class="badge badge-primary mb-4 f-14 width">Locatisation du Bien</span>
+        <div class="col-md-6">
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Pays: </div>
+            <div class="col-md-7"><b>{{prospect?.country?.nom}}</b></div>
+          </div>
+          <div class="row py-2">
+            <div class="col-md-5">Commune: </div>
+            <div class="col-md-7"><b>{{prospect?.common?.libelle}}</b></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row py-2">
+            <div class="col-md-5">Ville: </div>
+            <div class="col-md-7"><b>{{prospect?.city?.libelle}}</b></div>
+          </div>
+          
+          <div class="row py-2 item-condominium">
+            <div class="col-md-5">Quartier: </div>
+            <div class="col-md-7"><b>{{prospect?.neighborhood?.libelle}}</b></div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="col-md-12">
+      <hr class="my-2">
+      <div class="col-md" *ngIf="prospect">
+        <span class="badge badge-primary mb-4 f-14 width">FICHE DE DOSSIER</span>
+        <div class="row">
+          <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+            <app-folder-uploader (click)="showFile(owner?.folder)" [folder]="owner?.folder" [etat]="'show'"
+              [allowFileUpload]="false" [allowDownload]="true">
+            </app-folder-uploader>
+          </div>
+          <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+            <div class="row">
+              <div class="col-sm-12 mb-2">
+                <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                  <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                </button>
+              </div>
+            </div>
+            <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+            </ngx-doc-viewer>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="editProspect(prospect)" type="button" class="btn btn-primary" ngbTooltip="Modifier">
+          Modifier <i class="feather icon-edit-2"></i>
+        </button>
+        <button (click)="printerProspect(prospect)" type="submit" class="btn btn-warning" ngbTooltip="Imprimer">
+          Imprimer <i class="feather icon-printer"></i>
+        </button>
+        <button *ngIf="prospect?.isDelete" (click)="deleteProspect(prospect)" type="button"
+          class="btn btn-danger text-left" data-dismiss="modal" ngbTooltip="Supprimer">
+          Supprimer <i class="feather icon-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LISTE DES RESERVATIONS -->
+<div *ngIf="activeTab === 'RESERVATION'" class="width list-agent">
+  <app-reservation-list [reservations]="reservations"></app-reservation-list>
+</div>
+
+<!-- LISTE DES ACTIVITE -->
+<div class="width list-pre-reservation" *ngIf="activeTab === 'ACTIVITE'">
+  <app-activity-list [activites]="activites" [rdvs]="rdvs" [prospect]="prospect"></app-activity-list>
+</div>
+
+<!-- LISTE DES ACTIONS -->
+<div class="width list-pre-reservation" *ngIf="activeTab === 'ACTION'">
+  <app-action-list [actions]="actions" ></app-action-list>
+</div>

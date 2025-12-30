@@ -1,0 +1,238 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+      <div class="col-md-12">
+        <!-- PARTIR RESERVER AU CLIENT -->
+        <div class="row"> 
+          <span class="badge badge-primary my-2 f-14 width"> DETAILS SUR LE BIEN </span> 
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <label>Syndic <span class="asterix">*</span></label>
+              <app-entity-finder [namespace]="'Trustee'" [class]="'Trustee'" [groups]="['trustee']"
+                [required]="true" [selected]="currentTrustee"
+                [disabled]="this.edit" (uuid)="setTrusteeUuid($event)">
+              </app-entity-finder>
+            </div>
+            <div class="col-md-3">
+                <label>Fournisseur ou Prestataire <span class="asterix">*</span></label>
+                <app-entity-finder [class]="'Provider'" [groups]="['provider']" [required]="true"
+                  [selected]="currentProvider" [disabled]="this.edit || !canChangeProvider"
+                  (uuid)="setProviderUuid($event)">
+                </app-entity-finder>
+              </div>
+            <!-- <div *ngIf="!edit" class="col-md-4">
+              <div *ngIf="isLoadingHouse" class="spinner-container">
+                <div class="spinner"></div>
+              </div>
+              <label for="house">Lot</label>
+              <select (change)="selectHouseCo()" formControlName="houseCo" class="form-control" id="houseCo"
+                [attr.disabled]="f.trustee.value ? null : 'true'"
+                [ngClass]="{
+                'is-invalid': submit && f.houseCo.errors,
+                'is-valid': submit && f.houseCo.valid }">
+                <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+                <option *ngIf="houseCos.length > 0" [ngValue]="null">Selectionnez une copropriété </option>
+                <option *ngIf="houseCos.length === 0" [ngValue]="null">Ce Syndic ne possède aucune copropriété </option>
+                <option *ngFor="let houseCo of houseCos" [ngValue]="houseCo.uuid">{{houseCo.nom}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.houseCo.errors">
+                <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div *ngIf="edit" class="col-md-4">
+              <label for="house">Lot<span class="asterix">*</span></label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+                :value="{{ houseCo ? houseCo.nom : ''}}" readonly>
+            </div>
+            <div *ngIf="!edit" class="col-md-4">
+              <div *ngIf="isLoadingHomeCo" class="spinner-container">
+                <div class="spinner"></div>
+              </div>
+              <label for="homeCo">Villa ou Appartement</label>
+              <select formControlName="homeCo" class="form-control" id="homeCo"
+                [attr.disabled]="f.trustee.value ? null : 'true'">
+                <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+                <option *ngIf="homeCos.length > 0" [ngValue]="null">Selectionnez une villa ou un appartement</option>
+                <option *ngIf="homeCos.length === 0 && f.homeCo.value" [ngValue]="null">Ce Syndic ne possède aucune villa ou appartement </option>
+                <option *ngFor="let homeCo of homeCos" [ngValue]="homeCo.uuid">{{homeCo.nom}}</option>
+              </select>
+            </div>
+            <div *ngIf="edit" class="col-md-4">
+              <label for="homeCo">Villa ou Appartement<span class="asterix">*</span></label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+                :value="{{ homeCo ? homeCo.nom : 'PAS DE VILLA OU APPARTEMENT'}}" [readonly]="homeCo ? false : true">
+            </div> -->
+            <div *ngIf="edit" class="col-md-3">
+              <label for="house">Lot</label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+                :value="{{ (houseCo ? houseCo.nom: '') + ' ' + (homeCo? homeCo.nom : '') }}" readonly>
+            </div>
+            <div *ngIf="!edit" class="col-md-3">
+              <label for="home">Lot</label>
+              <ng-select formControlName="copropriete" [items]="coproprietes"
+                bindLabel="nomLot" [selectableGroup]="false" [groupBy]="groupingHelper" [groupValue]="groupValueHelper" [(ngModel)]="selectedCopriete">
+              </ng-select>
+            </div>
+            <div *ngIf="!edit" class="col-md-4">
+              <div *ngIf="isLoadingNature" class="spinner-container">
+                <div class="spinner"></div>
+              </div>
+              <label for="infrastructure">Infrastructure</label>
+              <select formControlName="infrastructure" class="form-control" id="infrastructure"
+                [attr.disabled]="f.trustee.value ? null : 'true'">
+                <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+                <option *ngIf="infrastructures.length > 0" [ngValue]="null">Selectionnez une infrastructure</option>
+                <option *ngIf="infrastructures.length === 0 && f.infrastructure.value" [ngValue]="null">Ce Syndic ne possède aucune infrastructure</option>
+                <option *ngFor="let infrastructure of infrastructures" [ngValue]="infrastructure.uuid">{{infrastructure.nom}}</option>
+              </select>
+            </div>
+            <div *ngIf="edit" class="col-md-4">
+              <label for="infrastructure">Infrastructure<span class="asterix">*</span></label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+                :value="{{ infrastructure ? infrastructure.nom : 'PAS D\'INFRASTRUCTURE'}}" [readonly]="infrastructure ? false : true">
+            </div>
+            <div *ngIf="!edit" class="col-md-3">
+                <div *ngIf="isLoadingTypeLoad" class="spinner-container">
+                  <div class="spinner"></div>
+                </div>
+                <label for="nature">Ligne budgetaire</label>
+                <select formControlName="ligneBudgetaire" class="form-control" id="ligneBudgetaire"
+                  [attr.disabled]="f.trustee.value ? null : 'true'">
+                  <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+                  <option *ngIf="typeLoads.length > 0 && f.trustee.value" [ngValue]="null">Selectionnez un le Syndic</option>
+                  <option *ngIf="typeLoads.length === 0 && f.trustee.value" [ngValue]="null">Ce Syndic ne possède ligne budgetaire </option>
+                  <option *ngFor="let typeLoad of typeLoads" [ngValue]="typeLoad.uuid">{{typeLoad.typeLoad.searchableTitle}}</option>
+                </select>
+              </div>
+              <div *ngIf="edit" class="col-md-3">
+                <label for="ligneBudgetaire">Ligne budgetaire<span class="asterix">*</span></label>
+                <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+                  :value="{{ ligneBudgetaire ? ligneBudgetaire.typeLoad.libelle : 'PAS DE NATURE'}}" readonly>
+              </div>
+          </div>
+        </div>
+  
+        <!-- PARTIR RESERVER AU CLIENT -->
+        <div class="row">
+          <span class="badge badge-primary my-2 f-14 width">DETAILS SUR LE CONTRAT </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-3">
+              <label for="libelle">Libellé <span class="asterix">*</span></label>
+              <input type="text" class="form-control" formControlName="libelle" id="libelle"
+                [ngClass]="{
+                'is-invalid': submit && f.libelle.errors,
+                'is-valid': submit && f.libelle.valid
+                }" placeholder="Libellé">
+              <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+                <label for="dateSign">Date de signature <span class="asterix">*</span></label>
+                <input (change)="onChangeDate()" type="date" class="form-control" formControlName="dateSign" id="dateSign"
+                  [ngClass]="{
+                  'is-invalid': submit && f.dateSign.errors,
+                  'is-valid': submit && f.dateSign.valid
+                  }">
+                <div class="invalid-feedback" *ngIf="submit && f.dateSign.errors">
+                  <div *ngIf="f.dateSign.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+            <div class="col-md-3">
+              <label for="dateD">Date debut <span class="asterix">*</span></label>
+              <input (change)="onChangeDate()" type="date" class="form-control" formControlName="dateD" id="dateD"
+                [ngClass]="{
+                'is-invalid': submit && f.dateD.errors,
+                'is-valid': submit && f.dateD.valid
+                }">
+              <div class="invalid-feedback" *ngIf="submit && f.dateD.errors">
+                <div *ngIf="f.dateD.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="dateF">Date fin <span class="asterix">*</span></label>
+              <input (change)="onChangeDate()" type="date" class="form-control" formControlName="dateF" id="dateF"
+                [ngClass]="{
+                'is-invalid': submit && f.dateF.errors,
+                'is-valid': submit && f.dateF.valid
+                }">
+              <div class="invalid-feedback" *ngIf="submit && f.dateF.errors">
+                <div *ngIf="f.dateF.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="montant">Montant du contrat <span class="asterix">*</span></label>
+              <input type="number" class="form-control" formControlName="montant" id="montant"
+                [ngClass]="{
+                'is-invalid': submit && f.montant.errors,
+                'is-valid': submit && f.montant.valid
+                 }" placeholder="Budget estimative">
+              <div class="invalid-feedback" *ngIf="submit && f.montant.errors">
+                <div *ngIf="f.montant.errors.required">{{required.novide}}</div>
+                <div *ngIf="f.montant.errors.pattern">{{required.nolettre}}</div>
+                <div *ngIf="f.montant.errors.pattern">{{required.positive}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="periodicite">Périodicité de paiement<span class="asterix">*</span></label>
+              <select [attr.disabled]="edit ? true : null" class="form-control"
+                id="periodicite" formControlName="periodicite" [ngClass]="{
+                  'is-invalid': submit && f.periodicite.errors,
+                  'is-valid': submit && f.periodicite.valid
+                }">
+                <option *ngFor="let item of periodiciteRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.periodicite.errors">
+                <div *ngIf="f.periodicite.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="date ">Type <span class="asterix">*</span></label>
+              <select formControlName="type" class="form-control" id="type" [ngClass]="{
+                    'is-invalid': submit && f.type.errors,
+                    'is-valid': submit && f.type.valid
+                  }">
+                <option [value]="'FOURNITURE'">FOURNITURE</option>
+                <option [value]="'PRESTATION'">PRESTATION</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <label for="description">Description </label>
+              <textarea class="form-control" name="description" id="description" formControlName="description" placeholder="Description"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-md">
+              <label>Pièces et documents à joindre</label>
+              <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                [path]="'contract'" [etat]="edit ? 'edit': 'add'" [folder]="edit && providerContract? providerContract?.folder : null">
+              </app-folder-uploader>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+  </form>
+  

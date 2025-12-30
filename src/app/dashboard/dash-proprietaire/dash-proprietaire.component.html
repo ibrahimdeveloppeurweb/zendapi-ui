@@ -1,0 +1,240 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width"
+    [dateD]="true"
+    [dateF]="true"
+
+  
+    [autre]="autre"
+    [autreTitle]="autreTitle"
+    [autreType]="autreType"
+    [autreClass]="autreClass"
+    [autreNamespace]="autreNamespace"
+    [autreGroups]="autreGroups"
+
+    [type]="true"
+    [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+  </app-filter>
+  <!-- FILTRE DE RECHERCHE END-->
+
+  <!-- WIDGET DES NOMBRES -->
+  <div class="col-xl-3 col-md-6" (click)="openModal('DASH_OWNER', ['Tout'], [widget?.nbrP],'OWNER')">
+  <!-- <div class="col-xl-3 col-md-6" (click)="openModal('DASH_OWNER', ['Tout'], [widget?.nbrP])"> -->
+    <app-card [hidHeader]="true">
+      <div class="row align-items-center m-l-0">
+        <div class="col-auto"> <i class="icon feather icon-users f-30 text-c-red"></i> </div>
+        <div class="col-auto">
+          <h6 class="text-muted m-b-10">{{ widget?.nbrP > 1 ? 'Proprietaires' : 'Proprietaire' }}</h6>
+          <h2 class="m-b-0">{{ widget?.nbrP }}</h2>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-xl-3 col-md-6"(click)="openModal('DASH_LOCATIVE', ['Tout'], [widget?.nbrL],'LOCATIVE')">
+    <app-card [hidHeader]="true">
+      <div class="row align-items-center m-l-0">
+        <div class="col-auto">
+          <i class="fas fa-home f-30 text-c-green"></i>
+        </div>
+        <div class="col-auto">
+        <h6 class="text-muted m-b-10">{{ widget?.nbrL > 1 ? 'Locatives' : 'Locative' }}</h6>
+        <h2 class="m-b-0">{{ widget?.nbrL }}</h2>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-xl-3 col-md-6"(click)="openModal('DASH_MANDAT', ['Tout'], [widget?.nbrM],'MANDAT')">
+    <app-card [hidHeader]="true">
+      <div class="row align-items-center m-l-0">
+        <div class="col-auto">
+          <i class="icon feather icon-file-text f-30 text-c-yellow"></i>
+        </div>
+        <div class="col-auto">
+          <h6 class="text-muted m-b-10">{{ widget?.nbrM > 1 ? 'Mandats' : 'Mandat' }}</h6>
+          <h2 class="m-b-0">{{ widget?.nbrM }}</h2>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-xl-3 col-md-6" (click)="openModal('DASH_REPAYMENT', ['Tout'], [widget?.nbrR],'REPAYMENT')">
+    <app-card [hidHeader]="true">
+      <div class="row align-items-center m-l-0">
+        <div class="col-auto">
+          <i class="icon feather icon-credit-card f-30 text-c-blue"></i>
+        </div>
+        <div class="col-auto">
+          <h6 class="text-muted m-b-10">{{ widget?.nbrR > 1 ? 'Reversements' : 'Reversement' }}</h6>
+          <h2 class="m-b-0">{{ widget?.nbrR }}</h2>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <!-- WIDGET DES NOMBRES END-->
+
+  <!-- WIDGET SECONDAIRES -->
+  <div class="col-md-7">
+    <div class="row">
+      <div class="col-md-12"(click)="openModal('DASH_IMMOBILIER', ['Tout'], [widget?.nbrH],'IMMOBILIER')">
+        <app-card [hidHeader]="true">
+          <div class="row align-items-center m-l-0">
+            <div class="col-auto">
+              <i class="feather icon-home f-30 text-c-blue"></i>
+            </div>
+            <div class="col-auto">
+              <h6 class="text-muted m-b-10">{{ widget?.nbrH > 1 ? 'Biens' : 'Bien' }}</h6>
+              <h2 class="m-b-0">{{ widget?.nbrH }}</h2>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <div class="col-md-6"(click)="openModal('DASH_IMMOBILIER', ['Vente','Vendus','Reserve','Disponible'], [widget?.bien.vente,widget?.bien.venteO,widget?.bien.venteR,widget?.bien.venteD],'IMMOBILIER')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="text-c-red">{{ widget?.bien.vente }}</h4>
+              <h6 class="text-muted m-b-0">{{ widget?.bien.vente > 1 ? 'Ventes' : 'Vente' }}</h6>
+            </div>
+            <div class="col-4 text-right"></div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.bien.venteO }} {{ widget?.bien.venteO > 1 ? 'Vendus' : 'Vendu' }}</p>
+              </div>
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.bien.venteR }} {{ widget?.bien.venteR > 1 ? 'Réservées' : 'Réservée' }}</p>
+              </div>
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.bien.venteD }} {{ widget?.bien.venteD > 1 ? 'Disponibles' : 'Disponible' }}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <div class="col-md-6"(click)="openModal('DASH_LOCATIVE', ['Tout', 'Disponible', 'Occupée','Reservée'], [widget?.bien?.loca,widget?.bien.locaD, widget?.bien.locaO, widget?.bien.locaR],'LOCATIVE')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="text-c-yellow">{{ widget?.bien?.loca }}</h4>
+              <h6 class="text-muted m-b-0">{{ widget?.bien.loca > 1 ? 'Locations' : 'Location' }}</h6>
+            </div>
+            <div class="col-4 text-right"> </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.bien.locaO }} {{ widget?.bien.locaO > 1 ? 'Occupées' : 'Occupée' }}</p>
+              </div>
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.bien.locaR }} {{ widget?.bien.locaR > 1 ? 'Réservées' : 'Réservée' }}</p>
+              </div>
+              <div class="col-4 ">
+                <p class="text-white m-b-0">{{ widget?.bien.locaD }} {{ widget?.bien.locaD > 1 ? 'Disponibles' : 'Disponible' }}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+    </div>
+  </div>
+  <!-- WIDGET SECONDAIRES -->
+
+  <!-- DIAGRAMME CIRCULAIRE -->
+  <div class="col-md-5">
+    <app-card cardTitle="DIAGRAMME CIRCULAIRE DES DISPONIBILITÉS" [options]="false">
+      <div #doughnutChart>
+        <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData" style="height: 345px;"></chart>
+      </div>
+    </app-card>
+  </div>
+  <!-- DIAGRAMME CIRCULAIRE -->
+
+  <!-- DIFERRENTS TABLEAU DE LISTING PART 2 -->
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-6">
+        <app-card [hidHeader]="true">
+          <div class="col-md-12">
+            <span class="badge badge-warning my-2 f-14 formBadge width"> LISTE DES 10 DERNIERS PROPRIETAIRES ACTIF </span>
+          </div>
+          <div class="col-md-12">
+            <div *ngIf="etat && listing?.ownerA.length > 0" class="table-responsive">
+              <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                <tr>
+                  <th>Nom Prenoms/Raison sociale</th>
+                  <th>Profession</th>
+                </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let owner of listing?.ownerA" (click)="showOwner(owner)">
+                    <td>
+                      <div class="d-inline-block align-middle">
+                        <img *ngIf="owner?.type === 'PARTICULIER' && owner?.sexe === 'Masculin'" class="img-radius wid-40 align-top m-r-15" [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                        <img *ngIf="owner?.type === 'PARTICULIER' && owner?.sexe === 'Féminin'" class="img-radius wid-40 align-top m-r-15" [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-mlle.jpeg'"  onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+                        <img *ngIf="owner?.type === 'ENTREPRISE' && owner?.photoSrc" class="img-radius wid-40 align-top m-r-15" [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                        <i *ngIf="owner?.type === 'ENTREPRISE' && !owner?.photoSrc" class="fas fa-building fa-3x"></i>
+                        <div class="d-inline-block">
+                          <h6>{{ owner?.searchableTitle }}</h6>
+                          <span class="m-0 d-inline-block align-middle">
+                            <i class="fa fa-phone"></i>{{ owner?.telephone }} - {{ owner?.type }}
+                          </span><br/>
+                          <span> Code : {{ owner?.code }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ owner?.profession }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <app-no-data class="width" [title]="'Aucun proprietaire trouvé'" *ngIf="listing?.ownerA && listing?.ownerA.length === 0"></app-no-data>
+          </div>
+        </app-card>
+      </div>
+      <div class="col-md-6">
+        <app-card [hidHeader]="true">
+          <div class="col-md-12">
+            <span class="badge badge-danger my-2 f-14 formBadge width"> LISTE DES 10 DERNIERS MANDATS VALIDER </span>
+          </div>
+          <div class="col-md-12">
+            <div *ngIf="etat && listing?.mandateV.length > 0" class="table-responsive">
+              <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Bien</th>
+                    <th>Type</th>
+                    <th>Montant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let mandate of listing?.mandateV" (click)="showMandate(mandate)">
+                    <td>
+                      <p class="m-0 d-inline-block align-middle font-16">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-warning">{{mandate?.house?.nom}}</span> <br />
+                        Superficie : {{mandate?.house?.superficie}} m² <br />
+                        Propriétaire : {{mandate?.house?.owner?.nom}}
+                      </p>
+                    </td>
+                    <td>
+                      <span *ngIf="mandate.type === 'VENTE'" class="badge badge-primary">Vente</span>
+                      <span *ngIf="mandate.type === 'LOCATION'" class="badge badge-warning">Location</span>
+                    </td>
+                    <td class="align-middle">
+                      <span *ngIf="mandate?.montantCom" class="text-warning">
+                      {{ mandate?.montantCom|number }} {{global.device}}
+                      </span>
+                      <span *ngIf="!mandate?.montantCom" class="text-warning">NON DEFINI</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <app-no-data class="width" [title]="'Aucun mandat trouvé'" *ngIf="listing?.mandateV && listing?.mandateV.length === 0"></app-no-data>
+        </div>
+        </app-card>
+      </div>
+    </div>
+  </div>
+</div>

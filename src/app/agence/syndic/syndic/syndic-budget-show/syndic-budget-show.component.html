@@ -1,0 +1,575 @@
+<div class="user-profile user-card mb-4" *ngIf="budget">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img class="img-radius img-fluid wid-80 hei-80"
+                      [src]="budget?.trustee?.photoSrc ? publicUrl+'/'+budget?.trustee?.photoSrc : 'assets/images/syndic.jpeg'"
+                      onerror="this.onerror=null; this.src='assets/images/syndic.jpeg'" />
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 class="mb-1">{{ budget?.libelle }}</h5>
+        </div>
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="media">
+                <i class="feather icon-map-pin mr-2 mt-1 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{budget?.trustee?.searchableDetail}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- MENU TABS BUDGET -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowsubdivision" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'BUDGET'}"
+                (click)="onChangeLoad('BUDGET')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="fas fa-building"></i> Budget
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'APPEL_CHARGE'}"
+                (click)="onChangeLoad('APPEL_CHARGE')" id="bien-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="bien" aria-selected="true">
+                <i class="fas fa-money-bill-alt"></i> Appels de charges
+              </a>
+            </li>
+        
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOUTONS DE GESTION -->
+<div class="col-sm-12 mb-4 btn-all-treasury-show">
+  <div class="first">
+    <div class="second">
+      <button (click)="back()" type="button" class="btn btn-secondary m-1 btn-treasury-show-back">
+        <i class="fa fa-arrow-alt-circle-left"></i> Retour
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="row" *ngIf="activeTab !== 'BUDGET' && activeTab !== 'ELABORETED' && activeTab !== 'APPEL_CHARGE'">
+  <app-filter class="width" [name]="name" [nameTitle]="nameTitle" [user]="false" [userTitle]="userTitle" [etat]="true"
+    [bien]="false" [bienTitle]="ilotTitle" [autre]="false" [autreTitle]="lotTitle" [etatRow]="etatRow"
+    [etatTitle]="etatTitle" [categorie]="false" [categorieRow]="categorieRow" [categorieTitle]="categorieTitle"
+    [dateD]="true" [dateF]="true" [create]="false" [min]="false" [minTitle]="minTitle" [max]="false"
+    [maxTitle]="maxTitle" [ordre]="true" [code]="false" [count]="true" [type]="true" [typeRow]="typeRow"
+    [uuid]="budget.uuid" (filterEvent)="onFilter($event)">
+  </app-filter>
+</div>
+
+<!-- DIAGRAMME CIRCULAIRE -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="row">
+      <!-- ENTREE -->
+      <div class="col-md-3 ">
+        <app-card *ngIf="activeTab === 'BUDGET'" [hidHeader]="true" cardClass="bg-c-green order-card">
+          <h4 class="text-white">TOTAL BUDGET</h4>
+          <h2 class="text-white nowrap">{{ budget?.valide |number }}</h2>
+          <h2 class="text-white nowrap">{{ global.device }}</h2>
+          <i class="card-icon fas fa-piggy-bank"></i>
+        </app-card>
+      </div>
+      <div class="col-md-3 " *ngIf="activeTab === 'BUDGET'">
+        <app-card [hidHeader]="true" cardClass="bg-c-yellow order-card">
+          <h4 class="text-white nowrap">MONTANT ENCAISSÉ </h4>
+          <h2 class="text-white nowrap">{{ totalEncaisse |number }}</h2>
+          <h2 class="text-white nowrap">{{ global.device }}</h2>
+          <i class="card-icon fas fa-piggy-bank"></i>
+        </app-card>
+      </div>
+      <div class="col-md-3 " *ngIf="activeTab === 'BUDGET'">
+        <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+          <h4 class="text-white nowrap">CHARGES RÉELLES</h4>
+          <h2 class="text-white nowrap">{{ budget?.charges |number }}</h2>
+          <h2 class="text-white nowrap">{{ global.device }}</h2>
+          <i class="card-icon fas fa-piggy-bank"></i>
+        </app-card>
+      </div>
+      <div class="col-md-3 " *ngIf="activeTab === 'BUDGET'">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h4 class="text-white">ÉCARTS</h4>
+          <h2 class="text-white nowrap">{{(budget?.valide - budget?.charges ) |number }}</h2>
+          <h2 class="text-white nowrap">{{ global.device }}</h2>
+          <i class="card-icon fas fa-piggy-bank"></i>
+        </app-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'BUDGET'}" id="budget" role="tabpanel"
+        aria-labelledby="budget-tab">
+        <span class="badge badge-warning mb-4 f-14 width">
+          DÉTAILS DU BUDGET
+        </span>
+        <div class="card">
+          <div class="col-md-12 mt-2 text center">
+            <div class="d-flex">
+              <!-- COL DROITE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Code : </span>
+                  <span class="title-result-show">{{budget?.code}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Libelle : </span>
+                  <span class="title-result-show text-primary">{{budget?.libelle}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Début du mandat : </span>
+                  <span class="title-result-show text-danger">{{budget?.trustee?.currentMandate?.dateD|date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Fin du mandat : </span>
+                  <span class="title-result-show text-danger">{{budget?.trustee?.currentMandate?.dateF|date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                </p>
+               
+              </div>
+              <!-- COL MILLIEU -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Ville : </span>
+                  <span class="title-result-show">{{budget?.trustee?.ville}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Commune : </span>
+                  <span class="title-result-show">{{budget?.trustee?.commune}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Quartier : </span>
+                  <span class="title-result-show">{{budget?.trustee?.quartier}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Etat : </span>
+                  <span class="badge badge-{{
+                    budget?.etat === 'CLOTURE' ? 'danger' :
+                    budget?.etat === 'VALIDE' ? 'success' :
+                    budget?.etat === ' EN COURS' ? 'primary' :                         
+                    budget?.etat === 'ATTENTE' ? 'warning' :
+                    budget?.etat === 'BROUILLON' ? 'info' : 'primary'
+                  }}">{{budget?.etat}}</span>
+                </p>
+              </div>
+              <!-- COL GAUCHE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Statut : </span>
+                  <span class="badge badge-{{
+                    budget?.statut === 'ACTIF' ? 'success' :
+                    budget?.statut === 'TERMINE' ? 'danger' : 'info'
+                  }}">{{budget?.statut}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Crée le : </span>
+                  <span class="title-result-show">{{ budget?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ budget?.create }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Modifié le : </span>
+                  <span class="title-result-show">{{ budget?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ budget?.update }}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- LISTING DU BUDGET ETABLIE -->
+        <div>
+          <span class="badge badge-warning mb-4 f-14 width">
+            DÉTAILS DES TYPES DE CHARGE
+            <span *ngIf="activeTab === 'BUDGET'" class="ml-2" ngbTooltip="ECARTS = BUDGET - CHARGES RELLES">
+              <i class="fas fa-info-circle"></i>
+            </span>
+            <span *ngIf="activeTab === 'ELABORETED'" class="ml-2" ngbTooltip="ECARTS =  BUDGET PREVU - BUDGET">
+              <i class="fas fa-info-circle"></i>
+            </span>
+          </span>
+          <div class="modal-footer">
+            <button *ngIf="budget?.etat === 'VALIDE' && budget?.etat != 'TERMINE'" (click)="edit(budget,'BROUILLON')" type="button" class="btn btn-info text-left" data-dismiss="modal"
+              ngbTooltip="Saisir le budget">
+              Saisir le budget <i class="fas fa-cash-register"></i>
+            </button>
+            <button placement="auto" ngbTooltip="Modifier" *ngIf="budget?.isDelete &&  budget?.etat != 'TERMINE'" 
+              class="btn btn-primary text-left" type="button" (click)="edit(budget,'MODIFIER')">
+              Modifier le budget <i class="feather icon-edit-2"></i>
+            </button>
+              <button *ngIf="budget?.isDelete === true" (click)="delete(budget)"
+                type="button" class="btn btn-danger text-left" data-dismiss="modal" ngbTooltip="Supprimer">
+                Supprimer le budget <i class="feather icon-trash"></i>
+              </button>          
+            <button (click)="printerBudget(budget,activeTab)" type="submit" class="btn btn-warning"
+              ngbTooltip="Imprimer le budget">
+              Imprimer <i class="feather icon-printer"></i>
+            </button>
+          </div>
+          <app-card [hidHeader]="true" cardClass="card-datatable">
+            <perfect-scrollbar [autoPropagation]="true" class="scroll-area" style="height: 450px;">
+              <div class="table-responsive m-0">
+                <table class="table table-hover text-nowrap table-bordered m-0">
+                  <thead>
+                    <tr>
+                      <th colspan="4" class="text-center vertical-align">POSTES BUDGÉTAIRES</th>
+                      <th class="text-center vertical-align" *ngIf="activeTab ===  'ELABORETED'"> MONTANT PRÉVU {{
+                        global.device }}</th>
+                      <th class="text-center vertical-align">{{activeTab === 'ELABORETED' ? 'MONTANT VALIDÉ' : 'BUDGET'
+                        }} {{ global.device }}</th>
+                      <th class="text-center vertical-align" *ngIf="activeTab ===  'BUDGET'"> CHARGES RÉELLES {{
+                        global.device }}</th>
+                      <th class="text-center vertical-align">ECARTS {{ global.device }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngFor="let row of groupedOptions">
+                      <tr>
+                        <td colspan="4" class="text-left bold">{{ row?.loadCategoryLibelle }}</td>
+                        <td class="text-center bold" *ngIf="activeTab ===  'ELABORETED'">{{ row?.totalMontantP| number
+                          }} {{ global.device }}</td>
+                        <td class="text-center bold">{{ row?.totalMontantV| number }} {{ global.device }}</td>
+                        <td class="text-center bold">{{ row?.totalCharges| number }} {{ global.device }}</td>
+                        <td class="text-center bold">{{ (row?.totalMontantV - row?.totalCharges)| number }} {{
+                          global.device }}</td>
+                      </tr>
+                      <tr *ngFor="let option of row.typeLoadLibelles">
+                        <td colspan="4" class="pl-5">
+                          {{ option.libelle }}
+                          <br>
+                          <!-- code: {{ option.code }} -->
+                        </td>
+                        <td class="text-center" *ngIf="activeTab ===  'ELABORETED'">{{ option.montantP | number }}</td>
+                        <td class="text-center">{{ option.montantV | number }}</td>
+                        <td class="text-center" *ngIf="activeTab ===  'BUDGET'">{{ option.charges | number }} </td>
+                        <td class="text-center" *ngIf="activeTab ===  'ELABORETED'">{{( option.montantV -
+                          option.montantP)| number }}</td>
+                        <td class="text-center" *ngIf="activeTab ===  'BUDGET'">{{( option.montantV - option.charges)|
+                          number }} </td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="4" class="text-center bold text-primary">TOTAL </td>
+                      <td class="text-center bold text-danger">{{ totalMontantV | number }} {{ global.device }}</td>
+                      <td class="text-center bold text-danger">{{ totalCharges | number }} {{ global.device }}</td>
+                      <td class="text-center bold text-info">{{ (totalMontantV-totalCharges) | number }} {{
+                        global.device }}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </perfect-scrollbar>
+          </app-card>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'ETAT_BUDGETAIRE'}" id="home" role="tabpanel"
+        aria-labelledby="home-tab">
+    
+        <div class="col-md-12">
+          <span class="badge badge-warning mb-4 f-14 width">
+            ÉTATS BUDGÉTAIRES
+            <span class="ml-2" ngbTooltip="ENSEMBLE D'OPÉRATIONS COMPRISE ENTRE LA DATE DÉBUT ET FIN DU MANDAT ACTIF">
+              <i class="fas fa-info-circle"></i>
+            </span>
+          </span>
+          <div class="modal-footer" *ngIf="groupedEtatBugets.length > 0">
+            <button (click)="printerBudget(budget,activeTab)" type="submit" class="btn btn-warning"
+              ngbTooltip="Imprimer le budget">
+              Imprimer <i class="feather icon-printer"></i>
+            </button>
+          </div>
+          <app-no-data [title]="'Aucune donnée trouvée'" *ngIf="groupedEtatBugets.length === 0"></app-no-data>
+          <app-card [hidHeader]="true" cardClass="card-datatable"
+            *ngIf="groupedEtatBugets && groupedEtatBugets.length > 0">
+            <perfect-scrollbar [autoPropagation]="true" class="scroll-area" style="height: 450px;">
+              <div class="table-responsive m-0">
+                <table class="table table-hover text-nowrap table-bordered m-0">
+                  <thead class="sticky-header">
+                    <tr>
+                      <th colspan="4" class="text-center vertical-align">POSTES BUDGÉTAIRES </th>
+                      <th class="text-center vertical-align">MONTANT VALIDÉ {{ global.device }}</th>
+                      <th class="text-center vertical-align">CHARGES RÉELLES {{ global.device }}</th>
+                      <th class="text-center vertical-align">ECARTS {{ global.device }}</th>
+                      <th class="text-center vertical-align">ACTIONS </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngFor="let row of groupedEtatBugets">
+                      <tr>
+                        <td colspan="4" class="text-left bold">{{ row?.loadCategoryLibelle }}</td>
+                        <td class="text-center bold">{{ row?.budgetValide| number }} {{ global.device }}</td>
+                        <td class="text-center bold">{{ row?.charges | number }} {{ global.device }} </td>
+                        <td colspan="2" class="text-center bold">{{ (row?.budgetValide-row?.charges) | number }} {{
+                          global.device }} </td>
+                      </tr>
+                      <tr *ngFor="let option of row.typeLoadLibelles">
+                        <td colspan="4" class="pl-5">{{ option.libelle }}
+                          <!-- <br /> -->
+                          <!-- code: {{ option?.code }} -->
+                        </td>
+                        <td class="text-center text-success">{{ option.montantV | number }}</td>
+                        <td class="text-center text-danger">{{ option.charges | number }}</td>
+                        <td class="text-center text-primary bold">{{ (option?.montantV-option?.charges) | number }} {{
+                          global.device }} </td>
+                        <td colspan="2" class="text-center">
+                          <button placement="auto" ngbTooltip="Plus d'infos" class="btn btn-icon btn-secondary ml-1"
+                            type="button" (click)="showEtat(row,option,activeTab)">
+                            <span class="btn-wrapper--icon"><i class="fas fa-eye"></i></span>
+                          </button>
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="4" class="text-center bold">TOTAUX</td>
+                      <td class="text-center bold text-success">{{ totalMontantVEtat | number }} {{ global.device }}
+                      </td>
+                      <td class="text-center bold text-danger">{{ totalChargesEtat | number }} {{ global.device }}</td>
+                      <td colspan="2" class="text-center bold text-primary ">{{ (totalMontantVEtat-totalChargesEtat) |
+                        number }} {{ global.device }}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </perfect-scrollbar>
+          </app-card>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'ETAT_FINANCIER'}" id="task" role="tabpanel"
+        aria-labelledby="task-tab">
+        <div class="col-md-12">
+          <!-- WIDGET DES TRANSACTION JOURNALIERE -->
+          <div class="row">
+            <div class="col-md-3">
+              <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+                <h6 class="text-white">TOTAL DES FACTURES</h6>
+                <h3 class="text-white nowrap">{{totalMontantFiances|number}} {{ global.device }}</h3>
+                <i class="card-icon feather icon-corner-up-right"></i>
+              </app-card>
+            </div>
+            <div class="col-md-3 ">
+              <app-card [hidHeader]="true" cardClass="bg-c-green order-card">
+                <h6 class="text-white nowrap">TOTAL MNTT FACTURES PAYEES</h6>
+                <h3 class="text-white nowrap">{{totalPayeFinance|number}} {{ global.device }}</h3>
+                <i class="card-icon feather icon-corner-up-left"></i>
+              </app-card>
+            </div>
+            <div class="col-md-3">
+              <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+                <h6 class="text-white nowrap">TOTAL MNTT FACTURES IMPAYEES</h6>
+                <h3 class="text-white nowrap">{{totalImPayeFinance|number}} {{ global.device }}</h3>
+                <i class="card-icon fas fa-piggy-bank"></i>
+              </app-card>
+            </div>
+            <div class="col-md-3">             
+              <app-card [hidHeader]="true" cardClass="bg-c-yellow order-card">
+                <h6 class="text-white nowrap">TOTAL MNTT ECART BUDGET                  
+                </h6>              
+                <!-- <span class="ml-2" ngbTooltip="BUDGET VALIDE - TOTAL FACTURE PAYEES">
+                  <i class="fas fa-info-circle"></i>
+                </span> -->
+                <h3 class="text-white nowrap">{{(totalMontantV - totalPayeFinance)| number}} {{ global.device }}</h3>
+                <i class="card-icon fas fa-piggy-bank"></i>
+              </app-card>
+            </div>
+          </div>
+       
+          <div class="col-md-12">
+            <span class="badge badge-warning mb-4 f-14 width">
+              ÉTATS FINANCIERS
+              <span class="ml-2" ngbTooltip="ENSEMBLE D'OPÉRATIONS COMPRISE ENTRE LA DATE DÉBUT ET FIN DU MANDAT ACTIF">
+                <i class="fas fa-info-circle"></i>
+              </span>
+            </span>
+            <div class="modal-footer" *ngIf="groupedEtatFinancier.length > 0">
+              <button (click)="printerBudget(budget,activeTab)" type="submit" class="btn btn-warning"
+                ngbTooltip="Imprimer le budget">
+                Imprimer <i class="feather icon-printer"></i>
+              </button>
+            </div>
+            <app-no-data [title]="'Aucune donnée trouvée'" *ngIf="groupedEtatFinancier.length === 0"></app-no-data>
+
+            <app-card [hidHeader]="true" cardClass="card-datatable"
+              *ngIf="groupedEtatFinancier && groupedEtatFinancier.length > 0">
+              <perfect-scrollbar [autoPropagation]="true" class="scroll-area" style="height: 450px;">
+                <div class="table-responsive m-0">
+                  <table class="table table-hover text-nowrap table-bordered m-0">
+                    <tbody>
+                      <ng-container *ngFor="let row of groupedEtatFinancier">
+                        <tr>
+                          <td class="text-left bold">{{ row?.loadCategoryLibelle }}</td>
+                        </tr>
+                        <tr>                        
+                          <div class="card-body p-3">
+                            <div class="table-responsive m-0">
+                              <table style="text-align: center;">
+                              <thead class="thead-light">
+                                <tr>
+                                    <th></th>
+                                    <th>Réference</th>
+                                    <th>Libelle de la facture</th>
+                                    <th>Détails</th>
+                                    <th>Date de transmission</th>
+                                    <th>Montant TTC</th>
+                                    <th>Montant Payé</th>
+                                    <th>Montant Restant</th>
+                                </tr>
+                              </thead>
+                                <ng-container *ngFor="let option of row.typeLoadLibelles">  
+                                  <ng-container *ngFor="let item of option">   
+                                  <tr>
+                                    <td>
+                                      <button (click)="toggleExpand(item)" class="expand-button">
+                                        {{ item.isExpanded ? '-' : '+' }}
+                                      </button>
+                                    </td>                                  
+                                    <td>{{ item?.details?.code }} </td>
+                                    <td>{{ item?.details?.libelle }} </td>
+                                    <td>
+                                      Type:{{ item?.details?.type }} <br/>
+                                      <p *ngIf="item?.details?.provider !=null" class="m-0 d-inline-block align-middle font-16">
+                                         Fournisseur <span class="text-primary">{{item?.details?.provider?.nom}}</span><br />                                      
+                                      </p>
+                                      <br/>
+                                      <span *ngIf="item?.details?.house !=null">
+                                        <span>Lot : {{item?.details?.house?.nom}} {{item?.details?.home?.nom}}</span><br />
+                                      </span>
+                                      <span *ngIf="item?.details?.infrastructure!=null">
+                                        <span>Infrastructure : {{item?.details?.infrastructure?.nom}}</span><br />
+                                      </span>
+                                    </td>
+                                    <td>{{ item?.details?.date|date: "d MMMM y hh:mm" : '' : 'fr-FR' }}</td>
+                                    <td class="align-middle">
+                                      <p class="m-0 d-inline-block align-middle font-16">
+                                          <span class="text-primary font-weight-blod">{{ item?.details?.montant|number }} {{ global.device
+                                              }}</span>
+                                      </p>
+                                  </td>
+                                  <td class="align-middle">
+                                      <p class="m-0 d-inline-block align-middle font-16">
+                                          <span class="text-success font-weight-blod">{{ item?.details?.montantPaye|number }} {{ global.device
+                                              }}</span>
+                                      </p>
+                                  </td>
+                                  <td class="align-middle">
+                                      <p class="m-0 d-inline-block align-middle font-16">
+                                          <span class="text-danger font-weight-blod">{{  (item?.details?.montant - item?.details?.montantPaye) |number }} {{ global.device}}</span>
+                                      </p>
+                                  </td>
+                                  </tr>                                  
+                                  <tr *ngIf="item.isExpanded">
+                                    <td colspan="8">
+                                      <table class="text-center" class="inner-table">
+                                        <thead>
+                                          <tr>
+                                            <th>DESIGNATION</th>
+                                            <th>PRIX U.</th>
+                                            <th>QTE</th>
+                                            <th>TVA</th>
+                                            <th>REMISE</th>
+                                            <th>TOTAL</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <tr *ngFor="let detail of item.details.options">
+                                            <td>{{ detail.libelle }}</td>
+                                            <td class="text-primary">{{ detail.prix | number }}</td>                 
+                                            <td class="text-succes">{{ detail.qte | number }}</td>                                    
+                                            <td class="text-succes">{{ detail.tva | number }}</td>                                    
+                                            <td class="text-succes">{{ detail.remise | number }}</td>                                    
+                                            <td class="text-info">{{ detail.total |number}}</td>                    
+                                          </tr>
+                                        </tbody>                                       
+                                      </table>
+                                    </td>
+                                  </tr>
+                                </ng-container>
+                                
+                              </ng-container>
+                              </table>
+                            </div>
+                          </div>
+                        </tr>
+                        <!-- <tr > 
+                          <td colspan="5">TOTAL</td>
+                          <td >{{row.montant | number}} {{ global.device}}</td>
+                          <td >{{row.paye| number}} {{ global.device}}</td>
+                          <td >{{(row.montant - row.paye) | number}} {{ global.device}}</td>
+                        </tr> -->
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+              </perfect-scrollbar>
+            </app-card>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'APPEL_CHARGE'}" id="task" role="tabpanel"
+      aria-labelledby="task-tab">
+      <div class="col-md-12">
+       
+        <div class="col-md-12">
+          <span class="badge badge-primary mb-4 f-14 width">
+              LISTE DES APPELS DE CHARGE
+              <span (mouseenter)="isHovered = true" (mouseleave)="isHovered = false">
+                <i class="feather icon-info"></i>
+              </span>
+          </span>
+          <div class="row">
+            <div class="col-md-4"></div>
+            <div *ngIf="isHovered" class="card card-box col-md-4 p-2">
+              <h5 class="bold text-center">Formule de calcul du montant de l'appel de charges</h5>
+              <p>Quota charge = (Valeur millième / Somme millièmes charge)</p>
+              <p>Quota = Somme des quotas pour chaque charges</p>
+              <p>Montant Appel de charge = </p>
+              <p class="ml-2"> - Quota, si la périodicité du mandat est annuelle</p>
+              <p class="ml-2"> - Quota / 4, si la périodicité du mandat est trimestrielle </p>
+              <p class="ml-2">- Quota / 12, si la périodicité du mandat est mensuelle</p>
+            </div>
+            <div class="col-md-4"></div>
+          </div>
+          <app-no-data [title]="'Aucun appel de charge trouvé'" *ngIf="fundsapeals && fundsapeals.length === 0"></app-no-data>
+          <app-funds-apeals-list *ngIf="fundsapeals && fundsapeals.length > 0" [fundsapeals]="fundsapeals" [montant]="montant" [paye]="paye" [reste]="reste"></app-funds-apeals-list>
+      </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>

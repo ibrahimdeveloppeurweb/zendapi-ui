@@ -1,0 +1,73 @@
+<div class="col-md-12">
+  <span class="badge badge-success my-2 f-14 formBadge width"> LISTE DES MUTATIONS DE DOSSIER </span>
+</div>
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th *ngIf="client">Client</th>
+            <th>Dossier</th>
+            <th>Etat</th>
+            <th>Montant total</th>
+            <th *ngIf="action">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of mutates">
+            <td *ngIf="client">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.folder?.customer?.searchableTitle}}</span> <br />
+                Type : {{item?.folder?.customer?.type}}<br />
+                Telephone : {{item?.folder?.customer.telephone}} <br />
+              </p>
+            </td>
+            <td>
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.folder?.libelle}}</span> <br />
+              </p>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-success' : item.etat === 'VALIDE',
+              'badge-danger' : item.etat === 'INVALIDE'
+              }">{{validation(item.etat)}}</span>
+            </td>
+            <td><p class="m-0 d-inline-block align-middle font-16"><span class="text-primary">{{item?.montant | number}} {{global.device}}</span> <br /></p></td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showMutate(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="MUTATE:EDIT">
+                  <button *ngIf="item.etat === 'INVALIDE'" (click)="editMutate(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                    ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="MUTATE:VALIDATE">
+                  <button *ngIf="item?.etat === 'INVALIDE'" (click)="validateMutate(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Cliquer pour validé une mutation de dossier">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="MUTATE:PRINTER:SHOW">
+                  <button *ngIf="item?.etat ==='VALIDE'" (click)="printerMutate(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                    ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="MUTATE:DELETE">
+                  <button *ngIf="item?.etat === 'INVALIDE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>

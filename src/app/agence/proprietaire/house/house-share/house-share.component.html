@@ -1,0 +1,19 @@
+<div class="modal-header">
+    <h5 class="modal-title">Partager la localisation</h5>
+    <button type="button" class="btn-close" (click)="close()"></button>
+  </div>
+  <div class="modal-body">
+      <ul class="list-group">
+            <li class="list-group-item"  (click)="shareVia('googleMapsUrl')">
+                
+                  <i class="fas fa-map-marker-alt"></i> Cliquez pour ouvrir
+                
+            </li>
+          <li class="list-group-item" (click)="shareVia('whatsapp')">
+              <i class="fab fa-whatsapp"></i> Partager via WhatsApp
+          </li>
+          <li class="list-group-item" (click)="shareVia('email')">
+              <i class="fas fa-envelope"></i> Partager via Email
+          </li>
+      </ul>
+  </div>    

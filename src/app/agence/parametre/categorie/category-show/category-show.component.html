@@ -1,0 +1,65 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL MILLIEU -->
+    <div class="flex-fill">
+      <p><span class="title-show bold">Code: </span> {{ loadCategory?.code }}</p>
+      <p><span class="title-show bold">Libellé: </span> {{ loadCategory?.libelle }}</p>      
+    </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show bold">Crée le: </span>
+          <span class="title-result-show">{{loadCategory?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show bold ml-5">Par: </span>
+          <span class="title-result-show">{{ loadCategory?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show bold">Modifié le: </span>
+          <span class="title-result-show">{{ loadCategory?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+            }}</span>
+          <span class="title-show bold ml-5">Par: </span>
+          <span class="title-result-show">{{loadCategory?.update }}</span>
+        </p>
+      </div>
+  </div>
+  <div class="col-md-12">
+    <span class="badge badge-info my-2 f-14 formBadge width"> LISTE DES TYPES DE CHARGE</span>
+  </div>
+  <div class="p-3">
+    <div class="table-responsive">
+      <table datatable class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Code</th>
+            <th>Libellé</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of loadCategory?.typeLoad">
+            <td>{{item?.code}}</td>
+            <td>{{item?.libelle}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<hr class="m-0">
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary" data-dismiss="modal">
+    <i class="ion-md-close-circle"></i> Fermer
+  </button>
+  <button (click)="edit(loadCategory)" class="btn btn-primary mx-2">
+    <i class="fas fa-pen"></i> Modifier
+  </button>
+  <button (click)="printer(loadCategory)" class="btn btn-warning">
+    <i class="ion-md-print"></i> Imprimer
+  </button>
+</div>

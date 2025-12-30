@@ -1,0 +1,190 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Référence : </span>
+        <span class="title-result-show">{{penality?.invoice?.code }}</span>
+      </p>
+      <p>
+        <span class="title-show">Locataire : </span>
+        <span class="title-result-show"> {{ penality?.contract?.tenant?.searchableTitle }} </span>
+      </p>
+      <p>
+        <span class="title-show">Mois : </span>
+        <span class="title-result-show">{{ penality.libelle }}</span>
+      </p>
+      <p>
+        <span class="title-show">pourcentage : </span>
+        <span class="title-result-show"> {{ penality?.invoice?.contract?.prcRetard }} %</span>
+      </p>
+      <p>
+        <span class="title-show text-warning">loyer : </span>
+        <span class="title-result-show text-warning">{{ penality?.invoice?.contract?.loyer|number }}
+          {{global.device}}</span>
+      </p>
+    </div>
+    <!-- COL DROITE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Etat: </span>
+        <span class="title-result-show">
+          <span class="badge" [ngClass]="{
+            'badge-danger' : penality?.invoice?.etat === 'IMPAYE',
+            'badge-primary' : penality?.invoice?.etat === 'ATTENTE',
+            'badge-warning' : penality?.invoice?.etat === 'EN COURS',
+            'badge-success' : penality?.invoice?.etat === 'SOLDE'
+            }">{{penality?.invoice?.etat}}
+          </span>
+          <span class="ml-1 badge" [ngClass]="{
+            'badge-danger' : penality?.invoice?.contract.etat === 'RESILIE',
+            'badge-warning' : penality?.invoice?.contract.etat === 'INACTIF',
+            'badge-primary' : penality?.invoice?.contract.etat === 'ACTIF'
+            }">{{penality?.invoice?.statut}}</span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Montant : </span>
+        <span class="title-result-show">{{ penality?.montant|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">Crée le : </span>
+        <span class="title-result-show">{{penality?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ penality?.create }}</span>
+      </p>
+      <p>
+        <span class="title-show">Modifié le : </span>
+        <span class="title-result-show">{{ penality?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{penality?.update }}</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered nowrap table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Désignation</th>
+          <th>Prix u.</th>
+          <th>Qte</th>
+          <th>Tva</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <p class="m-0 d-inline-block align-middle font-16">{{penality?.invoice?.libelle}}</p>
+          </td>
+          <td>
+            <p class="m-0 d-inline-block align-middle font-30"><span
+                class="font-weight-blod">{{penality?.invoice?.montant|number}} {{global.device}}</span></p>
+          </td>
+          <td>1</td>
+          <td>0</td>
+          <td>
+            <p class="m-0 d-inline-block align-middle font-30"><span
+                class="font-weight-blod">{{(penality?.invoice?.montant)|number}} {{global.device}}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="penality?.invoice?.transactions?.length > 0" class="table-responsive">
+    <table class="table table-sm table-striped table-bordered nowrap table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Réference</th>
+          <th>Operateur</th>
+          <th>Etat</th>
+          <th>Montant</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of penality?.invoice?.transactions">
+          <td>{{item?.reference}}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+                    'badge-info' : item?.operator === 'DEBITCARD',
+                    'badge-primary' : item?.operator === 'WAVE',
+                    'badge-light-warning' : item?.operator === 'MTN',
+                    'badge-success' : item?.operator=== 'MOOV',
+                    'badge-warning' : item?.operator === 'ORANGE'
+                    }">
+              {{item?.operator}}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="{
+                    'badge-primary' : item?.status === 'PROCESSING',
+                    'badge-danger' : item?.status === 'FAILED',
+                    'badge-success' : item?.status === 'SUCCEEDED'
+                    }">
+              {{payment(item?.status)}}
+            </span>
+          </td>
+          <td>{{item?.amount|number}} {{global.device}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-responsive invoice-table invoice-total">
+        <tbody>
+          <tr>
+            <th>TOTAL HT : </th>
+            <td> {{ penality?.invoice?.montant | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL TVA : </th>
+            <td> {{ penality?.invoice?.montantTva | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL PAYE : </th>
+            <td> {{ penality?.invoice?.paye | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL IMPAYE : </th>
+            <td class="text-danger"> {{ penality?.invoice?.impaye | number }} {{global.device}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <table class="width">
+    <tbody>
+      <tr class="border-bottom-success">
+        <td></td>
+        <td colspan="5" class="text-right font-weight-bold"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="border border-success">
+        <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+        <td class="font-weight-bold font-size-default text-right">{{ penality?.invoice?.montant | number }}
+          {{global.device}}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <button *ngxPermissionsOnly="'PENALITY:PRINTER:SHOW'" (click)="printerPenality(penality)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

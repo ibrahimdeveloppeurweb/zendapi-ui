@@ -1,0 +1,204 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="width btn-filter-fund-request">
+    <ng-template [ngxPermissionsOnly]="['FUND:REQUEST:LIST']">
+      <app-filter *ngIf="tresorerie && isFilterVisible" class="width"
+        [name]="true"
+        [nameTitle]="nameTitle"
+        [user]="true"
+        [userTitle]="userTitle"
+        [etat]="true"
+        [etatRow]="etatRow"
+        [etatTitle]="etatTitle"
+        [categorie]="true"
+        [categorieRow]="categorieRow"
+        [categorieTitle]="categorieTitle"
+        [dateD]="true"
+        [dateF]="true"
+        [create]="true"
+        [min]="true"
+        [minTitle]="minTitle"
+        [max]="true"
+        [maxTitle]="maxTitle"
+        [ordre]="true"
+        [code]="true"
+        [count]="true"
+        [type]="true"
+        [typeRow]="typeRow" (filterEvent)="onFilter($event)">
+      </app-filter>
+    </ng-template>
+  </div>
+  <ng-template [ngxPermissionsExcept]="['FUND:REQUEST:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'demande fond'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- BOUTONS DE GESTION -->
+  <div *ngIf="tresorerie" class="col-sm-12 mb-4 btn-all-fund-request">
+    <div class="first">
+      <div class="second">
+        <!-- <div class="btn-fund-request" data-hint="" data-hintposition="top-right"> -->
+        <div class="btn-fund-request">
+          <button *ngxPermissionsOnly="['FUND:REQUEST:NEW']" (click)="addFundRequest()" type="button" class="btn btn-primary m-1" ngbTooltip="Cliquez ici pour ajouter une demande">
+            Demandes <i class="feather icon-plus-circle"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="btn-group float-right m-1 btn-outil-fund-request" ngbDropdown>
+      <button class="btn btn-warning" ngbDropdownToggle type="button">
+        Outils <i class="fas fa-tools"></i>
+      </button>
+      <div class="dropdown-menu-right" ngbDropdownMenu>
+        <a class="dropdown-item" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer le listing">
+          Imprimer <i class="feather icon-printer"></i>
+        </a>
+        <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+          Exporter <i class="fa fa-file-excel"></i>
+        </a>
+        <a class="dropdown-item" (click)="onImport()" ngbTooltip="Cliquez ici pour importer un fichier">
+          Importer <i class="feather icon-download"></i>
+        </a>
+        <a class="dropdown-item" (click)="onModel()" ngbTooltip="Cliquez ici pour génerer un modèle">
+          Génerer <i class="feather icon-upload"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <!-- LISTE DES DEMANDES DE FONDS -->
+  <div class="width list-fund-request">
+    <ng-template ngxPermissionsOnly="FUND:REQUEST:LIST">
+      <div class="col-md-12">
+        <span class="badge badge-primary mb-4 f-14 width">
+          LISTE DES DEMANDES DE FONDS
+        </span>
+        <app-no-data class="width" [title]="'Aucune demande de fond trouvée'" *ngIf="type === 'DEMANDE' && funds && funds.length === 0"></app-no-data>
+      </div>
+      <div class="col-md-12" *ngIf="type === 'DEMANDE' && funds && funds.length > 0">
+        <app-card [hidHeader]="true" cardClass="card-datatable">
+          <div class="table-responsive">
+            <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Motif</th>
+                  <th>Etat</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Montant</th>
+                  <th>Montant decaissé</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of funds">
+                  <td>
+                    <p class="m-0 d-inline-block align-middle font-16">
+                      <span class="text-primary">{{ item?.motif }}</span> <br />
+                      Trésorerie : {{ item?.treasury?.nom }}<br />
+                      Initiateur : {{ item?.demandeur?.libelle }}
+                    </p>
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'badge-success' : item?.valid === 'VALIDE',
+                      'badge-warning' : item?.valid === 'ATTENTE',
+                      'badge-danger' : item?.valid === 'INVALIDE'
+                      }">{{ item?.valid === 'ATTENTE' ?  'EN ATTENTE DE VALIDATION' : item?.valid }}</span> <br/>
+                    <span class="badge" [ngClass]="{
+                      'badge-danger' : item?.priorite === 'URGENT',
+                      'badge-warning' : item?.priorite === 'MOYEN',
+                      'badge-success' : item?.priorite === 'NON'
+                      }">{{ item?.priorite === 'MOYEN' ? 'PRIORITE MOYEN' : item?.priorite === 'NON' ? 'NON PRIORITAIRE' : item?.priorite }}</span>
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'badge-danger' : item?.status === 'ATTENTE',
+                      'badge-success' : item?.status === 'TRANSMIS'
+                      }">{{ item?.status === 'ATTENTE' ?  'EN ATTENTE DE TRANSMISSION' : 'TRANSMIS'}}</span><br/>
+                    <span *ngIf="item?.etat === 'REJETER'" class="badge" [ngClass]="{
+                        'badge-danger' : item?.etat === 'REJETER'
+                        }">{{ item?.etat === 'REJETER' ?  'DEMANDE REJETÉE' : item?.etat }}</span>
+                    <span *ngIf="item?.valid === 'VALIDE'" class="badge" [ngClass]="{
+                      'badge-warning' : item?.etat === 'ATTENTE',
+                      'badge-success' : item?.etat === 'DECAISSER',
+                      'badge-danger' : item?.etat === 'REJETER'
+                      }">{{ item?.etat === 'ATTENTE' ?  'EN ATTENTE DE DECAISSEMENT' : item?.etat }}</span>
+                  </td>
+                  <td><p class="m-0 d-inline-block align-middle font-16">{{ item?.date| date: "d MMMM y" : '' : 'fr-FR' }}</p></td>
+                  <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                      <span class="text-success font-weight-blod">{{ item?.montant|number }} {{ global.device }}</span>
+                    </p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                      <span class="text-success font-weight-blod">{{ item?.montantD|number }} {{ global.device }}</span>
+                    </p>
+                  </td>
+                  <td class="table-action">
+                    <div class="overlay-edit">
+                      <button type="button" (click)="showFundRequest(item)" class="btn btn-icon btn-secondary"
+                        ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <ng-template ngxPermissionsOnly="FUND:REQUEST:EDIT">
+                        <button *ngIf="item?.status !== 'TRANSMIS'" (click)="editFundRequest(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                          ngbTooltip="Cliquer pour modifier la demande">
+                          <i class="feather icon-edit-2"></i>
+                        </button>
+                      </ng-template>
+                      <ng-template ngxPermissionsOnly="FUND:REQUEST:SEND">
+                        <button *ngIf="item?.status !== 'TRANSMIS'" (click)="sendFund(item)" type="button" class="btn btn-icon  btn-success ml-1" ngbTooltip="Cliquer pour transmettre la demande">
+                          <i class="fas fa-paper-plane"></i>
+                        </button>
+                      </ng-template>
+                      <ng-template ngxPermissionsOnly="FUND:REQUEST:VALIDATE">
+                        <button *ngIf="!tresorerie && item?.status === 'TRANSMIS' && item?.valid !== 'VALIDE' && item?.etat !== 'REJETER'" type="button" (click)="validateFund(item)"
+                          class="btn btn-icon btn-success ml-1" ngbTooltip="Cliquer pour valide la demande">
+                          <i class="fas fa-check"></i>
+                        </button>
+                      </ng-template>
+                      <ng-template ngxPermissionsOnly="FUND:REQUEST:DISBURSE">
+                        <button *ngIf="!tresorerie && item?.etat !== 'DECAISSER' && item?.etat !== 'REJETER' && item?.valid === 'VALIDE'" type="button"
+                          (click)="disburseFund(item)" class="btn btn-icon btn-success ml-1" ngbTooltip="Cliquer pour decaisser la demande">
+                          <i class="fas fa-hand-holding-usd"></i>
+                        </button>
+                      </ng-template>
+                      <ng-template ngxPermissionsOnly="FUND:REQUEST:REJECT">
+                        <button *ngIf="!tresorerie && item?.etat !== 'DECAISSER' && item?.etat !== 'REJETER' && item?.valid !== 'VALIDE'" type="button"
+                          (click)="rejectFund(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Cliquer pour rejeter la demande">
+                          <i class="fas fa-times-circle"></i>
+                        </button>
+                      </ng-template>
+                      <button *ngxPermissionsOnly="'FUND:REQUEST:PRINTER:SHOW'" (click)="printerFund(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                        ngbTooltip="Cliquer pour imprimer la demande">
+                        <i class="feather icon-printer"></i>
+                      </button>
+                      <button *ngxPermissionsOnly="'FUND:REQUEST:DELETE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Cliquer pour supprimer la demande">
+                        <i class="feather icon-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                  <td class="font-weight-bold font-size-40 text-warning"> {{ total | number }} {{global.device}}</td>
+                  <td class="font-weight-bold font-size-40 text-warning"> {{ totalD | number }} {{global.device}}</td>
+                  <td *ngIf="action"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </app-card>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template ngxPermissionsExcept="FUND:REQUEST:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'DEMANDE'" [title]="'liste demande fond'"></app-no-droit>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,299 @@
+<div class="user-profile user-card mb-4" *ngIf="ressource">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img *ngIf="ressource?.photoSrc" class="img-radius img-fluid wid-80 hei-80"
+                      [src]="ressource.photoSrc ? publicUrl+'/'+ressource.photoSrc : 'assets/images/avatar-default.png'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                    <i *ngIf="!ressource?.photoSrc" class="fas fa-building fa-5x"></i>
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 class="mb-1">{{ ressource?.codeGestion }}</h5>
+          <p class="mb-2 text-muted text-uppercase">{{ ressource?.libelle }}</p>
+        </div>
+        <div class="col-md-9 mt-md-4 ">
+          <div class="row">
+            <div class="col-md-6" *ngIf="ressource?.house && ressource?.rental && ressource?.piece">
+              <div class="media">
+                <div class="media-body">
+                  <p class="mb-0 font-size-table font-weight-bold">Bien : {{ ressource?.house }}</p>
+                  <p class="mb-0 font-size-table font-weight-bold">Locative: {{ ressource?.rental }}</p>
+                  <p class="mb-0 font-size-table font-weight-bold">Piece: {{ ressource?.piece }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6" *ngIf="ressource?.assignAt && ressource?.assignBy">
+              <div class="media">
+                <div class="media-body">
+                  <p class="mb-0 font-size-table font-weight-bold">Affecter Le : {{ ressource?.assignAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</p>
+                  <p class="mb-0 font-size-table font-weight-bold">Par : {{ ressource?.assignBy }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- MENU TABS PROPRIETAIRE -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowOwner" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'RESSOURCE'}"
+                (click)="onChangeLoad('RESSOURCE')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="far fa-user"></i> Informations
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'HORS'}"
+                (click)="onChangeLoad('HORS')" id="bien-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="bien" aria-selected="true">
+                <i class="feather icon-x-circle"></i> Hors service
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'TICKET'}"
+                (click)="onChangeLoad('TICKET')" id="bien-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="bien" aria-selected="true">
+                <i class="fas fa-ticket-alt"></i> Tickets
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'HISTORIQUE'}"
+                (click)="onChangeLoad('HISTORIQUE')" id="locative-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="locative" aria-selected="false">
+                <i class="fas fa-tag"></i> Historiques
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+    <button (click)="edit(ressource)" type="button" class="btn btn-primary m-1" ngbTooltip="Modifier la ressource">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+    <button (click)="assigner(ressource)" type="button" class="btn btn-success m-1" ngbTooltip="Affecter a une pieces">
+      Affecter a une pieces <i class="feather icon-share-2"></i>
+    </button>
+    <button *ngIf="ressource.etat != 'HORS SERVICE'" (click)="hs(ressource)" type="button" class="btn btn-danger text-left m-1" data-dismiss="modal"
+      ngbTooltip="Hors service">
+      Hors service  <i class="feather icon-x-circle"></i>
+   </button>
+    <button (click)="printer(ressource)" type="submit" class="btn btn-warning m-1" ngbTooltip="Imprimer la ressource">
+      Imprimer <i class="feather icon-printer"></i>
+    </button>
+    <button (click)="delete(ressource)" type="button" class="btn btn-danger text-left" data-dismiss="modal"
+      ngbTooltip="Supprimer la ressource">
+      Supprimer <i class="feather icon-trash"></i>
+    </button>
+    <button  *ngIf="ressource.etat === 'HORS SERVICE'" (click)="utilisation(ressource)" type="button" class="btn btn-warning text-left m-1" data-dismiss="modal"
+    ngbTooltip="Mettre en service">
+    Mettre en service    <i class="fas fa-spinner"></i>
+    </button>
+   
+    
+  </div>
+</div>
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="row" *ngIf="activeTab === 'TICKET'">
+  <app-filter class="width" [name]="true" [nameTitle]="nameTitle" [user]="true" [userTitle]="userTitle" [etat]="true"
+    [etatRow]="etatRow" [etatTitle]="etatTitle" [categorie]="true" [categorieRow]="categorieRow"
+    [categorieTitle]="categorieTitle" [dateD]="true" [dateF]="true" [create]="true" [min]="true" [minTitle]="minTitle"
+    [max]="true" [maxTitle]="maxTitle" [ordre]="true" [code]="true" [count]="true" [type]="true" [typeRow]="typeRow"
+    [uuid]="ressource.uuid" (filterEvent)="onFilter($event)">
+  </app-filter>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'RESSOURCE'}" id="profil" role="tabpanel"
+        aria-labelledby="profil-tab">
+        <div class="card">
+          <div class="row p-2">
+            <div class="col-md-4">
+              <p>
+                <span class="title-show">Code de gestion : </span>
+                <span class="title-result-show">{{ ressource?.codeGestion }}</span>
+              </p>
+              <p>
+                <span class="title-show">Code systeme : </span>
+                <span class="title-result-show">{{ ressource?.code }}</span>
+              </p>
+              <p>
+                <span class="title-show">Designation : </span>
+                <span class="title-result-show">{{ ressource?.libelle }}</span>
+              </p>
+              <p>
+                <span class="title-show">Designation : </span>
+                <span class="title-result-show">{{ ressource?.libelle }}</span>
+              </p>
+              <p>
+                <span class="title-show">Famille : </span>
+                <span class="title-result-show">{{ ressource?.famille }}</span>
+              </p>
+              <p>
+                <span class="title-show">Sous Famille : </span>
+                <span class="title-result-show">{{ ressource?.sousFamille?.libelle }}</span>
+              </p>
+            </div>
+            <div class="col-md-4">
+              <p>
+                <span class="title-show">Type de ressource: </span>
+                <span class="title-result-show">{{ ressource?.type }}</span>
+              </p>
+              <p>
+                <span class="title-show">Prix d'achat: </span>
+                <span class="title-result-show">{{ ressource?.prix|number }} XOF</span>
+              </p>
+              <p>
+                <span class="title-show">Type d'Immobilisation: </span>
+                <span class="title-result-show">{{ ressource?.immobilisation }}</span>
+              </p>
+              <p>
+                <span class="title-show">Méthode d'Evaluation: </span>
+                <span class="title-result-show">{{ ressource?.methode }}</span>
+              </p>
+              <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{ ressource?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ ressource?.create }}</span>
+              </p>
+              <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ ressource?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                  'fr-FR'}}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ ressource?.update }}</span>
+              </p>
+
+            </div>
+            <div class="col-md-4">
+              <div class=" d-flex justify-content-center align-items-center">
+                <div class="cover-img-block">
+                  <img [src]="url ? publicUrl+'/'+url : 'assets/images/house-default.png'"
+                    alt="{{ ressource?.libelle }}" class="img-fluid" width="250" height="250">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12" *ngIf="ressource">
+              <span class="badge badge-primary mb-4 f-14 width">FICHE DE DOSSIER</span>
+              <div class="row">
+                <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                  <app-folder-uploader (click)="showFile(ressource?.folder)" [maxSize]="3" [folder]="ressource?.folder"
+                    [etat]="'show'" [allowFileUpload]="false" [allowDownload]="true">
+                  </app-folder-uploader>
+                </div>
+                <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                  <div class="row">
+                    <div class="col-sm-12 mb-2">
+                      <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                        <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                      </button>
+                    </div>
+                  </div>
+                  <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                  </ngx-doc-viewer>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'TICKET'}" id="tickets" role="tabpanel"
+        aria-labelledby="bien-tab">
+        <div class="row">
+          <!-- LISTE DES TICKETS -->
+          <div class="col-md-12" *ngIf="type === 'TICKET' && tickets && tickets.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES TICKETS
+            </span>
+            <app-no-data [title]="'Aucun ticket trouvé'" *ngIf="type === 'TICKET' && tickets && tickets.length === 0">
+            </app-no-data>
+          </div>
+          <div>
+
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'HORS'}" id="bien" role="tabpanel"
+      aria-labelledby="bien-tab">
+      <div class="row">
+        <!-- LISTE DES BIENS -->
+        <div class="col-md-12" *ngIf="type === 'HORS' && hors && hors.length === 0">
+          <span class="badge badge-secondary mb-4 f-14 width">
+            LISTE DES HISTORIQUES HORS SERVICE
+          </span>
+          <app-no-data [title]="'Aucun Historique hors service trouvé'"
+            *ngIf="type === 'HORS' && hors && hors.length === 0">
+          </app-no-data>
+        </div>
+        <div class="col-md-12" *ngIf="hors && hors.length > 0">
+          <span class="badge badge-info mb-4 f-14 width">
+            LISTE DES HISTORIQUES HORS SERVICE
+          </span>
+          <app-card *ngIf="hors && hors.length > 0" [hidHeader]="true" cardClass="card-datatable">
+            <div class="row">
+              <app-ressource-historique [ressource]="ressource" [historiques]="hors"
+                class="width"></app-ressource-historique>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'HISTORIQUE'}" id="bien" role="tabpanel"
+        aria-labelledby="bien-tab">
+        <div class="row">
+          <!-- LISTE DES BIENS -->
+          <div class="col-md-12" *ngIf="type === 'HISTORIQUE' && historiques && historiques.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES HISTORIQUES
+            </span>
+            <app-no-data [title]="'Aucun Historiques trouvé'"
+              *ngIf="type === 'HISTORIQUE' && historiques && historiques.length === 0">
+            </app-no-data>
+          </div>
+          <div class="col-md-12" *ngIf="historiques && historiques.length > 0">
+            <span class="badge badge-info mb-4 f-14 width">
+              LISTE DES HISTORIQUES
+            </span>
+            <app-card *ngIf="historiques && historiques.length > 0" [hidHeader]="true" cardClass="card-datatable">
+              <div class="row">
+                <app-ressource-historique [ressource]="ressource" [historiques]="historiques"
+                  class="width"></app-ressource-historique>
+              </div>
+            </app-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

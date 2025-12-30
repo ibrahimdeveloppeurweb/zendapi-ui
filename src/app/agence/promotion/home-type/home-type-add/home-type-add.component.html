@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-warning my-2 f-14 formBadge width"> INFORMATION SUR LE TYPE DE MAISON </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-5">
+            <label for="libelle">Libellé <span class="asterix">*</span></label>
+            <input type="text" formControlName="libelle" class="form-control" id="libelle" [ngClass]="{
+              'is-invalid': submit && f.libelle.errors,
+              'is-valid': submit && f.libelle.valid
+            }" placeholder="Libellé">
+            <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+              <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <label for="description">Description </label>
+            <textarea class="form-control b-2" id="exampleFormControlTextarea5" formControlName="description"
+              rows="2" placeholder="Description"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

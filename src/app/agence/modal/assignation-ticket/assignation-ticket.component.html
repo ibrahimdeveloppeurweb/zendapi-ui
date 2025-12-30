@@ -1,0 +1,62 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="row">
+      <span class="badge badge-info my-2 f-14 width">
+        SELECTIONNER UN COMMERCIAL
+      </span>
+    </div>
+    <div class="form-group row">
+      <div class="col-md-12">
+        <label>Services <span class="asterix">*</span></label>
+        <app-entity-finder 
+          [class]="'Service'" 
+          [namespace]="'ADMIN'" 
+          [groups]="['service']" 
+          [required]="true"
+          [selected]="serviceSelected" (uuid)="setServiceUuid($event)">
+        </app-entity-finder>
+      </div>
+      <div class="col-12">
+        <label for="user">Commercial <span class="asterix">*</span></label>
+        <select formControlName="user" class="form-control" id="user" type=text [ngClass]="{
+          'is-invalid': submit && f.user.errors,
+          'is-valid': submit && f.user .valid 
+        }">
+          <option *ngFor="let item of users" [value]="item.id">{{item.nom}}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="submit && f.user.errors">
+          <div *ngIf="f.user.errors.required">{{required.novide}}</div>
+        </div>
+      </div> 
+      <div class="col-12">
+        <label for="urgence">Niveau d'urgence <span class="asterix">*</span></label>
+        <select formControlName="urgence" class="form-control" id="urgence" [ngClass]="{
+                    'is-invalid': submit && f.urgence.errors,
+                    'is-valid': submit && f.urgence.valid
+                  }">
+          <option *ngFor="let item of urgenceRow" [value]="item.value">{{item.label}}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="submit && f.urgence.errors">
+          <div *ngIf="f.urgence.errors.required">{{required.novide}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

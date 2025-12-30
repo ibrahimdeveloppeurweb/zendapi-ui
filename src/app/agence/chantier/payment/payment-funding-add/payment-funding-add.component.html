@@ -1,0 +1,203 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close"  (click)="onClose()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width"> SELECTION DE L'INTERVENTION </span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-6">
+                <label>Intervention <span class="asterix">*</span></label>
+                <app-entity-finder [class]="'Construction'" [groups]="['construction']"
+                  [required]="true" [selected]="currentConstruction"
+                  [disabled]="this.edit" (uuid)="setConstructionUuid($event)">
+                </app-entity-finder>
+              </div>
+              <div class="invalid-feedback" *ngIf="submit && f.construction.errors">
+                <div *ngIf="f.construction.errors.required">{{required.novide}}</div>
+              </div>
+              <div class="col-md-3">
+                <label >Bien </label>
+                <input type="text" class="form-control p-2 text-success" readonly [value]="construction?.rental ? construction?.house?.searchableTitle : construction?.rental?.libelle">
+              </div>
+              <div class="col-md-3">
+                <label for="montant">Montant </label>
+                <input type="text" class="form-control p-2 text-success " readonly [value]="construction ? construction?.budget: ''">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFFICHAGE DES RESULATS DE LA RECHERCHE -->
+      <div *ngIf="f.construction.value">
+        <div class="row">
+          <span class="badge badge-success my-2 f-14 formBadge width">
+            DETAILS DE LA SELECTION
+          </span>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <span class="badge badge-primary text-center width">
+              <h5 class="text-white py-2">TOTAL : {{ montantTotal | number }} {{global.device}}</h5>
+            </span>
+          </div>
+          <div class="col-sm-4">
+            <span class="badge badge-success text-center width">
+              <h5 class="text-white py-2">PAYE : {{ montantRegle | number }} {{global.device}}</h5>
+            </span>
+          </div>
+          <div class="col-sm-4">
+            <span class="badge badge-danger text-center width">
+              <h5 class="text-white py-2">IMPAYE : {{ montantRestant | number }} {{global.device}}</h5>
+            </span>
+          </div>
+        </div>
+
+        <div class="col-sm-12" formArrayName="options">
+          <div class="form-group">
+            <table id="invoices" class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead>
+                <tr>
+                  <th *ngIf="!edit">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <input class="form-check-input" id="selectAll" type="checkbox" (change)='onSelectAllInvoice($event)'>
+                      </div>
+                    </div>
+                  </th>
+                  <th class="col-sm-5">Designation</th>
+                  <th>Total</th>
+                  <th>Payé</th>
+                  <th>Impayé</th>
+                </tr>
+              </thead>
+              <tbody class="task-page">
+                <tr *ngFor="let item of option.controls; let i = index" [formGroupName]="i">
+                  <td *ngIf="!edit">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <input formControlName="checked" class="form-check-input" type="checkbox" id="checked{{i}}"
+                         (change)='onSelectInvoice()'>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="col-sm-5"><input formControlName="libelle" type="text" class="form-control p-2 bold" id="libelle{{i}}"></td>
+                  <td><input [value]="item.get('montant').value |number" type="text" class="form-control p-2 bold" readonly id="montant{{i}}"></td>
+                  <td><input [value]="item.get('paye').value |number" type="text"  class="form-control p-2 bold" readonly id="paye{{i}}"></td>
+                  <td><input [value]="item.get('impaye').value |number" type="text" class="form-control p-2 text-danger bold" readonly id="impaye{{i}}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- SELECTION DE LA FACTURE A REGLER -->
+        <div class="row">
+          <span class="badge badge-success my-2 f-14 formBadge width"> DETAILS DU REGLEMENT </span>
+        </div>
+        <!-- DETAILS DU PAIEMENT -->
+        <div class="row">
+          <div class="col-md-3">
+            <label for="date">Date de paiement <span class="asterix">*</span></label>
+            <input type="date" formControlName="date" class="form-control" id="date" [ngClass]="{
+              'is-invalid': submit && f.date.errors,
+              'is-valid': submit && f.date.valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+              <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="mode">Mode de paiement <span class="asterix">*</span></label>
+            <select (change)="onChangeLibelle()" class="form-control" formControlName="mode"  id="mode" [ngClass]="{
+              'is-invalid': submit && f.mode.errors,
+              'is-valid': submit && f.mode.valid
+            }">
+              <option *ngFor="let item of modeRow" [value]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+              <div *ngIf="f.mode.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="effectue">Effectué par <span class="asterix">*</span></label>
+            <select (change)="onChangeEffectue()"class="form-control" formControlName="effectue" id="effectue" [ngClass]="{
+              'is-invalid': submit && f.effectue.errors,
+              'is-valid': submit && f.effectue.valid
+            }">
+              <option [value]="'LUI MEME'">LUI MÊME</option>
+              <option [value]="'AUTRE'">AUTRE</option>
+            </select>
+          </div>
+          <div class="col-md-3" *ngIf="f.effectue.value === 'AUTRE'">
+            <label for="tiers">Tiers <span class="asterix">*</span></label>
+            <input type="text" formControlName="tiers" class="form-control" id="tiers"
+              placeholder="Nom du tiers">
+          </div>
+          <div class="col-md-3"  *ngIf="f.mode.value !== 'ESPECE'">
+            <label for="source">{{ sourceTitle }}</label>
+            <input type="text" formControlName="source" class="form-control" id="source" [placeholder]="sourceTitle">
+          </div>
+          <div class="col-md-3" *ngIf="f.mode.value !== 'ESPECE'">
+            <label for="numero">{{ numeroTitle }}</label>
+            <input type="text" formControlName="numero" class="form-control" id="numero"
+              [placeholder]="numeroTitle">
+          </div>
+        </div>
+        <div clas="row">
+          <div class="col-md-6 ml-md-auto">
+            <label for="montant">Montant <span class="asterix">*</span></label>
+            <input [attr.disabled]="isHidden ? true : null" type="number"step="1000" (change)="onChangeMontant()" formControlName="montant" id="montant"
+              class="form-control text-lg-right p-4 text-success text-h-danger font-weight-bold formBadgeLarge"
+              placeholder="Montant" [ngClass]="{
+              'is-invalid': submit && f.montant.errors,
+              'is-valid': submit && f.montant.valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.montant.errors">
+              <div *ngIf="f.montant.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.montant.errors.pattern">{{required.novide}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PIECES JOINTES -->
+        <div class="row">
+          <span class="badge badge-success my-2 f-14 formBadge width"> PIECES JOINTES </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md">
+              <label>Pièces et documents à joindre</label>
+              <app-folder-uploader 
+                (filesd)="files($event)"
+                (filesUploaded)="setParam('folderUuid',$event)" 
+                [path]="'paiement_financement'" 
+                [etat]="edit ? 'edit': 'add'"
+                [folder]="edit && payment ? payment?.folder : null">
+              </app-folder-uploader>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

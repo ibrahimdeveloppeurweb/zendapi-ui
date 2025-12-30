@@ -1,0 +1,130 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modale.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="d-flex">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Référence : </span>
+          <span class="title-result-show">{{reservation?.numero }}</span>
+        </p>
+        <p>
+          <span class="title-show">Prospect : </span>
+          <span class="title-result-show">{{ reservation?.prospect?.libelle }}</span>
+        </p>
+        <p>
+          <span class="title-show">Email : </span>
+          <span class="title-result-show"> {{ reservation?.prospect?.email }} </span>
+        </p>
+        <p>
+          <span class="title-show">Telephone : </span>
+          <span class="title-result-show"> {{ reservation?.prospect?.telephone }}</span>
+        </p>
+        <p>
+          <span class="title-show">Etat : </span>
+          <span class="title-result-show">
+            <span class="badge" [ngClass]="{
+              'badge-light-success' : reservation?.etat === 'VALIDE',
+              'badge-light-warning' : reservation?.etat ===  'INVALIDE'
+              }">{{ reservation?.etat}}
+            </span>
+          </span>
+        </p>
+      </div>
+      <!-- COL MILLIEU -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show ">Mode de financement : </span>
+          <span class="title-result-show text-warning">{{ reservation?.mode }}</span>
+        </p>
+        <p>
+          <span class="title-show">Budget minimum : </span>
+          <span class="title-result-show text-warning">{{ reservation?.min |number }} {{global.device}}</span>
+        </p>
+        <p>
+          <span class="title-show">Budget maximum  : </span>
+          <span class="title-result-show text-warning">{{ reservation?.max|number }} {{global.device}}</span>
+        </p>
+        <p>
+          <span class="title-show">Apport (%) : </span>
+          <span class="title-result-show">{{ reservation?.apport}} %</span> -
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Date de pré-réservation : </span>
+          <span class="title-result-show"> {{ reservation?.date|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+        </p>
+        <p>
+          <span class="title-show">Date de livraison : </span>
+          <span class="title-result-show"> {{ reservation?.dateL|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+        </p>
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{reservation?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ reservation?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ reservation?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{reservation?.update }}</span>
+        </p>
+      </div>
+    </div>
+  
+    <div *ngIf="reservation?.options?.length > 0" class="table-responsive">
+      <table class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Choix</th>
+            <th>Offre</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of reservation?.options" >
+            <td><p class="m-0 d-inline-block align-middle font-16">{{item?.choix}}</p></td>
+            <td><p class="m-0 d-inline-block align-middle font-16">{{item?.libelle}}</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <table class="width">
+      <tbody>
+        <tr class="border-bottom-success">
+          <td></td>
+          <td colspan="5" class="text-right font-weight-bold"></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="border border-success">
+          <td colspan="5" class="font-weight-bold font-size-default">FRAIS </td>
+          <td class="font-weight-bold font-size-default text-right">{{ reservation?.invoice?.montant | number }} {{global.device}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <ng-template >
+      <button (click)="edit(reservation)" class="btn btn-primary">
+        Modifier <i class="feather icon-edit-2"></i>
+      </button>
+    </ng-template>
+    <ng-template>
+      <button (click)="printer(reservation)"  class="btn btn-warning">
+        Imprimer <i class="feather icon-printer"></i>
+      </button>
+    </ng-template>
+  </div>
+  

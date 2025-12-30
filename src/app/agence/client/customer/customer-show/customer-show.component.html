@@ -1,0 +1,559 @@
+<div class="user-profile user-card mb-4">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true" aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img class="img-radius img-fluid wid-100 hei-100" [src]="customer?.photoSrc ? publicUrl+'/'+customer?.photoSrc : 'assets/images/avatar-default.png'"
+                      alt="" onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"
+                    >
+                    <img *ngIf="customer?.type === 'PARTICULIER' && customer?.sexe === 'Masculin'" class="img-radius img-fluid wid-80 hei-80" [src]="customer.photoSrc ? publicUrl+'/'+customer.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                    <img *ngIf="customer?.type === 'PARTICULIER' && customer?.sexe === 'Féminin'" class="img-radius img-fluid wid-80 hei-80" [src]="customer.photoSrc ? publicUrl+'/'+customer.photoSrc : 'assets/images/avatar-mlle.jpeg'"  onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+                    <img *ngIf="customer?.type === 'ENTREPRISE' && customer?.photoSrc" class="img-radius img-fluid wid-80 hei-80" [src]="customer.photoSrc ? publicUrl+'/'+customer.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                    <i *ngIf="customer?.type === 'ENTREPRISE' && !customer?.photoSrc" class="fas fa-building fa-5x"></i>
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 class="mb-1">{{ customer?.nom }}</h5>
+          <p class="mb-2 text-muted text-uppercase">{{ customer?.type }}</p>
+        </div>
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-3">
+              <p class="mb-1 text-muted d-flex align-items-end text-h-primary">
+                <i class="fas fa-business-time mr-2"></i>{{customer?.profession}}
+              </p>
+              <div class="clearfix"></div>
+              <p class="mb-1 text-muted d-flex align-items-end text-h-primary">
+                <i class="feather icon-phone mr-2 f-18"></i>{{customer?.telephone}}
+              </p>
+            </div>
+            <div class="col-md-3">
+              <div class="media">
+                <i class="feather icon-map-pin mr-2 mt-1 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{customer?.numbWhatsapp}}</p>
+                </div>
+              </div>
+              <div class="media">
+                <i class="feather icon-map-pin mr-2 mt-1 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{customer?.domicile}}</p>
+                </div>
+              </div>
+              <div class="media">
+                <i class="feather icon-mail mr-2 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{customer?.user?.email}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="media">
+                <div class="media-body">
+                  <p class="mb-0 text-muted text-danger font-size-secondary font-weight-bold">{{ customer?.impaye < 0 ? 'A REMBOURSER' : 'DOIT' }} : {{ customer?.impaye | number }} {{global.device}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- MENU TABS PROPRIETAIRE -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowcustomer" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'CLIENT'}"
+               (click)="onChangeLoad('CLIENT')" id="profil-tab" data-toggle="tab"
+                href="javascript:" role="tab" aria-controls="profil" aria-selected="true">
+                <i class="far fa-user"></i> Profil
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'DOSSIER'}"
+               (click)="onChangeLoad('DOSSIER')"id="dossier-tab" data-toggle="tab"
+                href="javascript:" role="tab" aria-controls="dossier" aria-selected="true">
+                <i class="feather icon-folder"></i> Dossier
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'FACTURE' }"
+                (click)="onChangeLoad('FACTURE')" id="entree-tab" data-toggle="tab"
+                 href="javascript:" role="tab" aria-controls="entree" aria-selected="false">
+                <i class="feather icon-file-minus"></i> Facture
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'PAIEMENT'}"
+                (click)="onChangeLoad('PAIEMENT')" id="paiement-tab" data-toggle="tab"
+                href="javascript:" role="tab" aria-controls="paiement" aria-selected="false">
+                <i class="feather icon-credit-card"></i> Paiement
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'MUTATION'}"
+               (click)="onChangeLoad('MUTATION')"id="mutate-tab" data-toggle="tab"
+                href="javascript:" role="tab" aria-controls="mutate" aria-selected="true">
+                <i class="fas fa-sync-alt"></i> Mutation
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'RESILIATION'}"
+                (click)="onChangeLoad('RESILIATION')" id="terminate-tab" data-toggle="tab"
+                href="javascript:" role="tab" aria-controls="terminate" aria-selected="false">
+                <i class="fas fa-door-closed"></i> Resiliation
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'TICKET'}"
+                (click)="onChangeLoad('TICKET')" id="note-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="note" aria-selected="true">
+                <i class="feather icon-file-text"></i> Ticket
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 mb-2">
+      <button (click)="backCustomer()" type="button" class="btn btn-secondary m-1">
+        <i class="fa fa-arrow-alt-circle-left"></i> Retour
+      </button>
+    </div>
+</div>
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="row" *ngIf="activeTab !== 'CLIENT' && activeTab !== 'TICKET' ">
+  <ng-template [ngxPermissionsOnly]="['FOLDER:LIST', 'PAYMENT:CUSTOMER:LIST', 'MUTATE:LIST', 'FOLDER:TERMINATE:LIST', 'INVOICE:FOLDER:LIST']">
+    <app-filter class="width"
+      [name]="name"
+      [nameTitle]="nameTitle"
+      [user]="true"
+      [userTitle]="userTitle"
+      [etat]="true"
+      [etatRow]="etatRow"
+      [etatTitle]="etatTitle"
+      [categorie]="true"
+      [categorieRow]="categorieRow"
+      [categorieTitle]="categorieTitle"
+      [dateD]="true"
+      [dateF]="true"
+      [create]="true"
+      [min]="true"
+      [minTitle]="minTitle"
+      [max]="true"
+      [maxTitle]="maxTitle"
+      [ordre]="true"
+      [code]="true"
+      [count]="true"
+      [type]="true"
+      [typeRow]="typeRow" [uuid]="customer.uuid" (filterEvent)="onFilter($event)">
+    </app-filter>
+  </ng-template>
+  <ng-template [ngxPermissionsExcept]="['FOLDER:LIST', 'PAYMENT:CUSTOMER:LIST', 'MUTATE:LIST', 'FOLDER:TERMINATE:LIST', 'INVOICE:FOLDER:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'client detail'"></app-no-droit>
+    </div>
+  </ng-template>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+      <ng-template ngxPermissionsOnly="CUSTOMER:SHOW">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'CLIENT'}"
+          id="profil" role="tabpanel" aria-labelledby="profil-tab">
+          <div class="card">
+            <div class="col-md-12 mt-2 text center">
+              <div class="d-flex">
+                <!-- COL GAUCHE -->
+                <div class="flex-fill">
+                  <p>
+                    <span class="title-show">Référence : </span>
+                    <span class="title-result-show">{{ customer?.code }}</span>
+                  </p>
+                  <div *ngIf="customer?.type === 'ENTREPRISE'">
+                    <p>
+                      <span class="title-show">Raison sociale : </span>
+                      <span class="title-result-show">{{ customer?.nom }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Statut : </span>
+                      <span class="title-result-show">{{ customer?.type }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Email : </span>
+                      <span class="title-result-show">{{ customer?.user?.email }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Telephone : </span>
+                      <span class="title-result-show">{{ customer?.telephone }}</span>
+                    </p>
+                    <p>
+                    <span class="title-show">Siege socal: </span>
+                    <span class="title-result-show">{{ customer?.siegeSocial }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Code postal : </span>
+                      <span class="title-result-show">{{ customer?.codePostal }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Capital: </span>
+                      <span class="title-result-show">{{ customer?.capital }}</span>
+                    </p>
+                  </div>
+                  <div *ngIf="customer?.type === 'PARTICULIER'">
+                    <p>
+                      <span class="title-show">Nom : </span>
+                      <span class="title-result-show">{{ customer?.civilite+' '+customer?.nom }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Sexe: </span>
+                      <span class="title-result-show">{{ customer?.sexe }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Email : </span>
+                      <span class="title-result-show">{{ customer?.user?.email }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Telephone : </span>
+                      <span class="title-result-show">{{ customer?.telephone }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Domicile : </span>
+                      <span class="title-result-show">{{ customer?.domicile}}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Date naissance: </span>
+                      <span class="title-result-show">{{ customer?.dateN|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Lieu de naissance: </span>
+                      <span class="title-result-show">{{ customer?.lieuN }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Nationnalité: </span>
+                      <span class="title-result-show">{{ customer?.nationalite }}</span>
+                    </p>
+                  </div>
+                </div>
+                <!-- COL MILLIEU -->
+                <div class="flex-fill">
+                  <div *ngIf="customer?.type === 'ENTREPRISE'">
+                    <p>
+                      <span class="title-show">N° Compte contribualbe: </span>
+                      <span class="title-result-show">{{ customer?.ncc }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">N° Registre de commerce: </span>
+                      <span class="title-result-show">{{ customer?.nrc }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Nom du responsable: </span>
+                      <span class="title-result-show">{{ customer?.civilite+' '+customer?.nomResponsable }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Telephone du responsable: </span>
+                      <span class="title-result-show">{{ customer?.telResponsable }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Poste du responsable: </span>
+                      <span class="title-result-show">{{ customer?.posteOccupe }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Sexe: </span>
+                      <span class="title-result-show">{{ customer?.sexe }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Domicile: </span>
+                      <span class="title-result-show">{{ customer?.domicile }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Date naissance: </span>
+                      <span class="title-result-show">{{ customer?.dateN|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+                    </p>
+                  </div>
+                  <div *ngIf="customer?.type === 'PARTICULIER'">
+                    <p>
+                      <span class="title-show">Type : </span>
+                      <span class="title-result-show">{{ customer?.type }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Situation matrimonial: </span>
+                      <span class="title-result-show">{{ customer?.situationMatrimoniale }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Code postal : </span>
+                      <span class="title-result-show">{{ customer?.codePostal }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Profession : </span>
+                      <span class="title-result-show">{{ customer?.profession }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Nonbre d'enfant: </span>
+                      <span class="title-result-show">{{ customer?.enfant }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Personne en cas d'urgence : </span>
+                      <span class="title-result-show">{{ customer?.nomUrgence }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Numero d'urgence : </span>
+                      <span class="title-result-show">{{ customer?.contactUrgence }}</span>
+                    </p> <p>
+                      <span class="title-show">affinité partagée : </span>
+                      <span class="title-result-show">{{ customer?.affiniteUrgence}}</span>
+                    </p>
+                  </div>
+                </div>
+                <!-- COL DROITE -->
+                <div class="flex-fill">
+                  <div *ngIf="customer?.type === 'ENTREPRISE'">
+                    <p>
+                      <span class="title-show">Lieu de naissance: </span>
+                      <span class="title-result-show">{{ customer?.lieuN }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Nature de la pièce: </span>
+                      <span class="title-result-show">{{ customer?.naturePiece }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Numero de la pièce: </span>
+                      <span class="title-result-show">{{ customer?.numPiece }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Validité de la pièce: </span>
+                      <span class="title-result-show">{{ customer?.dateExpirePiece }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Date d'emmision: </span>
+                      <span class="title-result-show">{{ customer?.dateEmission }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Signature de l'autorité: </span>
+                      <span class="title-result-show">{{ customer?.signatureAutorite }}</span>
+                    </p>
+                  </div>
+                  <div *ngIf="customer?.type === 'PARTICULIER'">
+                    <p>
+                      <span class="title-show">Nature de la pièce: </span>
+                      <span class="title-result-show">{{ customer?.naturePiece }}</span>
+                    </p>
+                    <p *ngIf="customer?.naturePiece === 'autre'">
+                      <span class="title-show">Autre pièce: </span>
+                      <span class="title-result-show">{{ customer?.autrePiece }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Numero de la pièce: </span>
+                      <span class="title-result-show">{{ customer?.numPiece }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Validité de la pièce: </span>
+                      <span class="title-result-show">{{ customer?.dateExpirePiece|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Date d'emmision: </span>
+                      <span class="title-result-show">{{ customer?.dateEmission|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Signature de l'autorité: </span>
+                      <span class="title-result-show">{{ customer?.signatureAutorite }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Crée le : </span>
+                      <span class="title-result-show">{{ customer?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                      <span class="title-show ml-5"> Par : </span>
+                      <span class="title-result-show">{{ customer?.create }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Modifié le : </span>
+                      <span class="title-result-show">{{ customer?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                      <span class="title-show ml-5"> Par : </span>
+                      <span class="title-result-show">{{ customer?.update }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md" *ngIf="customer">
+                <span class="badge badge-primary mb-4 f-14 width">FICHE DE DOSSIER</span>
+                <div class="row">
+                  <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                    <app-folder-uploader (click)="showFile(customer?.folder)"
+                    [maxSize]="3"
+                    [folder]="customer?.folder"
+                    [etat]="'show'"
+                    [allowFileUpload]="false" [allowDownload]="true">
+                    </app-folder-uploader>
+                  </div>
+                  <div [ngClass]="file ? 'col-md-8' : ''"  *ngIf="file" >
+                    <div class="row">
+                      <div class="col-sm-12 mb-2">
+                        <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                          <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                        </button>
+                      </div>
+                    </div>
+                    <ngx-doc-viewer
+                      [url]="file"
+                      viewer="url" style="width:100%;height: 64vh;">
+                    </ngx-doc-viewer>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button *ngxPermissionsOnly="'CUSTOMER:EDIT'" (click)="editCustomer(customer)" type="button" class="btn btn-primary">
+                  Modifier <i class="feather icon-edit-2"></i>
+                </button>
+                <button *ngxPermissionsOnly="'CUSTOMER:PRINTER:SHOW'" (click)="printerCustomer(customer) "type="submit" class="btn btn-warning">
+                  Imprimer <i class="feather icon-printer"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="CUSTOMER:DELETE">
+                  <button *ngIf="customer?.isDelete" (click)="delete(customer)"  type="button" class="btn btn-danger text-left" data-dismiss="modal">
+                    Supprimer <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="CUSTOMER:SHOW" [ngxPermissionsOnly]="['FOLDER:LIST', 'PAYMENTCUSTOMER:LIST', 'MUTATE:LIST', 'FOLDERTERMINATE:LIST', 'INVOICE:FOLDER:LIST']">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'CLIENT'" [title]="'detail client'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="FOLDER:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'DOSSIER'}"
+          id="loyer" role="tabpanel" aria-labelledby="loyer-tab">
+          <div class="row">
+            <!-- LISTE DES DOSSIERS -->
+            <div class="col-md-12" *ngIf="type === 'DOSSIER' && folders && folders.length === 0">
+              <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES DOSSIER
+              </span>
+              <app-no-data [title]="'Aucun dossier trouvé'" *ngIf="type === 'DOSSIER' && folders && folders.length === 0"></app-no-data>
+            </div>
+            <app-folder-list style="width: 100%;" *ngIf="folders && folders.length > 0" [folders]="folders" [client]="client"></app-folder-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="FOLDER:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="type === 'activeTab'" [title]="'liste dossier'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="INVOICE:FOLDER:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'FACTURE'}"
+          id="loyer" role="tabpanel" aria-labelledby="facture-tab">
+          <div class="row">
+            <!-- LISTE DES FACTURES -->
+            <div class="col-md-12" *ngIf="type === 'FACTURE' && invoices && invoices.length === 0">
+              <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES FACTURES
+              </span>
+              <app-no-data [title]="'Aucune facture trouvé'" *ngIf="type === 'FACTURE' && invoices && invoices.length === 0"></app-no-data>
+            </div>
+            <app-invoice-customer-list style="width: 100%;" *ngIf="invoices && invoices.length > 0" [invoices]="invoices" [client]="client"></app-invoice-customer-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="INVOICE:FOLDER:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'FACTURE'" [title]="'liste facture dossier'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="PAYMENT:CUSTOMER:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'PAIEMENT'}"
+          id="loyer" role="tabpanel" aria-labelledby="loyer-tab">
+          <div class="row">
+            <!-- LISTE DES LOYERS -->
+            <app-payment-customer-list style="width: 100%;" *ngIf="payments && payments.length > 0" [payments]="payments" [client]="client"></app-payment-customer-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="PAYMENT:CUSTOMER:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'PAIEMENT'" [title]="'liste paiement'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="MUTATE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'MUTATION'}"
+          id="mutate" role="tabpanel" aria-labelledby="mutate-tab">
+          <div class="row">
+            <!-- LISTE DES LOYERS -->
+            <app-mutate-list style="width: 100%;" *ngIf="mutates && mutates.length > 0" [mutates]="mutates" [client]="client"></app-mutate-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="MUTATE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'MUTATION'" [title]="'liste mutation'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="FOLDER:TERMINATE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'RESILIATION'}"
+          id="terminate" role="tabpanel" aria-labelledby="terminate-tab">
+          <div class="row">
+            <!-- LISTE DES LOYERS -->
+            <app-folder-terminate-list style="width: 100%;" *ngIf="terminates && terminates.length > 0" [terminates]="terminates" [client]="client"></app-folder-terminate-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="FOLDER:TERMINATE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'RESILIATION'" [title]="'liste résiliation dossier'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- LISTE DES NOTES_INTERNES -->
+      <div class="width list-notes-internes" *ngIf="activeTab === 'NOTE_INTERNE'">
+        <app-activity-list [notes]="notes" [rdvs]="rdvs"></app-activity-list>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'TICKET'}" id="ticket"
+      role="tabpanel" aria-labelledby="reversement-tab">
+      <div class="row">
+        <!-- LISTE DES TICKETS -->
+        <div class="col-md-12" *ngIf="tickets">
+          <span class="badge badge-success mb-4 f-14 width">
+            LISTE DES TICKETS
+          </span>
+          <app-no-data [title]="'Aucun ticket trouvé'" *ngIf="tickets && tickets.length === 0">
+          </app-no-data>
+        </div>
+        <app-ticket-table *ngIf="tickets && tickets.length > 0" [tickets]="tickets" class="width">
+        </app-ticket-table>
+      </div>
+    </div>
+
+    </div>
+  </div>
+</div>
+<!-- AFFICHAGE DU TABS FIN -->
+
+
+
+
+
+

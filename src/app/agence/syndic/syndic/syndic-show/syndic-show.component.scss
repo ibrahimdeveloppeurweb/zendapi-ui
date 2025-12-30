@@ -1,0 +1,20 @@
+agm-map {
+    height: 300px;
+}
+.pac-container {
+    z-index: 9999999999 !important;
+  }
+  ::ng-deep.swal2-container {
+    z-index: 10000 !important;
+  }
+
+  .condominium-pic img{
+    display: block;
+    height: 250px !important;
+    width: auto;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .item-condominium {
+    background-color: rgb(241, 245, 245);
+}

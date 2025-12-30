@@ -1,0 +1,450 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR LE BIEN CONCERNE -->
+      <div class="row">
+        <span class="badge badge-warning my-2 f-14 width">
+          DETAILS SUR LE BIEN CONCERNE
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <label for="type">Type de mandat <span class="asterix">*</span></label>
+            <select *ngIf="!edit" (change)="loadHouses()" formControlName="type" class="form-control" id="type"
+              [ngClass]="{
+                'is-invalid': submit && f.type.errors,
+                'is-valid': submit && f.type.valid
+              }">
+              <option [value]="'VENTE'">VENTE</option>
+              <option [value]="'LOCATION'">LOCATION</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+              <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+            </div>
+            <input *ngIf="edit" type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ edit ? f.type.value : ''}}" readonly>
+          </div>
+          <div class="col-md-4">
+            <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true" [label]="'Propriétaire'"
+              (uuid)="setOwnerUuid($event)" [selected]="ownerSelected" [disabled]="edit"
+              [placeholder]="'Selectionez un propriétaire'">
+            </app-entity-finder>
+          </div>
+          <div *ngIf="!edit" class="col-md-4">
+            <div *ngIf="isLoadingHouse" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+
+            <label for="house">Bien concerné <span class="asterix">*</span></label>
+            <select (change)="selectHouse($event.target.value)" formControlName="house" class="form-control" id="house"
+              [ngClass]="{
+                'is-invalid': submit && f.house.errors,
+                'is-valid': submit && f.house.valid
+              }">
+              <option value="null" selected>Selectionnez un bien</option>
+              <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+              <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div *ngIf="edit" class="col-md-4">
+            <label for="house">Bien concerné <span class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ house ? house.searchableTitle : ''}}" readonly>
+          </div>
+          <div class="col-md-4">
+            <label for="name">Type de bien</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ house ? house.type : ''}}" readonly>
+          </div>
+          <div class="col-md-4">
+            <label for="name">Quartier </label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ house ? house.quartier : ''}}" readonly>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAILS IMPOTS ET COMMISSIONS -->
+      <div class="row" *ngIf="f.house.value">
+        <span class="badge badge-warning my-2 f-14 width">
+          DETAILS IMPOTS ET COMMISSIONS
+        </span>
+      </div>
+      <div class="form-group" *ngIf="f.house.value">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="periodiciteR">Périodicité de reversement <span class="asterix">*</span></label>
+            <select class="form-control" id="periodiciteR" formControlName="periodiciteR" [ngClass]="{
+                'is-invalid': submit && f.periodiciteR.errors,
+                'is-valid': submit && f.periodiciteR.valid
+              }">
+              <option *ngFor="let item of periodiciteRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.periodiciteR.errors">
+              <div *ngIf="f.periodiciteR.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="limiteR">Date limite pour tirer le reversement <span class="asterix">*</span></label>
+            <select class="form-control" id="limiteR" formControlName="limiteR" [ngClass]="{
+                'is-invalid': submit && f.limiteR.errors,
+                'is-valid': submit && f.limiteR.valid
+              }">
+              <option *ngFor="let item of dayRow" [ngValue]="item">{{item}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.limiteR.errors">
+              <div *ngIf="f.limiteR.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION LOCATION -->
+        <ng-container *ngIf="f.type.value === 'LOCATION'">
+          <div class="row mb-2">
+            <div class="col-md-3">
+              <label for="taxe">Impôt foncier à la charge ? <span class="asterix">*</span></label>
+              <select class="form-control" id="taxe" formControlName="taxe" (change)="calculateMensualite()" [ngClass]="{
+                'is-invalid': submit && f.taxe.errors,
+                'is-valid': submit && f.taxe.valid
+              }">
+                <option *ngFor="let item of taxeRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.taxe.errors">
+                <div *ngIf="f.taxe.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3" *ngIf="f.taxe.value === 'AGENCE'">
+              <label for="periodicite">Périodicité <span class="asterix">*</span></label>
+              <select class="form-control" id="periodicite" formControlName="periodicite" [ngClass]="{
+                  'is-invalid': submit && f.periodicite.errors,
+                  'is-valid': submit && f.periodicite.valid
+                }">
+                <option *ngFor="let item of periodiciteRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.periodicite.errors">
+                <div *ngIf="f.periodicite.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="facturation">Type Facturation <span class="asterix">*</span></label>
+              <select class="form-control" id="facturation" formControlName="facturation" [ngClass]="{
+                  'is-invalid': submit && f.facturation.errors,
+                  'is-valid': submit && f.facturation.valid
+                }">
+                <option *ngFor="let item of facturationRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.facturation.errors">
+                <div *ngIf="f.facturation.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="commission">{{ f.facturation?.value == 'PRC' ? 'Commission (%)' : 'Commission (XOF)'}} <span
+                  class="asterix">*</span></label>
+              <input formControlName="commission" id="commission" type="number"
+                class="form-control" [ngClass]="{
+                'is-invalid': submit && f.commission.errors,
+                'is-valid': submit && f.commission.valid
+                }" placeholder="Commission">
+              <div class="invalid-feedback" *ngIf="submit && f.commission.errors">
+                <div *ngIf="f.commission.errors.required">{{required.novide}}</div>
+                <div *ngIf="f.commission.errors.pattern">{{required.positive}}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Champs spécifiques Garantie Loyer -->
+          <div class="row mb-2" *ngIf="f.facturation.value === 'GRT_LOYER'">
+            <div class="col-md-3">
+              <label for="montantGarantie">Montant Garantie Loyer <span class="asterix">*</span></label>
+              <input formControlName="montantGarantie" id="montantGarantie" type="number" class="form-control" [ngClass]="{
+                'is-invalid': submit && f.montantGarantie.errors,
+                'is-valid': submit && f.montantGarantie.valid
+                }" placeholder="Montant garantie">
+              <div class="invalid-feedback" *ngIf="submit && f.montantGarantie.errors">
+                <div *ngIf="f.montantGarantie.errors.required">{{required.novide}}</div>
+                <div *ngIf="f.montantGarantie.errors.pattern">{{required.positive}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="partCharge">Part Charge (Calculée)</label>
+              <input [value]="f.partCharge.value | number" id="partCharge" type="text" class="form-control" 
+                [ngClass]="{
+                  'is-invalid': f.partCharge.errors
+                }" 
+                readonly>
+              <div class="invalid-feedback" *ngIf="f.partCharge.errors">
+                <div *ngIf="f.partCharge.errors.negativePartCharge">
+                  La commission ne peut pas dépasser le montant garanti
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date prélèvement pour MTN -->
+          <div class="row mb-2" *ngIf="f.facturation.value === 'MTN'">
+            <div class="col-md-3">
+              <label for="limite">Date prélèvement commission <span class="asterix">*</span></label>
+              <select formControlName="limite" class="form-control" id="limite" [ngClass]="{
+                  'is-invalid': submit && f.limite.errors,
+                  'is-valid': submit && f.limite.valid
+                }">
+                <option *ngFor="let item of limiteRow" [value]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.limite.errors">
+                <div *ngIf="f.limite.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TVA et charges -->
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <label for="taxeCommission">La commission est-elle soumise à la TVA ? <span class="asterix">*</span></label>
+              <select class="form-control" id="taxeCommission" formControlName="taxeCommission" [ngClass]="{
+                'is-invalid': submit && f.taxeCommission.errors,
+                'is-valid': submit && f.taxeCommission.valid
+                }">
+                <option [ngValue]="'OUI'">OUI</option>
+                <option [ngValue]="'NON'">NON</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.taxeCommission.errors">
+                <div *ngIf="f.taxeCommission.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4" *ngIf="f.taxeCommission.value === 'OUI'">
+              <label for="tvaCommissionCharge">TVA sur commission à la charge de ? <span class="asterix">*</span></label>
+              <select class="form-control" id="tvaCommissionCharge" formControlName="tvaCommissionCharge" [ngClass]="{
+                'is-invalid': submit && f.tvaCommissionCharge.errors,
+                'is-valid': submit && f.tvaCommissionCharge.valid
+                }">
+                <option *ngFor="let item of taxeRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.tvaCommissionCharge.errors">
+                <div *ngIf="f.tvaCommissionCharge.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="charge">Les charges sont reversées à ? <span class="asterix">*</span></label>
+              <select class="form-control" id="charge" formControlName="charge" [ngClass]="{
+                'is-invalid': submit && f.charge.errors,
+                'is-valid': submit && f.charge.valid
+                }">
+                <option *ngFor="let item of taxeRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.charge.errors">
+                <div *ngIf="f.charge.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- SECTION VENTE -->
+        <ng-container *ngIf="f.type.value === 'VENTE'">
+          <div class="row mb-2">
+            <div class="col-md-3">
+              <label for="facturation">Type Facturation <span class="asterix">*</span></label>
+              <select class="form-control" id="facturation" formControlName="facturation" [ngClass]="{
+                  'is-invalid': submit && f.facturation.errors,
+                  'is-valid': submit && f.facturation.valid
+                }">
+                <option *ngFor="let item of facturationRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.facturation.errors">
+                <div *ngIf="f.facturation.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="commission">{{ f.facturation?.value == 'PRC' ? 'Commission (%)' : 'Commission (XOF)'}} <span
+                  class="asterix">*</span></label>
+              <input formControlName="commission" id="commission" type="number"
+                class="form-control" [ngClass]="{
+                'is-invalid': submit && f.commission.errors,
+                'is-valid': submit && f.commission.valid
+                }" placeholder="Commission">
+              <div class="invalid-feedback" *ngIf="submit && f.commission.errors">
+                <div *ngIf="f.commission.errors.required">{{required.novide}}</div>
+                <div *ngIf="f.commission.errors.pattern">{{required.positive}}</div>
+              </div>
+            </div>
+            <div class="col-md-3" *ngIf="f.facturation.value === 'MTN'">
+              <label for="limite">Date prélèvement commission <span class="asterix">*</span></label>
+              <select formControlName="limite" class="form-control" id="limite" [ngClass]="{
+                  'is-invalid': submit && f.limite.errors,
+                  'is-valid': submit && f.limite.valid
+                }">
+                <option *ngFor="let item of limiteRow" [value]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.limite.errors">
+                <div *ngIf="f.limite.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="montantCom">Montant commission <span class="asterix">*</span></label>
+              <input formControlName="montantCom" id="montantCom" type="number"
+                class="form-control" [ngClass]="{
+                  'is-invalid': submit && f.montantCom.errors,
+                  'is-valid': submit && f.montantCom.valid
+                }" placeholder="Montant commission">
+              <div class="invalid-feedback" *ngIf="submit && f.montantCom.errors">
+                <div *ngIf="f.montantCom.errors.required">{{required.novide}}</div>
+                <div *ngIf="f.montantCom.errors.pattern">{{required.positive}}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-md-3">
+              <label for="verseCom">Déduire commission du reversement ? <span class="asterix">*</span></label>
+              <select class="form-control" id="verseCom" formControlName="verseCom" [ngClass]="{
+                'is-invalid': submit && f.verseCom.errors,
+                'is-valid': submit && f.verseCom.valid
+                }">
+                <option *ngFor="let item of verseRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.verseCom.errors">
+                <div *ngIf="f.verseCom.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="taxeCommission">La commission est-elle soumise à la TVA ? <span class="asterix">*</span></label>
+              <select class="form-control" id="taxeCommission" formControlName="taxeCommission" [ngClass]="{
+                'is-invalid': submit && f.taxeCommission.errors,
+                'is-valid': submit && f.taxeCommission.valid
+                }">
+                <option [ngValue]="'OUI'">OUI</option>
+                <option [ngValue]="'NON'">NON</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.taxeCommission.errors">
+                <div *ngIf="f.taxeCommission.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3" *ngIf="f.taxeCommission.value === 'OUI'">
+              <label for="tvaCommissionCharge">TVA sur commission à la charge de ? <span class="asterix">*</span></label>
+              <select class="form-control" id="tvaCommissionCharge" formControlName="tvaCommissionCharge" [ngClass]="{
+                'is-invalid': submit && f.tvaCommissionCharge.errors,
+                'is-valid': submit && f.tvaCommissionCharge.valid
+                }">
+                <option *ngFor="let item of taxeRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.tvaCommissionCharge.errors">
+                <div *ngIf="f.tvaCommissionCharge.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- DETAILS SUR LES TERMES DU MANDATS -->
+      <div class="row" *ngIf="f.house.value">
+        <span class="badge badge-warning my-2 f-14 width">
+          DETAILS SUR LES TERMES DU MANDATS
+        </span>
+      </div>
+      <div class="form-group" *ngIf="f.house.value">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <label for="date">Date de signature <span class="asterix">*</span></label>
+            <input formControlName="date" id="date" type="date" class="form-control" [ngClass]="{
+                  'is-invalid': submit && f.date.errors,
+                  'is-valid': submit && f.date.valid
+                }">
+            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+              <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.date.errors.dateOrder">La date de signature doit être antérieure à la date de début</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="dateD">Date de debut <span class="asterix">*</span></label>
+            <input formControlName="dateD" id="dateD" type="date" class="form-control" (change)="calculateMensualite()"
+              [ngClass]="{
+                  'is-invalid': submit && f.dateD.errors,
+                  'is-valid': submit && f.dateD.valid
+                }">
+            <div class="invalid-feedback" *ngIf="submit && f.dateD.errors">
+              <div *ngIf="f.dateD.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.dateD.errors.dateOrder">La date de début doit être antérieure à la date de fin</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="dateF">Date de fin <span class="asterix">*</span></label>
+            <input formControlName="dateF" id="dateF" type="date" class="form-control" (change)="calculateMensualite()"
+              [ngClass]="{
+                  'is-invalid': submit && f.dateF.errors,
+                  'is-valid': submit && f.dateF.valid
+                }">
+            <div class="invalid-feedback" *ngIf="submit && f.dateF.errors">
+              <div *ngIf="f.dateF.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.dateF.errors.dateOrder">La date de fin doit être postérieure à la date de début</div>
+            </div>
+          </div>
+          <div class="col-md-4" *ngIf="f.type.value === 'VENTE'">
+            <label for="valeur">Montant de vente <span class="asterix">*</span></label>
+            <input formControlName="valeur" id="valeur" type="number"
+              class="form-control" [ngClass]="{
+                  'is-invalid': submit && f.valeur.errors,
+                  'is-valid': submit && f.valeur.valid
+                }" placeholder="Montant de vente">
+            <div class="invalid-feedback" *ngIf="submit && f.valeur.errors">
+              <div *ngIf="f.valeur.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.valeur.errors.pattern">{{required.positive}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="isSigned">Signature numérique du mandat ? <span class="asterix">*</span></label>
+            <select class="form-control" id="isSigned" formControlName="isSigned" [ngClass]="{
+                  'is-invalid': submit && f.isSigned.errors,
+                  'is-valid': submit && f.isSigned.valid
+                }">
+              <option *ngFor="let item of booleanRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.isSigned.errors">
+              <div *ngIf="f.isSigned.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="tacite">Renouvellement tacite ? <span class="asterix">*</span></label>
+            <select class="form-control" id="tacite" formControlName="tacite" [ngClass]="{
+                  'is-invalid': submit && f.tacite.errors,
+                  'is-valid': submit && f.tacite.valid
+                }">
+              <option *ngFor="let item of booleanRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.tacite.errors">
+              <div *ngIf="f.tacite.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Affichage du montant total pour les ventes -->
+        <div class="row" *ngIf="f.type.value === 'VENTE'">
+          <div class="col-md-6"></div>
+          <div class="col-md-6">
+            <label for="total">MONTANT TOTAL DE LA COMMISSION</label>
+            <input [value]="f.montantCom.value | number" id="total" type="text" 
+              class="form-control text-lg-right p-4 text-warning font-weight-bold formBadgeLarge" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

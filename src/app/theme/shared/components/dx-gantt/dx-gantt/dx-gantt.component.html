@@ -1,0 +1,304 @@
+<div class="container-fluid" style="background-color: white;">
+  <div class="row py-2 mx-auto">
+    <div class="col-md-8 mx-auto">
+      <h3 class="text-center">
+        {{ title }} 
+        <span *ngIf="type === 'DQ'"> 
+          {{ dq?.numero }} - CODE : {{ dq?.code }}
+        </span>
+        <span *ngIf="home && type === 'PLANNING' || type === 'EDIT' || type === 'SHOW'">
+          PROMOTION : {{ promotion?.libelle}}
+        </span>        
+        <br>
+        <span class="badge badge-secondary" *ngIf="type === 'DQ'"> 
+          {{ dq?.libelle}}
+        </span>
+        <br>
+        <div class="badge-secondary" *ngIf="type === 'PLANNING'">          
+          <ul style="list-style-type:disc;">
+            <li *ngFor="let item of home">
+              <span>{{ item?.searchableTitle}}</span>              
+            </li>
+          </ul>
+        </div>
+        <div class="badge-secondary" *ngIf="type ==='EDIT' || type === 'SHOW'">          
+          <ul style="list-style-type:disc;">
+            <li>
+              <span>{{ home?.searchableTitle}}</span>              
+            </li>
+          </ul>
+        </div>
+      </h3>
+    </div>   
+  </div>
+
+  <div class="row py-5 mx-auto">
+    <div class="col-md-12" id="gantt">
+      
+      <!-- Start -- Dx GANTT -->
+      <dx-gantt scaleType="months" height="700" rootValue="0"
+        [taskListWidth]="700"
+        (onTaskDblClick)="showTaskPopup($event)"
+        (onTaskEditDialogShowing)="showTaskPopup($event)"
+        [firstDayOfWeek]="1"
+        [disabled]="false"
+        (onInitialized)="onGanttInitialized($event)"
+        (onTaskDeleted)="onTaskDeleted($event)"
+        (onDependencyDeleted)="onDependencyDeleted($event)"
+        (onCustomCommand)="onCustomCommand($event)"
+        (onSelectionChanged)="onSelectionChanged($event)"
+      >
+
+        <!-- Context menu -->
+        <dxo-context-menu *ngIf="type !== 'SHOW'">
+          <dxi-item text="Ajouter" icon="add">
+            <dxi-item text="Ajouter un élément" name="addTask"></dxi-item>
+            <dxi-item text="Ajouter un sous élement" name="addSubTask"></dxi-item>
+            <dxi-item text="Ajouter un élément au dessus" name="addTaskUp" icon="doc"></dxi-item>
+            <dxi-item text="Ajouter un élément en dessous" name="addTaskDown" icon="doc"></dxi-item>
+            <dxi-item text="Ajouter un sous élément en dessous" name="addSubTaskDown" icon="doc"></dxi-item>
+          </dxi-item>
+          <dxi-item text="Supprimer l'élément" name="deleteTask"></dxi-item>    
+        </dxo-context-menu>
+        <!-- Context menu -->
+
+        <dxo-scale-type-range
+          [min]="'days'" 
+          [max]="'years'">
+        </dxo-scale-type-range>
+
+        <!-- Binding tasks list -->
+        <dxo-tasks [dataSource]="tasks"></dxo-tasks>
+        <!-- <dxo-tasks [dataSource]="dataSource"></dxo-tasks> -->
+
+        <!-- Binding dependencies list -->
+        <dxo-dependencies [dataSource]="dependencies"></dxo-dependencies>
+      
+        <dxi-column dataField="code" caption="Code" width="80%"></dxi-column>
+        <dxi-column dataField="title" caption="Libellé" width="100%"></dxi-column>
+        <dxi-column dataField="unite" caption="Unité" width="100%"></dxi-column>
+        <dxi-column dataField="quantity" caption="Quantité" dataType="number" width="100%" [visible]="type === 'SHOW' ? true : false">
+          <dxo-format
+            type="fixedPoint"
+          >
+          </dxo-format>
+        </dxi-column>
+        <dxi-column dataField="qteEffectue" caption="Quantité effectué" dataType="number" width="100%" [visible]="type === 'SHOW' ? true : false"></dxi-column>
+        <dxi-column dataField="evolution" caption="Evolution physique (%)" dataType="number" width="100%" [visible]="type === 'SHOW' ? true : false"></dxi-column>
+        <dxi-column dataField="priority" caption="Priorité" [visible]="type === 'PLANNING' || type === 'EDIT' || type === 'SHOW' ? true : false"></dxi-column>
+        <dxi-column dataField="start" caption="Date de début" dataType="date" width="100%" [visible]="type === 'PLANNING' || type === 'EDIT'  || type === 'SHOW' ? true : false"></dxi-column>
+        <dxi-column dataField="end" caption="Date de fin" dataType="date" width="100%" [visible]="type === 'PLANNING' || type === 'EDIT' || type === 'SHOW' ? true : false"></dxi-column>
+        <dxi-column caption="Durée (JOURS)" [calculateCellValue]="calculDuration" 
+                    width="100%" dataType="number" 
+                    [visible]="type === 'PLANNING' || type === 'SHOW' ? true : false"
+                    [allowFiltering]="true"
+                    [allowHeaderFiltering]="true"
+                    [allowSorting]="true"
+                  >
+        </dxi-column>
+        <!-- <dxi-column dataField="end" caption="Date de fin" dataType="date" width="100%" [visible]="type === 'PLANNING' || type === 'EDIT' || type === 'SHOW' ? true : false"></dxi-column> -->
+      
+        <!-- Start -- Dx Toolbar -->
+        <dxo-toolbar>
+          <dxi-item name="collapseAll"></dxi-item>
+          <dxi-item name="expandAll"></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item name="addTask"></dxi-item>
+          <dxi-item name="deleteTask"></dxi-item>
+          <dxi-item name="separator" *ngIf="dq && !dq?.isValidate ? true : false"></dxi-item>
+          <dxi-item name="separator" *ngIf="type === 'PLANNING' && planning && !planning?.isValidate ? true : false"></dxi-item>
+          <dxi-item widget="dxButton" [options]="printButtonOptions" *ngIf="type !== 'EDIT'"> </dxi-item>
+          <dxi-item name="separator" *ngIf="type === 'PLANNING' && planning && !planning?.isValidate ? true : false"></dxi-item>
+          <dxi-item name="zoomIn" *ngIf="type === 'PLANNING'"></dxi-item>
+          <dxi-item name="zoomOut" *ngIf="type === 'PLANNING'"></dxi-item>
+          <dxi-item name="separator" *ngIf="type === 'PLANNING'"></dxi-item>
+          <dxi-item name="fullScreen" *ngIf="type === 'PLANNING'"></dxi-item>
+        </dxo-toolbar>
+        <!-- End -- Dx Toolbar -->
+      
+        <dxo-validation [autoUpdateParentTasks]="true"></dxo-validation>
+
+        <dxo-editing
+          *ngIf="type === 'PLANNING' || type === 'DQ'"
+          [enabled]="dq && dq?.isValidate ? false : true"
+          [allowTaskAdding]="dq && dq?.isValidate ? false : true"
+          [allowTaskDeleting]="dq && dq?.isValidate ? false : true"
+          [allowTaskUpdating]="dq && dq?.isValidate ? false : true"
+          [allowTaskResourceUpdating]="false"
+          [allowResourceAdding]="false"
+          [allowResourceDeleting]="false"
+        ></dxo-editing>
+
+        <dxo-editing
+          *ngIf="type === 'EDIT'"
+          [enabled]="false"
+          [allowTaskAdding]="false"
+          [allowTaskDeleting]="false"
+          [allowTaskUpdating]="false"
+          [allowTaskResourceUpdating]="false"
+          [allowResourceAdding]="false"
+          [allowResourceDeleting]="false"
+        ></dxo-editing>
+
+        <dxo-editing 
+          *ngIf="type === 'PLANNING' || type === 'EDIT'"
+          [enabled]="planning && planning?.isValidate ? false : true" 
+          [allowDependencyAdding]="planning && planning?.isValidate ? false : true" 
+          [allowDependencyDeleting]="planning && planning?.isValidate ? false : true" 
+          [allowTaskAdding]="planning && planning?.isValidate ? false : true"
+          [allowTaskDeleting]="planning && planning?.isValidate ? false : true"
+          [allowTaskUpdating]="planning && planning?.isValidate ? false : true"
+          [allowTaskResourceUpdating]="false"
+          [allowResourceAdding]="false"
+          [allowResourceDeleting]="false"
+        ></dxo-editing>
+        
+        <dxo-filter-row [visible]="true"></dxo-filter-row>
+        <dxo-header-filter [visible]="true"></dxo-header-filter>
+      </dx-gantt>
+      <!-- End -- Dx GANTT -->
+    
+      <!-- Start -- Dx Popup -->
+      <dx-popup [visible]="isPopupVisible" 
+                [hideOnOutsideClick]="false"
+                [height]="400"
+                [width]="500"
+                [resizeEnabled]="false"
+                [dragEnabled]="true"
+                [showTitle]="true"
+                title="Ajouter / Modifier un élément"
+                position="center"
+                contentTemplate="content"
+                (onHiding)="onHidingPopup($event)"
+      >
+    
+        <div *dxTemplate="let data of 'content'">
+            <div id="form-container">
+              <form (submit)="onSubmitForm($event)">
+                <dx-form id="form"
+                  [formData]="task"
+                  colCount="auto"
+                  [labelMode]="floating"
+                  [labelLocation]="top"
+                  (onFieldDataChanged)="formatNumber($event)"
+                >
+                  <dxi-item dataField="code">
+                    <dxi-validation-rule type="required" message="Le code est requis"></dxi-validation-rule>
+                    <dxo-label text="Code" ></dxo-label>
+                  </dxi-item>
+                  <dxi-item dataField="priority" editorType="dxSelectBox" [editorOptions]="prioritiesSelectBoxOptions" [visible]="type === 'PLANNING' || type === 'EDIT' ? true : false">
+                    <dxi-validation-rule type="required" message="La priorité est requise."></dxi-validation-rule>
+                    <dxo-label text="Priorité"></dxo-label>
+                  </dxi-item>
+                  <dxi-item dataField="title">
+                    <dxi-validation-rule type="required" message="Le libellé est requis"></dxi-validation-rule>
+                    <dxo-label text="Libellé" ></dxo-label>
+                  </dxi-item>
+                  <dxi-item dataField="quantity" editorType="dxNumberBox" [visible]="type === 'DQ' ? false : true" [helpText]="'Qte formatée : ' + formatedQuantity">
+                    <dxo-label text="Quantité" ></dxo-label>
+                  </dxi-item>
+                  <dxi-item dataField="unite">
+                    <dxo-label text="Unité" ></dxo-label>
+                  </dxi-item>
+                  <dxi-item dataField="start" [visible]="type === 'PLANNING' || type === 'EDIT' ? true : false">
+                    <dxo-label text="Date de début" ></dxo-label>
+                  </dxi-item>
+                  <dxi-item dataField="end" [visible]="type === 'PLANNING' || type === 'EDIT' ? true : false">
+                    <dxo-label text="Date de fin" ></dxo-label>
+                  </dxi-item>
+
+                  <dxi-item
+                      *ngIf="type !== 'PLANNING'"
+                      itemType="empty" 
+                      [colSpan]="4">
+                  </dxi-item>
+
+                  <dxi-item 
+                      itemType="button"
+                      [buttonOptions]="saveButtonOptions">
+                  </dxi-item>
+                  <dxi-item 
+                      itemType="button"
+                      [buttonOptions]="cancelButtonOptions">
+                  </dxi-item>
+                </dx-form>
+              </form>
+            </div>
+        </div>
+      </dx-popup>
+      <!-- End -- Dx Popup -->
+
+      <!-- Start -- Dx Loader -->
+      <dx-load-panel
+        #loadPanel
+        shadingColor="rgba(0,0,0,0.4)"
+        [position]="{ of: '#gantt' }"
+        [(visible)]="isLoadingVisible"
+        [showIndicator]="true"
+        [showPane]="true"
+        [shading]="true"
+        [hideOnOutsideClick]="false"
+        [message]="'Veuillez patienter...'"
+      >
+      </dx-load-panel>
+      <!-- End -- Dx Loader -->
+    </div>
+
+    <div class="col-md-6 py-2">
+      <!-- Start -- Dx Button -->
+      <dx-button
+          *ngIf="type === 'PLANNING' || type === 'DQ'"
+          text="Enregistrer les données"
+          (onClick)="getElements()"
+          [stylingMode]="'contained'"
+          type="success"
+          hint="'Enregistrer les données'"
+      >
+      </dx-button>
+      <dx-button
+          *ngIf="type === 'EDIT'"
+          text="Enregistrer les données"
+          (onClick)="getElements()"
+          [stylingMode]="'contained'"
+          type="success"
+          hint="'Enregistrer les données'"
+      >
+      </dx-button>
+      <!-- End -- Dx Button -->
+    </div>
+  </div>
+
+  <div class="row py-5 mx-auto" *ngIf="type === 'SHOW'">
+    <div class="col-md-8 mx-auto">
+      <h3 class="text-center">
+        Tableau récaputilatif des travaux
+      </h3>
+      <div class="card card-box rounded border-0">
+        <div class="card-body p-3">
+          <div class="table-responsive m-0">
+            <table class="table table-hover text-nowrap m-0 table-with-100-percent">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Désignation</th>                  
+                  <th>Quantité total </th>                  
+                  <th>Quantité éffectué </th>                  
+                  <th>Pourcentage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of parentsArray; let i = index">
+                  <td>{{item?.code}}</td>
+                  <td>{{item?.designation}}</td>
+                  <td>{{item?.total}}</td>
+                  <td>{{item?.qteEffectue}}</td>
+                  <td class="text-center">{{item?.percent | number:'1.2-2'}}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

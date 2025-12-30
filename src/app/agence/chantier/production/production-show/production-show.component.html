@@ -1,0 +1,224 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <div class="d-flex">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Réference : </span>
+          <span class="title-result-show">{{ production?.code }}</span>
+        </p>
+        <p>
+          <span class="title-show">Intervention : </span>
+          <span class="title-result-show">{{ production?.construction?.searchableTitle }}</span>
+        </p>
+        <p>
+          <span class="title-show">Bien : </span>
+          <span class="title-result-show">
+            {{ production?.construction?.rental ? production?.construction?.rental?.libelle :
+              production?.construction?.house?.searchableTitle }}
+            </span>
+        </p>
+        <p>
+          <span class="title-show">Proprietaire : </span>
+          <span class="title-result-show">{{ production?.construction?.house?.owner?.searchableTitle}}</span>
+        </p>
+        <p>
+          <span class="title-show">Evolution : </span>
+          <span class="title-result-show ">
+            <circle-progress
+              [percent]="getGlobalProgress()"
+              [radius]="25"
+              [toFixed]="1"
+              [titleFontSize]="10"
+              [outerStrokeWidth]="5"
+              [innerStrokeWidth]="3"
+              [outerStrokeColor]="getGlobalProgress() >= 65 ? '#3FBD0D' : getGlobalProgress() > 35 ? '#F0DD35' : '#EC0F0F'"
+              [innerStrokeColor]="'#95cde4'"
+              [animation]="true"
+              [showSubtitle]="false"
+              [animationDuration]="300">
+            </circle-progress>
+          </span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Budget : </span>
+          <span class="title-result-show text-warning">{{ production.construction.budget }} {{global.device}}</span>
+        </p>
+        <p>
+          <span class="title-show">Etat Intervention : </span>
+          <span class="title-result-show">
+            <span class="badge"
+              [ngClass]="{
+              'badge-danger' : production?.construction?.etat === 'STOPPER',
+              'badge-primary' : production?.construction?.etat === 'EN COURS',
+              'badge-warning' : production?.construction?.etat === 'PREVU',
+              'badge-success' : production?.construction?.etat === 'TERMINER'
+              }"> {{ production?.construction?.etat === 'EN COURS'  ? 'EN COURS DE REALISATION' : production?.construction?.etat }}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Etat : </span>
+          <span class="title-result-show">
+            <span class="badge" [ngClass]="{
+              'badge-danger' : production?.etat === 'INVALIDE',
+              'badge-success' : production?.etat === 'VALIDE'
+              }">{{ validation(production?.etat) }}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{ production?.createdAt }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ production?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ production?.updatedAt }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ production?.update }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Détails des options de production par devis -->
+  <div class="col-md-12 mb-3">
+   <span class="badge badge-primary my-2 f-14 width"> DÉTAILS DES TÂCHES PAR DEVIS </span>
+  </div>
+
+  <div class="col-md-12" *ngFor="let quote of production?.quotes; let quoteIndex = index">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header bg-light">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <h6 class="mb-0">
+              <i class="fas fa-file-invoice mr-2"></i>
+              <strong>{{ quote?.libelle }}</strong>
+              <span class="ml-2 text-muted small">({{ quote?.provider?.searchableTitle }})</span>
+            </h6>
+          </div>
+          <div class="col-md-3 text-center">
+            <span class="font-weight-bold text-warning">
+              <i class="fas fa-money-bill-wave mr-1"></i>
+              {{ quote?.montant | number }} {{ global.device }}
+            </span>
+          </div>
+          <div class="col-md-3 text-right">
+            <span class="badge" [ngClass]="{
+              'badge-danger': getQuoteProgress(quote) < 50,
+              'badge-warning': getQuoteProgress(quote) >= 50 && getQuoteProgress(quote) <= 90,
+              'badge-success': getQuoteProgress(quote) > 90
+            }">
+              {{ getQuoteProgress(quote) }}% terminé
+            </span>
+          </div>
+        </div>
+        <!-- Barre de progression du devis -->
+        <div class="row mt-2">
+          <div class="col-md-12">
+            <div class="progress" style="height: 20px;">
+              <div class="progress-bar" 
+                   [ngClass]="getProgressColor(getQuoteProgress(quote))" 
+                   role="progressbar" 
+                   [style.width]="getQuoteProgress(quote) + '%'"
+                   [attr.aria-valuenow]="getQuoteProgress(quote)" 
+                   aria-valuemin="0" 
+                   aria-valuemax="100">
+                {{ getQuoteProgress(quote) }}%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive" *ngIf="quote?.optionProductions && quote.optionProductions.length > 0">
+          <table class="table table-sm table-bordered mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 40%;">Tâche</th>
+                <th style="width: 15%;">Statut</th>
+                <th style="width: 40%;">Fichiers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let option of quote.optionProductions; let i = index">
+                <td class="text-center">
+                  <strong>{{ i + 1 }}</strong>
+                </td>
+                <td>
+                  <span class="font-weight-medium">{{ option?.libelle || 'Tâche sans libellé' }}</span>
+                </td>
+                <td class="text-center">
+                  <span class="badge" [ngClass]="{
+                    'badge-success': option?.evolution,
+                    'badge-warning': !option?.evolution
+                  }">
+                    {{ option?.evolution ? 'TERMINÉ' : 'EN COURS' }}
+                  </span>
+                </td>
+                <td>
+                  <!-- Fichiers du Folder -->
+                  <div *ngIf="option?.folder?.files && option.folder.files.length > 0" class="d-flex flex-wrap">
+                    <div *ngFor="let file of option.folder.files" class="mr-2 mb-1">
+                      <button type="button" 
+                              class="btn btn-sm btn-outline-primary" 
+                              (click)="openFile(file)"
+                              [title]="file?.realName || 'Fichier'">
+                        <i [ngClass]="getFileIcon(file)"></i>
+                        <span class="ml-1 small">{{ file?.realName || 'Fichier' }}</span>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Fichier via fileSrc (ancien système ou base64) -->
+                  <div *ngIf="option?.fileSrc && (!option?.folder?.files || option.folder.files.length === 0)" class="d-flex flex-wrap">
+                    <button type="button" 
+                            class="btn btn-sm btn-outline-primary" 
+                            (click)="openFile(option)"
+                            [title]="option?.fileName || 'Fichier'">
+                      <i [ngClass]="getFileIcon(option)"></i>
+                      <span class="ml-1 small">{{ option?.fileName || 'Fichier' }}</span>
+                    </button>
+                  </div>
+                  <!-- Aucun fichier -->
+                  <span *ngIf="(!option?.folder?.files || option.folder.files.length === 0) && !option?.fileSrc" 
+                        class="text-muted small">
+                    <i class="fas fa-info-circle"></i> Aucun fichier
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="!quote?.optionProductions || quote.optionProductions.length === 0" class="alert alert-info mb-0">
+          <i class="fas fa-info-circle"></i> Aucune tâche définie pour ce devis
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template *ngxPermissionsOnly="'PRODUCTION:EDIT'">
+    <button *ngIf="production?.etat === 'INVALIDE'" (click)="editProduction(production)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <button *ngxPermissionsOnly="'PRODUCTION:PRINTER:SHOW'" (click)="printerProduction(production)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

@@ -1,0 +1,102 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-danger mb-4 f-14 width formBadge">
+                    DETAILS CONCERNANT LE MANDAT
+                </span>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true"
+                                    [label]="'Propriétaire'" (uuid)="setOwnerUuid($event)" [selected]="ownerSelected"
+                                    [disabled]="edit" [placeholder]="'Selectionez un propriétaire'">
+                                </app-entity-finder>
+                                <div class="invalid-feedback" *ngIf="submit && f.owner.errors">
+                                    <div *ngIf="f.owner.errors.required">{{required.novide}}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div *ngIf="loading" class="spinner-container">
+                                    <div class="spinner"></div>
+                                </div>
+                                <label for="mandat">Mandat <span class="asterix">*</span></label>
+                                <select [attr.disabled]="mandates.length > 0 ? null : true"
+                                   (change)="setMandateUuid($event)" formControlName="mandate" class="form-control"
+                                    id="mandate"
+                                    [ngClass]="{'is-invalid': submit && f.mandate.errors,'is-valid': submit && f.mandate.valid}">
+                                    <option [value]="null" selected> Selectionnez un mandat</option>
+                                    <option *ngFor="let item of mandates" [value]="item.uuid">{{item.libelle}}</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="submit && f.mandate.errors">
+                                    <div *ngIf="f.mandate.errors.required">{{required.novide}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- DETAILS SUR LES TERMES DU CONTRAT -->
+        <div class="row" *ngIf="f.mandate.value">
+            <div class="col">
+                <span class="badge badge-danger mb-4 f-14 width">
+                    DETAILS SUR LES TERMES DU CONTRAT
+                </span>
+            </div>
+        </div>
+        <div class="row" *ngIf="f.mandate.value">
+            <div class="col-md-4">
+                <label for="date">Date de résiliation</label>
+                <input type="date"
+                    [ngClass]="{'is-invalid': submit && f.date.errors,'is-valid': submit && f.date.valid}"
+                    formControlName="date" id="date" class="form-control">
+                <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                    <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="date">Date du mandat</label>
+                <input [value]="mandate?.date|date: 'd MMMM y' : '' : 'fr-FR'" [attr.disabled]=" true"
+                    class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label for="mandat">Type de mandat</label>
+                <input [value]="mandate?.type" readonly type="text" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label for="mandat">Commission (%)</label>
+                <input [value]="mandate?.commission" readonly type="text" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label for="mandat">Montant commission</label>
+                <input [value]="mandate?.montantCom" readonly type="text" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label for="mandat">Nom du bien</label>
+                <input [value]="mandate?.house?.searchableTitle" readonly type="text" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="form.reset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+    </div>
+</form>

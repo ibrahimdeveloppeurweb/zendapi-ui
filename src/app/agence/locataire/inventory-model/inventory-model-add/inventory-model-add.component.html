@@ -1,0 +1,109 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+      <div class="fom-group row">
+          <div class="col-md-12">
+              <span class="badge badge-info mb-2 f-14 formBadge width">TYPE DE MAISON</span>
+          </div>
+          <div class="col-md-12">
+            <label for="type">Type de maison <span class="asterix">*</span></label>
+              <app-entity-finder [class]="'TypeBien'" 
+                                [groups]="['type_bien']" 
+                                [required]="true" 
+                                [params]="[{ type: [{type : 'LOCATION'}] }]"
+                                [isAutoCreate]="true" 
+                  [selected]="typeBienSelected" (uuid)="setTypeBienUuid($event)">
+              </app-entity-finder>
+          </div>
+
+          <div class="col-md-12">
+              <span class="badge badge-info my-2 f-14 formBadge width">INVENTAIRE DES ELEMENTS PRESENTS</span>
+          </div>
+          <div class="col-md-12">
+              <div formArrayName="pieces">
+                  <div class="form-group bg-light p-2 border rounded" *ngFor="let item of pieces.controls; let i=index" [formGroupName]="i">
+                      <div class="d-flex justify-content-between align-items-center">
+                          <label for="libelle{{i}}">Pièce concerné <span class="asterix">*</span></label>
+                          <div>
+                              <button type="button" (click)="onDeletePiece(i)" class="btn btn-danger mb-2 mr-2" ngbTooltip="Supprimer">
+                                  <i class="feather icon-trash"></i> Supprimer la pièce
+                              </button>
+                              <button type="button" (click)="onDupliquerPiece(item)" class="btn btn-primary mb-2 mr-2" ngbTooltip="Dupliquer">
+                                  <i class="fas fa-copy"></i> Dupliquer la pièce
+                              </button>
+                              <button type="button" [disabled]="!item.valid" (click)="onSavePiece(i, item)" class="btn btn-success mb-2" ngbTooltip="Enregistrer">
+                                  <i class="feather icon-save"></i> Enregistrer la pièce
+                              </button>
+                          </div>
+                      </div>
+                      <input class="form-control" type="text" formControlName="libelle" id="libelle{{i}}" placeholder="Pièce concerné">
+
+                      <!-- Equipement -->
+                      <div class="ml-3">
+                          <div formArrayName="options">
+                              <div class="row">
+                                  <div class="col-md-10">
+                                      <label>Les équipements <span class="asterix">*</span></label>
+                                  </div>
+                                  <div class="col-md-2"></div>
+                              </div>
+                              <div class="form-group" *ngFor="let props of item.get('options').controls; let j=index" [formGroupName]="j">
+                                  <div class="row">
+                                      <div class="col-md-10">
+                                          <app-entity-finder 
+                                              [class]="'Equipment'" 
+                                              [groups]="['equipment']" 
+                                              [required]="true" 
+                                              [isAutoCreate]="true" 
+                                              (uuid)="setEquipmentUuid($event, props)" 
+                                              [selected]="props.get('equipmentSelected')?.value">
+                                          </app-entity-finder>
+                                          <div class="invalid-feedback" *ngIf="submit && props.get('equipment').errors">
+                                              <div *ngIf="props.get('equipment').errors.required">{{required.novide}}</div>
+                                          </div>
+                                      </div>
+                                      <div class="col-md-2 text-right">
+                                          <button title="Delete" (click)="onDeleteEquipement(i,j, props)" type="button" class="btn btn-danger">
+                                              <i class="feather icon-trash"></i>
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="row mb-2">
+                              <div class="col-md-12 text-right">
+                                  <button class="btn btn-msg-send btn-secondary ml-auto" (click)="onAddEquipement(i, 3)" type="button">
+                                      Ajouter un équipement <i class="fa fa-plus"></i>
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="text-right">
+                      <button class="btn btn-msg-send btn-primary ml-auto" (click)="onAddPiece()" type="button">
+                          Ajouter une pièce <i class="fa fa-plus"></i>
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+          Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="onReset()" type="button" class="btn btn-warning">
+          Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid"  type="submit" class="btn btn-primary">
+          Enregistrer <i class="feather icon-save"></i>
+      </button>
+  </div>
+</form>

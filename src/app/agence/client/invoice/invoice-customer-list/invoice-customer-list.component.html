@@ -1,0 +1,81 @@
+<div class="col-md-12">
+    <span class="badge badge-warning my-2 f-14 formBadge width"> LISTE DES FACTURES</span>
+  </div>
+  <div class="col-sm-12">
+    <app-card [hidHeader]="true" cardClass="card-datatable">
+      <br/>
+      <div class="table-responsive">
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th *ngIf="client">Client</th>
+              <th>Libelle</th>
+              <th>Etat</th>
+              <th>Montant</th>
+              <th>Payé</th>
+              <th>Restant</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of invoices">
+              <td *ngIf="client">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.folder?.customer?.searchableTitle}}</span> <br />
+                  Type : {{item?.folder?.customer?.type}}<br />
+                  Telephone : {{item?.folder?.customer?.telephone}}
+                </p>
+              </td>
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">{{ item?.libelle }}</p>
+                <br *ngIf="item?.folder?.etat !== 'ACTIF'"/>
+                <span *ngIf="item?.folder?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                'badge-light-danger' : item?.folder?.etat === 'RESILIE',
+                'badge-light-warning' : item?.folder?.etat === 'INACTIF',
+                'badge-light-primary' : item?.folder?.etat === 'ACTIF'
+                }"><small>{{item?.statut}}</small></span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="{
+                'badge-danger' : item?.etat === 'IMPAYE',
+                'badge-primary' : item?.etat === 'ATTENTE',
+                'badge-warning' : item?.etat === 'EN COURS',
+                'badge-success' : item?.etat === 'SOLDE'
+                }">{{PAYMENT(item?.etat)}}</span>
+              </td>
+              <td class="align-middle">
+                <span class="text-primary font-weight-blod">{{item?.montant|number}} {{global.device}}</span>
+              </td>
+              <td class="align-middle">
+                <span class="text-success font-weight-blod">{{item?.paye|number}} {{global.device}}</span>
+              </td>
+              <td class="align-middle">
+                <span class="text-danger font-weight-blod">{{item?.impaye|number}} {{global.device}}</span>
+              </td>
+              <td class="table-action">
+                <div class="overlay-edit">
+                  <button (click)="showInvoice(item)" type="button" class="btn btn-icon btn-secondary"
+                    ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button (click)="printerInvoice(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                    ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td [attr.colspan]="client ? '4' : '3'" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-primary"> {{total | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{paye | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{impaye | number}} {{global.device}}</td>
+              <td *ngIf="action"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </app-card>
+  </div>

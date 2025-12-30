@@ -1,0 +1,52 @@
+<div class="card card-box rounded border-0 p-3">
+  <div class="py-0">
+      <h3 class="text-center">Catégorie de charges</h3>
+  </div>
+  <hr class="border-2">
+  <div class="d-flex justify-content-end my-1">
+      <div class="d-flex align-items-center">
+          <button (click)="add()" class="btn btn-primary button-radius" tooltip="Ajouter un compte taxe" type="button">
+              <i class="fas fa-plus-circle"></i> Ajouter
+          </button>
+      </div>
+  </div>
+
+  <span class="badge badge-primary my-2 f-14 width">LISTE DES CATEGORIES DE CHARGE </span>
+  <app-no-data *ngIf="loadCategory && loadCategory.length === 0" [title]="'Aucun type de millième trouvé'"></app-no-data>
+  <div *ngIf="loadCategory && loadCategory.length > 0">
+    <div class="table-responsive  m-0">
+      <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Code</th>
+            <th>Libellé</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of loadCategory">
+            <td>{{item?.code}}</td>
+            <td>{{item?.libelle}}</td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="show(item)" type="button" class="btn btn-icon btn-secondary ml-1" ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button (click)="edit(item)" type="button" class="btn btn-icon btn-info ml-1" ngbTooltip="Modifier">
+                  <i class="feather icon-edit-2"></i>
+                </button>
+                <button *ngIf="item?.isDelete" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1"
+                  ngbTooltip="Supprimer">
+                  <i class="feather icon-trash"></i>
+                </button>
+                <button (click)="print(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

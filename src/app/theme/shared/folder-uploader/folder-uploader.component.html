@@ -1,0 +1,85 @@
+<div class="folder-container">
+  <div style="display: flex">
+    <div style="flex:2">
+      <small class="font-weight-bold text-uppercase"> Formats et taille accepté :</small>
+      <small class="text-muted">
+        JPEG, JPG, PNG, PDF, DOCS, DOCX, XlS, XLM pour une taille maximale de 2 Méga bits
+      </small>
+    </div>
+    <div *ngIf="etat === 'edit'" style="display:flex">
+      <div *ngIf="save" title="Supprimer le dossier" (click)="allRemove()" class="remove-btn ml-5 mb-2" style="background: red;color:white">
+        <i class="fas fa-trash"></i>
+      </div>
+    </div>
+  </div>
+  <div class="files">
+    <div *ngIf="etat === 'edit' || etat === 'add'">
+      <div *ngFor="let todo of todos; let i= index;" style="display: flex" class="file-container">
+        <div class="file-occurrence" style="flex:2">
+          <div class="file-preview" *ngIf="todo.background" [style]="{'background': todo.background}"> </div>
+          <div class="file-name">
+            {{todo.file.name}}
+          </div>
+          <div *ngIf="!todo.finished && !todo.failed" class="progress">
+            <span style="background: mediumseagreen;position: absolute; left: 0; top: 0;
+              height: 20px; border-radius: 5px;" [style]="{'width' : todo.percent +'%' }">
+            </span>
+            <span class="percent-text">{{todo.percent}}%</span>
+          </div>
+        </div>
+        <div style="display:flex">
+          <div title="Réessayer" (click)="retry(todo)" class="remove-btn" style="background: gray;color:black">
+            <i class="fas fa-sync"></i>
+          </div>
+          <div title="Annuler" (click)="removeNew(todo, i)" class="remove-btn ml-2" style="background: trash;color:white">
+            <i class="fas fa-trash"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="etat !== 'add'">
+      <div *ngFor="let todo of downloaded; let i=index" style="display: flex;cursor: pointer;" (click)="showFile(todo)" class="row file-container">
+        <div class="file-occurrence" style="margin-left: 3%;width: 100%;">
+          <!-- <div class="col-md-2 file-preview" *ngIf="todo?.img" [style]="{'background': todo?.img}"></div> -->
+          <div class="col-md-2" *ngIf="todo?.img">
+            <a class="{{setIconByExtention(todo?.extention)}}" style="color: gray;font-size: 36px;" ></a>
+          </div>
+          <div class="col-md-8 file-name"> {{ todo?.name }}</div>
+          <div class="col-md-2" style="text-align: end;">  <a class="btn btn-icon btn-warning fas fa-eye" ></a></div>
+          <span style="background: mediumseagreen;position: absolute; left: 0; top: 0;
+            height: 20px; border-radius: 5px;" [style]="{'width' : todo.percent +'%' }">
+          </span>
+          <span class="percent-text"></span>
+        </div>
+        <div style="display:flex">
+          <div *ngIf="save" title="Telécharger" (click)="download(todo, i)" class="remove-btn" style="background: green;color:white">
+            <i class="fas fa-download"></i>
+          </div>
+          <div *ngIf="save" title="Supprimer" (click)="remove(todo, i)" class="remove-btn ml-2" style="background: trash;color:white">
+            <i class="fas fa-trash"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <div *ngIf="etat === 'edit' || etat === 'add'">
+      <div style="display: flex;">
+        <label>
+          <input type="file" multiple="true" style="display: none;" (change)="uploadFiles($event.target.files)">
+          <div style="padding:5px 10px;background: #4680ff;border:none;color:white;margin-top:10px;">
+            Ajouter des fichiers <i class="fas fa-plus"></i>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div *ngIf="etat === 'edit'">
+      <label>
+        <div (click)="terminate()" class="bg-{{ save ? 'warning' : 'danger'}}" style="padding:5px 10px;border:none;color:white;margin-top:10px;">
+          {{ save ? 'Terminer' : 'Modifier' }} <i class="fas fa-{{ save ? 'check' : 'edit'}}"></i>
+        </div>
+      </label>
+    </div>
+  </div>
+</div>

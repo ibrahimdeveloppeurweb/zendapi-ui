@@ -1,0 +1,412 @@
+<div class="user-profile user-card mb-4">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-12 mt-md-4">
+          <ul class="nav nav-tabs profile-tabs nav-fill inline" id="tabShowdtenant" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'DASHBOARD'}"
+                (click)="onChangeLoad('DASHBOARD')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="far fa-user"></i> Informations
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="offre?.list?.parentId">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'LOT'}" (click)="onChangeLoad('LOT')"
+                id="contract-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="contract"
+                aria-selected="true">
+                <i class="feather icon-file-text"></i> Offre(s) Similaires
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'RESERVATION'}"
+                (click)="onChangeLoad('RESERVATION')" id="etat-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="etat" aria-selected="false">
+                <i class="feather icon-list"></i> Pré-reservation (s)
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'COMMENTAIRE'}"
+                (click)="onChangeLoad('COMMENTAIRE')" id="etat-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="etat" aria-selected="false">
+                <i class="feather icon-list"></i> Commentaires (s)
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+  </div>
+</div>
+<div *ngIf="this.activeTab === 'DASHBOARD'">
+  <div class="card card-box p-3">
+    <div class="row">
+      <div class="col-md-6 d-flex align-items-center justify-content-between">
+        <ng-container>
+          <ngb-carousel>
+            <ng-template ngbSlide *ngFor="let img of offre?.list?.gallery">
+              <div class="picsum-img-wrapper">
+                <img [src]="img ? publicUrl+'/'+img.path : 'assets/images/avatar-default.png'"
+                  class="img-fluid image-taille-fixe-2"/>
+              </div>
+            </ng-template>
+          </ngb-carousel>
+        </ng-container>
+      </div>
+      <div class="col-md-5">
+        <hr>
+        <h5 class="text-center py-2 item-condominium text-primary" *ngIf="offre?.list?.parent">{{ offre?.list?.parent }}</h5>
+        <hr>
+        <h5 class="text-center py-2 item-condominium text-primary">{{ offre?.list?.libelle }}</h5>
+        <hr>
+        <h6 class="mb-1 bold text-center">Crée le {{ offre?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}
+          par {{offre?.create}}</h6>
+        <hr>
+        <h4 class="text-center py-2 item-condominium"><span class="text-success">Valeur : </span><span
+            class="text-success">{{offre?.list?.montant| number}} XOF</span></h4>
+        <hr>
+      </div>
+    </div>
+  </div>
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="text-center">
+      <h4><span class="text-center">DÉTAILS</span></h4>
+    </div>
+    <hr>
+    <div class="row" *ngIf="offre?.list?.type === 'LOT'">
+      <div class="col-md-12">
+        <div class="d-flex">
+          <!-- COL DROITE -->
+          <div class="flex-fill">
+            <p>
+              <span class="title-show">Code : </span>
+              <span class="title-result-show">{{offre?.list?.code}}</span>
+            </p>
+            <p>
+              <span class="title-show">Type : </span>
+              <span class="title-result-show">{{offre?.list?.typeBien}}</span>
+            </p>
+            <p>
+              <span class="title-show">Lotissement</span>
+              <span class="title-result-show">{{ offre?.list?.parent }}</span>
+            </p>
+            <p>
+              <span class="title-show">Ilot : </span>
+              <span class="title-result-show">{{offre?.list?.ilot}}</span>
+            </p>
+            <p>
+              <span class="title-show">Lot : </span>
+              <span class="title-result-show">{{offre?.list?.libelle}}</span>
+            </p>
+            <p>
+              <span class="title-show">Superficie : </span>
+              <span class="title-result-show">{{offre?.list?.superficie}} m²</span>
+            </p>
+          </div>
+          <!-- COL MILLIEU -->
+          <div class="flex-fill">
+            <p>
+              <span class="title-show">Superficie en hectare  du lotissement: </span>
+              <span class="title-result-show">{{offre?.list?.hectare}} m²</span>
+            </p>
+            <p>
+              <span class="title-show">Superficie en are  du lotissement: </span>
+              <span class="title-result-show">{{offre?.list?.are}} m²</span>
+            </p>
+            <p>
+              <span class="title-show">Superficie en centiare du lotissement: </span>
+              <span class="title-result-show">{{offre?.list?.centiare}} m²</span>
+            </p>
+            <p>
+              <span class="title-show">Ville : </span>
+              <span class="title-result-show">{{offre?.list?.ville}}</span>
+            </p>
+            <p>
+              <span class="title-show">Commune : </span>
+              <span class="title-result-show text-warning">{{ offre?.list?.commune }} </span>
+            </p>
+            <p>
+              <span class="title-show">Village : </span>
+              <span class="title-result-show text-warning">{{ offre?.list?.quartier }} </span>
+            </p>
+          </div>
+          <!-- COL GAUCHE -->
+          <div class="flex-fill">
+            <p>
+              <span class="title-show">Valeur: </span>
+              <span class="title-result-show text-warning">{{ offre?.list?.montant| number }}
+                {{global.device}}</span>
+            </p>
+            <p>
+              <span class="title-show">Etat : </span>
+              <span class="badge title-show" [ngClass]="{
+                  'badge-danger' : offre?.list?.etat === 'INDISPONIBLE',
+                  'badge-success' : offre?.list?.etat ===  'DISPONIBLE'
+                  }">{{ offre?.list?.etat}}
+              </span>
+            </p>
+            <p>
+              <span class="title-show">Longitude : </span>
+              <span class="title-result-show">{{offre?.list?.lng}}</span>
+            </p>
+            <p>
+              <span class="title-show">Latitude : </span>
+              <span class="title-result-show">{{offre?.list?.lat}}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" *ngIf="offre?.list?.type === 'MAISON'">
+      <div class="col-md-12">
+        <div class="d-flex">
+          <!-- COL DROITE -->
+          <div class="flex-fill">
+            <p>
+              <span class="title-show">Code : </span>
+              <span class="title-result-show">{{offre?.list?.code}}</span>
+            </p>
+            <p>
+              <span class="title-show">Libelle : </span>
+              <span class="title-result-show">{{offre?.list?.libelle}}</span>
+            </p>
+            <p>
+              <span class="title-show">Promotion : </span>
+              <span class="title-result-show">{{ offre?.list?.parent }}</span>
+            </p>
+            <p>
+              <span class="title-show">Superficie : </span>
+              <span class="title-result-show">{{offre?.list?.superficie}} m²</span>
+            </p>
+            <p>
+              <span class="title-show">Ville : </span>
+              <span class="title-result-show">{{offre?.list?.ville}}</span>
+            </p>
+          </div>
+          <!-- COL MILLIEU -->
+          <div class="flex-fill">
+            <p>
+              <span class="title-show">Commune : </span>
+              <span class="title-result-show text-warning">{{ offre?.list?.commune }} </span>
+            </p>
+            <p>
+              <span class="title-show">Quartier : </span>
+              <span class="title-result-show text-warning">{{ offre?.list?.quartier }} </span>
+            </p>
+            <p>
+              <span class="title-show">Chiffre d'affaire  du programme: </span>
+              <span class="title-result-show text-warning">{{ offre?.list?.montantCa| number }}
+                {{global.device}}</span>
+            </p>
+            <p>
+              <span class="title-show">Marge du programme : </span>
+              <span class="title-result-show text-warning">{{ offre?.list?.montantMarge| number }}
+                {{global.device}}</span>
+            </p>
+            <p>
+              <span class="title-show">Coût de construction du programme: </span>
+              <span class="title-result-show text-warning">{{offre?.list?.montantCc| number}}
+                {{global.device}}</span>
+            </p>
+          </div>
+          <!-- COL GAUCHE -->
+          <div class="flex-fill">
+            <p>
+              <span class="title-show">Coût de revient du programme : </span>
+              <span class="title-result-show text-warning">{{offre?.list?.montantCr| number}} {{global.device}}</span>
+            </p>
+            <p>
+              <span class="title-show">Etat : </span>
+              <span class="badge title-show" [ngClass]="{
+                  'badge-danger' : offre?.list?.etat === 'INDISPONIBLE',
+                  'badge-success' : offre?.list?.etat ===  'DISPONIBLE'
+                  }">{{ offre?.list?.etat}}
+              </span>
+            </p>
+            <p>
+              <span class="title-show">Longitude : </span>
+              <span class="title-result-show">{{offre?.list?.lng}}</span>
+            </p>
+            <p>
+              <span class="title-show">Latitude : </span>
+              <span class="title-result-show">{{offre?.list?.lat}}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <hr>
+    </div>
+
+    <div class="col-lg-12 m-2 mt-2">
+      <div class="d-flex" *ngIf="offre?.list?.type === 'MAISON'">
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+          <p>
+            <span class="title-show">Nombre de Chambres : </span>
+            <span class="title-result-show">{{offre?.list?.chambre}}</span>
+          </p>
+          <p>
+            <span class="title-show">Nombre de Douches : </span>
+            <span class="title-result-show">{{offre?.list?.douche }} </span>
+          </p>
+          <p>
+            <span class="title-show">Nombre de Salons : </span>
+            <span class="title-result-show">{{offre?.list?.salon}}</span>
+          </p>
+        </div>
+        <!-- COL CENTRE -->
+        <div class="flex-fill">
+          <p>
+            <span class="title-show">Nombre de Cuisines : </span>
+            <span class="title-result-show">{{offre?.list?.cuisine}}</span>
+          </p>
+          <p>
+            <span class="title-show">Nombre de Garages : </span>
+            <span class="title-result-show">{{offre?.list?.garage}}</span>
+          </p>
+        </div>
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+        </div>
+      </div>
+      <div class="row m-2">
+        <div class="col-md-12 mb-2">
+          <label for="link">Lien de la vidéo <span class="asterix">*</span></label>
+          <input type="text" class="form-control" readonly [value]="offre?.list?.video">
+        </div>
+        <div class="col-md-4" *ngIf="offre?.list?.type === 'MAISON'">
+          <p>
+            <input class="form-check-input"  type="checkbox" value="{{offre?.list?.wifi}}">
+            <label for="wifi">WiFi </label>
+          </p>
+          <p>
+            <input class="form-check-input" type="checkbox" value="{{offre?.list?.piscine}}">
+            <label for="piscine">Piscine </label>
+          </p>
+          <p>
+            <input class="form-check-input" type="checkbox" value="{{offre?.list?.securite}}">
+            <label for="securite">Gardien de Sécurité</label>
+          </p>
+        </div>
+        <div class="col-md-4" *ngIf="offre?.list?.type === 'MAISON'">
+          <p>
+            <input class="form-check-input" type="checkbox" value="{{offre?.list?.clim}}">
+            <label for="clim">Air Conditioner </label>
+          </p>
+          <p>
+            <input class="form-check-input" type="checkbox" value="{{offre?.list?.urgence}}">
+            <label for="urgence">Issue d'Urgence</label>
+          </p>
+          <p>
+            <input class="form-check-input" type="checkbox" value="{{offre?.list?.incendie}}">
+            <label for="incendie">Borne d'incendie </label>
+          </p>
+        </div>
+        <div class="col-md-4" *ngIf="offre?.list?.type === 'MAISON'">
+          <p>
+            <input class="form-check-input" type="checkbox" value="{{offre?.list?.parking}}">
+            <label for="parking">Parking </label>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row m-4 mb-2">
+      <div class="col-md-12">
+        <span class="badge badge-secondary my-2 f-14 width"> Plan</span>
+      </div>
+      <div class="col-md-12">
+        <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-ride="carousel"  [interval]="5000">
+          <div class="carousel-inner">
+            <div *ngFor="let item of offre?.list?.plan; let i = index" class="carousel-item" [ngClass]="{'active':slideImage === i}">
+              <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/promotion-default.jpg'" alt="" class="d-block" width="1000" height="600">
+            </div>
+          </div>
+          <ol class="carousel-indicators position-relative">
+            <li *ngFor="let item of offre?.list?.plan; let i = index" data-target="#carouselExampleCaptions" data-slide-to="1" class="w-25 h-auto" (click)="slideImage = i" [ngClass]="{'active': viewImage === item.id}">
+              <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/promotion-default.jpg'" alt="" class="d-block wid-50">
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </app-card>
+</div>
+<div *ngIf="this.activeTab === 'LOT'">
+  <app-offre-list [offres]="offres"></app-offre-list>
+</div>
+<div *ngIf="this.activeTab === 'RESERVATION'">
+</div>
+<div *ngIf="this.activeTab === 'COMMENTAIRE'"><!-- LISTE DES TICKETS -->
+  <div class="ticket-block">
+    <span class="badge badge-info my-2 f-14 width"> LISTE DES TICKETS </span>
+    <div class="row">
+      <div class="col-auto">
+        <img class="media-object wid-60 img-radius" src="assets/images/avatar-default.png"  alt="Generic placeholder image ">
+      </div>
+      <div class="col">
+        <div class="card hd-body">
+          <div class="row align-items-center">
+            <div class="col border-right pr-0">
+              <div class="card-body inner-center">
+                <div class="ticket-customer font-weight-bold"> Mr Maman</div>
+              </div>
+              <ul class="list-inline mt-2 mb-0">
+                <li class="list-inline-item">
+                  <img src="assets/images/avatar-default.png" alt="" class="wid-20 rounded mr-1 img-fluid">Attribué à Kouess
+                </li>
+                <li class="list-inline-item">
+                  <!-- <i class="feather icon-calendar mr-1 f-14"></i>publié {{getPastTime(item.createdAt)}} -->
+                  <i class="feather icon-calendar mr-1 f-14"></i>publié 24-04-2024
+                </li>
+                <li class="list-inline-item">
+                  <i class="feather icon-message-square mr-1 f-14"></i> 5
+                </li>
+              </ul>
+              <div class="mt-2"><span class="">Objet: </span> Mon Test</div>
+              <div class="excerpt mt-4">
+                <h6>Description</h6>
+                <div [innerHTML]="item.description"></div>
+              </div>
+              <!-- <div class="mt-2">
+                  <a class="mr-3 text-muted" (click)="showTicket(item)"><i class="Éeather icon-eye mr-1"></i>Voir</a>
+                  <a class="mr-3 text-danger" (click)="delete(item)"> <i class="feather icon-trash-2 mr-1"></i>Supprimer</a>
+                  <a *ngIf="item.etat != 'FERME'" class="text-success" (click)="assignTicket(item)"><i class="feather icon-share-2 mr-1"></i>Assigner à</a>
+                </div> -->
+            </div>
+          </div>
+          <div class="col-auto pl-0 right-icon">
+            <div class="card-body">
+              <ul class="list-unstyled mb-0">
+                <li>
+                  <a href="javascript:" data-toggle="tooltip" data-placement="top" title=""
+                    data-original-title="tooltip on top">
+                    <i class="feather icon-circle text-muted"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-auto hover-blk position-absolute shadow-sm rounded">
+              <div class="card-body p-0 pt-2">
+                <div class="img-txt">
+                  <img src="assets/images/avatar-default.png" alt="" class="wid-20 rounded mr-1 img-fluid">
+                  <p></p>
+                </div>
+                <p [innerHTML]=""></p>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

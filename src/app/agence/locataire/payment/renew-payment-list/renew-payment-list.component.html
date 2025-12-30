@@ -1,0 +1,141 @@
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+      <div *ngIf="validate && dataSelected.length>0" class="btn-rental float-right mb-2">
+        <button (click)="onConfirme()"  type="submit" class="btn btn-success m-1">
+          Valider <i class="feather icon-check-square"></i>
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+          <tr>
+            <th >
+              <div class="form-group">
+                <div class="form-check">
+                  <input id="selectAll" class="form-check-input" formControlName="valueOne" type="checkbox" id="checkAll"
+                         (change)="onCheckAll($event)">
+                </div>
+              </div>
+            </th>
+            <th>Locative</th>
+            <th *ngIf="locataire">Locataire</th>
+            <th>N° facture</th>
+            <th>Etat</th>
+            <th>Facture concernée</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th *ngIf="action">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of payments; let i = index">
+            <td>
+              <div class="form-group">
+                <div class="form-check">
+                  <input formControlName="checked" class="form-check-input"  type="checkbox" id="check{{i}}"
+                         (change)="onCheckItem(item)">
+                </div>
+              </div>
+            </td>
+            <td class="align-middle">
+              <p *ngIf="item?.invoice?.contract" class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.invoice?.contract?.rental?.libelle}}</span><br />
+                Superficie : {{item?.invoice?.contract?.rental?.house?.superficie}} m² - {{item?.invoice?.contract?.rental?.house?.piece}} pièce(s): <br />
+                Propriétaire : {{item?.invoice?.contract?.rental?.house?.owner?.searchableTitle}}
+              </p>
+              <p *ngIf="item?.invoice?.short" class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.invoice?.short?.rental?.libelle}}</span><br />
+                Superficie : {{item?.invoice?.short?.rental?.house?.superficie}} m² - {{item?.invoice?.short?.rental?.house?.piece}} pièce(s): <br />
+                Propriétaire : {{item?.invoice?.short?.rental?.house?.owner?.searchableTitle}}
+              </p>
+            </td>
+            <td *ngIf="locataire">
+              <p *ngIf="item?.invoice?.contract" class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.invoice?.contract?.tenant?.searchableTitle}}</span> <br /> Type : {{item?.invoice?.contract?.tenant?.type}}<br /> Telephone : {{item?.invoice?.contract?.tenant?.telephone}}
+              </p>
+              <p *ngIf="item?.invoice?.short" class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.invoice?.short?.tenant?.searchableTitle}}</span> <br /> Type : {{item?.invoice?.short?.tenant?.type}}<br /> Telephone : {{item?.invoice?.short?.tenant?.telephone}}
+              </p>
+            </td>
+            <td>{{ item?.invoice?.code}}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-success' : item?.etat === 'VALIDE',
+              'badge-danger' : item?.etat === 'INVALIDE'
+              }">{{validation(item?.etat)}}</span> <br />
+              <span class="badge " [ngClass]="{
+              'badge-light-success' : item?.status === 'CONFIRMER',
+              'badge-light-danger' : item?.status === 'ATTENTE'
+              }"><small>{{confirmation(item?.status)}}</small></span>
+            </td>
+            <td>
+              {{ item?.invoice?.libelle}}
+              <span *ngIf="item?.invoice?.contract && item?.invoice?.contract?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                'badge-light-danger' : item?.invoice?.contract?.etat === 'RESILIE',
+                'badge-light-warning' : item?.invoice?.contract?.etat === 'INACTIF',
+                'badge-light-primary' : item?.invoice?.contract?.etat === 'ACTIF'
+              }"><small>{{item?.invoice?.contract?.etat}}</small></span>
+
+              <!-- CONTRAT A VOURT TERME -->
+              <br *ngIf="item?.invoice?.short && item?.invoice?.short?.etat !== 'ACTIF'" />
+              <span *ngIf="item?.invoice?.short && item?.invoice?.short?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                'badge-light-danger' : item?.invoice?.short?.etat === 'RESILIE',
+                'badge-light-warning' : item?.invoice?.short?.etat === 'INACTIF',
+                'badge-light-primary' : item?.invoice?.short?.etat === 'ACTIF'
+              }"><small>{{item?.invoice?.short?.etat}}</small></span>
+            </td>
+            <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+            <td><span class="text-primary">{{item?.montant|number}} {{global.device}}</span></td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showPayment(item)" type="button" class="btn btn-icon btn-secondary ml-1"
+                        ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button *ngIf="item?.etat === 'INVALIDE'" (click)="validatePayment(item)" type="button" class="btn btn-icon  btn-success ml-1" ngbTooltip="Valider">
+                  <i class="fas fa-check"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="PAYMENT:EDIT">
+                  <button *ngIf="item?.invoice?.contract && item?.etat === 'INVALIDE' && item?.invoice?.contract?.etat === 'ACTIF'" (click)="editPayment(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                          ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button *ngIf="item?.invoice?.short && item?.etat === 'INVALIDE' && item?.invoice?.short?.etat === 'ACTIF'" (click)="editPayment(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                          ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                </ng-template>
+                <button (click)="annulerPayment(item)" type="button" class="btn btn-icon  btn-danger ml-1" ngbTooltip="Annuler le paiement">
+                  <i class="feather icon-x"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="PAYMENT:PRINTER:SHOW">
+                  <button *ngIf="item?.etat === 'VALIDE'" (click)="printerPayment(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                          ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="PAYMENT:DELETE">
+                  <button *ngIf="item?.invoice?.contract && item?.etat === 'INVALIDE' && item?.invoice?.contract?.etat === 'ACTIF'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                  <button *ngIf="item?.invoice?.short && item?.etat === 'INVALIDE' && item?.invoice?.contract?.etat === 'ACTIF'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr>
+            <td [attr.colspan]="locataire ? '8' : '7'" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-success"> {{total | number}} {{global.device}}</td>
+            <td *ngIf="action"></td>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+    </form>
+  </app-card>
+</div>

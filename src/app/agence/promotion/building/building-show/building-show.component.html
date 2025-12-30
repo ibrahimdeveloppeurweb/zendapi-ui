@@ -1,0 +1,373 @@
+<div class="user-profile user-card mb-4" *ngIf="building">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img [src]="'assets/images/building.png'"
+                      alt="{{ building?.libelle }}" title="{{ building?.libelle }}"
+                      class="img-radius img-fluid wid-100 hei-100">
+                    <img class="img-radius img-fluid wid-100 hei-100"
+                      [src]="'assets/images/building.png'"
+                      alt="" onerror="this.onerror=null; this.src='assets/images/building.png'"
+                    >
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 class="mb-1">{{ building?.libelle }}</h5>
+        </div>
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="media">
+                <i class="feather icon-map-pin mr-2 mt-1 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{building?.localisation}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- MENU TABS BUILDING -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowsubdivision" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'BUILDING'}"
+                (click)="onChangeLoad('BUILDING')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="fas fa-building"></i> Bâtiment
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'MAISON'}" (click)="onChangeLoad('MAISON')"
+                id="bien-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="bien" aria-selected="true">
+                <i class="fas fa-home"></i> Maison
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+    <!-- <button class="btn btn-success m1" (click)="visite3D()" type="button"
+      ngbTooltip="Effectuer une visite 3d de la promotion">
+      Visite 3D <i class="fa fa-cube"></i>
+    </button> -->
+  </div>
+</div>
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="row" *ngIf="activeTab !== 'BUILDING'">
+  <app-filter class="width"
+  [name]="false"
+  [nameTitle]="nameTitle"
+  [user]="true"
+  [userTitle]="userTitle"
+  [etat]="true"
+  [bien]="ilot"
+  [bienTitle]="ilotTitle"
+  [autre]="lot"
+  [autreTitle]="lotTitle"
+  [etatRow]="etatRow"
+  [etatTitle]="etatTitle"
+  [categorie]="false"
+  [dateD]="true"
+  [dateF]="true"
+  [create]="true"
+  [min]="true"
+  [minTitle]="minTitle"
+  [max]="true"
+  [maxTitle]="maxTitle"
+  [ordre]="true"
+  [code]="true"
+  [count]="true"
+  [type]="true"
+  [typeRow]="typeRow"
+  [uuid]="building.uuid"
+  (filterEvent)="onFilter($event)">
+  </app-filter>
+</div>
+
+<!-- DIAGRAMME CIRCULAIRE -->
+<div class="row">
+  <div class="col-md-6">
+    <div class="row">
+      <!-- CHIFFRE AFFAITRE  -->
+      <div class="col-md-6">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">Chiffre d'affaire</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="fas fa-piggy-bank f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-12 text-right">
+                <p class="text-white m-b-0">{{0 }} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- CHIFFRE AFFAITRE END -->
+      <!-- MAISON OCCUPE -->
+      <div class="col-md-6">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ building?.nbrMaisonV > 1 ? 'Appartements vendues' : 'Appartement vendue' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ building?.nbrMaisonV }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ building?.valeurMaisonV |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON OCCUPE END -->
+      <!-- MAISON RESERVER -->
+      <div class="col-md-6">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ building?.nbrMaisonR > 1 ? 'Appartements reservées' : 'Appartement reservée' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-sm-4">
+                <p class="text-white m-b-0">{{ building?.nbrMaisonR }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ building?.valeurMaisonR |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON RESERVER END -->
+      <!-- MAISON DISPONIBLE -->
+      <div class="col-md-6">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ building?.nbrMaisonD > 1 ? 'Appartements disponibles' : 'Appartement disponible' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-sm-4">
+                <p class="text-white m-b-0">{{ building?.nbrMaisonD }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ building?.valeurMaisonD |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON DISPONIBLE END -->
+    </div>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="DIAGRAMME CIRCULAIRE DE PROGRESSION" [options]="false" class="text-center">
+      <div class="row">
+        <div class="col-md-6">
+          <circle-progress
+            [percent]="building?.prcEcheancier"
+            [radius]="50"
+            [toFixed]="1"
+            [titleFontSize]="10"
+            [outerStrokeWidth]="5"
+            [innerStrokeWidth]="3"
+            [outerStrokeColor]="building?.prcEcheancier >= 65 ? '#3FBD0D' : building?.prcEcheancier > 35 ? '#F0DD35' : '#EC0F0F'"
+            [innerStrokeColor]="'#95cde4'"
+            [animation]="true"
+            [showSubtitle]="false"
+            [animationDuration]="300"
+          ></circle-progress>
+          <p class="mt-2">ETAT DE PAIEMENT ECHEANCIER</p>
+        </div>
+        <div class="col-md-6">
+          <circle-progress
+            [percent]="building?.prcEtatA"
+            [radius]="50"
+            [toFixed]="1"
+            [titleFontSize]="10"
+            [outerStrokeWidth]="5"
+            [innerStrokeWidth]="3"
+            [outerStrokeColor]="building?.prcEtatA >= 65 ? '#3FBD0D' : building?.prcEtatA > 35 ? '#F0DD35' : '#EC0F0F'"
+            [innerStrokeColor]="'#95cde4'"
+            [animation]="true"
+            [showSubtitle]="false"
+            [animationDuration]="300"
+          ></circle-progress>
+          <p class="mt-2">TAUX DE PROGRESSION FINANCIER VFA</p>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'BUILDING'}" id="building"
+        role="tabpanel" aria-labelledby="building-tab">
+        <div class="card">
+          <div class="col-md-12 mt-2 text center">
+            <div class="d-flex">
+              <!-- COL DROITE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Code : </span>
+                  <span class="title-result-show">{{building?.code}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Libellé : </span>
+                  <span class="title-result-show">{{building?.libelle}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Superficie : </span>
+                  <span class="title-result-show">{{building?.superficie}} m²</span>
+                </p>
+                <p>
+                  <span class="title-show">Nombre d'appartement : </span>
+                  <span class="title-result-show">{{building?.nbrMaison}} Appartement(s)</span>
+                </p>
+              </div>
+              <!-- COL MILLIEU -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Ville : </span>
+                  <span class="title-result-show">{{building?.promotion?.ville}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Commune : </span>
+                  <span class="title-result-show">{{building?.promotion?.commune}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Quartier : </span>
+                  <span class="title-result-show">{{building?.promotion?.quartier}}</span>
+                </p>
+              </div>
+              <!-- COL GAUCHE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Longitude : </span>
+                  <span class="title-result-show">{{building?.promotion?.lng}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Latitude : </span>
+                  <span class="title-result-show">{{building?.promotion?.lat}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Crée le : </span>
+                  <span class="title-result-show">{{ building?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ building?.create }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Modifié le : </span>
+                  <span class="title-result-show">{{ building?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ building?.update }}</span>
+                </p>
+              </div>
+            </div>
+            <div class="col-md mb-2" *ngIf="building">
+              <span class="badge badge-primary mb-4 f-14 width">FICHER TÉLÉCHARGÉ</span>
+              <div class="row">
+                <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                  <app-folder-uploader (click)="showFile(building.folder)"
+                    [maxSize]="3"
+                    [folder]="building.folder"
+                    [allowFileUpload]="false" [allowDownload]="true">
+                  </app-folder-uploader>
+                </div>
+                <div [ngClass]="file ? 'col-md-8' : ''"  *ngIf="file" >
+                  <div class="row">
+                    <div class="col-sm-12 mb-2">
+                      <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                        <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                      </button>
+                    </div>
+                  </div>
+                  <ngx-doc-viewer
+                    [url]="file"
+                    viewer="url" style="width:100%;height: 34vh;">
+                  </ngx-doc-viewer>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button *ngxPermissionsOnly="'BUILDING:EDIT'" (click)="editBuilding(building)" type="button" class="btn btn-primary" ngbTooltip="Modifier">
+                Modifier <i class="feather icon-edit-2"></i>
+              </button>
+              <button *ngxPermissionsOnly="'BUILDING:PRINTER:SHOW'" (click)="printerBuilding(building)" type="submit" class="btn btn-warning" ngbTooltip="Imprimer">
+                Imprimer <i class="feather icon-printer"></i>
+              </button>
+              <button *ngxPermissionsOnly="'BUILDING:DELETE'" (click)="delete(building)" type="button" class="btn btn-danger text-left" data-dismiss="modal"
+                ngbTooltip="Supprimer">
+                Supprimer <i class="feather icon-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'MAISON'}" id="home" role="tabpanel"
+        aria-labelledby="home-tab">
+        <div class="row">
+          <!-- LISTE DES APPARTMENTS -->
+          <div class="col-md-12" *ngIf="homes && homes.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES APPARTMENTS
+            </span>
+            <app-no-data [title]="'Aucune maison trouvée'" *ngIf="islets && islets.length === 0"></app-no-data>
+          </div>
+          <app-home-list [homes]="homes" *ngIf="homes && homes.length > 0" class="width"></app-home-list>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

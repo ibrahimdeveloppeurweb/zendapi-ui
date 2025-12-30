@@ -1,0 +1,607 @@
+<app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="row">
+        <div class="col-md-4">
+            <img style="width: 80%;" [src]="lot?.photoSrc ? publicUrl+'/'+lot?.photoSrc : 'assets/images/house-default.png'">
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                <h3 class="badge badge-primary p-2">{{lot?.type}}</h3>
+            </div>
+            <span class="mt-2">
+                <h4>Lot : {{structure === 'HOUSE' ? lot?.nom : lot?.libelle}}</h4>
+            </span>
+            <hr>
+            <span class="mb-2">Crée le {{lot?.createdAt | date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}</span>
+            <div class="mt-3">
+                <!-- <div class="py-1" *ngIf="copropriete?.type === 'VERTICAL'">
+                    <h5><span class="px-2"><i class="fas fa-home text-success"></i></span>{{ nbBien | number }} - Biens</h5>
+                </div> -->
+                <div class="py-1 item-condominium">
+                    <h5><span class="px-2"><i class="fas fa-paint-roller text-success"></i> </span>{{ nbTravaux | number }} - Travaux</h5>
+                </div>
+                <div class="py-1">
+                    <h5><span class="px-2"><i class="fas fa-clipboard text-success"></i></span>{{ nbFacture | number }} - Factures</h5>
+                </div>
+                <div class="py-1 item-condominium">
+                    <h5><span class="px-2"><i class="fas fa-bars text-success"></i></span>{{ nbDevis | number }} - Devis</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>Code :</span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{lot?.code}}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 ">
+                <div class="col-md-5">
+                    <span>Lot :</span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{lot?.nom | number}}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>Superficie :</span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{lot?.superficie | number}} M²
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2" *ngIf="structure === 'RENTAL'">
+                <div class="col-md-5">
+                    <span>Nombre de pièce :</span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{lot?.nbrPiece}}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium" *ngIf="copropriete?.type !== 'VERTICAL'">
+                <div class="col-md-5">
+                    <span>Numéro de porte :</span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{copropriete?.numPorte}}
+                    </span>
+                </div>
+            </div>
+            <div class="py-2" *ngIf="copropriete?.type !== 'VERTICAL'">
+                <h3 class="text-center">Tantièmes</h3>
+            </div>
+            <div *ngIf="copropriete?.type !== 'VERTICAL'">
+                <div *ngFor="let elem of copropriete?.tantiemes; let i = index">
+                    <div [ngClass]="i % 2 === 0 ? 'row py-2 item-condominium' : 'row py-2'">
+                      <div class="col-md-5 text-center">
+                        <span>{{elem?.type}}</span>
+                      </div>
+                      <div class="col-md-7 text-center">
+                        <span class="bold">
+                          {{elem?.valeur | number}}
+                        </span>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div *ngIf="copropriete?.type !== 'VERTICAL'" class="col-md-4">
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>
+                        Code
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.owner?.code }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-md-5">
+                    <span>
+                        {{copropriete?.owner?.type === 'PARTICULIER' ? 'Nom & prénoms' : 'Raison social'}}
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.owner?.nom }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>
+                        Type
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.owner?.type === 'PARTICULIER' ? 'Particulier' : 'Enreprise' }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-md-5">
+                    <span>
+                        {{copropriete?.owner?.type === 'PARTICULIER' ? 'Contact' : 'Tel. bureau'}}
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.owner?.type === 'PARTICULIER' ? copropriete?.owner?.telephone : copropriete?.owner?.telephone }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>
+                        Autorisation de notifier
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        <span *ngIf="copropriete?.owner?.autorisation === 'AUCUNE'">Aucune</span>
+                        <span *ngIf="copropriete?.owner?.autorisation === 'SMS'">Sms</span>
+                        <span *ngIf="copropriete?.owner?.autorisation === 'MAIL'">Mail</span>
+                        <span *ngIf="copropriete?.owner?.autorisation === 'SMS_MAIL'">Sms & Mail</span>
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2" *ngIf="copropriete?.owner?.type === 'ENTREPRISE'">
+                <div class="col-md-5">
+                    <span>
+                        N° Compte contribuable
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.owner?.ncc}}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium"  *ngIf="copropriete?.owner?.type === 'ENTREPRISE'">
+                <div class="col-md-5">
+                    <span>
+                        N° Registre de commerce
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.owner?.nrc}}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2"  *ngIf="copropriete?.owner?.type === 'ENTREPRISE'">
+                <div class="col-md-5">
+                    <span>
+                        Boîte postal
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.owner?.codePostal}}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-{{copropriete?.type === 'VERTICAL' ? 7 : 4}}">
+            <div class="row py-2">
+                <div class="col-md-5">
+                    <span>
+                        Près de l'eau ?  :
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.presEau === true ? 'Oui' :'Non' }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>
+                        Bornage effectué ?  :
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.bornage === true ? 'Oui' :'Non' }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-md-5">
+                    <span>
+                        Nbre de salle d'eau ? :
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.salleEau === true ? 'Oui' :'Non' }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>
+                        Nombre de parking ?  :
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.nbrParking === true ? 'Oui' :'Non' }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-md-5">
+                    <span>
+                        Nombre de niveau ?  :
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.nbrNiveau === true ? 'Oui' :'Non' }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>
+                        Jardin :
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.jardin === true ? 'Oui' :'Non' }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-md-5">
+                    <span>
+                        Piscine :
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.piscine === true ? 'Oui' :'Non' }}
+                    </span>
+                </div>
+            </div>
+            <div class="row py-2 item-condominium">
+                <div class="col-md-5">
+                    <span>
+                        Bas fond :
+                    </span>
+                </div>
+                <div class="col-md-7">
+                    <span class="bold">
+                        {{ copropriete?.basFond === true ? 'Oui' :'Non' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-{{copropriete?.type === 'VERTICAL' ? 5 : 4}}">
+            <agm-map [draggableCursor]="'default'" [mapTypeId]="'hybrid'" [latitude]="copropriete?.lat ? copropriete?.lat : lat" [longitude]="copropriete?.lng ? copropriete?.lng : lng" [zoom]="copropriete?.zoom ? copropriete?.zoom : zoom">
+                <agm-marker [latitude]="copropriete?.lat ? copropriete?.lat : lat" [longitude]="copropriete?.lng ? copropriete?.lng : lng"></agm-marker>
+            </agm-map>
+        </div>
+
+        <div class="modal-footer">
+            <button (click)="back()" type="button" class="btn btn-secondary m-1">
+                <i class="fa fa-arrow-alt-circle-left"></i> Retour
+            </button>
+            <button (click)="editHouse(copropriete)" type="button"
+                class="btn btn-primary" ngbTooltip="Modifier">
+                Modifier <i class="feather icon-edit-2"></i>
+            </button>
+            <button (click)="printHouse(copropriete)" type="submit"
+                class="btn btn-warning" ngbTooltip="Imprimer">
+                Imprimer <i class="feather icon-printer"></i>
+            </button>
+            <button (click)="delete(copropriete)"type="button"
+                class="btn btn-danger text-left" data-dismiss="modal" ngbTooltip="Supprimer">
+                Supprimer <i class="feather icon-trash"></i>
+            </button>
+        </div>
+    </div>
+    <hr>
+    <div class="col-md" *ngIf="copropriete">
+        <div class="row">
+          <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+            <app-folder-uploader (click)="showFile(copropriete?.folder)" [folder]="copropriete?.folder" [etat]="'show'"
+              [allowFileUpload]="false" [allowDownload]="true">
+            </app-folder-uploader>
+          </div>
+          <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+            <div class="row">
+              <div class="col-sm-12 mb-2">
+                <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                  <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                </button>
+              </div>
+            </div>
+            <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+            </ngx-doc-viewer>
+          </div>
+        </div>
+      </div>
+      <hr>
+    <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowOwner" role="tablist">
+        <li class="nav-item" *ngIf="copropriete?.type === 'VERTICAL'">
+            <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'LOT'}" (click)="onChangeLoad(true, 'LOT')"
+            id="profil-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="profil" aria-selected="true">
+                <i class="fas fa-home"></i> Lot(s) <span class="bold text-primary">{{ nbBien | number }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'TRAVAUX'}" (click)="onChangeLoad(true, 'TRAVAUX')"
+            id="profil-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="profil" aria-selected="true">
+                <i class="fas fa-paint-roller"></i> Intervention(s) <span class="bold text-primary">{{ nbTravaux | number }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'DEVIS'}" (click)="onChangeLoad(true, 'DEVIS')"
+            id="profil-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="profil" aria-selected="true">
+            <i class="fas fa-bars"></i> Devis <span class="bold text-primary">{{ nbDevis | number }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'FACTURE'}" (click)="onChangeLoad(true, 'FACTURE')"
+            id="profil-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="profil" aria-selected="true">
+            <i class="fas fa-clipboard"></i> Facture(s) <span class="bold text-primary">{{ nbFacture | number }}</span>
+            </a>
+        </li>
+    </ul>
+</app-card>
+
+<div class="alert-primary m-2 col-md-12">
+    <div class="col-md-12 mt-2 text-center p-2">
+        <h4 class="text-black">{{copropriete?.trustee?.nom}}</h4>
+    </div>
+</div>
+
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="width btn-filter-copropriete">
+    <app-filter class="width"
+        *ngIf="view"
+        [name]="true"
+        [nameTitle]="nameTitle"
+        [bien]="bien"
+        [bienTitle]="bienTitle"
+        [user]="true"
+        [userTitle]="userTitle"
+        [etat]="true"
+        [etatRow]="etatRow"
+        [etatTitle]="etatTitle" [categorie]="categorie" [categorieRow]="categorieRow" [categorieTitle]="categorieTitle" [dateD]="true" [dateF]="true" [create]="true"
+        [min]="false" [minTitle]="minTitle" [max]="false" [maxTitle]="maxTitle" [ordre]="true" [code]="false" [count]="true" [type]="true" [typeRow]="typeRow" (filterEvent)="onFilter($event)">
+    </app-filter>
+</div>
+
+<app-card [hidHeader]="true" cardClass="card-datatable" *ngIf="activeTab === 'LOT'">
+    <div class="mt-2">
+        <span class="badge badge-primary mb-4 f-14 width"> LISTE DES LOTS </span>
+        <app-no-data [title]="'Aucun bien trouvé'" *ngIf="homes && homes.length === 0"></app-no-data>
+        <div *ngIf="homes && homes.length > 0">
+            <div class="table-responsive m-0">
+                <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>code</th>
+                            <th>Lot/Num porte</th>
+                            <th>Type</th>
+                            <th>Copropriétaires</th>
+                            <th>Tantième</th>
+                            <th>Dimensions</th>
+                            <th>Crée le</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of homes">
+                            <td>
+                                <span class="text-black d-block">
+                                    {{item?.code}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-black">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <span class="text-black d-block">
+                                                Lot : {{item?.nom | number}}
+                                            </span>
+                                            <span class="text-black d-block">
+                                                Num de porte : {{item?.numPorte}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-warning d-block">
+                                    {{item?.categorie}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-black">
+                                    <div class="d-flex align-items-center">
+                                      <div>
+                                        <span class="text-black d-block">
+                                            Propriétaire : {{item?.owner?.nom}}
+                                        </span>
+                                        <span class="text-black d-block">
+                                            Type : {{item?.owner?.type}}
+                                        </span>
+                                      </div>
+                                    </div>
+                                </span>
+                            </td>
+                            <td>
+                                <span *ngFor="let elem of item?.tantiemes">
+                                    <span>{{elem?.type}} : </span><span><span class="text-success">{{elem?.valeur | number}}</span></span><br/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    Superficie : {{item?.superficie | number}}
+                                </span>
+                            </td>
+                            <td>{{item?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}</td>
+                            <td>
+                                <button (click)="showhouseItem(item)" type="button"
+                                    class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</app-card>
+
+<div *ngIf="activeTab === 'TRAVAUX'">
+    <div class="col-md-12">
+        <span class="badge badge-primary mb-4 f-14 width">
+            LISTE DES TRAVAUX
+        </span>
+        <app-no-data [title]="'Aucune intervention trouvée'" *ngIf="interventions && interventions.length === 0"></app-no-data>
+        <div *ngIf="interventions && interventions.length > 0">
+          <app-card [hidHeader]="true" cardClass="card-datatable">
+              <div class="table-responsive">
+                  <table datatable [dtOptions]="dtOptions"
+                      class="table table-sm table-striped table-bordered nowrap table-hover">
+                      <thead class="thead-light">
+                          <tr>
+                              <th>Bien</th>
+                              <th>Libellé</th>
+                              <th>Evolution</th>
+                              <th>Etat</th>
+                              <th>Crée le</th>
+                              <th>Montant</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let item of interventions">
+                              <td class="align-middle">
+                                  <p class="m-0 d-inline-block align-middle font-16">
+                                      <span class="text-primary">{{item?.trustee ? item?.trustee?.nom :
+                                          ''}}</span>
+                                      <span *ngIf="item?.rental!=null || item?.house!=null">
+                                          <br /> <span>
+                                              Superficie : {{item?.rental
+                                              ? item?.rental?.superficie : item?.house?.superficie}} m² -
+                                              {{item?.rental
+                                              ? item?.rental?.piece : item?.house?.nbrPiece}} pièce(s)
+                                          </span>
+                                      </span>
+                                      <span *ngIf="item?.houseCo!=null">
+                                          <br /> <span>Copropriété : {{item?.houseCo?.nom}}</span>
+                                      </span>
+                                      <span *ngIf="item?.homeCo!=null">
+                                          <br /> <span>Villa ou appartement : {{item?.homeCo?.nom}}</span>
+                                      </span>
+                                      <span *ngIf="item?.infrastructure!=null">
+                                          <br /> <span>Infrastructure : {{item?.infrastructure?.nom}}</span>
+                                      </span>
+                                      <span *ngIf="item?.nature!=null">
+                                          <br /> <span>Nature : {{item?.nature?.libelle}}</span>
+                                      </span>
+                                      <span *ngIf="house!=null">
+                                          <br /> <span>Propriétaire
+                                              : {{item?.house?.owner?.searchableTitle}}</span>
+                                      </span>
+                                  </p>
+                              </td>
+                              <td class="align-middle">
+                                  <p class="m-0 d-inline-block align-middle font-16">
+                                      <span class="text-primary">{{item?.nom}}</span><br /> Durée:
+                                      {{timelapse(item?.dateD, item?.dateF)}} <br /> Début: {{item?.dateD|date: "d
+                                      MMMM y" : '' : 'fr-FR'}} - Fin: {{item?.dateF|date: "d MMMM y" : '' :
+                                      'fr-FR'}}
+                                  </p>
+                              </td>
+                              <td>
+                                  <circle-progress [percent]="item?.pourcentage" [radius]="25" [toFixed]="1"
+                                      [titleFontSize]="10" [outerStrokeWidth]="5" [innerStrokeWidth]="3"
+                                      [outerStrokeColor]="item?.pourcentage >= 65 ? '#3FBD0D' : item?.pourcentage > 35 ? '#F0DD35' : '#EC0F0F'"
+                                      [innerStrokeColor]="'#95cde4'" [animation]="true" [showSubtitle]="false"
+                                      [animationDuration]="300"></circle-progress>
+                              </td>
+                              <td>
+                                  <span class="badge" [ngClass]="{
+                                      'badge-danger' : item?.etat === 'STOPPER',
+                                      'badge-primary' : item?.etat === 'EN COURS',
+                                      'badge-warning' : item?.etat === 'PREVU',
+                                      'badge-success' : item?.etat === 'TERMINER'
+                                      }"> {{ item?.etat === 'EN COURS' ? 'EN COURS DE REALISATION' : item?.etat }}
+                                  </span>
+                              </td>
+                              <td>{{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                              <td>
+                                  <p class="m-0 d-inline-block align-middle font-16">
+                                      <span class="text-warning">{{item?.budget|number}} {{global.device}}</span>
+                                  </p>
+                              </td>
+                              <td class="table-action">
+                                <button (click)="showConstruction(item)" type="button"
+                                  class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                                  <i class="fas fa-eye"></i>
+                                </button>
+                                <button (click)="editConstruction(item)" type="button"
+                                    class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                                    <i class="feather icon-edit-2"></i>
+                                </button>
+                                <button (click)="printerConstruction(item)" type="button"
+                                    class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                                    <i class="feather icon-printer"></i>
+                                </button>
+                                <button (click)="deleteConstruction(item)" type="button" class="btn btn-icon btn-danger ml-1"
+                                    ngbTooltip="Supprimer">
+                                    <i class="feather icon-trash"></i>
+                                </button>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </app-card>
+       </div>
+    </div>
+</div>
+
+<div *ngIf="activeTab === 'FACTURE'">
+    <div class="col-md-12">
+       <app-no-data [title]="'Aucune facture trouvée'" *ngIf="invoiceCos && invoiceCos.length === 0"></app-no-data>
+       <app-invoice-co-list *ngIf="invoiceCos && invoiceCos.length > 0" [invoiceCos]="invoiceCos"></app-invoice-co-list>
+    </div>
+</div>
+
+<div *ngIf="activeTab === 'DEVIS'">
+    <div class="col-md-12">
+        <app-no-data [title]="'Aucun devis trouvé'" *ngIf="quotes && quotes.length === 0"></app-no-data>
+       <app-quote-list *ngIf="quotes && quotes.length > 0" [quotes]="quotes"></app-quote-list>
+    </div>
+</div>
+

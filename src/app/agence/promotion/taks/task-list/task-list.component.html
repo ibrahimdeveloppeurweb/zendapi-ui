@@ -1,0 +1,88 @@
+<div class="col-md-12">
+    <span *ngIf="homes && homes.length > 0" class="badge badge-info mb-4 f-14 width">
+      LISTE DES TRAVAUX
+    </span>
+    
+  <app-card *ngIf="homes && homes.length > 0" [hidHeader]="true" cardClass="card-datatable">
+    <div class="row">
+      <div class="table-responsive">
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+                <th>Maison</th>
+                <th>Date Début</th>
+                <th>Date Fin</th>
+                <th>Nbre de Jours</th>
+                <th>Etat</th>
+                <th>Evolution physique</th>
+                <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of homes">
+              <td class="align-middle text-center">
+              <p class="m-0 d-inline-block align-middle font-16">   
+                <span class="text-primary">Lot N°{{item?.lot}} Ilot N°{{item?.ilot}}</span> <br />                  
+                Superficie : {{item?.superficie}} m² <br />
+                Lotisement : {{item?.subdivision?.nom}}
+                </p>
+              </td>
+              <td class="align-middle text-center">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-primary">{{item?.dateTravaux?.dateD | date: "d MMMM y" : '' : 'fr-FR'}}</span>
+                  </p>
+              </td>
+              <td class="align-middle text-center">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                      <span class="text-danger">{{item?.dateTravaux?.dateF | date: "d MMMM y" : '' : 'fr-FR'}}</span> 
+                  </p>
+              </td>
+              <td class="align-middle text-center">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{item?.dateTravaux?.duree}}</span> 
+                  </p>
+              </td>
+              <td class="align-middle text-center">      
+                <span *ngIf="item?.statut" class="badge" [ngClass]="{
+                  'badge-secondary' : item?.statut === 'EN COURS',
+                  'badge-danger' : item?.statut === 'EN ATTENTE',
+                  'badge-success' : item?.statut === 'TERMINER'
+                  }">{{item?.statut}}</span>
+              </td>
+                <td class="align-middle text-center">
+                    <circle-progress
+                    [percent]="item?.evolution"
+                    [radius]="30"
+                    [toFixed]="1"
+                    [titleFontSize]="10"
+                    [outerStrokeWidth]="5"
+                    [innerStrokeWidth]="3"
+                    [outerStrokeColor]="item?.evolution >= 65 ? '#3FBD0D' : item?.evolution > 35 ? '#F0DD35' : '#EC0F0F'"
+                    [innerStrokeColor]="'#95cde4'"
+                    [animation]="true"
+                    [showSubtitle]="false"
+                    [animationDuration]="300"
+                ></circle-progress>
+              </td> 
+              <td class="align-middle text-center">  
+                <button (click)="showReport(item)" *ngxPermissionsOnly="['TASK:SHOW']" type="button" class="btn btn-icon btn-info"
+                  ngbTooltip="Rapports journaliers">
+                  <i class="fas fa-eye"></i>
+                </button>              
+                <button *ngxPermissionsOnly="['TASK:EDIT']" (click)="show(item, 'EDIT')" type="button" class="btn btn-icon btn-secondary ml-1"
+                ngbTooltip="Modifier le DQ">
+                <i class="fa fa-calendar"></i>                  
+                </button>
+                <button *ngxPermissionsOnly="['TASK:SHOW']" (click)="show(item, 'SHOW')" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Détails des travaux ">
+                  <i class="fa fa-calendar"></i>                                    
+                </button>                           
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </app-card>
+  </div>
+  

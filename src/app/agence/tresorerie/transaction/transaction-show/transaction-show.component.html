@@ -1,0 +1,133 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+        (click)="modale.close('ferme')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="d-flex">
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Référence : </span>
+                <span class="title-result-show">{{transaction?.reference}}</span>
+            </p>
+            <p>
+                <span class="title-show">Code : </span>
+                <span class="title-result-show">{{transaction?.code}}</span>
+            </p>
+            <p>
+                <span class="title-show">Bénéficiaire : </span>
+                <span class="title-result-show">{{transaction?.concerne}}</span>
+            </p>
+            <p>
+                <span class="title-show">Type : </span>
+                <span class="title-result-show">
+                    <span *ngIf="transaction?.type === 'PAYMENT'" class="badge badge-info">Paiement locataire</span>
+                    <span *ngIf="transaction?.type === 'PAYMENT_CUSTOMER'" class="badge badge-warning">Paiement
+                        client</span>
+                </span>
+            </p>
+            <p>
+                <span class="title-show">Operateur : </span>
+                <span class="title-result-show">
+                    <span class="badge" [ngClass]="{
+                        'badge-info' : transaction?.operator === 'DEBITCARD',
+                        'badge-primary' : transaction?.operator === 'WAVE',
+                        'badge-light-warning' : transaction?.operator === 'MTN',
+                        'badge-success' : transaction?.operator=== 'MOOV',
+                        'badge-warning' : transaction?.operator === 'ORANGE'
+                        }">
+                        Via {{transaction?.operator}}
+                    </span>
+                </span>
+            </p>
+        </div>
+        <!-- COL MILLIEU -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Etat : </span>
+                <span class="title-result-show">
+                    <span class="badge" [ngClass]="{
+                                'badge-danger' : transaction?.status === 'FAILED',
+                                'badge-success' : transaction?.status === 'SUCCEEDED',
+                                'badge-primary' : transaction?.status === 'PROCESSING'
+                                }">
+                        <span *ngIf="transaction?.status === 'PROCESSING'">En cours de traitement</span>
+                        <span *ngIf="transaction?.status === 'FAILED'">Échec</span>
+                        <span *ngIf="transaction?.status === 'SUCCEEDED'">Effectuée avec succès</span>
+                    </span>
+                </span>
+            </p>
+            <p>
+                <span class="title-show ">Montant : </span>
+                <span class="title-result-show text-warning">{{transaction?.amount|number}} {{global.device}}</span>
+            </p>
+            <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{transaction?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ transaction?.create }}</span>
+            </p>
+            <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ transaction?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                    }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{transaction?.update }}</span>
+            </p>
+        </div>
+        <!-- COL DROITE -->
+    </div>
+
+    <div *ngIf="transaction?.invoices.length > 0" class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>Libellé</th>
+                    <th>Etat</th>
+                    <th>Montant</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of transaction?.invoices">
+                    <td>
+                        <p class="m-0 d-inline-block align-middle font-16">{{item?.libelle }}</p>
+                    </td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                            'badge-danger' : item?.etat === 'IMPAYE',
+                            'badge-primary' : item?.etat === 'ATTENTE',
+                            'badge-warning' : item?.etat === 'EN COURS',
+                            'badge-success' : item?.etat === 'SOLDE'
+                            }">{{PAYMENT(item?.etat)}}</span>
+                    </td>
+                    <td>{{item?.montant|number}} {{global.device}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <table class="width">
+        <tbody>
+            <tr class="border-bottom-success">
+                <td></td>
+                <td colspan="5" class="text-right font-weight-bold"></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr class="border border-success">
+                <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+                <td class="font-weight-bold font-size-default text-right">{{transaction?.amount|number}}
+                    {{global.device}}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<div class="modal-footer">
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+    </button>
+</div>

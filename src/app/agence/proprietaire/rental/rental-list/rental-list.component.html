@@ -1,0 +1,86 @@
+<div class="table-responsive">
+  <div class="btn-group float-right m-1 btn-outil-owner" >
+    <div class="btn-owner">
+      <button class="btn btn-primary" (click)="addRental()"  type="button">
+        Ajouter 
+      </button>
+    </div>
+  </div>
+  <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+    <thead class="thead-light">
+      <tr>
+        <th>Bien</th>
+        <th>Occupant</th>
+        <th>Etat</th>
+        <th>Loyer net</th>
+        <th>Charge</th>
+        <th>Loyer brut</th>
+        <th *ngIf="action">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of rentals">
+        <td class="align-middle">
+          <img [src]="item?.photoSrc ? item?.photoSrc : 'assets/images/house-default.png'" alt="{{item?.libelle}}"
+            title="{{item?.libelle}}" class="rounded mr-2 ml-0" height="48" />
+          <p class="m-0 d-inline-block align-middle font-16">
+            <span class="text-primary">{{item?.libelle}}</span> <br />
+            Superficie : {{item?.superficie}} m² - {{item?.piece}} pièce(s): <br />
+            Propriétaire : {{item?.house?.owner?.nom}}
+          </p>
+        </td>
+        <td *ngIf="item?.occupant === 'AUCUN OCCUPANT'"> <span>{{item.occupant}}</span> </td>
+        <td *ngIf="item?.occupant !== 'AUCUN OCCUPANT'"> <span (click)="showTenant(item)">{{item.occupant}}</span> </td>
+        <td>
+          <span class="badge" [ngClass]="{
+          'badge-success' : item?.etat === 'DISPONIBLE',
+          'badge-warning' : item?.etat === 'RESERVE',
+          'badge-danger' : item?.etat === 'OCCUPE'
+          }">{{item?.etat}}</span>
+        </td>
+        <td class="align-middle">
+          <p class="m-0 d-inline-block align-middle font-16">
+            <span class="text-primary">{{item?.montant|number}} {{global.device}}</span>
+          </p>
+        </td>
+        <td class="align-middle">
+          <span class="text-success">{{item?.charge|number}} {{global.device}}</span>
+        </td>
+        <td class="align-middle">
+          <span class="text-danger">{{item?.total|number}} {{global.device}}</span>
+        </td>
+        <td *ngIf="action" class="table-action">
+          <!-- <button (click)="visite3D(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Visite 3D">
+            <i class="fas fa-cube"></i>
+          </button> -->
+          <button *ngxPermissionsOnly="'RENTAL:SHOW'" (click)="showRental(item)" type="button" class="btn btn-icon btn-secondary"
+            ngbTooltip="Détails">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button *ngxPermissionsOnly="'RENTAL:EDIT'" (click)="editRental(item)" type="button" class="btn btn-icon btn-primary ml-1"
+            ngbTooltip="Modifier">
+            <i class="feather icon-edit-2"></i>
+          </button>
+          <button *ngxPermissionsOnly="'RENTAL:PRINTER:SHOW'" (click)="printerRental(item)" type="button" class="btn btn-icon btn-warning ml-1"
+            ngbTooltip="Imprimer">
+            <i class="feather icon-printer"></i>
+          </button>
+          <ng-template ngxPermissionsOnly="RENTAL:DELETE">
+            <button *ngIf="item?.etat === 'DISPONIBLE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+              <i class="feather icon-trash"></i>
+            </button>
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+        <td class="font-weight-bold font-size-40 text-warning"> {{loyers | number}} {{global.device}}</td>
+        <td class="font-weight-bold font-size-40 text-success"> {{charges | number}} {{global.device}}</td>
+        <td class="font-weight-bold font-size-40 text-danger"> {{total | number}} {{global.device}}</td>
+        <td *ngIf="action"></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>

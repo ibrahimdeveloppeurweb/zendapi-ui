@@ -1,0 +1,149 @@
+<div class="col-md-12">
+  <app-card *ngIf="mandates && mandates.length > 0" [hidHeader]="true" cardClass="card-datatable">
+    <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+      <div class="btn-rental float-right mb-2">
+        <button *ngIf="validate && dataSelected.length>0"  (click)="onConfirme()"  type="submit" class="btn btn-success m-1">
+          Valider <i class="feather icon-check-square"></i>
+        </button>
+      </div>
+    <div class="row">
+      <div class="table-responsive">
+        <div class="btn-rental float-right mb-2">
+          <button class="btn btn-primary" (click)="addMandate()"  type="button">
+            Ajouter 
+          </button>
+        </div>
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions"
+          class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input id="selectAll" class="form-check-input" formControlName="valueOne" type="checkbox" id="checkAll"
+                    (change)="onCheckAll($event)">
+                  </div>
+                </div>
+              </th> 
+              <th>Bien</th>
+              <th>Type</th>
+              <th>Commission</th>
+              <th *ngIf="hasGarantieLoyerMandates">Garantie</th>
+              <th *ngIf="hasGarantieLoyerMandates">Part Charge</th>
+              <th *ngIf="!hasGarantieLoyerMandates">Montant</th>
+              <th>Etat</th>
+              <th *ngIf="action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of mandates; let i = index">
+              <td>
+                  <div class="form-group">
+                    <div class="form-check">
+                      <input formControlName="checked" class="form-check-input"  type="checkbox" id="check{{i}}"
+                      (change)="onCheckItem(item)">
+                    </div>
+                  </div>
+                  </td> 
+              <td class="align-middle">
+                <img [src]="item?.photoSrc ? item?.photoSrc : 'assets/images/house-default.png'" alt="{{item?.libelle}}"
+                  class="rounded mr-2 ml-0" height="48" />
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">{{item?.house?.nom}}</span> <br /> Superficie : {{item?.house?.superficie}}
+                  m² <br /> Propriétaire : {{item?.house?.owner?.nom}}
+                </p>
+              </td>
+              <td>
+                <span *ngIf="item?.type === 'VENTE'" class="badge badge-primary">Vente</span>
+                <span *ngIf="item?.type === 'LOCATION'" class="badge badge-warning">Location</span>
+              </td>
+              <td class="align-middle">
+                <span class="text-primary" *ngIf="item?.facturation == 'PRC'">{{ item?.commission }} %</span>
+                <span class="text-primary" *ngIf="item?.facturation == 'MTN'">{{ item?.commission|number }} {{global.device}}</span>
+                <span class="text-primary" *ngIf="item?.facturation == 'GRT_LOYER'">{{ item?.commission|number }} {{global.device}}</span>
+              </td>
+              <td class="align-middle" *ngIf="hasGarantieLoyerMandates">
+                <span *ngIf="item?.facturation === 'GRT_LOYER' && item?.montantGarantie" class="text-primary">
+                  {{ item?.montantGarantie|number }} {{global.device}}
+                </span>
+                <span *ngIf="item?.facturation !== 'GRT_LOYER'" class="text-primary">-</span>
+              </td>
+              <td class="align-middle" *ngIf="hasGarantieLoyerMandates">
+                <span *ngIf="item?.facturation === 'GRT_LOYER' && item?.partCharge" class="text-info">
+                  {{ item?.partCharge|number }} {{global.device}}
+                </span>
+                <span *ngIf="item?.facturation !== 'GRT_LOYER'" class="text-primary">-</span>
+              </td>
+              <td class="align-middle" *ngIf="!hasGarantieLoyerMandates">
+                <span *ngIf="item?.montantCom" class="text-primary">
+                  {{ item?.montantCom|number }} {{global.device}}
+                </span>
+                <span *ngIf="!item?.montantCom" class="text-primary">NON DEFINI</span>
+              </td>
+              <td>
+                <span *ngIf="item?.etat" class="badge badge-success" [ngClass]="{
+                  'badge-success' : item?.etat === 'VALIDE',
+                  'badge-warning' : item?.etat === 'INVALIDE',
+                  'badge-danger' : item?.etat === 'RESILIE'
+                }">{{validation(item?.etat)}}</span><br />
+                <span class="ml-1 badge badge-light-{{item?.signed !== null ? 'success' : 'danger'}}">
+                  <small>{{item?.signed !== null ? 'Mandat signé' : 'Mandat non signé'}}</small>
+                </span>
+              </td>
+              <td class="table-action">
+                <button (click)="showMandate(item)" type="button" class="btn btn-icon ml-1 btn-secondary"
+                  ngbTooltip="Détails"><i class="fas fa-eye"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="MANDATE:EDIT">
+                  <button (click)="editMandate(item)" type="button"
+                    class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier"><i class="feather icon-edit-2"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="MANDATE:VALIDATE">
+                  <button (click)="validate(item)" *ngIf="item?.etat === 'INVALIDE'" type="button"
+                    class="btn btn-icon btn-success ml-1" ngbTooltip="Valider"><i class="fas fa-check"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="MANDATE:PRINTER:SHOW">
+                  <button (click)="printerMandate(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                    ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                </ng-template>
+                <button *ngIf="item?.etat !== 'RESILIE'" (click)="uploadMandate(item)" type="button"
+                  class="btn btn-icon btn-info ml-1" ngbTooltip="Télécharger le mandat signé">
+                  <i class="feather icon-upload-cloud"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="MANDATE:DELETE">
+                  <button type="button" (click)="delete(item)"
+                    class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="font-weight-bold font-size-16 text-right">TOTAL</td>
+              <td *ngIf="hasGarantieLoyerMandates" class="font-weight-bold font-size-16 text-primary">
+                {{ totalCommission|number }} {{global.device}}
+              </td>
+              <td *ngIf="hasGarantieLoyerMandates" class="font-weight-bold font-size-16 text-primary">
+                {{ totalGarantie|number }} {{global.device}}
+              </td>
+              <td *ngIf="hasGarantieLoyerMandates" class="font-weight-bold font-size-16 text-info">
+                {{ totalPartCharge|number }} {{global.device}}
+              </td>
+              <td *ngIf="!hasGarantieLoyerMandates" class="font-weight-bold font-size-16 text-warning">
+                {{ total|number }} {{global.device}}
+              </td>
+              <td colspan="2" *ngIf="action"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </form>
+  </app-card>
+</div>

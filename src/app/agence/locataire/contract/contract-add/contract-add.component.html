@@ -1,0 +1,692 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <aw-wizard #wizard class="arc-wizard">
+        <!-- STEP 1  DU FORMULAIRE-->
+        <aw-wizard-step stepTitle="Contrat">
+          <!-- DETAILS SUR LE LOCATAIRE -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14  width"> DETAILS SUR LE LOCATAIRE ET LE PROPRIETAIRE </span>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-3">
+                    <label>Locataire <span class="asterix">*</span></label>
+                    <app-entity-finder (change)="onStep(form.value)" [class]="'Tenant'" [groups]="['tenant']"
+                      [required]="true" [selected]="tenantSelected" [disabled]="edit" (uuid)="setTenantUuid($event)"
+                      [placeholder]="'Selectionez un locataire'">
+                    </app-entity-finder>
+                  </div>
+                  <div class="col-md-3">
+                    <label>Propriétaire <span class="asterix">*</span></label>
+                    <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true"
+                      [selected]="ownerSelected" [disabled]="edit" (uuid)="setOwnerUuid($event)"
+                      [placeholder]="'Selectionez un Propriétaire'">
+                    </app-entity-finder>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="house">Bien concerné <span class="asterix">*</span></label>
+                    <select [attr.disabled]="edit || !f.owner.value ? true : null"
+                      (change)="selectHouse($event.target.value)" formControlName="house" class="form-control"
+                      id="house" [ngClass]="{
+                        'is-invalid': submit && f.house.errors,
+                        'is-valid': submit && f.house.valid
+                      }">
+                      <option [value]="null" selected>Selectionnez un bien</option>
+                      <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                      <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3" *ngIf="house?.blockHouses?.length == 0">
+                    <label for="rental">Locative <span class="asterix">*</span></label>
+                    <select *ngIf="!edit" [attr.disabled]="!f.house.value ? true : null"
+                      (ngModelChange)="onChangeRental($event); onStep(form.value)" class="form-control" id="rental"
+                      formControlName="rental" [ngClass]="{
+                        'is-invalid': submit && f.rental.errors,
+                        'is-valid': submit && f.rental.valid
+                      }">
+                      <option [value]="null" selected>Selectionnez la locative</option>
+                      <option *ngFor="let item of rentals" [value]="item.uuid">{{item.porte}}</option>
+                    </select>
+                    <input *ngIf="edit" type="text" readonly [value]="contract?.rental?.libelle"
+                      class="form-control font-weight-bold">
+                    <div class="invalid-feedback" *ngIf="submit && f.rental.errors">
+                      <div *ngIf="f.rental.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" *ngIf="house?.blockHouses?.length > 0">
+                  <div class="col-md-6">
+                    <label for="block">Liste des blocks <span class="asterix">*</span></label>
+                    <select [attr.disabled]="edit || !f.owner.value ? true : null"
+                      (change)="selectBlock($event.target.value)" formControlName="block" class="form-control"
+                      id="block" [ngClass]="{
+                        'is-invalid': submit && f.block.errors,
+                        'is-valid': submit && f.block.valid
+                      }">
+                      <option [value]="null" selected>Selectionnez un block</option>
+                      <option *ngFor="let item of blocks" [value]="item.uuid">{{item.libelle}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.block.errors">
+                      <div *ngIf="f.block.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-5">
+                    <label for="rental">Locative <span class="asterix">*</span></label>
+                    <select *ngIf="!edit" [attr.disabled]="!f.house.value ? true : null"
+                      (ngModelChange)="onChangeRental($event); onStep(form.value)" class="form-control" id="rental"
+                      formControlName="rental" [ngClass]="{
+                        'is-invalid': submit && f.rental.errors,
+                        'is-valid': submit && f.rental.valid
+                      }">
+                      <option [value]="null" selected>Selectionnez la locative</option>
+                      <option *ngFor="let item of rentals" [value]="item.uuid">{{item.porte}}</option>
+                    </select>
+                    <input *ngIf="edit" type="text" readonly [value]="contract?.rental?.libelle"
+                      class="form-control font-weight-bold">
+                    <div class="invalid-feedback" *ngIf="submit && f.rental.errors">
+                      <div *ngIf="f.rental.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 ml-md-auto">
+                    <label for="loyer">Coût du loyer</label>
+                    <input type="text" readonly formControlName="loyer" [value]="loyerMontant|number" class="form-control text-lg-right p-4 text-success text-h-danger
+                      font-weight-bold formBadgeLarge" id="loyer">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- DETAILS SUR LES DATES DE LA FACTURE D ENTREE -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS SUR LA FACTURE D'ENTREE
+            </span>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="dateFa">Date de facturation  <span class="asterix">*</span></label>
+                    <input  type="date" formControlName="dateFa"
+                      class="form-control" id="dateFa" [ngClass]="{
+                        'is-invalid': submit && f.dateFa.errors,
+                        'is-valid': submit && f.dateFa.valid
+                      }">
+                    <div class="invalid-feedback" *ngIf="submit && f.dateFa.errors">
+                      <div *ngIf="f.dateFa.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="dateE">Date d'échéance de la facture d'entrée  <span class="asterix">*</span></label>
+                    <input type="date" formControlName="dateE"
+                      class="form-control" id="dateE" [ngClass]="{
+                        'is-invalid': submit && f.dateE.errors,
+                        'is-valid': submit && f.dateE.valid
+                      }">
+                    <div class="invalid-feedback" *ngIf="submit && f.dateE.errors">
+                      <div *ngIf="f.dateE.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- DETAILS SUR LES TERMES DU CONTRAT -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS SUR LES TERMES DU CONTRAT
+            </span>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <label for="type">Type de contrat <span class="asterix">*</span></label>
+              <select (change)="onStep(form.value)" class="form-control" id="type" formControlName="type" [ngClass]="{
+                'is-invalid': submit && f.type.errors,
+                'is-valid': submit && f.type.valid
+                }">
+                <option *ngFor="let item of typeRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="dateSign">Date de signature <span class="asterix">*</span></label>
+              <input (change)="onStep(form.value)" type="date" formControlName="dateSign" class="form-control"
+                id="dateSign" [ngClass]="{
+                'is-invalid': submit && f.dateSign.errors,
+                'is-valid': submit && f.dateSign.valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.dateSign.errors">
+                <div *ngIf="f.dateSign.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="dateEntr">Date d'entrée <span class="asterix">*</span></label>
+              <input (change)="onChangeDate(); onStep(form.value)" type="date" formControlName="dateEntr"
+                class="form-control" id="dateEntr" [ngClass]="{
+                  'is-invalid': submit && f.dateEntr.errors,
+                  'is-valid': submit && f.dateEntr.valid
+                }">
+              <div class="invalid-feedback" *ngIf="submit && f.dateEntr.errors">
+                <div *ngIf="f.dateEntr.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="dateFin">Date de fin <span class="asterix">*</span></label>
+              <input type="date" formControlName="dateFin" (change)="onChangeDate(); onStep(form.value)"
+                class="form-control" id="dateFin" [ngClass]="{
+                  'is-invalid': submit && f.dateFin.errors,
+                  'is-valid': submit && f.dateFin.valid
+                }">
+              <div class="invalid-feedback" *ngIf="submit && f.dateFin.errors">
+                <div *ngIf="f.dateFin.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <label for="moisCaution">Nbr de mois de caution <span class="asterix">*</span></label>
+              <input [attr.disabled]="edit ? true : null" (change)="onChangeCaution(); onStep(form.value)" type="number"
+                formControlName="moisCaution" min="0" class="form-control" id="moisCaution"
+                placeholder="Nombre de mois de caution" [ngClass]="{
+                  'is-invalid': submit && f.moisCaution.errors,
+                  'is-valid': submit && f.moisCaution.valid
+                }">
+              <div class="invalid-feedback" *ngIf="submit && f.moisCaution.errors">
+                <div *ngIf="f.moisCaution.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="caution">Montant pas de porte <span class="asterix">*</span></label>
+              <input [attr.disabled]="edit ? true : null" (change)="onChangeTotal(); onStep(form.value)" type="number"
+                formControlName="pasPorte" class="form-control text-danger font-weight-bold"
+                placeholder="Montant pas de porte " [ngClass]="{
+                'is-invalid': submit && f.pasPorte.errors,
+                'is-valid': submit && f.pasPorte.valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.pasPorte.errors">
+                <div *ngIf="f.pasPorte.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="caution">Montant caution <span class="asterix">*</span></label>
+              <input [attr.disabled]="edit ? true : null" (change)="onChangeTotal(); onStep(form.value)" type="number"
+                formControlName="caution" class="form-control text-danger font-weight-bold"
+                placeholder="Montant caution" [ngClass]="{
+                'is-invalid': submit && f.caution.errors,
+                'is-valid': submit && f.caution.valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.caution.errors">
+                <div *ngIf="f.caution.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="cautionReverser">Caution á reversé  ? <span class="asterix">*</span></label>
+              <select  class="form-control" id="cautionReverser" formControlName="cautionReverser"
+                [ngClass]="{
+                  'is-invalid': submit && f.cautionReverser.errors,
+                  'is-valid': submit && f.cautionReverser.valid
+                }">
+                <option *ngFor="let item of cotionRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.cautionReverser.errors">
+                <div *ngIf="f.cautionReverser.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="moisAvance">Nbr de mois d'avance <span class="asterix">*</span></label>
+              <input [attr.disabled]="edit ? true : null" (change)="onChangeAvance(); onStep(form.value)" type="number"
+                formControlName="moisAvance" min="0" class="form-control" id="moisAvance"
+                placeholder="Nombre de mois d'avance" placeholder="Nbr de mois d'avance" [ngClass]="{
+                'is-invalid': submit && f.moisAvance.errors,
+                'is-valid': submit && f.moisAvance.valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.moisAvance.errors">
+                <div *ngIf="f.moisAvance.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="avance">Montant avance <span class="asterix">*</span></label>
+              <input [attr.disabled]="edit ? true : null" (change)="onChangeTotal(); onStep(form.value)" type="number"
+                formControlName="avance" class="form-control text-danger font-weight-bold" placeholder="Montant avance"
+                [ngClass]="{
+                'is-invalid': submit && f.avance.errors,
+                'is-valid': submit && f.avance.valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.avance.errors">
+                <div *ngIf="f.avance.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="prcRetard">Pénalité en cas de retard % <span class="asterix">*</span></label>
+              <input (change)="onStep(form.value)" type="number" formControlName="prcRetard" class="form-control"
+                min="0" id="prcRetard" [ngClass]="{
+                'is-invalid': submit && f.prcRetard.errors,
+                'is-valid': submit && f.prcRetard.valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.prcRetard.errors">
+                <div *ngIf="f.prcRetard.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="limite">Limite de paiement <span class="asterix">*</span></label>
+              <select (change)="onStep(form.value)" formControlName="limite" class="form-control" id="limit" [ngClass]="{
+                  'is-invalid': submit && f.limite.errors,
+                  'is-valid': submit && f.limite.valid
+                }">
+                <option *ngFor="let item of limiteRow" [value]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.limite.errors">
+                <div *ngIf="f.limite.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="renouveler">Renouvellement tacite ? <span class="asterix">*</span></label>
+              <select (change)="onStep(form.value)" class="form-control" id="renouveler" formControlName="renouveler"
+                [ngClass]="{
+                  'is-invalid': submit && f.renouveler.errors,
+                  'is-valid': submit && f.renouveler.valid
+                }">
+                <option *ngFor="let item of booleanRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.renouveler.errors">
+                <div *ngIf="f.renouveler.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <!-- <div class="col-md-3">
+              <label for="moratoire">Moratoire sur la facture d'entrée ? <span class="asterix">*</span></label>
+              <select [attr.disabled]="edit ? true : null" (change)="addDeadline(); onStep(form.value)"
+                class="form-control" id="moratoire" formControlName="moratoire" [ngClass]="{
+                  'is-invalid': submit && f.moratoire.errors,
+                  'is-valid': submit && f.moratoire.valid
+                }">
+                <option *ngFor="let item of booleanRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.moratoire.errors">
+                <div *ngIf="f.moratoire.errors.required">{{required.novide}}</div>
+              </div>
+            </div> -->
+            <div class="col-md-3">
+              <label for="periodicite">Périodicité <span class="asterix">*</span></label>
+              <!-- [attr.disabled]="edit ? true : null" -->
+              <select (change)="onStep(form.value)" class="form-control"
+                id="periodicite" formControlName="periodicite" [ngClass]="{
+                  'is-invalid': submit && f.periodicite.errors,
+                  'is-valid': submit && f.periodicite.valid
+                }">
+                <option *ngFor="let item of periodiciteRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.periodicite.errors">
+                <div *ngIf="f.periodicite.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="isSigned">Signature numérique du contrat ? <span class="asterix">*</span></label>
+              <select (change)="onStep(form.value)" class="form-control" id="isSigned" formControlName="isSigned"
+                [ngClass]="{
+                  'is-invalid': submit && f.isSigned.errors,
+                  'is-valid': submit && f.isSigned.valid
+                }">
+                <option *ngFor="let item of booleanRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.isSigned.errors">
+                <div *ngIf="f.isSigned.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="dateEcheance">Date échéance <span class="asterix">*</span></label>
+              <input (change)="onChangeDate(); onStep(form.value)" type="date" formControlName="dateEcheance"
+                class="form-control" id="dateEcheance" [ngClass]="{
+                  'is-invalid': submit && f.dateEcheance.errors,
+                  'is-valid': submit && f.dateEcheance.valid
+                }">
+              <div class="invalid-feedback" *ngIf="submit && f.dateEcheance.errors">
+                <div *ngIf="f.dateEcheance.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="step" class="col-sm-12 centered-content mt-4">
+            <button type="button" awNextStep (click)="onRentGenere(form.value)" class="btn btn-primary">
+              Suivant <i class="feather icon-arrow-right"></i>
+            </button>
+          </div>
+        </aw-wizard-step>
+
+        <!-- STEP 2 DU FACTURE-->
+        <aw-wizard-step stepTitle="Facture">
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              AJOUTER DES OPTIONS SUR CETTE FACTURE
+            </span>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div formArrayName="options">
+                  <!-- LABEL DU TABLEAU DES OPTIONS -->
+                  <div class="form-group" *ngIf="option.length > 0">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <label>Désignation <span class="asterix">*</span></label>
+                      </div>
+                      <div class="col-md-2">
+                        <label>Prix unitaire <span class="asterix">*</span></label>
+                      </div>
+                      <div class="col-md-1">
+                        <label>Qté <span class="asterix">*</span></label>
+                      </div>
+                      <div class="col-md-1">
+                        <label>TVA</label>
+                      </div>
+                      <div class="col-md-2">
+                        <label>Remise</label>
+                      </div>
+                      <div class="col-md-2">
+                        <label>Total</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group" *ngFor="let opt of option.controls; let i=index" [formGroupName]="i">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <input type="text" formControlName="libelle" class="form-control p-2" id="libelle{{i}}"
+                          [ngClass]="{
+                            'is-invalid': submit && opt.get('libelle').errors,
+                            'is-valid': submit && opt.get('libelle').valid
+                          }" placeholder="Désignation">
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('libelle').errors">
+                          <div *ngIf="opt.get('libelle').errors.required">{{required.novide}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <input (change)="onChangeTotal()" type="number" formControlName="prix" class="form-control"
+                          id="prix{{i}}" [ngClass]="{
+                            'is-invalid': submit && opt.get('prix').errors,
+                            'is-valid': submit && opt.get('prix').valid
+                          }" placeholder="Prix unitaire">
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                          <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                        </div>
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                          <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                          <div *ngIf="opt.get('prix').errors.pattern">{{required.nolettre}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-1">
+                        <input (change)="onChangeTotal()" type="number" formControlName="qte" class="form-control"
+                          id="qte{{i}}" [ngClass]="{
+                            'is-invalid': submit && opt.get('qte').errors,
+                            'is-valid': submit && opt.get('qte').valid
+                          }" placeholder="Quantité">
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('qte').errors">
+                          <div *ngIf="opt.get('qte').errors.required">{{required.novide}}</div>
+                          <div *ngIf="opt.get('qte').errors.pattern">{{required.nolettre}}</div>
+                          <div *ngIf="opt.get('qte').errors.pattern">{{required.positive}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-1">
+                        <input (change)="onChangeTotal()" type="number" formControlName="tva" class="form-control p-2"
+                          id="tva{{i}}" [ngClass]="{
+                            'is-invalid': submit && opt.get('tva').errors,
+                            'is-valid': submit && opt.get('tva').valid
+                          }" placeholder="TVA">
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('tva').errors">
+                          <div *ngIf="opt.get('tva').errors.pattern">{{required.nolettre}}</div>
+                          <div *ngIf="opt.get('tva').errors.pattern">{{required.positive}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <input (change)="onChangeTotal()" type="number" formControlName="remise" class="form-control"
+                          id="remise{{i}}">
+                      </div>
+                      <div class="col-md-2">
+                        <input type="number" formControlName="total" class="form-control p-2" id="total{{i}}"
+                          step="0.01" placeholder="TOTAL" readonly>
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('total').errors">
+                          <div *ngIf="opt.get('total').errors.pattern">{{required.nolettre}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-1">
+                        <button (click)="onDeleteOption(i)" type="button" class="btn btn-icon btn-danger">
+                          <i class="feather icon-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-2 d-flex flex-row-reverse">
+                  <button (click)="onAddOption()" type="button" class="btn btn-primary">
+                    Ajouter <i class="feather icon-plus"></i>
+                  </button>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-12">
+                    <table class="table table-responsive invoice-table invoice-total">
+                      <tbody>
+                        <tr>
+                          <th>TOTAL HT :</th>
+                          <td>{{ totalHT | number }}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL REMISE :</th>
+                          <td>{{ totalRemise | number }}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL TVA :</th>
+                          <td>{{ totalTva | number }}</td>
+                        </tr>
+                        <tr class="text-info">
+                          <td>
+                            <hr />
+                            <h2 class="text-primary m-r-10">TOTAL :</h2>
+                          </td>
+                          <td>
+                            <hr />
+                            <h2 class="text-success">{{ totalTTC | number }}</h2>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button type="button" awPreviousStep class="btn btn-warning">
+                <i class="feather icon-arrow-left"></i> Précedent
+              </button>
+              <button *ngIf="!edit && rent.length > 0" type="button" awNextStep class="btn btn-primary">
+                Suivant <i class="feather icon-arrow-right"></i>
+              </button>
+              <button *ngIf="f.moratoire.value && rent.length == 0" type="button" awNextStep class="btn btn-primary">
+                Suivant <i class="feather icon-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <!-- STEP 3 DU FORMULAIRE-->
+        <aw-wizard-step stepTitle="Loyers précédents" *ngIf="!edit && rent.length > 0">
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS CONCERNANT LES FACTURES PRECEDENTES GENEREES
+            </span>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <table class="table table-striped table-bordered nowrap table-hover">
+                  <thead>
+                    <tr>
+                      <th>Mois</th>
+                      <th>Type</th>
+                      <th>Loyer</th>
+                      <th>Charge</th>
+                      <th>Total</th>
+                      <th>Verse</th>
+                      <th>Restant</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody class="task-page" formArrayName="rents">
+                    <tr class="form-group" *ngFor="let item of rent.controls; let i=index" [formGroupName]="i">
+                      <td><input formControlName="mois" class="form-control p-2" id="mois{{i}}"></td>
+                      <td><input formControlName="type" class="form-control p-2" id="type{{i}}"></td>
+                      <td>
+                        <input type="number" formControlName="loyer" class="form-control p-2" id="loyer_{{i}}"
+                          (change)="onCalculRent(i)" [ngClass]="{
+                            'is-invalid': submit && item.get('loyer').errors,
+                            'is-valid': submit && item.get('loyer').valid
+                        }">
+                      </td>
+                      <td>
+                        <input type="number" formControlName="charge" class="form-control p-2" id="charge_{{i}}"
+                          (change)="onCalculRent(i)" [ngClass]="{
+                            'is-invalid': submit && item.get('charge').errors,
+                            'is-valid': submit && item.get('charge').valid
+                        }">
+                      </td>
+                      <td>
+                        <input type="number" formControlName="total" class="form-control p-2" id="total_{{i}}"
+                          (change)="onCalculRent(i)" [ngClass]="{
+                            'is-invalid': submit && item.get('total').errors,
+                            'is-valid': submit && item.get('total').valid
+                        }">
+                      </td>
+                      <td>
+                        <input type="number" formControlName="verse" class="form-control p-2" id="verse_{{i}}"
+                          step="1000" (change)="onCalculRent(i)" [ngClass]="{
+                            'is-invalid': submit && item.get('verse').errors,
+                            'is-valid': submit && item.get('verse').valid
+                          }">
+                      </td>
+                      <td>
+                        <input type="number" formControlName="restant" class="form-control p-2" readonly [ngClass]="{
+                            'is-invalid': submit && item.get('restant').errors,
+                            'is-valid': submit && item.get('restant').valid
+                          }">
+                      </td>
+                      <td>
+                        <button [disabled]="edit" (click)="deleteRent(i)" type="button" class="btn btn-danger">
+                          <i class="feather icon-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-sm-12 centered-content">
+                <div class="btn-group mt-10">
+                  <button type="button" awPreviousStep class="btn btn-warning">
+                    <i class="feather icon-arrow-left"></i> Précedent
+                  </button>
+                  <button *ngIf="f.moratoire.value" type="button" awNextStep class="btn btn-primary">
+                    Suivant <i class="feather icon-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <!-- STEP 4 DU FORMULAIRE-->
+        <aw-wizard-step stepTitle="Echeancier" *ngIf="f.moratoire.value">
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS CONCERNANT LE MORATOIRE
+            </span>
+          </div>
+          <div class="row">
+            <div *ngIf="f.moratoire.value" class="col-md-3">
+              <label for="nbrMoratoire">Nombre de moratoire <span class="asterix">*</span></label>
+              <input (change)="addDeadline()" type="number" formControlName="nbrMoratoire" min="0" class="form-control"
+                id="nbrMoratoire" [ngClass]="{
+                  'is-invalid': submit && f.nbrMoratoire.errors,
+                  'is-valid': submit && f.nbrMoratoire.valid
+                }">
+            </div>
+
+            <div *ngIf="deadlines.controls.length > 0" class="col-sm-12">
+              <div class="form-group">
+                <div formArrayName="deadlines">
+                  <!-- LABEL DU TABLEAU DES ECHEANCES -->
+                  <div class="form-group">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <label>Date <span class="asterix">*</span></label>
+                      </div>
+                      <div class="col-md-6">
+                        <label>Description</label>
+                      </div>
+                      <div class="col-md-3">
+                        <label>Montant <span class="asterix">*</span></label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group" *ngFor="let deadline of deadlines.controls; let i=index" [formGroupName]="i">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <input autocomplete="off" formControlName="date" placeholder="Sélectionner le mois"
+                          id="date{{i}}" class="form-control" [placement]="'top'" bsDatepicker
+                          [bsConfig]="{dateInputFormat: 'DD-MM-YYYY'}">
+                      </div>
+                      <div class="col-md-6">
+                        <input type="text" formControlName="description" class="form-control" id="description{{i}}"
+                          placeholder="Description">
+                      </div>
+                      <div class="col-md-3">
+                        <input type="number" formControlName="montant" class="form-control p-2" id="montant{{i}}"
+                          placeholder="Montant">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button type="button" awPreviousStep class="btn btn-warning">
+                <i class="feather icon-arrow-left"></i> Précedent
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+      </aw-wizard>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

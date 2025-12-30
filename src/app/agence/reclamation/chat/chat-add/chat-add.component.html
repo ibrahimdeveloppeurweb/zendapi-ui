@@ -1,0 +1,73 @@
+<div class="content">
+  <div class="card-body">
+    <h4>{{ticket.objet}}<span [ngClass]="ticket.etat==='FERME'?'badge-danger':'badge-success'"
+        class="badge  text-uppercase ml-2 f-12">{{ticket.etat}}</span></h4>
+    <div class="border-bottom pb-3 pt-3">
+      <div class="row">
+        <div class="col-md-7">
+          <button *ngIf="ticket.etat!='FERME'" type="button" (click)="close(ticket)"
+            class="btn btn-outline-success btn-sm mr-2">Fermer
+            <i class="feather icon-check mr-1"></i>
+          </button>
+        </div>
+        <div class="col-md-5 text-right">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-card" #scrollMe style="height: 50%; overflow-y: auto;">
+    <div style="overflow: hidden;">
+      <div class="card-body">
+        <div *ngFor="let item of ticket.chats">
+          <div *ngIf="item.user.uuid == user.uuid" class="row m-b-20 send-chat">
+            <div class="col">
+              <div class="msg">
+                <p [innerHTML]="item.message" class="m-b-0"></p>
+                <img *ngFor="let image of item.folder?.files" src="{{publicUrl+'/'+image?.fullPath}}" alt=""
+                  (click)="open(publicUrl+'/'+image?.fullPath)">
+              </div>
+              <p class="text-muted m-b-0"><i class="fa fa-clock-o m-r-10"></i>{{item.user.nom}}</p>
+            </div>
+            <div class="col-auto p-l-0">
+              <img src="assets/images/avatar-default.png" alt="user image" class="img-radius wid-40">
+            </div>
+          </div>
+          <div *ngIf="item.user.uuid != user.uuid" class="row m-b-20 received-chat">
+            <div class="col-auto p-r-0">
+              <img src="assets/images/avatar-default.png" alt="user image" class="img-radius wid-40">
+            </div>
+            <div class="col">
+              <div class="msg">
+                <p [innerHTML]="item.message" class="m-b-0"></p>
+                <img *ngFor="let image of item.folder?.files" src="{{publicUrl+'/'+image?.fullPath}}" alt=""
+                  (click)="open(publicUrl+'/'+image?.fullPath)">
+              </div>
+              <p class="text-muted m-b-0"><i class="fa fa-clock-o m-r-10"></i>{{item.user.nom}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="ticket.etat!='FERME'" class="px-5">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <app-folder-uploader #folderUploader (filesd)="files($event)" [maxSize]="3"
+            (filesUploaded)="setParam('folderUuid',$event)" [path]="'chat'" [etat]="'add'" [folder]="null">
+          </app-folder-uploader>
+        </div>
+      </div>
+      <div class="form-group">
+        <input type="text" formControlName="message" placeholder="Message" name="task-insert" id="Project"
+          class="form-control">
+        <div class="form-icon">
+          <button [disabled]="form.invalid" type="submit" class="btn btn-primary btn-icon">
+            <i *ngIf="!loading" class="feather icon-message-circle"></i>
+            <span *ngIf="loading" role="status" class="spinner-border spinner-border-sm"></span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

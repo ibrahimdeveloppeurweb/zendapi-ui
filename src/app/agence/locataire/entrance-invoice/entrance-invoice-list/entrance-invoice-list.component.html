@@ -1,0 +1,115 @@
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+        <tr>
+          <th>Locative</th>
+          <th *ngIf="locataire">Locataire</th>
+          <th>Etat</th>
+          <th>Période</th>
+          <th>Montant</th>
+          <th>Payé</th>
+          <th>Restant</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of invoices">
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span *ngIf="item?.contract">
+                  <span class="text-warning">{{item?.contract?.rental?.libelle}}</span> <br />
+                  Superficie : {{item?.contract?.rental?.superficie}} m² - {{item?.contract?.rental?.piece}} pièce(s): <br />
+                  Propriétaire : {{item?.contract?.rental?.house?.owner?.searchableTitle}}
+                </span>
+                <span *ngIf="item?.groupedContract">
+                  <span class="text-warning">{{item?.groupedContract?.house?.nom}}</span> <br />
+                  <span *ngFor="let rental of item?.groupedContract?.rentals">{{rental?.libelle}} - Superficie : {{rental?.superficie}} m² - {{rental?.piece}} pièce(s): <br /></span>
+                  Propriétaire : {{item?.groupedContract?.house?.owner?.searchableTitle}}
+                </span>
+              </p>
+            </td>
+            <td *ngIf="locataire">
+              <span class="m-0 d-inline-block align-middle font-16">
+                <div *ngIf="item?.contract">
+                  <span class="text-warning">{{item?.contract?.tenant?.searchableTitle}}</span> <br />
+                  Type : {{item?.contract?.tenant?.type}}<br />
+                  Telephone : {{item?.contract?.tenant?.telephone}}
+                </div>
+                <div *ngIf="item?.groupedContract">
+                  <span class="text-warning">{{item?.groupedContract?.tenant?.searchableTitle}}</span> <br />
+                  Type : {{item?.groupedContract?.tenant?.type}}<br />
+                  Telephone : {{item?.groupedContract?.tenant?.telephone}}
+                </div>
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-danger' : item?.etat === 'IMPAYE',
+              'badge-primary' : item?.etat === 'ATTENTE',
+              'badge-warning' : item?.etat === 'EN COURS',
+              'badge-success' : item?.etat === 'SOLDE'
+              }">{{payment(item?.etat)}}</span>
+            </td>
+            <td>
+              <p class="m-0 d-inline-block align-middle font-16">{{ item?.libelle }}</p>
+              <div *ngIf="item?.contract">
+                <br *ngIf="item?.contract?.etat !== 'ACTIF'"/>
+                <span *ngIf="item?.contract?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                'badge-light-danger' : item?.contract?.etat === 'RESILIE',
+                'badge-light-warning' : item?.contract?.etat === 'INACTIF',
+                'badge-light-primary' : item?.contract?.etat === 'ACTIF'
+                }"><small>{{item?.statut}}</small></span>
+              </div>
+              <div *ngIf="item?.groupedContract">
+                <br *ngIf="item?.groupedContract?.etat !== 'ACTIF'"/>
+                <span *ngIf="item?.groupedContract?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                'badge-light-danger' : item?.groupedContract?.etat === 'RESILIE',
+                'badge-light-warning' : item?.groupedContract?.etat === 'INACTIF',
+                'badge-light-primary' : item?.groupedContract?.etat === 'ACTIF'
+                }"><small>{{item?.statut}}</small></span>
+              </div>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary font-weight-blod">{{item?.montant|number}} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-success font-weight-blod">{{item?.paye|number}} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-danger font-weight-blod">{{item?.impaye|number}} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showEntranceInvoice(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button *ngxPermissionsOnly="'INVOICE:PRINTER:SHOW'" (click)="printerInvoice(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-primary"> {{total | number}} {{global.device}}</td>
+            <td class="font-weight-bold font-size-40 text-success"> {{paye | number}} {{global.device}}</td>
+            <td class="font-weight-bold font-size-40 text-danger"> {{impaye | number}} {{global.device}}</td>
+            <td *ngIf="action"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

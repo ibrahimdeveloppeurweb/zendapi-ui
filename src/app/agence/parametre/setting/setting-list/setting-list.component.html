@@ -1,0 +1,317 @@
+<div class="row">
+  <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+    <div class="col-md-3">
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4>Paramètres</h4>
+        </div>
+        <div class="card-body p-3">
+          <div class="cat-list">
+            <div *ngxPermissionsOnly="'SETTING:AGENCY'" class="border-bottom pb-3 ">
+              <a class="btn btn-light width" (click)="onDisplay('GENERAL')">
+                <i class="fa fa-cog"></i> Général
+              </a>
+            </div>
+            <div *ngxPermissionsOnly="'SETTING:SMS:AGENCY'" class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('SMS')">
+                <i class="fas fa-comment-alt"></i> Sms
+              </a>
+            </div>
+            <div *ngxPermissionsOnly="'SETTING:MAIL:AGENCY'" class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('MAIL')">
+                <i class="fas fa-envelope"></i> Mails
+              </a>
+            </div>
+            <div *ngxPermissionsOnly="'SETTING:TEMPLATE:AGENCY'" class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('TEMPLATE')">
+                <i class="fas fa-synagogue"></i> Templates
+              </a>
+            </div>
+            <!--<div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('PAYSTACK')">
+                <i class="fas fa-credit-card"></i> Compte Paystack
+              </a>
+            </div>-->
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4>Autres paramètres</h4>
+        </div>
+        <div class="card-body p-3">
+          <div class="cat-list">
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('EQUIPEMENT')">
+                <i class="fas fa-synagogue"></i> Équipement
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('TANTIEME')">
+                <i class="fas fa-calendar"></i> Millièmes
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('CATEGORY')">
+                <i class="fas fa-cash-register"></i> Catégorie de charges
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('TYPE_BIEN')">
+                <i class="fas fa-home"></i> Type de bien
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4>Comptabilité</h4>
+        </div>
+        <div class="card-body p-3">
+          <div class="cat-list">
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('JOURNAUX')">
+                <i class="fas fa-book"></i> Journaux comptables
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('COMPTE_MODELE')">
+                <i class="fa-sharp fas fa-bookmark"></i> Modèle de plan comptable
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('PLAN_COMPTABLE')">
+                <i class="fas fa-compress"></i> Plan comptable
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('PLAN_AUXILIAIRE')">
+                <i class="fa-sharp fas fa-sort"></i> Plans des comptes auxiliaires
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('COMPTE_DEFAUT')">
+                <i class="fas fa-pallet"></i> Comptes par défaut
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('TRESORERIE')">
+                <i class="fas fa-pallet"></i> Trésorerie
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('COMPTE_TVA')">
+                <i class="fas fa-money-bill-wave"></i> Comptes Taxes
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('CHARGE')">
+                <i class="fas fa-money-bill-wave"></i> Comptes Charges soc/fisc
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('FRAIS')">
+                <i class="fas fa-money-bill-wave"></i> Notes de Frais
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('PRODUIT')">
+                <i class="fas fa-money-bill-wave"></i> Produits
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onChange('LENGTH_CODE_COMPTABLE')">
+                <i class="fas fa-reel"></i> Longueur des Codes Comptables
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4>Localisation des biens</h4>
+        </div>
+        <div class="card-body p-3">
+          <div class="cat-list">
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('COUNTRY')">
+                <i class="fas fa-globe"></i> Pays
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('CITY')">
+                <i class="fas fa-city"></i> Villes
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('COMMON')">
+                <i class="fas fa-home"></i> Communes
+              </a>
+            </div>
+            <div class="border-bottom pb-3 pt-3">
+              <a class="btn btn-light width" (click)="onDisplay('NEIGHBORHOOD')">
+                <i class="fas fa-house-damage"></i> Quartiers
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <!-- LISTE DES PARAMETRES GENERAUX -->
+      <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+      <app-general-add *ngIf="type === 'GENERAL' && general" [general]="general" class="width"></app-general-add>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="SETTING:AGENCY">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="type === 'GENERAL'" [title]="'liste template'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- LISTE DES TEMPLATE -->
+      <ng-template ngxPermissionsOnly="SETTING:TEMPLATE:AGENCY">
+        <app-template-add *ngIf="type === 'TEMPLATE'" class="width"></app-template-add>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="SETTING:TEMPLATE:AGENCY">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="type === 'TEMPLATE'" [title]="'liste template'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- LISTE DES SMS -->
+      <ng-template ngxPermissionsOnly="SETTING:SMS:AGENCY">
+        <app-sms-add *ngIf="type === 'SMS' && sms" [sms]="sms" class="width"></app-sms-add>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="SETTING:SMS:AGENCY">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="type === 'SMS'" [title]="'liste sms'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- LISTE DES MAILS -->
+      <ng-template ngxPermissionsOnly="SETTING:MAIL:AGENCY">
+          <app-mail-add *ngIf="type === 'MAIL' && mail" [mail]="mail" class="width"></app-mail-add>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="SETTING:MAIL:AGENCY">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="type === 'MAIL'" [title]="'liste mail'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- PARAMÈTRES DU COMPTE PAYSTACK -->
+      <!-- <ng-template ngxPermissionsOnly="SETTING:PAYSTACK:AGENCY"> -->
+      <app-paystack-account-show *ngIf="type === 'PAYSTACK'" class="width"></app-paystack-account-show>
+      <!-- </ng-template> -->
+      <!-- <ng-template ngxPermissionsExcept="SETTING:PAYSTACK:AGENCY">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="type === 'PAYSTACK'" [title]="'Paramètres du compte Paystack de l\'agence'"></app-no-droit>
+        </div>
+      </ng-template> -->
+
+      <!-- LISTE DES EQUIPEMENTS -->
+      <div class="col-md-12" *ngIf="type === 'EQUIPEMENT'">
+        <app-equipment-list [equipments]="equipments" class="width"></app-equipment-list>
+        <app-no-data class="width" [title]="'Aucun équipement trouvé'" *ngIf="equipments && equipments.length === 0"></app-no-data>
+      </div>
+
+      <!-- LISTE DES ANNEES -->
+      <div class="col-md-12" *ngIf="type === 'YEAR'">
+        <app-year-list *ngIf="years" [years]="years" class="width"></app-year-list>
+      </div>
+
+      <!-- LISTE DES TANTIEMES -->
+      <div class="col-md-12" *ngIf="type === 'TANTIEME'">
+        <app-tantieme-list class="width"></app-tantieme-list>
+      </div>
+
+      <!-- LISTE DES CATEGORIES DE CHARGES -->
+      <div class="col-md-12" *ngIf="type === 'CATEGORY'">
+        <app-category-list class="width" [loadCategory]="loadCategory"></app-category-list>
+      </div>
+
+
+
+      <!-- DEFINIR LA TAILLE DES COMPTE COMPTABLE -->
+      <div class="col-md-12" *ngIf="type ===  'LENGTH_CODE_COMPTABLE'">
+        <app-length-code-comptable></app-length-code-comptable>
+      </div>
+
+      <!-- LISTE DES COMPTES TVA -->
+      <div class="col-md-12" *ngIf="type ===  'COMPTE_TVA'">
+        <app-compte-tva-list class="width"></app-compte-tva-list>
+      </div>
+
+      <!-- LISTE DES COMPTE AUXILIAIRE -->
+      <div class="col-md-12" *ngIf="type === 'PLAN_AUXILIAIRE'">
+        <app-plan-auxiliaire class="width"></app-plan-auxiliaire>
+      </div>
+
+      <!-- LISTE DES COMPTE PAS DEFAUT -->
+      <div class="col-md-12" *ngIf="type === 'COMPTE_DEFAUT'">
+        <app-compte-defaut class="width"></app-compte-defaut>
+      </div>
+
+      <!-- LISTE DES COMPTES COMPTABLES -->
+      <div class="col-md-12" *ngIf="type === 'PLAN_COMPTABLE'">
+        <app-plan-comptable-list class="width"></app-plan-comptable-list>
+      </div>
+
+      <!-- LISTE DES JOURNAUX -->
+      <div class="col-md-12" *ngIf="type === 'JOURNAUX'">
+        <app-journaux-list class="width"></app-journaux-list>
+      </div>
+
+      <!-- LISTE DES MODELES DE COMPTE COMPTABLES -->
+      <div class="col-md-12" *ngIf="type === 'COMPTE_MODELE'">
+        <app-plan-modele-list class="width"></app-plan-modele-list>
+      </div>
+
+      <!-- LISTE DES COMPTES TRESORERIE -->
+      <div class="col-md-12" *ngIf="type === 'TRESORERIE'">
+        <app-tresorerie class="width"></app-tresorerie>
+      </div>
+
+      <!-- LISTE DES COMPTES CHARGES -->
+      <div class="col-md-12" *ngIf="type === 'CHARGE'">
+        <app-charge class="width"></app-charge>
+      </div>
+
+      <!-- LISTE DES NOTES DE FRAIS -->
+      <div class="col-md-12" *ngIf="type === 'FRAIS'">
+        <app-note-frais class="width"></app-note-frais>
+      </div>
+
+      <!-- LISTE DES NOTES DE FRAIS -->
+      <div class="col-md-12" *ngIf="type === 'PRODUIT'">
+        <app-produit class="width"></app-produit>
+      </div>
+
+      <div class="col-md-12" *ngIf="type === 'COUNTRY'">
+        <app-country-list class="width"></app-country-list>
+      </div>
+
+      <!-- LISTE DES VILLES -->
+      <div class="col-md-12" *ngIf="type === 'CITY'">
+        <app-city-list class="width"></app-city-list>
+      </div>
+
+      <div class="col-md-12" *ngIf="type === 'COMMON'">
+        <app-common-list class="width"></app-common-list>
+      </div>
+
+      <div class="col-md-12" *ngIf="type === 'NEIGHBORHOOD'">
+        <app-neighborhood-list class="width"></app-neighborhood-list>
+      </div>
+      <div class="col-md-12" *ngIf="type === 'TYPE_BIEN'">
+        <app-type-bien-list class="width"></app-type-bien-list>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="SETTING:AGENCY">
+    <div class="col-md-12">
+      <app-no-droit [title]="'Paramètre client'"></app-no-droit>
+    </div>
+  </ng-template>
+</div>

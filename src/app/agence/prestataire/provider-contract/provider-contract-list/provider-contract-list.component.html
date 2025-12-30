@@ -1,0 +1,96 @@
+<div class="col-md-12">
+    <span class="badge badge-secondary mb-4 f-14 width">LISTE DES CONTRATS</span>
+    <app-card [hidHeader]="true" cardClass="card-datatable">
+        <div class="table-responsive">
+            <table *ngIf="etat" datatable [dtOptions]="dtOptions"
+                class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Syndic</th>
+                        <th>Libellé CONTRAT</th>
+                        <th>Fournisseur ou Prestataire</th>
+                        <th>Date de signature</th>
+                        <th>Date de début</th>
+                        <th>Date de fin</th>
+                        <th>Etat</th>
+                        <th>Montant</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of providerContracts">
+                        <td>
+                            <span class="text-primary">{{item?.trustee?.nom}}</span><br>
+                            <span>
+                                <span>Lot : {{item?.houseCo?.nom}} {{item?.homeCo?.nom}}</span><br />
+                            </span>
+                            <span *ngIf="item?.infrastructure!=null">
+                                <span>Infrastructure : {{item?.infrastructure?.nom}}</span><br />
+                            </span>
+                        </td>
+                        <td>
+                            <span>{{ item?.libelle }}</span>
+                        </td>
+                        <td *ngIf="prestataire" class="align-middle">
+                            <p class="m-0 d-inline-block align-middle font-16">
+                                <span class="text-primary">{{item?.provider?.nom}}</span><br />
+                                Type: {{item?.provider?.type }} <br />
+                                Telephone: {{item?.provider?.telephone}}
+                            </p>
+                        </td>
+                        <td>{{ item.dateSign|date: "d MMMM y hh:mm" : '' : 'fr-FR' }}</td>
+                        <td>{{ item.dateD|date: "d MMMM y hh:mm" : '' : 'fr-FR' }}</td>
+                        <td>{{ item.dateF|date: "d MMMM y hh:mm" : '' : 'fr-FR' }}</td>
+                        <td>
+                            <span class="badge" [ngClass]="{
+                'badge-danger' : item?.etat === 'INVALIDE',
+                'badge-success' : item?.etat === 'VALIDE'
+                }">{{validation(item?.etat)}}</span>
+                        </td>
+                        <td class="align-middle">
+                            <p class="m-0 d-inline-block align-middle font-16">
+                                <span class="text-success font-weight-blod">{{ item?.montant|number }} {{ global.device
+                                    }}</span>
+                            </p>
+                        </td>
+                        <td class="table-action">
+                            <button *ngxPermissionsOnly="'INVOICE:CO:SHOW'" (click)="showProviderContract(item)" type="button"
+                                class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <ng-template ngxPermissionsOnly="INVOICE:CO:EDIT">
+                                <button *ngIf="item?.etat === 'INVALIDE'" (click)="editProviderContract(item)" type="button"
+                                    class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                                    <i class="feather icon-edit-2"></i>
+                                </button>
+                            </ng-template>
+                            <ng-template ngxPermissionsOnly="INVOICE:CO:VALIDATE">
+                                <button *ngIf="item?.etat === 'INVALIDE'" (click)="validateProviderContract(item)"
+                                    type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Valider">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </ng-template>
+                            <button *ngIf="item?.etat === 'VALIDE'" (click)="printerProviderContract(item)" type="button"
+                                class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                                <i class="feather icon-printer"></i>
+                            </button>
+                            <button *ngxPermissionsOnly="'INVOICE:CO:DELETE'" type="button" (click)="delete(item)"
+                                class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                                <i class="feather icon-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td [attr.colspan]="prestataire && construction? '7' : '5'"
+                            class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                        <td class="font-weight-bold font-size-40 text-warning"> {{ total | number }} {{global.device}}
+                        </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </app-card>
+</div>

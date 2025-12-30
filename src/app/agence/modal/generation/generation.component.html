@@ -1,0 +1,22 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <!-- BOUTONS DE GESTION -->
+  <div class="col-sm-12 mb-4 d-flex justify-content-center">
+    <button (click)="onConfirme('AVIS')" type="button" class="btn btn-primary float-center m-1"
+      ngbTooltip="Cliquez ici pour generer manuellement des avis echeances">
+      Avis écheances <i class="fas fa-pager"></i>
+    </button>
+    <button (click)="onConfirme('RENT')" type="button" class="btn btn-info float-center m-1" ngbTooltip="Cliquez ici pour generer manuellement des loyers">
+      Loyer <i class="feather icon-package"></i>
+    </button>
+    <button (click)="onConfirme('PENALITY')" type="button" class="btn btn-warning float-center m-1" ngbTooltip="Cliquez ici pour generer manuellement toutes les pénalitées">
+      Pénalité <i class="feather icon-package"></i>
+    </button>
+  </div>
+</div>

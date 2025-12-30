@@ -1,0 +1,93 @@
+<div class="col-md-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th >type</th>
+            <th *ngIf="treasury">Emetteur</th>
+            <th>Recepteur</th>
+            <th>Libelle</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of supplies">
+          <td class="align-middle" >
+            <p class="m-0 d-inline-block align-middle font-16">
+              <span class="text-primary">{{ item?.type }}</span>
+            </p>
+          </td>
+          <td class="align-middle" *ngIf="treasury">
+            <p class="m-0 d-inline-block align-middle font-16">
+              <span class="text-primary">{{ item?.emetteur?.searchableTitle }}</span> <br />
+              Gérant : {{ item?.emetteur?.gerant?.libelle }} - Type: {{item?.emetteur?.type }}
+            </p>
+          </td>
+          <td class="align-middle" >
+            <p class="m-0 d-inline-block align-middle font-16">
+              <span class="text-primary">{{ item?.recepteur?.searchableTitle }}</span> <br />
+              Gérant : {{ item?.recepteur?.gerant?.libelle }} - Type: {{item?.recepteur?.type }}
+            </p>
+          </td>
+          <td>
+            <p class="m-0 d-inline-block align-middle font-16">
+              <span class="text-primary">{{item?.libelle}}</span> <br />
+              Mode : {{ item?.mode }} <br />
+              <span class="badge" [ngClass]="{
+              'badge-success' : item?.etat === 'VALIDE',
+              'badge-danger' : item?.etat === 'ATTENTE'
+              }">{{ item?.etat === 'ATTENTE' ?  'EN ATTENTE DE VALIDATION' : item?.etat }}</span> <br/>
+            </p>
+          </td>
+          <td>{{ item?.date|date: "d MMMM y" : '' : 'fr-FR' }}</td>
+          <td class="align-middle">
+            <p class="m-0 d-inline-block align-middle font-16">
+              <span class="text-success font-weight-blod">{{item?.montant|number}} {{global.device}}</span>
+            </p>
+          </td>
+          <td class="table-action">
+            <div class="overlay-edit">
+              <button *ngxPermissionsOnly="'SUPPLY:SHOW'" (click)="showSupply(item)" type="button" class="btn btn-icon btn-secondary ml-1"
+                ngbTooltip="Détails">
+                <i class="fas fa-eye"></i>
+              </button>
+              <ng-template ngxPermissionsOnly="SUPPLY:EDIT">
+                <button *ngIf="item.etat === 'ATTENTE'" (click)="editSupply(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                  ngbTooltip="Modifier">
+                  <i class="feather icon-edit-2"></i>
+                </button>
+              </ng-template>
+              <ng-template ngxPermissionsOnly="SUPPLY:VALIDATE">
+                <button *ngIf="item.etat === 'ATTENTE'" (click)="validateSupply(item)" type="button" class="btn btn-icon  btn-success ml-1" ngbTooltip="Valider">
+                  <i class="fas fa-check"></i>
+                </button>
+              </ng-template>
+              <ng-template ngxPermissionsOnly="SUPPLY:PRINTER:SHOW">
+                <button *ngIf="item.etat === 'VALIDE'" (click)="printerSupply(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+              </ng-template>
+              <ng-template ngxPermissionsOnly="SUPPLY:DELETE">
+                <button type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                  <i class="feather icon-trash"></i>
+                </button>
+              </ng-template>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-warning"> {{total | number}} {{global.device}}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

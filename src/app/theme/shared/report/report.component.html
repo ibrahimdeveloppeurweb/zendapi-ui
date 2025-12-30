@@ -1,0 +1,82 @@
+<div class="col-md-12">
+    <app-card [hidHeader]="true" blockClass="">
+      <form [formGroup]="form" (ngSubmit)="filters()">
+        <div class="form-group">
+          <div class="row">
+            <div *ngIf="type" class="mb-2 col-md">
+              <label for="type">Type</label>
+              <select (change)="types()" formControlName="type" class="form-control" id="type">
+                <option *ngFor="let item of typeRow" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+            <div *ngIf="name" class="mb-2 col-md">
+              <label for="name">{{nameTitle}}</label>
+              <input formControlName="name" type="text" id="name" class="form-control" id="name" [placeholder]="nameTitle">
+            </div>
+            <div *ngIf="autre" class="mb-2 col-md">
+              <label for="autre">{{autreTitle}}</label>
+              <input formControlName="autre" type="text" id="autre" class="form-control" id="autre" [placeholder]="autreTitle">
+            </div>
+            <div *ngIf="bien" class="mb-2 col-md">
+              <label for="bien">{{bienTitle}}</label>
+              <input formControlName="bien" type="text" id="bien" class="form-control" id="bien" [placeholder]="bienTitle">
+            </div>
+            <div *ngIf="dateD" class="mb-2 col-md">
+              <label for="dateD">Date de début</label>
+              <input type="date" formControlName="dateD" id="dateD" class="form-control" placeholder="yyyy-mm-dd">
+            </div>
+            <div *ngIf="dateF" class="mb-2 ml-2 col-md">
+              <label for="dateF">Date de fin</label>
+              <input type="date" formControlName="dateF" id="dateF" class="form-control" placeholder="yyyy-mm-dd">
+            </div>
+          </div>
+          <hr class="border-primary">
+          <div class="row" id="filterForm">
+            <div *ngIf="categorie" class="col-md mb-2">
+              <label for="categorie">{{categorieTitle}}</label>
+              <select formControlName="categorie" class="form-control" id="categorie">
+                <option *ngFor="let item of categorieRow" [value]="item?.value">{{ item?.label }}</option>
+              </select>
+            </div>
+            <div *ngIf="etat" class="col-md mb-2">
+              <label for="etat">{{etatTitle}}</label>
+              <select formControlName="etat" class="form-control" id="etat">
+                <option *ngFor="let item of etatRow" [value]="item?.value">{{ item?.label }}</option>
+              </select>
+            </div>
+            <div *ngIf="create" class="col-md mb-2">
+              <label for="create">Date de création</label>
+              <input type="date" formControlName="create" id="create" class="form-control" placeholder="yyyy-mm-dd">
+            </div>
+            <div *ngIf="min" class="col-md mb-2">
+              <label for="min">{{minTitle}}</label>
+              <input type="number" formControlName="min" id="min" class="form-control" [placeholder]="minTitle">
+            </div>
+            <div *ngIf="max" class="col-md mb-2">
+              <label for="max">{{maxTitle}}</label>
+              <input type="number" formControlName="max" id="max" class="form-control" [placeholder]="maxTitle">
+            </div>
+            <div *ngIf="ordre" class="col-md mb-2">
+              <label for="ordre">Ordre</label>
+              <select formControlName="ordre" class="form-control" id="ordre">
+                <option [value]="'ASC'">Croissant</option>
+                <option [value]="'DESC'">Décroissant</option>
+              </select>
+            </div>
+            <div *ngIf="count" class="col-md mb-2">
+              <label for="count">Nombre</label>
+              <select formControlName="count" class="form-control" id="count">
+                <option *ngFor="let item of countRow" [value]="item.value">{{ item.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="d-flex flex-row-reverse">
+          <button type="submit" class="btn btn-warning">
+            Imprimer <i class="feather icon-printer"></i>
+          </button>
+        </div>
+      </form>
+    </app-card>
+</div>

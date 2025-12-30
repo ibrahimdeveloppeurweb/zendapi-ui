@@ -1,0 +1,409 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <aw-wizard #wizard class="">
+        <!-- STEP 1  DU FORMULAIRE-->
+        <aw-wizard-step stepTitle="Identification du Prospect">
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14  width"> Identification du Prospect </span>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-3">
+                    <label for="typeP">Type de Prospect</label>
+                    <select class="form-control" id="typeP" formControlName="typeP" (change)="onChangeType($event)">
+                      <option *ngFor="let item of typeRow" [value]="item?.value">{{item.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.typeP.errors">
+                      <div *ngIf="f.typeP.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="source">Source du Prospect <span class="asterix">*</span></label>
+                    <select class="form-control" id="source" formControlName="source"
+                      [ngClass]="{'is-invalid': submit && f.source.errors,'is-valid': submit && f.source.valid }">
+                      <option *ngFor="let item of sourceRow" [ngValue]="item?.value">{{item?.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.source.errors">
+                      <div *ngIf="f.source.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <label for="civilite">Civilité <span class="asterix">*</span></label>
+                    <select class="form-control" id="civilite" formControlName="civilite" (change)="onSexe()"
+                      [ngClass]="{'is-invalid': submit && f.civilite.errors,'is-valid': submit && f.civilite.valid }">
+                      <option *ngFor="let item of civilityRow" [ngValue]="item.value">{{item.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.civilite.errors">
+                      <div *ngIf="f.civilite.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="nom"> Nom et Prénoms<span class="asterix">*</span> </label>
+                    <input type="text" formControlName="nom" class="form-control" id="nom"
+                      [ngClass]="{'is-invalid': submit && f.nom.errors,'is-valid': submit && f.nom.valid}"
+                      [placeholder]="'Nom et Prénoms'">
+                    <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+                      <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="téléphone">Téléphone<span class="asterix">*</span> </label>
+                    <app-contact-mask [selected]="telephoneSelected" (value)="setContact($event, 'telephone')"
+                      [name]="'telephone'" [required]="true" [placeholder]="'Votre pays'"></app-contact-mask>
+                    <div class="invalid-feedback" *ngIf="submit && f.telephone.errors">
+                      <div *ngIf="f.telephone.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="numbWhatsapp">Contact whatsapp
+                    </label>
+                    <app-contact-mask [selected]="numbWhatsappSelected" (value)="setContact($event, 'numbWhatsapp')"
+                      [name]="'numbWhatsapp'" [required]="true" [placeholder]="'Votre pays'"></app-contact-mask>
+                    <div class="invalid-feedback" *ngIf="submit && f?.numbWhatsapp?.errors">
+                      <div *ngIf="f.numbWhatsapp?.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="email"> Email </label>
+                    <input type="text" formControlName="email" class="form-control" id="email">
+                      <div class="invalid-feedback" *ngIf="submit && f.email.errors">
+                        <div *ngIf="f.email.errors.required">{{required.novide}}</div>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="statutM">Statut matrimonial</label>
+                    <select class="form-control" id="statutM" formControlName="statutM">
+                      <option *ngFor="let item of maritalRow" [value]="item?.value">{{item.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.statutM.errors">
+                      <div *ngIf="f.statutM.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="enfant">Avez vous des enfants ?</label>
+                    <select class="form-control" id="enfant" formControlName="enfant">
+                      <option *ngFor="let item of booleanRow" [value]="item?.value">{{item.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.enfant.errors">
+                      <div *ngIf="f.enfant.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3" *ngIf="f.enfant.value === 'OUI'">
+                    <label for="nbEnfant">Nombre d'enfant</label>
+                    <input type="number" formControlName="nbEnfant" class="form-control" id="nbEnfant" min='0'
+                      [ngClass]="{'is-invalid': submit && f.nbEnfant.errors,'is-valid': submit && f.nbEnfant.valid}"
+                      placeholder="Nombre d'enfant">
+                    <div class="invalid-feedback" *ngIf="submit && f.nbEnfant.errors">
+                      <div *ngIf="f.nbEnfant.errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="profession">Profession</label>
+                    <select class="form-control" id="profession" formControlName="profession">
+                      <option *ngFor="let item of professionRow" [value]="item?.value">{{item.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.profession.errors">
+                      <div *ngIf="f.profession.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 centered-content mt-4">
+            <button type="button" awNextStep class="btn btn-primary">
+              Suivant <i class="feather icon-arrow-right"></i>
+            </button>
+          </div>
+        </aw-wizard-step>
+
+        <!-- STEP 2 DU FACTURE-->
+
+        <aw-wizard-step stepTitle="Recueil de Besoins">
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14  formBadge width"> Informations sur le besoin </span>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-4">
+                    <label for="besoin">Type de Besoin </label>
+                    <select class="form-control" id="besoin" formControlName="besoin"
+                      [ngClass]="{'is-invalid': submit && f.besoin.errors,'is-valid': submit && f.besoin.valid }">
+                      <option *ngFor="let item of besoinRow" [ngValue]="item?.value">{{item?.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.besoin.errors">
+                      <div *ngIf="f.besoin.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="bien">Type de Bien </label>
+                    <select (change)="onChange('bien')" class="form-control" id="bien" formControlName="bien" [ngClass]="{
+                      'is-invalid': submit && f.bien.errors,
+                      'is-valid': submit && f.bien.valid
+                      }">
+                      <option [value]="'IMMEUBLE'">IMMEUBLE</option>
+                      <option [value]="'STUDIO'">STUDIO</option>
+                      <option [value]="'VILLA'">VILLA</option>
+                      <option [value]="'BUREAU'">BUREAU</option>
+                      <option [value]="'TERRAIN'">TERRAIN</option>
+                      <option [value]="'ENTREPOT'">ENTREPOT</option>
+                      <option [value]="'VILLA TRIPLEX'">VILLA TRIPLEX</option>
+                      <option [value]="'VILLA DUPLEX'">VILLA DUPLEX</option>
+                      <option [value]="'VILLA BASSE'">VILLA BASSE</option>
+                      <option [value]="'APPARTEMENT'">APPARTEMENT</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                      <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4" *ngIf="f.besoin.value == 'LOCATION' && (f.type.value == 'APPARTEMENT' || f.type.value == 'BUREAU' || f.type.value == 'STUDIO' || f.type.value == 'VILLA' || f.type.value == 'VILLA DUPLEX' || f.type.value == 'VILLA TRIPLEX' || f.type.value == 'VILLA BASSE')">
+                    <label for="bienM">Est-il meublé ? </label>
+                    <select formControlName="bienM" class="form-control" id="bienM"
+                      [ngClass]="{
+                      'is-invalid': submit && f.bien.errors,
+                      'is-valid': submit && f.bien .valid
+                    }">
+                      <option *ngFor="let item of bienRow" [value]="item.value">{{item.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.bien.errors">
+                      <div *ngIf="f.bien.errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4" *ngIf="f.besoin.value == 'GESTION' && f.type.value == 'IMMEUBLE'">
+                    <label for="niveau">Nombre d'étage <span class="asterix">*</span></label>
+                    <input formControlName="niveau" id="niveau" type="number"  min="0" class="form-control" (change)="loadNiveau()">
+                  </div>
+                  <div class="col-md-4" *ngIf="f.type.value == 'APPARTEMENT' || f.type.value == 'BUREAU' || f.type.value == 'VILLA' || f.type.value == 'VILLA DUPLEX' || f.type.value == 'VILLA TRIPLEX' || f.type.value == 'VILLA BASSE' || f.type.value == 'IMMEUBLE'">
+                    <label for="nbrPiece">Nombre de pièce</label>
+                    <input formControlName="nbrPiece" id="nbrPiece" type="number" class="form-control"
+                      >
+                  </div>
+                  <div class="col-md-4" *ngIf="f.type.value == 'TERRAIN' || f.type.value == 'ENTREPOT'">
+                    <label for="superficie">Superfice (m²)</label>
+                    <input formControlName="superficie" type="number" class="form-control" [ngClass]="{
+                        'is-invalid': submit && f.superficie.errors,
+                        'is-valid': submit && f.superficie.valid
+                      }" placeholder="Superfice (m²)">
+                    <div class="invalid-feedback" *ngIf="submit && f.superficie.errors">
+                      <div *ngIf="f.superficie.errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4" *ngIf="f.besoin.value == 'GESTION' && f.type.value !== 'STUDIO' && f.type.value !== 'BUREAU' && f.type.value !== 'TERRAIN' && f.type.value !== 'ENTREPOT'">
+                    <label for="nbrLocative">Nombre de locative ? <span class="asterix">*</span></label>
+                    <input (ngModelChange)="onChangeLocative()" formControlName="nbrLocative" type="number"
+                      class="form-control" [ngClass]="{
+                        'is-invalid': submit && f.nbrLocative.errors,
+                        'is-valid': submit && f.nbrLocative.valid
+                      }">
+                    <div class="invalid-feedback" *ngIf="submit && f.nbrLocative.errors">
+                      <div *ngIf="f.nbrLocative.errors.required">{{required.novide}}</div>
+                      <div *ngIf="f.nbrLocative.errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4" *ngIf="f.besoin.value == 'GESTION'">
+                    <label for="revenueL">Revenu Locatif <span class="asterix"></span></label>
+                    <input type="number" formControlName="revenueL" id="revenueL" class="form-control">
+                  </div>
+                  <div class="col-md-4" *ngIf="f.besoin.value == 'ACHAT'">
+                    <div class="position-relative form-group">
+                      <label for="min">Budget Minimum <span class="asterix">*</span></label>
+                      <input type="number" min="0" class="form-control" formControlName="min" id="min"
+                      [ngClass]="{'is-invalid': submit && f.min.errors,'is-valid': submit && f.min.valid}">
+                      <div class="invalid-feedback" *ngIf="submit && f.min.errors">
+                          <div *ngIf="f.min.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4" *ngIf="f.besoin.value == 'ACHAT'">
+                    <div class="position-relative form-group">
+                        <label for="max">Budget Maximum <span class="asterix">*</span></label>
+                        <input type="number" min="0" class="form-control" formControlName="max" id="max"
+                        [ngClass]="{'is-invalid': submit && f.max.errors,'is-valid': submit && f.max.valid}">
+                        <div class="invalid-feedback" *ngIf="submit && f.max.errors">
+                            <div *ngIf="f.max.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4" *ngIf="f.besoin.value == 'GESTION'">
+                    <div class="position-relative form-group">
+                        <label for="pourcentage">Pourcentage de Gestion (%) <span class="asterix">*</span></label>
+                        <input type="number" class="form-control" formControlName="pourcentage" id="pourcentage"
+                        [ngClass]="{'is-invalid': submit && f.pourcentage.errors,'is-valid': submit && f.pourcentage.valid}">
+                        <div class="invalid-feedback" *ngIf="submit && f.pourcentage.errors">
+                            <div *ngIf="f.pourcentage.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                  </div>
+                
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14 formBadge width"> Localisation du bien </span>
+          </div>
+          <div class="form-group">
+              <div class="row mb-2">
+                <div class="col-md-4">
+                  <label for="city">Ville <span class="asterix">*</span></label>
+                  <div class="row">
+                      <div class="col-md-10">
+                        <select formControlName="city" (change)="onSelectCity($event)" class="form-control" id="city" type=text [(ngModel)]="citySelected" [ngClass]="{
+                          'is-invalid': submit && f.city.errors,
+                          'is-valid': submit && f.city .valid
+                        }"
+                        placeholder="Selectionez une ville">
+                          <option *ngFor="let item of cities" [value]="item.uuid">{{item.libelle}}</option>
+                        </select>
+                      </div>
+                      <div class="col-md-2">
+                          <span class="add" (click)="onAdd('VILLE')"> <i class="fas fa-plus text-white fs-12"></i></span>
+                      </div>
+                  </div>
+                  <div class="invalid-feedback" *ngIf="submit && f.city.errors">
+                    <div *ngIf="f.city.errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label for="common">Commune <span class="asterix">*</span></label>
+                  <div class="row">
+                      <div class="col-md-10">
+                        <select formControlName="common" class="form-control" id="common" type=text [ngClass]="{
+                          'is-invalid': submit && f.common.errors,
+                          'is-valid': submit && f.common.valid
+                        }"
+                        placeholder="Selectionez une commune">
+                          <option *ngFor="let item of commons" [value]="item.uuid">{{item.libelle}}</option>
+                      </select>
+                      </div>
+                      <div class="col-md-2">
+                          <span class="add" (click)="onAdd('COMMUNE')"> <i class="fas fa-plus text-white fs-12"></i></span>
+                      </div>
+                  </div>
+                  <div class="invalid-feedback" *ngIf="submit && f.common.errors">
+                    <div *ngIf="f.common.errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label for="quartier">Quartier <span class="asterix">*</span></label>
+                  <div class="row">
+                      <div class="col-md-10">
+                        <select formControlName="quartier"  class="form-control" id="quartier" type=text [ngClass]="{
+                          'is-invalid': submit && f.quartier.errors,
+                          'is-valid': submit && f.quartier.valid
+                        }"
+                        placeholder="Selectionez une quartier">
+                          <option *ngFor="let item of quartiers" [value]="item.uuid">{{item.libelle}}</option>
+                      </select>
+                      </div>
+                      <div class="col-md-2">
+                          <span class="add" (click)="onAdd('QUARTIER')"> <i class="fas fa-plus text-white fs-12"></i></span>
+                      </div>
+                  </div>
+                  <div class="invalid-feedback" *ngIf="submit && f.quartier.errors">
+                    <div *ngIf="f.quartier.errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <span class="badge badge-primary my-2 f-14 formBadge width"> Description (Description supplémentaire du bien) </span>
+              </div>
+                <!-- <label for="Commentaire">Description (Description supplémentaire du bien) <span class="asterix">*</span></label> -->
+              <app-tinymce formControlName="commentaire" id="commentaire" #tinymce='tinymce' aria-placeholder="Contenu du message"></app-tinymce>
+                <div class="invalid-feedback" *ngIf="submit && f.commentaire.errors">
+                  <div *ngIf="f.commentaire.errors.required">{{required.novide}}</div>
+                </div>
+            </div>
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button type="button" awPreviousStep class="btn btn-warning">
+                <i class="feather icon-arrow-left"></i> Précedent
+              </button>
+              <button type="button" awNextStep class="btn btn-primary">
+                Suivant <i class="feather icon-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <!-- STEP 3 DU FORMULAIRE-->
+        <aw-wizard-step stepTitle="Documents Supplémentaires">
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLEMENTAIRES </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-2">
+                <app-image-uploader (filesd)="loadfile($event)" [maxSize]="2" [type]="['image/png', 'image/jpg', 'image/jpeg']" [photo]="edit && prospect ? prospect.photo : null"
+                  (imageUploaded)="setParam('photoUuid', $event)"></app-image-uploader>
+              </div>
+              <div class="col-md">
+                <label class="ml-2">Pièces et documents à joindre</label>
+                <div class="row">
+                  <div [ngClass]="fileO ? 'col-md-4' : 'col-md-12 mr-2'">
+                    <app-folder-uploader
+                      [maxSize]="3"
+                      (click)="showFile(prospect?.folder)"
+                      (filesd)="files($event)"
+                      (filesUploaded)="setParam('folderUuid',$event)"
+                      [type]="['application/pdf']"
+                      [path]="'prospect'"
+                      [etat]="edit ? 'edit': 'add'"
+                      [folder]="edit && prospect ? prospect.folder : null">
+                    </app-folder-uploader>
+                  </div>
+    
+                  <div [ngClass]="fileO ? 'col-md-8' : ''" *ngIf="fileO">
+                    <div class="row">
+                      <div class="col-sm-12 mb-2">
+                        <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                          <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                        </button>
+                      </div>
+                    </div>
+                    <ngx-doc-viewer [url]="fileO" viewer="url" style="width:100%;height: 64vh;">
+                    </ngx-doc-viewer>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button type="button" awPreviousStep class="btn btn-warning">
+                <i class="feather icon-arrow-left"></i> Précedent
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+      </aw-wizard>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="onReset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+    <button *ngIf="transformation" (click)="onConvertir()"type="button" class="btn btn-success">
+      Convertir <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

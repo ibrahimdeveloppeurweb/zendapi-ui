@@ -1,0 +1,274 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Référence : </span>
+        <span class="title-result-show">{{contract?.code }}</span>
+      </p>
+      <p>
+        <span class="title-show">Type : </span>
+        <span class="title-result-show">{{ contract?.type }}</span>
+      </p>
+      <p>
+        <span class="title-show">Locataire : </span>
+        <span class="title-result-show"> {{ contract?.tenant?.searchableTitle }} </span>
+      </p>
+      <p>
+        <span class="title-show">Bien : </span>
+        <span class="title-result-show"> {{ contract?.rental?.house?.nom }}</span>
+      </p>
+      <p>
+        <span class="title-show">Locative : </span>
+        <span class="title-result-show"> {{ contract?.rental?.porte}}</span>
+      </p>
+      <p>
+        <span class="title-show">Proprietaire : </span>
+        <span class="title-result-show"> {{ contract?.rental?.house?.owner?.searchableTitle }}</span>
+      </p>
+      <p>
+        <span class="title-show">Etat : </span>
+        <span class="title-result-show">
+          <span class="badge" [ngClass]="{
+            'badge-light-success' : contract?.etat === 'ACTIF',
+            'badge-light-warning' : contract?.etat ===  'INACTIF',
+            'badge-light-danger' : contract?.etat ===  'RESILIE'
+            }">{{ contract?.etat}}
+          </span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Renouvellement tacite : </span>
+        <span class="title-result-show">
+          <span class="badge" [ngClass]="{
+            'badge-light-success' : contract?.renouveler === true,
+            'badge-light-danger' : contract?.renouveler ===  false
+            }">{{ contract?.renouveler === true ?  'OUI' : 'NON'}}
+          </span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Contrat physique : </span>
+        <span class="title-result-show">
+          <span class="ml-1 badge badge-light-{{contract?.signed !== null ? 'success' : 'danger'}}">
+           {{contract?.signed !== null ? 'Contrat signé' : 'Contrat non signé'}}
+          </span>
+        </span>
+      </p>
+    </div>
+    <!-- COL MILLIEU -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show ">Montant : </span>
+        <span class="title-result-show text-warning">{{ contract?.montant|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">Loyer : </span>
+        <span class="title-result-show text-warning">{{ contract?.loyer|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">Charge : </span>
+        <span class="title-result-show text-warning">{{ contract?.charge|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">Pas de porte : </span>
+        <span class="title-result-show text-warning">{{ contract?.pasPorte|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">La caution est reversé à ?  : </span>
+        <span class="title-result-show text-warning">{{ contract?.cautionReverser }} </span>
+      </p>
+      <p>
+        <span class="title-show">Cautions : </span>
+        <span class="title-result-show">({{ contract?.moisCaution}} Mois)</span> -
+        <span class="title-result-show text-warning">{{ contract?.caution|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">Avance : </span>
+        <span class="title-result-show">({{ contract?.moisAvance}} Mois) - </span>
+        <span class="title-result-show text-warning">{{ contract?.avance|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">Pourcentage de retard : </span>
+        <span class="title-result-show">{{ contract?.prcRetard }}%</span>
+      </p>
+      <p>
+        <span class="title-show">Date limite de paiement : </span>
+        <span class="title-result-show">{{ contract?.limite}}</span>
+      </p>
+      <p *ngIf="contract?.etatLieux">
+        <span class="title-show">Etat des lieux : </span>
+        <span class="title-result-show">
+          <span class="ml-1 badge badge-light-danger">
+           {{contract?.etatLieux }}
+          </span>
+        </span>
+      </p>
+    </div>
+    <!-- COL DROITE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Moratoire : </span>
+        <span class="title-result-show">
+          <span class="badge" [ngClass]="{
+            'badge-light-success' : contract?.moratoire == true,
+            'badge-light-danger' : contract?.moratoire == false
+            }">{{ contract?.moratoire == true ?  'OUI' : 'NON'}}
+          </span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Periodicite : </span>
+        <span class="title-result-show">{{ contract?.periodicite }}</span>
+      </p>
+      <p>
+        <span class="title-show">Date de signature : </span>
+        <span class="title-result-show">{{ contract?.dateSign|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+      </p>
+      <p>
+        <span class="title-show">Date d'entrée : </span>
+        <span class="title-result-show">{{ contract?.dateEntr|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+      </p>
+      <p>
+        <span class="title-show">Date de Cloture : </span>
+        <span class="title-result-show">
+          <span class="ml-1 badge badge-light-danger">
+           {{contract?.dateFin|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}
+          </span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Crée le : </span>
+        <span class="title-result-show">{{contract?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ contract?.create }}</span>
+      </p>
+      <p>
+        <span class="title-show">Modifié le : </span>
+        <span class="title-result-show">{{ contract?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{contract?.update }}</span>
+      </p>
+      <p>
+        <span class="title-show">Validé le : </span>
+        <span class="title-result-show">{{ contract?.validateAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{contract?.validate }}</span>
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="contract?.entranceInvoice?.options.length > 0" class="table-responsive">
+    <table class="table table-sm table-striped table-bordered nowrap table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Désignation</th>
+          <th>Prix u.</th>
+          <th>Qte</th>
+          <th>Tva</th>
+          <th>Remise</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of contract?.entranceInvoice?.options" >
+          <td><p class="m-0 d-inline-block align-middle font-16">{{item?.libelle}}</p></td>
+          <td>
+            <p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.prix|number}} {{global.device}}</span></p>
+          </td>
+          <td>{{item?.qte}}</td>
+          <td>{{item?.tva}} %</td>
+          <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.remise|number}} {{global.device}}</span></td>
+          <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{(item?.total)|number}} {{global.device}}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="contract?.entranceInvoice?.options.length > 0" class="row">
+    <div class="col-sm-12">
+      <table class="table table-responsive invoice-table invoice-total">
+        <tbody>
+          <tr>
+            <th>TOTAL HT : </th>
+            <td> {{ contract?.entranceInvoice?.montantHt | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL REMISE : </th>
+            <td> {{ contract?.entranceInvoice?.montantRemise | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL TVA : </th>
+            <td> {{ contract?.entranceInvoice?.montantTva | number }} {{global.device}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <table class="width">
+    <tbody>
+      <tr class="border-bottom-success">
+        <td></td>
+        <td colspan="5" class="text-right font-weight-bold"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="border border-success">
+        <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+        <td class="font-weight-bold font-size-default text-right">{{ contract?.entranceInvoice?.montant | number }} {{global.device}}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="row mb-2 mt-2">
+    <div class="col-md">
+      <span class="badge badge-secondary b-2 f-14 width">FICHE DE DOSSIER</span>
+      <div class="row">
+        <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+          <app-folder-uploader (click)="showFile(contract?.signed)" [maxSize]="3"
+            [folder]="contract?.signed"
+            [etat]="'show'"
+            [allowFileUpload]="false" [allowDownload]="true">
+          </app-folder-uploader>
+        </div>
+        <div [ngClass]="file ? 'col-md-8' : ''"  *ngIf="file">
+          <div class="row">
+            <div class="col-sm-12 mb-2">
+              <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+              </button>
+            </div>
+          </div>
+          <ngx-doc-viewer
+            [url]="file"
+            viewer="url" style="width:100%;height: 64vh;">
+          </ngx-doc-viewer>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template *ngxPermissionsOnly="'CONTRACT:EDIT'">
+    <button *ngIf="contract?.etat ==='INACTIF'" (click)="editContract(contract)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <ng-template *ngxPermissionsOnly="'CONTRACT:PRINTER:SHOW'">
+    <button (click)="printerContract(contract)"  class="btn btn-warning">
+      Imprimer <i class="feather icon-printer"></i>
+    </button>
+  </ng-template>
+
+</div>

@@ -1,0 +1,48 @@
+<div class="card card-box rounded border-0 p-3 container">
+    <div>
+        <div class="py-0">
+            <h3 class="text-center">Longueur des comptes comptables</h3>
+        </div>
+        <hr class="border-2">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="p-2 m-0">
+                <div class="row mb-1">
+                    <div class="col-md-8">
+                        <span class="bold">
+                            Longueur des comptes comptables de Tiers 
+                            <span class="ml-2" ngbTooltip="Longueur des comptes comptables de Tiers (Si vous définissez la valeur à 6 ici, le compte « 401 » apparaîtra comme « 401000 » à l'écran)">
+                                <i class="fas fa-info-circle"></i>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" formControlName="thirdPartyAccountLength" class="form-control" id="thirdPartyAccountLength" placeholder="Compte tiers">
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-1">
+                    <div class="col-md-8">
+                        <span class="bold">
+                            Longueur des comptes de la comptabilité générale
+                            <span class="ml-2" ngbTooltip="Longueur des comptes de la comptabilité générale (Si vous définissez la valeur à 6 ici, le compte « 706 » apparaîtra comme « 706000 » à l'écran)	">
+                                <i class="fas fa-info-circle"></i>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" formControlName="generalAccountLength" class="form-control" id="generalAccountLength" placeholder="Compte générale">
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <div></div>
+                <div class="text-right">
+                    <button class="btn btn-primary text-white button-radius" type="submit">
+                        Enregistrer <i class="fas fa-save mr-1 p-1"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

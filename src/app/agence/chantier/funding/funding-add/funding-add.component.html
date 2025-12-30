@@ -1,0 +1,183 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR L'INTERVENTION  -->
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 width">DETAILS SUR L'INTERVENTION</span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label>Intervention <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Construction'" [groups]="['construction']"
+              [required]="true" [selected]="currentConstruction"
+              [disabled]="this.edit" (uuid)="setConstructionUuid($event)">
+            </app-entity-finder>
+          </div>
+          <div class="invalid-feedback" *ngIf="submit && f.construction.errors">
+            <div *ngIf="f.construction.errors.required">{{required.novide}}</div>
+          </div>
+          <div class="col-md-3">
+            <label for="date">Date <span class="asterix">*</span></label>
+            <input [attr.disabled]="form.value.construction ? null : 'true'" type="date" class="form-control" formControlName="date" id="date" (change)="onChangeTotal()">
+          </div>
+          <div class="col-md-3">
+            <label>Bien </label>
+            <input type="text" class="form-control p-2 text-success" readonly [value]="construction?.house ? construction?.house?.searchableTitle : construction?.rental?.libelle">
+          </div>
+          <div class="col-md-3">
+            <label for="montant">Montant </label>
+            <input type="text" class="form-control p-2 text-success" readonly [value]="construction?.budget | number">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div *ngIf="f.construction.value && f.date.value" class="col-md-12">
+      <!-- DETAILS SUR LE FINANCEMENT -->
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 width"> DETAILS SUR LE FINANCEMENT </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="financeur">Financer par <span class="asterix">*</span></label>
+            <select formControlName="financeur" class="form-control" id="financeur" (ngModelChange)="onChangeTotal()"
+              [ngClass]="{
+                'is-invalid': submit && f.financeur.errors,
+                'is-valid': submit && f.financeur.valid
+              }">
+              <option [value]="'AGENCE'">L'AGENCE</option>
+              <option [value]="'PROPRIETAIRE'">LE PROPRIETAIRE</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.financeur.errors">
+              <div *ngIf="f.financeur.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="montantP">Apport propriétaire <span class="asterix">*</span></label>
+            <input [attr.disabled]="form.value.financeur === 'AGENCE' ? null : ''" type="number" 
+              [class]="form.value.financeur === 'AGENCE' ? 'form-control' : 'form-control p-2'"
+              formControlName="montantP" id="montantP" (change)="onChangeTotal()" step="1000" [min]="0">
+          </div>
+          <div class="col-md-2">
+            <label for="montantA">Apport agence <span class="asterix">*</span></label>
+            <input type="number" class="form-control p-2" formControlName="montantA" id="montantA" readonly>
+          </div>
+          <div class="col-md-2">
+            <label for="mois">Mois <span class="asterix">*</span></label>
+            <input (change)="onChangeTotal()" [min]="0" type="number" 
+              [attr.disabled]="form.value.financeur == 'AGENCE' ? null : ''"
+              [class]="form.value.financeur == 'AGENCE' ? 'form-control' : 'form-control p-2'" 
+              formControlName="mois" id="mois">
+          </div>
+          <div class="col-md-2">
+            <label for="interet">Taux d'intérêt <span class="asterix">*</span></label>
+            <input (change)="onChangeTotal()" type="number" [min]="0" 
+              [attr.disabled]="form.value.financeur == 'AGENCE' ? null : ''" 
+              [class]="form.value.financeur == 'AGENCE' ? 'form-control' : 'form-control p-2'" 
+              formControlName="interet" id="interet">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION : Sélection des périodes -->
+    <div *ngIf="showPeriodSelection" class="col-md-12">
+      <div class="row">
+        <span class="badge badge-warning my-2 f-14 width">
+          SÉLECTION DES PÉRIODES <span class="asterix">*</span>
+          <small class="ml-2">({{selectedPeriodsCount}}/{{f.mois.value}} sélectionnée(s))</small>
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-muted">
+                <i class="fas fa-info-circle"></i>
+                Sélectionnez <strong>{{f.mois.value}} période(s)</strong> pour le calcul d'amortissement :
+              </span>
+              <div>
+                <button type="button" class="btn btn-sm btn-primary mr-2" (click)="selectFirstPeriods()">
+                  <i class="fas fa-check-double"></i> Sélectionner les {{f.mois.value}} premiers
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary" (click)="clearAllPeriods()">
+                  <i class="fas fa-times"></i> Tout effacer
+                </button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-2 mb-2" *ngFor="let period of availablePeriods; let idx = index">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" 
+                    [id]="'period-' + period.index" 
+                    [checked]="period.selected"
+                    (change)="togglePeriod(idx)">
+                  <label class="custom-control-label" [for]="'period-' + period.index"
+                    [ngClass]="{'text-success font-weight-bold': period.selected}">
+                    {{period.label}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isHidden && option.controls.length > 0" class="col-md-12" formArrayName="options">
+      <!-- AFFICHAGE DES RÉSULTATS -->
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width"> 
+          TABLEAU D'AMORTISSEMENT
+          <small class="ml-2">({{option.controls.length}} période(s))</small>
+        </span>
+      </div>
+      <div class="row">
+        <div class="table-responsive">
+          <table class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th class="col-md-2">Période</th>
+                <th>Capital</th>
+                <th>Intérêt</th>
+                <th>Amortissement</th>
+                <th>Mensualités</th>
+                <th>Valeur finale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of option.controls; let i = index" [formGroupName]="i">
+                <td class="col-md-2"><input formControlName="periode" type="text" class="form-control p-2 bold text-left" id="periode{{i}}"></td>
+                <td><input formControlName="capital" type="text" class="form-control p-2 bold" readonly id="capital{{i}}"></td>
+                <td><input formControlName="interet" type="text" class="form-control p-2 bold" readonly id="interet{{i}}"></td>
+                <td><input formControlName="ammortissement" type="text" class="form-control p-2 text-danger bold" readonly id="ammortissement{{i}}"></td>
+                <td><input formControlName="mensualite" type="text" class="form-co  ntrol p-2 text-danger bold" readonly id="mensualite{{i}}"></td>
+                <td><input formControlName="valeur" type="text" class="form-control p-2 text-danger bold" readonly id="valeur{{i}}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset(); clearAllPeriods()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

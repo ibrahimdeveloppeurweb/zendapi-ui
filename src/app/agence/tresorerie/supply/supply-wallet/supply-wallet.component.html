@@ -1,0 +1,158 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LE TYPE DE DÉPÔT </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <label for="type">Compte de dépôt <span class="asterix">*</span></label>
+            <select  formControlName="type" class="form-control">
+              <option [value]="null">Selectionner</option>
+              <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+            </select>
+          </div>
+          <div class="col-md-8">
+            <label for="mode">Source de revenue <span class="asterix">*</span></label>
+            <input type="text" formControlName="description" class="form-control p-2 " placeholder="Source de revenue">
+          </div>
+        </div>  
+        <div class="col-md-12">
+          <div class="row">
+            <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LA TRESORERIE EMETTRICE </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-4">
+                <app-entity-finder [class]="'Treasury'" [groups]="['treasury']" [required]="true"
+                  [label]="'Trésorerie'" (uuid)="setTreasuryEmetteurUuid($event)"
+                  [selected]="emetteurSelected"
+                  [disabled]="edit" [placeholder]="'Selectionez une tresorerie'">
+                </app-entity-finder>
+              </div>
+              <div class="col-md-4">
+                <label >Gerant <span class="asterix">*</span></label>
+                <input type="text" class="form-control p-2 font-weight-bold text-success text-uppercase"  readonly :value="{{ treasuryR ? treasuryR?.gerant?.libelle : ''}}">
+              </div>
+              <div class="col-md-4">
+                <label >Solde <span class="asterix">*</span></label>
+                <input type="text" class="form-control p-2 font-weight-bold text-success text-uppercase" readonly :value="{{ treasuryR ? treasuryR?.solde : ''}}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="row">
+          <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LA TRESORERIE RECEPTRICE </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <app-entity-finder [class]="'Treasury'" [groups]="['treasury']" [required]="true"
+                [label]="'Trésorerie '" (uuid)="setTreasuryRecepteurUuid($event)"
+                [selected]="recepteurSelected"
+                [disabled]="edit" [placeholder]="'Selectionez une tresorerie'">
+              </app-entity-finder>
+            </div>
+            <div class="col-md-4">
+              <label >Gerant <span class="asterix">*</span></label>
+              <input type="text" class="form-control p-2 font-weight-bold text-success text-uppercase" readonly :value="{{ treasuryR ? treasuryR?.gerant?.libelle : ''}}">
+            </div>
+            <div class="col-md-4">
+              <label >Solde <span class="asterix">*</span></label>
+              <input type="text" class="form-control p-2 font-weight-bold text-success text-uppercase" readonly :value="{{ treasuryR ? treasuryR?.solde : ''}}">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="row">
+          <span class="badge badge-success my-2 f-14 formBadge width">
+            INFORMATION SUR LE DÉPÔT
+          </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-8">
+              <label for="libelle">Libellé <span class="asterix">*</span></label>
+              <input type="text" formControlName="libelle" class="form-control" id="libelle" placeholder="Libellé">
+            </div>
+            <div class="col-md-4">
+              <label for="date">Date <span class="asterix">*</span></label>
+              <input type="date" formControlName="date" class="form-control" id="date" >
+            </div>
+            <div class="col-md-4">
+              <label for="mode">Mode <span class="asterix">*</span></label>
+              <select  formControlName="mode" (change)="onChangeLibelle()"class="form-control" id="mode">
+              <option *ngFor="let item of modeRow" [value]="item.value">{{item.label}}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="source">{{ sourceTitle }}</label>
+              <input type="text" formControlName="source" class="form-control" id="source" [placeholder]="sourceTitle">
+            </div>
+            <div class="col-md-4">
+              <label for="montant">Montant <span class="asterix">*</span></label>
+              <input type="number" formControlName="montant" step="1000" class="form-control" id="montant" placeholder="Montant">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge badge-success my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLEMENTAIRES </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md">
+              <label class="ml-2">Pièces et documents à joindre</label>
+              <div class="row">
+                <div [ngClass]="fileO ? 'col-md-4' : 'col-md-12'">
+                  <app-folder-uploader
+                    [maxSize]="3"
+                    (filesUploaded)="setParam('folderUuid',$event)"
+                    [type]="['application/pdf']"
+                    [path]="'proprietaire'"
+                    [etat]="edit ? 'edit': 'add'"
+                    [folder]="edit && owner ? owner.folder : null">
+                  </app-folder-uploader>
+                </div>
+  
+                <div [ngClass]="fileO ? 'col-md-8' : ''" *ngIf="fileO">
+                  <div class="row">
+                    <div class="col-sm-12 mb-2">
+                      <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                        <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                      </button>
+                    </div>
+                  </div>
+                  <ngx-doc-viewer [url]="fileO" viewer="url" style="width:100%;height: 64vh;">
+                  </ngx-doc-viewer>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>
+

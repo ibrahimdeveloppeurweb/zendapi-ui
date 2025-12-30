@@ -1,0 +1,160 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+        (click)="modale.close('ferme')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="d-flex">
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+            <p>
+              <span class="title-show">Type : </span>
+              <span class="title-result-show">
+                <span class="badge" [ngClass]="{
+                  'badge-light-primary' : inventory?.type === 'ENTREE',
+                  'badge-light-info' : inventory?.type ===  'SORTIE'
+                  }">{{ inventory?.type}}
+                </span>
+              </span>
+            </p>
+            <p>
+                <span class="title-show">Date : </span>
+                <span class="title-result-show">{{ inventory?.date|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+            </p>
+            <p>
+                <span class="title-show">Contrat : </span>
+                <span class="title-result-show">{{ inventory?.contract?.libelle }}</span>
+            </p>
+            <p>
+                <span class="title-show">Locataire : </span>
+                <span class="title-result-show">{{ inventory?.contract?.tenant?.nom }}</span>
+            </p>
+            <p>
+                <span class="title-show">Propriétaire : </span>
+                <span class="title-result-show">{{ inventory?.contract.rental?.house?.owner?.nom }}</span>
+            </p>
+            <p>
+                <span class="title-show">Locative : </span>
+                <span class="title-result-show">Porte N° {{ inventory?.contract.rental?.libelle }}</span>
+            </p>
+        </div>
+        <!-- COL DROITE -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Superficie : </span>
+                <span class="title-result-show">{{ inventory?.contract.rental?.superficie}} m²</span>
+            </p>
+            <p>
+                <span class="title-show">Nombre de pièces : </span>
+                <span class="title-result-show">{{ inventory?.contract.rental?.piece }}</span>
+            </p>
+            <p>
+              <span class="title-show">Etat : </span>
+              <span class="title-result-show">
+                <span class="badge" [ngClass]="{
+                  'badge-success' : inventory?.etat === 'VALIDE',
+                  'badge-warning' : inventory?.etat ===  'ATTENTE'
+                  }">{{ inventory?.etat}}
+                </span>
+              </span>
+            </p>
+            <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{ inventory?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ inventory?.create }}</span>
+            </p>
+            <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ inventory?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ inventory?.update }}</span>
+            </p>
+            <p>
+                <span class="title-show">Validé le : </span>
+                <span class="title-result-show">{{ inventory?.validateAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ inventory?.validate }}</span>
+            </p>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>PIÈCE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of inventory.pieces">
+                <td class="left">
+                  <span class="text-bold mb-1">{{ item?.libelle }}</span>
+                  <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>ÉQUIPEMENT</th>
+                        <th>ETAT</th>
+                        <th>DESCRIPTION</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let el of item.options">
+                        <td class="left">{{ el?.equipment?.libelle }}</td>
+                        <td class="left">{{ el?.etat }}</td>
+                        <td class="left">{{ el?.description }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md">
+            <span class="badge badge-info mb-2 f-14 width">FICHE DE DOSSIER</span>
+            <div class="row">
+                <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                    <app-folder-uploader
+                      [maxSize]="3"
+                      [path]="'etat_lieux'"
+                      (click)="showFile(inventory?.folder)"
+                      [folder]="inventory?.folder"
+                      [etat]="'show'"
+                      [allowFileUpload]="false" [allowDownload]="true">
+                    </app-folder-uploader>
+                </div>
+                <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                    <div class="row">
+                        <div class="col-sm-12 mb-2">
+                            <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                                <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                            </button>
+                        </div>
+                    </div>
+                    <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                    </ngx-doc-viewer>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <ng-template *ngxPermissionsOnly="'INVENTORY:EDIT'">
+      <button *ngIf="inventory?.etat ==='INACTIF'" (click)="editInventory(inventory)" class="btn btn-primary">
+        Modifier <i class="feather icon-edit-2"></i>
+      </button>
+    </ng-template>
+    <ng-template *ngxPermissionsOnly="'INVENTORY:PRINTER:SHOW'">
+      <button (click)="printerInventory(inventory)"  class="btn btn-warning">
+        Imprimer <i class="feather icon-printer"></i>
+      </button>
+    </ng-template>
+</div>

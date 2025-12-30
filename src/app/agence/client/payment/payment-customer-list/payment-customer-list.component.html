@@ -1,0 +1,105 @@
+<div class="col-md-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+      <div *ngIf="validate && dataSelected.length>0" class="btn-rental float-right mb-2">
+        <button (click)="onConfirme()"  type="submit" class="btn btn-success m-1">
+          Valider <i class="feather icon-check-square"></i>
+        </button>
+      </div>
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>
+              <div class="form-group">
+                <div class="form-check">
+                  <input id="selectAll" class="form-check-input" formControlName="valueOne" type="checkbox" id="checkAll"
+                  (change)="onCheckAll($event)">
+                </div>
+              </div>
+            </th> 
+            <th *ngIf="client">Client</th>
+            <th>Dossier</th>
+            <th>Etat</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of payments; let i = index">
+            <td>
+              <div class="form-group">
+                <div class="form-check">
+                  <input formControlName="checked" class="form-check-input"  type="checkbox" id="check{{i}}"
+                  (change)="onCheckItem(item)">
+                </div>
+              </div>
+            </td> 
+            <td *ngIf="client">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.invoice?.folder?.customer?.searchableTitle}}</span> <br />
+                Type : {{item?.invoice?.folder?.customer?.type}}<br />
+                Telephone : {{item?.invoice?.folder?.customer.telephone}} <br />
+              </p>
+            </td>
+            <td>
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.invoice?.folder?.libelle}}</span> <br />
+                Facture N° {{item?.invoice?.code}}
+              </p>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-success' : item?.etat === 'VALIDE',
+              'badge-danger' : item?.etat === 'INVALIDE'
+              }">{{validation(item?.etat)}}</span> <br />
+              <span class="badge" [ngClass]="{
+              'badge-light-success' : item?.status === 'CONFIRMER',
+              'badge-light-danger' : item?.status === 'ATTENTE'
+              }"><small>{{confirmation(item?.status)}}</small></span>
+            </td>
+            <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+            <td><span class="text-primary">{{item?.montant | number}} {{global.device}}</span></td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showPayment(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="PAYMENT:CUSTOMER:EDIT">
+                  <button *ngIf="item?.etat === 'INVALIDE'" (click)="editPayment(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                    ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="PAYMENT:CUSTOMER:VALIDATE">
+                  <button *ngIf="item?.etat === 'INVALIDE'" (click)="validatePayment(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Valider">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </ng-template>
+                <button *ngIf="item?.etat === 'VALIDE'" (click)="printerPayment(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="PAYMENT:CUSTOMER:DELETE">
+                  <button *ngIf="item?.etat === 'INVALIDE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td [attr.colspan]="client ? '5' : '4'" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-success"> {{total | number}} {{global.device}}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </form>
+  </app-card>
+</div>

@@ -1,0 +1,877 @@
+<div class="user-profile user-card mb-4">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+
+        <div class="col-md-9 mt-md-4">
+          <!-- MENU TABS PROPRIETAIRE -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowOwner" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'BIEN'}" (click)="onChangeLoad('BIEN')"
+                id="bien-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="bien" aria-selected="true">
+                <i class="feather icon-home"></i> Bien
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'TICKET'}"
+                (click)="onChangeLoad('TICKET')" id="ticket-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="note" aria-selected="true">
+                <i class="feather icon-file-text"></i> Ticket
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'BIEN'}" id="profil" role="tabpanel"
+        aria-labelledby="profil-tab">
+
+        <app-card [hidHeader]="true">
+          <div class="row">
+            <div class="col-lg-5">
+              <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item" [ngClass]="{'active': viewImage === 1}">
+                    <img *ngIf="!house?.photoSrc" src="assets/images/house-default.png" alt="" class="d-block w-100">
+                    <img *ngIf="house?.photoSrc" src="{{publicUrl+'/'+house?.photoSrc}}" alt="" class="d-block w-100">
+                  </div>
+                  <div *ngFor="let item of files" class="carousel-item" [ngClass]="{'active': viewImage === item.id}">
+                    <img *ngIf="item?.fullPath" src="{{publicUrl+'/'+item?.fullPath}}" alt="" class="d-block w-100">
+                  </div>
+                </div>
+                <ol class="carousel-indicators position-relative">
+                  <li data-target="#carouselExampleCaptions" data-slide-to="0" class="w-25 h-auto active"
+                    (click)="this.viewImage = 1" [ngClass]="{'active': viewImage === 1}">
+                    <img *ngIf="!house?.photoSrc" src="assets/images/house-default.png" alt="" class="d-block wid-50">
+                    <img *ngIf="house?.photoSrc" src="{{publicUrl+'/'+house?.photoSrc}}" alt="" class="d-block wid-50">
+                  </li>
+                  <li *ngFor="let item of files" data-target="#carouselExampleCaptions" data-slide-to="1"
+                    class="w-25 h-auto" (click)="this.viewImage = item.id"
+                    [ngClass]="{'active': viewImage === item.id}">
+                    <img *ngIf="item?.fullPath" src="{{publicUrl+'/'+item?.fullPath}}" alt="" class="d-block wid-50">
+                  </li>
+                </ol>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <form class="pl-lg-4">
+                <h2>
+                  <span class="badge badge-light-{{ house?.disponible === 'LOCATION' ? 'info' : 'secondary' }}">
+                    {{ house?.disponible === 'LOCATION' ? 'En location' : 'En vente' }}
+                  </span>
+                </h2><br />
+                <h3 class="mt-0">{{ house?.nom }} <a href="javascript: void(0);" class="text-muted"><i
+                      class="mdi mdi-square-edit-outline ml-2"></i></a> </h3>
+                <p class="mb-1">Crée le {{ house?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}} par {{
+                  house?.create}}</p>
+                <div class="mt-3">
+                  <h5>
+                    <span *ngIf="house?.disponible === 'VENTE'" class="badge" [ngClass]="{
+                      'badge-success' : house?.etat === 'DISPONIBLE',
+                      'badge-warning' : house?.etat === 'RESERVE',
+                      'badge-danger' : house?.etat === 'VENDU'
+                      }">{{ house?.etat }}
+                    </span>
+                    <span
+                      class="badge badge-light-{{house?.isMandat ? 'warning' : 'danger'}} ml-1"><small>{{house?.isMandat
+                        ? 'MANDAT EN COURS' : 'SANS MANDAT'}}</small> </span>
+                  </h5>
+                </div>
+                <div class="mt-4">
+                  <h6>Valeur venale:</h6>
+                  <h3>{{ house?.valeur|number }} {{global.device}}</h3>
+                </div>
+                <div *ngIf="house?.disponible === 'LOCATION'" class="mt-3">
+                  <div class="d-flex">
+                    <div class="flex-fill">
+                      <h5><i class="fas fa-home text-success"></i> {{ house?.nbrLocative }} Locatives</h5>
+                      <ul class="list-unstyled">
+                        <li>
+                          <div class="media">
+                            <i class="fas fa-tag text-success mr-2 mt-2"></i>
+                            <div class="media-body">
+                              <strong class="">Occupée - </strong>
+                              <span>{{ house?.nbrLocativeO }} </span>
+                              <strong class="">Valeur </strong>
+                              <span>{{ house?.valeurLocativeO|number }} {{global.device}}</span>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="mt-2">
+                          <div class="media">
+                            <i class="fas fa-tag text-success mr-2 mt-2"></i>
+                            <div class="media-body">
+                              <strong class="">Disponible - </strong>
+                              <span>{{ house?.nbrLocativeD }} </span>
+                              <strong class="">Valeur </strong>
+                              <span>{{ house?.valeurLocativeD|number }} {{global.device}}</span>
+                            </div>
+                          </div>
+                        </li>
+                        <li class="mt-2">
+                          <div class="media">
+                            <i class="fas fa-tag text-success mr-2 mt-2"></i>
+                            <div class="media-body">
+                              <strong class="">Reservée - </strong>
+                              <span>{{ house?.nbrLocativeR }} </span>
+                              <strong class="">Valeur </strong>
+                              <span>{{ house?.valeurLocativeR|number }} {{global.device}}</span>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="flex-fill">
+                      <div *ngFor="let house of houses">
+                        <div *ngIf="house?.loyer">
+                          <strong>Total Loyer</strong><br />
+                          <h4><span class="mt-2">{{ house?.loyer | number }} {{ global.device }}</span></h4>
+                        </div>
+                        <div *ngIf="house?.charges">
+                          <strong>Total Charges</strong><br />
+                          <h4><span class="mt-2">{{ house?.charges | number }} {{ global.device }}</span></h4>
+                        </div>
+                        <div *ngIf="house?.valeurLocatives">
+                          <strong>Valeur des locatives</strong><br />
+                          <h3><span class="mt-2">{{ house?.valeurLocatives | number }} {{ global.device }}</span></h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="house?.disponible === 'VENTE'" class="mt-3">
+                  <div class="d-flex">
+                    <div class="flex-fill">
+                      <h6><i class="fas fa-folder text-success"></i> {{ house?.folderCustomer ?
+                        house?.folderCustomer?.libelle : 'AUCUN DOSSIER'}}</h6>
+                      <h6><i class="fas fa-shopping-cart text-success"></i> Acquereur: {{house?.folderCustomer ?
+                        house?.acquereur: 'AUCUN ACQUEREUR'}}</h6>
+                      <h6><i class="fas fa-calendar-check text-success"></i> Date acquisition: {{ house?.folderCustomer
+                        ?
+                        house?.house?.folderCustomer?.date : 'AUCUN DOSSIER'}}</h6>
+                    </div>
+                    <div class="flex-fill">
+                      <strong>Montant de vente </strong><br />
+                      <h3><span class="mt-2">{{ house?.montantV|number }} {{global.device}} </span></h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4 mt-md-0 mt-3">
+                    <button *ngxPermissionsOnly="'HOUSE:EDIT'" (click)="editHouse(house)" type="button"
+                      class="btn btn-block btn-primary" ngbTooltip="Modifier">
+                      Modifier <i class="feather icon-edit-2"></i>
+                    </button>
+                  </div>
+                  <!-- <div class="col-sm-4 mt-md-0 mt-3">
+                    <button class="btn btn-block btn-success" (click)="visite3D()" type="button"
+                      ngbTooltip="Effectuer une visite 3d de la promotion">
+                      Visite 3D <i class="fa fa-cube"></i>
+                    </button>
+                  </div> -->
+                  <div class="col-sm-4">
+                    <button *ngxPermissionsOnly="'HOUSE:PRINTER:EDIT'" (click)="printerHouse(house)" type="button"
+                      class="btn btn-block btn-warning mt-md-0 mt-2" ngbTooltip="Imprimer">
+                      Imprimer <i class="feather icon-printer"></i>
+                    </button>
+                  </div>
+                  <div class="col-sm-4">
+                    <button *ngxPermissionsOnly="'HOUSE:DELETE'" (click)="delete(house)" type="button"
+                      class="btn btn-block btn-danger mt-md-0 mt-2" data-dismiss="modal" ngbTooltip="Supprimer">
+                      Supprimer
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-lg-12">
+              <div>
+                <div class="w-100">
+                  <div class="d-flex">
+                    <!-- COL GAUCHE -->
+                    <div class="flex-fill">
+                      <p>
+                        <span class="title-show">Proprietaire : </span>
+                        <span class="title-result-show">{{ house?.owner?.searchableTitle }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Contact : </span>
+                        <span class="title-result-show">{{ house?.owner?.telephone }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE' && house?.titre">
+                        <span class="title-show">Option titre de propriété : </span>
+                        <span class="title-result-show">{{ house?.optionTitre }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE'">
+                        <span class="title-show">Village : </span>
+                        <span class="title-result-show">{{ house?.village }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE'">
+                        <span class="title-show">Approuvé : </span>
+                        <span class="title-result-show">{{ house?.approuve === true ? 'OUI' :'NON' }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE' && house?.approuve">
+                        <span class="title-show">N° D'approbation : </span>
+                        <span class="title-result-show">{{ house?.numApprobation }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE' && house?.approuve">
+                        <span class="title-show">Date d'approbation : </span>
+                        <span class="title-result-show">{{ house?.dateApprobation }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Lot : </span>
+                        <span class="title-result-show">{{ house?.lot }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">N° identifiant Cie: </span>
+                        <span class="title-result-show">{{ house?.numCie }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">N° identifiant Sodeci : </span>
+                        <span class="title-result-show">{{ house?.numSodeci }}</span>
+                      </p>
+                    </div>
+                    <!-- COL MILIEU -->
+                    <div class="flex-fill">
+                      <p>
+                        <span class="title-show">Ilot : </span>
+                        <span class="title-result-show">{{ house?.ilot }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">A l'angle ? : </span>
+                        <span class="title-result-show">{{ house?.angle === true ? 'OUI' :'NON' }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Près de l'eau ? : </span>
+                        <span class="title-result-show">{{ house?.presEau === true ? 'OUI' :'NON' }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE'">
+                        <span class="title-show">Bornage effectué : </span>
+                        <span class="title-result-show">{{ house?.bornage === true ? 'OUI' :'NON' }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE'">
+                        <span class="title-show">Viabilisé : </span>
+                        <span class="title-result-show">{{ house?.viabilisation === true ? 'OUI' :'NON' }}</span>
+                      </p>
+                      <p
+                        *ngIf="house?.disponible === 'VENTE' && house?.type !== 'TERRAIN' && house?.type !== 'IMMEUBLE'">
+                        <span class="title-show">Nombre de salle d'eau : </span>
+                        <span class="title-result-show">{{ house?.salleEau }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE' && house?.type !== 'TERRAIN'">
+                        <span class="title-show">Nombre de parking : </span>
+                        <span class="title-result-show">{{ house?.nbrParking }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE' && house?.type !== 'TERRAIN'">
+                        <span class="title-show">Nombre de niveau : </span>
+                        <span class="title-result-show">{{ house?.nbrNiveau }}</span>
+                      </p>
+                    </div>
+                    <!-- COL DROITE -->
+                    <div class="flex-fill">
+                      <p *ngIf="house?.disponible === 'VENTE' && house.type !== 'TERRAIN'">
+                        <span class="title-show">Jardin : </span>
+                        <span class="title-result-show">{{ house?.jardin === true ? 'OUI' :'NON' }}</span>
+                      </p>
+                      <p *ngIf="house?.disponible === 'VENTE' && house?.type !== 'TERRAIN'">
+                        <span class="title-show">Piscine : </span>
+                        <span class="title-result-show">{{ house?.piscine === true ? 'OUI' :'NON' }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Bas fond ? : </span>
+                        <span class="title-result-show">{{ house?.basFond === true ? 'OUI' :'NON' }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Longitude : </span>
+                        <span class="title-result-show">{{ house?.lng }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Latitude : </span>
+                        <span class="title-result-show">{{ house?.lat }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Modifié le : </span>
+                        <span class="title-result-show">{{ house?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                          }}</span>
+                        <span class="title-show ml-5"> Par : </span>
+                        <span class="title-result-show">{{ house?.update }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Crée le : </span>
+                        <span class="title-result-show">{{ house?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                          }}</span>
+                        <span class="title-show ml-5"> Par : </span>
+                        <span class="title-result-show">{{ house?.create }}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div *ngIf="house?.etat === 'VENDU'">
+                    <ngb-tabset [destroyOnHide]="false">
+                      <!-- TAB ECHEANCIERS / AVANCES -->
+                      <ngb-tab>
+                        <ng-template ngbTabTitle>
+                          <b>Dossiers</b>
+                        </ng-template>
+                        <ng-template ngbTabContent>
+                          <div class="d-flex mt-3">
+                            <!-- COL GAUCHE -->
+                            <div class="flex-fill">
+                              <p>
+                                <span class="title-show">Dossier N° : </span>
+                                <span class="title-result-show">{{house?.folderCustomer?.code}}</span>
+                              </p>
+                              <p>
+                                <span class="title-show">Acquereur : </span>
+                                <span class="title-result-show"
+                                  (click)="showCustomer(house?.acquereur)">{{house?.acquereur}}</span>
+                              </p>
+                              <p>
+                                <span class="title-show">Chargé d'affaire : </span>
+                                <span class="title-result-show">{{house?.folderCustomer?.charge?.nom}}</span>
+                              </p>
+                              <p>
+                                <span class="title-show">Etat : </span>
+                                <span class="badge title-show" [ngClass]="{
+                                  'badge-success' : house?.folderCustomer?.etat === 'VALIDE',
+                                  'badge-danger' : house?.folderCustomer?.etat === 'INVALIDE',
+                                  'badge-primary' : house?.folderCustomer?.etat ===  'RESILIE'
+                                  }">{{ house?.folderCustomer?.etat}}
+                                </span>
+                              </p>
+                            </div>
+                            <!-- COL MILIEU -->
+                            <div class="flex-fill">
+                              <p>
+                                <span class="title-show">Montant : </span>
+                                <span class="title-result-show">{{house?.folderCustomer?.montant | number }}
+                                  {{global.device}} </span>
+                              </p>
+                              <p>
+                                <span class="title-show">avance : </span>
+                                <span class="title-result-show text-warning">{{ house?.folderCustomer?.montantAvance |
+                                  number }} {{ global.device }}</span>
+                              </p>
+                              <p>
+                                <span class="title-show">Frais de dossier : </span>
+                                <span class="title-result-show text-warning">{{ house?.folderCustomer?.montantFrais |
+                                  number
+                                  }} {{ global.device }}</span>
+                              </p>
+                            </div>
+                            <!-- COL GAUCHE -->
+                            <div class="flex-fill">
+                              <p>
+                                <span class="title-show">Motif : </span>
+                                <span class="title-result-show">
+                                  <span class="badge badge">{{ house?.folderCustomer?.motif == 'PROPRIETAIRE' ? 'BIEN EN
+                                    VENTE': house?.folderCustomer?.motif}}</span>
+                                </span>
+                              </p>
+                              <p>
+                                <span class="title-show">modalite : </span>
+                                <span class="title-result-show">{{ house?.folderCustomer?.modalite }}</span>
+                              </p>
+                              <p *ngIf="house?.folderCustomer?.modalite === 'ECHEANCE'">
+                                <span class="title-show">Nombre de mois : </span>
+                                <span class="title-result-show">{{ house?.folderCustomer?.nbrMois }}</span>
+                              </p>
+                            </div>
+                          </div>
+                          <div class="row" *ngIf="house?.folderCustomer?.echeances.length > 0">
+                            <!-- TABLEAU DES ECHEANCIERS -->
+                            <div class="col-md-12">
+                              <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                                DETAILS DES ECHEANCIERS
+                              </span>
+                              <div class="table-responsive">
+                                <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                                  <thead class="thead-light">
+                                    <tr>
+                                      <th>Description</th>
+                                      <th>Etat</th>
+                                      <th>Montant</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let item of house?.folderCustomer?.echeances">
+                                      <td>{{item?.description }}</td>
+                                      <td>{{item.etat}}</td>
+                                      <td>{{item.montant | number}} {{global.device}} </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row" *ngIf="house?.folderCustomer?.advances.length > 0">
+                            <!-- TABLEAU DES AVANCES -->
+                            <div class="col-md-12">
+                              <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                                DETAILS DES AVANCEMENTS
+                              </span>
+                              <div class="table-responsive">
+                                <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                                  <thead class="thead-light">
+                                    <tr>
+                                      <th>Libelle</th>
+                                      <th>Pourcentage (%)</th>
+                                      <th>Etat</th>
+                                      <th>Montant</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let item of house?.folderCustomer?.advances">
+                                      <td>{{item?.libelle }}</td>
+                                      <td>{{item.prc}} %</td>
+                                      <td>{{item.etat}}</td>
+                                      <td>{{item.montant | number}} {{global.device}} </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ngb-tab>
+
+                      <!-- TAB FACTURE -->
+                      <ngb-tab>
+                        <ng-template ngbTabTitle>
+                          <b>Factures</b>
+                        </ng-template>
+                        <ng-template ngbTabContent>
+                          <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                            DETAILS DE LA FACTURE
+                          </span>
+                          <div class="table-responsive">
+                            <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                              <thead class="thead-light">
+                                <tr>
+                                  <th>Désignation</th>
+                                  <th>Prix u.</th>
+                                  <th>Qte</th>
+                                  <th>Tva</th>
+                                  <th>Remise</th>
+                                  <th>Total</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngFor="let item of house?.folderCustomer?.invoice?.options">
+                                  <td>
+                                    <p class="m-0 d-inline-block align-middle font-16">{{item?.libelle}}</p>
+                                  </td>
+                                  <td>
+                                    <p class="m-0 d-inline-block align-middle font-30"><span
+                                        class="font-weight-blod">{{item?.prix |number}} {{global.device}}</span></p>
+                                  </td>
+                                  <td>{{item?.qte}}</td>
+                                  <td>{{item?.tva}} %</td>
+                                  <td>
+                                    <p class="m-0 d-inline-block align-middle font-30"><span
+                                        class="font-weight-blod">{{item?.remise |number }} {{global.device}}</span>
+                                  </td>
+                                  <td>
+                                    <p class="m-0 d-inline-block align-middle font-30"><span
+                                        class="font-weight-blod">{{item?.total |number}} {{global.device}}</span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-12">
+                              <table class="table table-responsive invoice-table invoice-total">
+                                <tbody>
+                                  <tr>
+                                    <th>TOTAL HT : </th>
+                                    <td>{{ house?.folderCustomer?.invoice?.montantHt | number }} {{global.device}}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>TOTAL REMISE : </th>
+                                    <td>{{ house?.folderCustomer?.invoice?.montantRemise | number }} {{global.device}}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th>TOTAL TVA : </th>
+                                    <td>{{ house?.folderCustomer?.invoice?.montantTva | number }} {{global.device}}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>TOTAL PAYE : </th>
+                                    <td> {{ house?.folderCustomer?.invoice?.paye | number }} {{global.device}}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>TOTAL IMPAYE : </th>
+                                    <td class="text-danger"> {{ house?.folderCustomer?.invoice?.impaye | number }}
+                                      {{global.device}}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <table class="width mb-3">
+                            <tbody>
+                              <tr class="border-bottom-success">
+                                <td></td>
+                                <td colspan="5" class="text-right font-weight-bold"></td>
+                              </tr>
+                            </tbody>
+                            <tfoot>
+                              <tr class="border border-success">
+                                <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+                                <td class="font-weight-bold font-size-default text-right">{{
+                                  house?.folderCustomer?.invoice?.montant | number }} {{global.device}}</td>
+                              </tr>
+                            </tfoot>
+                          </table>
+                        </ng-template>
+                      </ngb-tab>
+
+                      <!-- TAB PAIEMENT -->
+                      <ngb-tab *ngIf="payments">
+                        <ng-template ngbTabTitle>
+                          <b>Paiements</b>
+                        </ng-template>
+                        <ng-template ngbTabContent>
+                          <table class="table table-sm table-striped table-bordered nowrap table-hover my-3">
+                            <thead class="thead-light">
+                              <tr>
+                                <th>Tiers</th>
+                                <th>Mode</th>
+                                <th>Etat</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Montant</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let item of payments">
+                                <td>{{ item?.tiers }}</td>
+                                <td>{{ item?.mode }}</td>
+                                <td>
+                                  <span class="badge" [ngClass]="{
+                                  'badge-success' : item.etat === 'VALIDE',
+                                  'badge-danger' : item.etat === 'INVALIDE'
+                                  }">{{ item?.etat }}</span>
+                                </td>
+                                <td>
+                                  <span class="badge" [ngClass]="{
+                                    'badge-light-success' : item?.status === 'CONFIRMER',
+                                    'badge-light-danger' : item?.status === 'ATTENTE'
+                                  }">{{ item?.status }}</span>
+                                </td>
+                                <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+                                <td><span class="text-warning">{{item?.montant | number}} {{global.device}}</span></td>
+                              </tr>
+                            </tbody>
+                            <tfoot>
+                              <tr>
+                                <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                                <td class="font-weight-bold font-size-40 text-success"> {{total | number}}
+                                  {{global.device}}
+                                </td>
+                              </tr>
+                            </tfoot>
+                          </table>
+                        </ng-template>
+                      </ngb-tab>
+                    </ngb-tabset>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="house?.folder" class="col-lg-12 mb-2">
+              <span class="badge badge-secondary mb-4 f-14 width">FICHE DE DOSSIER</span>
+              <app-folder-uploader [folder]="house?.folder" [maxSize]="3" [etat]="'show'" [allowFileUpload]="false"
+                [allowDownload]="true">
+              </app-folder-uploader>
+            </div>
+          </div>
+          <ng-container *ngIf="house?.blockHouses?.length == 0">
+            <div class="table-responsive">
+              <table *ngIf="house?.disponible === 'LOCATION' && house?.rentals"
+                class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Locative</th>
+                    <th>Occupant</th>
+                    <th>Etat</th>
+                    <th>Crée le</th>
+                    <th>Loyer net</th>
+                    <th>Charge</th>
+                    <th>Loyer brut</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of house?.rentals">
+                    <td class="align-middle">
+                      <img [src]="item.photoSrc ? item.photoSrc : 'assets/images/house-default.png'"
+                        alt="{{item?.libelle}}" title="{{item?.libelle}}" class="rounded mr-2 ml-0" height="48" />
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-primary">{{item?.type + ' N° ' + item?.porte}}</span> <br />
+                        Superficie : {{item?.superficie}} m² - {{item?.piece}} pièce(s): <br />
+                      </p>
+                    </td>
+                    <td>
+                      <span (click)="showTenant(item)">{{item.occupant}}</span>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'badge-success' : item.etat === 'DISPONIBLE',
+                        'badge-warning' : item.etat === 'RESERVE',
+                        'badge-danger' : item.etat === 'OCCUPE'
+                      }">{{item.etat}}</span>
+                    </td>
+                    <td class="align-middle">{{item.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-warning">{{item.montant | number}} {{global.device}}</span>
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <span class="text-success">{{item.charge | number}} {{global.device}}</span>
+                    </td>
+                    <td class="align-middle">
+                      <span class="text-danger">{{(item.montant + item.charge) | number}} {{global.device}}</span>
+                    </td>
+                    <td class="table-action">
+                      <button *ngxPermissionsOnly="'RENTAL:SHOW'" (click)="showRental(item)" type="button"
+                        class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button *ngxPermissionsOnly="'RENTAL:EDIT'" (click)="editRental(item)" type="button"
+                        class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                        <i class="feather icon-edit-2"></i>
+                      </button>
+                      <button *ngxPermissionsOnly="'RENTAL:PRINTER:SHOW'" (click)="printerRental(item)" type="button"
+                        class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                        <i class="feather icon-printer"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ng-container>
+          <!-- CORRECTION PRINCIPALE: Syntaxe correcte pour ngFor avec actions sur les tabs -->
+          <ng-container *ngIf="house?.blockHouses?.length > 0">
+            <ngb-tabset [destroyOnHide]="false" (tabChange)="onTabChange($event)">
+              <ngb-tab *ngFor="let block of house?.blockHouses; let i = index" [id]="'tab-' + i"
+                [disabled]="block?.disabled">
+                <ng-template ngbTabTitle>
+                  <b (click)="onTabClick(block.uuid, i)">{{block?.libelle}}</b>
+                  <span class="badge badge-primary ml-2" *ngIf="block?.rentals?.length">
+                    {{block?.rentals?.length}}
+                  </span>
+                </ng-template>
+
+                <ng-template ngbTabContent>
+                  <!-- Contenu du tab avec tableau des locations du bloc -->
+                  <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h5>Nombre de locatives: {{rentals?.length}}</h5>
+                      <button class="btn btn-primary btn-sm" (click)="addRentalToBlock(block)"
+                        *ngxPermissionsOnly="'RENTAL:ADD'">
+                        <i class="fas fa-plus mr-1"></i>Ajouter une location
+                      </button>
+                    </div>
+
+                    <!-- Tableau des locations pour ce bloc -->
+                    <div class="table-responsive" *ngIf="rentals?.length > 0">
+                      <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                        <thead class="thead-light">
+                          <tr>
+                            <th>Locative</th>
+                            <th>Occupant</th>
+                            <th>Etat</th>
+                            <th>Crée le</th>
+                            <th>Loyer net</th>
+                            <th>Charge</th>
+                            <th>Pas de porte</th>
+                            <th>Loyer brut</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of rentals; trackBy: trackByRental">
+                            <td class="align-middle">
+                              <img [src]="item.photoSrc ? item.photoSrc : 'assets/images/house-default.png'"
+                                alt="{{item?.libelle}}" title="{{item?.libelle}}" class="rounded mr-2 ml-0"
+                                height="48" />
+                              <p class="m-0 d-inline-block align-middle font-16">
+                                <span class="text-primary">{{item?.type + ' N° ' + item?.porte}}</span> <br />
+                                Superficie : {{item?.superficie}} m² - {{item?.piece}} pièce(s): <br />
+                              </p>
+                            </td>
+                            <td>
+                              <span (click)="showTenant(item)" class="cursor-pointer text-info">
+                                {{item.occupant}}
+                              </span>
+                            </td>
+                            <td>
+                              <span class="badge" [ngClass]="{
+                      'badge-success' : item.etat === 'DISPONIBLE',
+                      'badge-warning' : item.etat === 'RESERVE',
+                      'badge-danger' : item.etat === 'OCCUPE'
+                    }">{{item.etat}}</span>
+                            </td>
+                            <td class="align-middle">{{item.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}
+                            </td>
+                            <td class="align-middle">
+                              <span class="text-warning">{{item.montant | number}} {{global.device}}</span>
+                            </td>
+                            <td class="align-middle">
+                              <span class="text-success">{{item.charge | number}} {{global.device}}</span>
+                            </td>
+                            <td class="align-middle">
+                              <span class="text-success">{{item.pasPorte | number}} {{global.device}}</span>
+                            </td>
+                            <td class="align-middle">
+                              <span class="text-danger">{{(item.montant + item.charge) | number}}
+                                {{global.device}}</span>
+                            </td>
+                            <td class="table-action">
+                              <button *ngxPermissionsOnly="'RENTAL:SHOW'" (click)="showRental(item)" type="button"
+                                class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                                <i class="fas fa-eye"></i>
+                              </button>
+                              <button *ngxPermissionsOnly="'RENTAL:EDIT'" (click)="editRental(item)" type="button"
+                                class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                                <i class="feather icon-edit-2"></i>
+                              </button>
+                              <button *ngxPermissionsOnly="'RENTAL:PRINTER:SHOW'" (click)="printerRental(item)"
+                                type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                                <i class="feather icon-printer"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <!-- Message si aucune location -->
+                    <div class="text-center py-4" *ngIf="rentals?.length">
+                      <i class="fas fa-home fa-3x text-muted mb-3"></i>
+                      <h5 class="text-muted">Aucune location dans ce bloc</h5>
+                      <p class="text-muted">Cliquez sur "Ajouter une location" pour commencer</p>
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-tab>
+            </ngb-tabset>
+          </ng-container>
+
+          <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+            <div class="row" *ngIf="users?.length > 0">
+              <span class="badge badge-primary my-2 f-14 formBadge width"> Liste des agents liés au bien</span>
+            </div>
+            <div class="row d-flex justify-content-end" *ngIf="users?.length > 0">
+              <div class="col-sm-4">
+                <button type="submit" [disabled]="!isHidden" class="btn btn-block btn-danger mt-md-0 mt-2"
+                  data-dismiss="modal" ngbTooltip="Supprimer"> Supprimer
+                  <i class="feather icon-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive" formArrayName="users">
+              <table *ngIf="users?.length > 0" class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>
+                      <div class="form-group">
+                        <div class="form-check">
+                          <input class="form-check-input" id="selectAll" type="checkbox" (change)='onSelectAll($event)'>
+                        </div>
+                      </div>
+                    </th>
+                    <th>Nom et prénoms</th>
+                    <th>Contact</th>
+                    <th>Service</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of users.controls; let i = index" [formGroupName]="i">
+                    <td>
+                      <div class="form-group">
+                        <div class="form-check">
+                          <input formControlName="checked" class="form-check-input" type="checkbox" id="checked{{i}}"
+                            (change)='onSelect($event, item)'>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="align-middle">
+                      <img *ngIf="item.get('sexe').value === 'Masculin'" class="rounded mr-3" height="48"
+                        title="{{item.get('libelle').value}}"
+                        [src]="item.get('photoSrc').value ? publicUrl +'/' + item.get('photoSrc').value : 'assets/images/avatar-default.png'"
+                        onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                      <img *ngIf="item.get('sexe').value === 'Féminin'" class="rounded mr-3" height="48"
+                        title="{{item.get('libelle').value}}"
+                        [src]="item.get('photoSrc').value ? publicUrl +'/' + item.get('photoSrc').value : 'assets/images/avatar-mlle.jpeg'"
+                        onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'" />
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-body mb-2">{{ item.get('libelle').value }} ({{ item.get('email').value
+                          }})</span><br />
+                        <br />
+                        <span *ngIf="item.get('type').value === 'ADMIN'" class="badge badge-info badge-pill">
+                          Administrateur </span>
+                        <span *ngIf="item.get('type').value === 'USER'" class="badge badge-primary badge-pill">
+                          Utilisateur </span>
+                        <span class="text-right">
+                          {{ item.get('isOnline').value ? "En ligne" : 'hors ligne'}}<i
+                            class="fas fa-circle text-{{ item.get('isOnline').value ? 'success' : 'danger' }} ml-1"></i>
+                        </span>
+                      </p>
+                    </td>
+                    <td class="align-middle">{{ item.get('telephone').value }}</td>
+                    <td class="align-middle text-primary">{{ item.get('service').value ? item.get('service').value :
+                      'NON DEFINI'}}</td>
+                  </tr>
+              </table>
+            </div>
+          </form>
+        </app-card>
+
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'TICKET'}" id="ticket" role="tabpanel"
+        aria-labelledby="reversement-tab">
+        <div class="row">
+          <!-- LISTE DES TICKETS -->
+          <div class="col-md-12" *ngIf="tickets">
+            <span class="badge badge-success mb-4 f-14 width">
+              LISTE DES TICKETS
+            </span>
+            <app-no-data [title]="'Aucun ticket trouvé'" *ngIf="tickets && tickets.length === 0">
+            </app-no-data>
+          </div>
+          <app-card *ngIf="tickets && tickets.length > 0" [hidHeader]="true" cardClass="card-datatable">
+            <app-ticket-table [ticksets]="tickets" class="width"> </app-ticket-table>
+          </app-card>
+
+
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+  </div>
+</div>

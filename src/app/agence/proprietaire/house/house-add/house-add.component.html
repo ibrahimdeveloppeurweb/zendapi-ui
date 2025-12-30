@@ -1,0 +1,851 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <aw-wizard #wizard class="arc-wizard">
+        <aw-wizard-step stepTitle="Bien {{ disponible === 'LOCATION' ? 'en location' : 'en vente' }}">
+          <!-- DETAILS SUR LE PROPRIETAIRE -->
+          <div class="row" *ngIf="edit">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS SUR LE PROPRIETAIRE
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2" *ngIf="edit">
+              <div class="col-md-3">
+                <label>Propriétaire </label>
+                <input type="text" class="form-control text-uppercase p-2 font-weight-bold"
+                  value="{{ house ? house.owner?.nom : ''}}" readonly>
+              </div>
+              <div class="col-md-3">
+                <label>Type </label>
+                <input type="text" class="form-control text-uppercase p-2 font-weight-bold"
+                  value="{{ house ? house.owner?.type : ''}}" readonly>
+              </div>
+              <div class="col-md-3">
+                <label>Contact </label>
+                <input type="text" class="form-control p-2 font-weight-bold"
+                  value="{{ house ? house.owner?.telephone : ''}}" readonly>
+              </div>
+              <div class="col-md-3">
+                <label>E-mail </label>
+                <input type="text" class="form-control p-2 font-weight-bold"
+                  value="{{ house ? house.owner?.email : ''}}" readonly>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAILS SUR LE BIEN -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS SUR LE BIEN
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+
+              <div class="col-md-3">
+                <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true" [label]="'Propriétaire'"
+                  (uuid)="setOwnerUuid($event)" [selected]="ownerSelected" [disabled]="edit"
+                  [placeholder]="'Selectionez un propriétaire'">
+                </app-entity-finder>
+              </div>
+              <div class="col-md-3">
+                <label for="nom">Nom du bien <span class="asterix">*</span></label>
+                <input formControlName="nom" type="text" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.nom.errors,
+                    'is-valid': submit && f.nom.valid
+                  }" placeholder="Nom du bien">
+                <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+                  <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              
+              <div class="col-md-3" >
+                <label for="type">Type de bien ? <span class="asterix">*</span> </label>
+                <app-entity-finder [class]="'TypeBien'" 
+                [groups]="['type_bien']" 
+                [required]="true" 
+                [params]="[{ type: [{type : 'LOCATION'}] }]"
+                [isAutoCreate]="true" 
+                [selected]="typeBienSelected" (uuid)="setTypeBienUuid($event)">
+              </app-entity-finder>
+                <div class="invalid-feedback" *ngIf="submit && f.typeBien.errors">
+                  <div *ngIf="f.typeBien.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3" *ngIf="f.type.value === 'AUTRES'">
+                <label for="autreType">Autre type <span class="asterix">*</span></label>
+                <input formControlName="autreType" id="autreType" type="text" class="form-control"
+                  placeholder="Autre type">
+              </div>
+              <div class="col-md-3" *ngIf="f.type.value === 'IMMEUBLE'">
+                <label for="niveau">Nombre d'étage <span class="asterix">*</span></label>
+                <input formControlName="niveau" id="niveau" type="number"  min="0" class="form-control" (change)="loadNiveau()">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'LOCATION'">
+                <label for="isBlock">Ajouter par block<span class="asterix">*</span></label>
+                <select class="form-control" id="isBlock" formControlName="isBlock">
+                  <option [value]="false">Non</option>
+                  <option [value]="true">Oui</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'LOCATION' && !edit && !f.isBlock.value">
+                <label for="nbrLocative">Nombre de locative ? <span class="asterix">*</span></label>
+                <input (ngModelChange)="onChangeLocative()" formControlName="nbrLocative" type="number"
+                  class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.nbrLocative.errors,
+                    'is-valid': submit && f.nbrLocative.valid
+                  }" placeholder="Nombre de locative ?">
+                <div class="invalid-feedback" *ngIf="submit && f.nbrLocative.errors">
+                  <div *ngIf="f.nbrLocative.errors.required">{{required.novide}}</div>
+                  <div *ngIf="f.nbrLocative.errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'LOCATION'">
+                <label for="numerotation">Type de numérotation <span class="asterix">*</span></label>
+                <select (change)="onChangeNumerotation()" class="form-control" id="numerotation"
+                  formControlName="numerotation">
+                  <option *ngFor="let item of numerotationRow" [value]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="superficie">Superfice (m²)</label>
+                <input formControlName="superficie" type="number" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.superficie.errors,
+                    'is-valid': submit && f.superficie.valid
+                  }" placeholder="Superfice (m²)">
+                <div class="invalid-feedback" *ngIf="submit && f.superficie.errors">
+                  <div *ngIf="f.superficie.errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="valeur">Valeur vénale</label>
+                <input formControlName="valeur" type="number" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.valeur.errors,
+                    'is-valid': submit && f.valeur.valid
+                  }" placeholder="Valeur">
+                <div class="invalid-feedback" *ngIf="submit && f.valeur.errors">
+                  <div *ngIf="f.valeur.errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="lot">Lot </label>
+                <input formControlName="lot" id="lot" type="text" class="form-control" placeholder="Lot">
+              </div>
+              <div class="col-md-3">
+                <label for="ilot">Ilot </label>
+                <input formControlName="ilot" id="ilot" type="text" class="form-control" placeholder="Ilot">
+              </div>
+              <div class="col-md-3">
+                <label for="numCie">N° identifiant CIE </label>
+                <input formControlName="numCie" id="numCie" type="text" class="form-control" placeholder="N° identifiant CIE">
+              </div>
+              <div class="col-md-3">
+                <label for="numSodeci">N° identifiant SODECI </label>
+                <input formControlName="numSodeci" id="numSodeci" type="text" class="form-control" placeholder="N° identifiant SODECI">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE'">
+                <label for="domaine">Type de domaine <span class="asterix">*</span></label>
+                <select (change)="onChange('domaine')" class="form-control" id="domaine" formControlName="domaine"
+                  [ngClass]="{
+                    'is-invalid': submit && f.domaine.errors,
+                    'is-valid': submit && f.domaine.valid
+                  }">
+                  
+                  <option [value]="'URBAIN'">URBAIN</option>
+                  <option [value]="'RURAL'">RURAL</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.domaine.errors">
+                  <div *ngIf="f.domaine.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE'">
+                <label for="titre">A t-il un titre de propriété ? <span class="asterix">*</span></label>
+                <select (change)="onChange('titre')" class="form-control" id="titre" formControlName="titre" [ngClass]="{
+                    'is-invalid': submit && f.titre.errors,
+                    'is-valid': submit && f.titre.valid
+                  }">
+                  <option [ngValue]="false">NON</option>
+                  <option [ngValue]="true">OUI</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.titre.errors">
+                  <div *ngIf="f.titre.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && titre">
+                <label for="numTitre">Numéro du titre de propriété <span class="asterix">*</span></label>
+                <input formControlName="numTitre" id="numTitre" type="text" class="form-control"
+                  placeholder="Numéro titre foncier">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && titre">
+                <label for="optionTitre">Option titre de propriété <span class="asterix">*</span></label>
+                <select class="form-control" id="optionTitre" formControlName="optionTitre" [ngClass]="{
+                    'is-invalid': submit && f.optionTitre.errors,
+                    'is-valid': submit && f.optionTitre.valid
+                  }">
+                  <option *ngFor="let item of optionTitreRow" [value]="item.value">{{ item.label }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.optionTitre.errors">
+                  <div *ngIf="f.optionTitre.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' ">
+                <label for="bornage">Bornage effectué ?</label>
+                <select class="form-control" id="bornage" formControlName="bornage">
+                  <option [ngValue]="false">NON</option>
+                  <option [ngValue]="true">OUI</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE'">
+                <label for="viabilisation">Viabilisé ?</label>
+                <select class="form-control" id="viabilisation" formControlName="viabilisation">
+                  <option [ngValue]="false">NON</option>
+                  <option [ngValue]="true">OUI</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && domaine === 'RURAL'">
+                <label for="village">Nom du village</label>
+                <input formControlName="village" id="village" type="text" class="form-control"
+                  placeholder="Nom du village">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE'">
+                <label for="approuve">Approuvé ?</label>
+                <select (change)="onChange('approuve')" class="form-control" id="approuve" formControlName="approuve">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && approuve">
+                <label for="numApprobation">N° D'approbation <span class="asterix">*</span></label>
+                <input formControlName="numApprobation" id="numApprobation" type="text" class="form-control"
+                  placeholder="N° D'approbation">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && approuve">
+                <label for="dateApprobation">Date d'approbation <span class="asterix">*</span></label>
+                <input formControlName="dateApprobation" id="dateApprobation" type="date" class="form-control">
+              </div>
+              <div class="col-md-{{disponible === 'LOCATION' ? 9 : disponible === 'VENTE' && approuve ? 6 : 12}}">
+                <label for="description">Description <span class="asterix">*</span></label>
+                <textarea formControlName="description" id="description" type="text" class="form-control"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAILS DE LOCALISATION -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS DE LOCALISATION
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <label for="ville">Ville <span class="asterix">*</span></label>
+                <input formControlName="ville" type="text" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.ville.errors,
+                    'is-valid': submit && f.ville.valid
+                  }" placeholder="Ville">
+                <div class="invalid-feedback" *ngIf="submit && f.ville.errors">
+                  <div *ngIf="f.ville.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="commune">Commune <span class="asterix">*</span></label>
+                <input formControlName="commune" type="text" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.commune.errors,
+                    'is-valid': submit && f.commune.valid
+                  }" placeholder="Commune">
+                <div class="invalid-feedback" *ngIf="submit && f.commune.errors">
+                  <div *ngIf="f.commune.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="quartier">Quartier <span class="asterix">*</span></label>
+                <input formControlName="quartier" type="text" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.quartier.errors,
+                    'is-valid': submit && f.quartier.valid
+                  }" placeholder="Quartier">
+                <div class="invalid-feedback" *ngIf="submit && f.quartier.errors">
+                  <div *ngIf="f.quartier.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="lng">Longitude</label>
+                <input type="text" class="form-control" formControlName="lng" id="lng" placeholder="Longitude">
+              </div>
+              <div class="col-md-3">
+                <label for="lat">Latitude</label>
+                <input type="text" class="form-control" formControlName="lat" id="lat" placeholder="Latitude">
+              </div>
+              <div class="col-md-3">
+                <label for="hauteur">Hauteur</label>
+                <input formControlName="hauteur" type="number" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.hauteur.errors,
+                    'is-valid': submit && f.hauteur.valid
+                  }" placeholder="Hauteur">
+                <div class="invalid-feedback" *ngIf="submit && f.hauteur.errors">
+                  <div *ngIf="f.hauteur.errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="altitude">Altitude</label>
+                <input formControlName="altitude" type="number" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.altitude.errors,
+                    'is-valid': submit && f.altitude.valid
+                  }" placeholder="Altitude">
+                <div class="invalid-feedback" *ngIf="submit && f.altitude.errors">
+                  <div *ngIf="f.altitude.errors.pattern">{{ required.nolettre }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <agm-map [draggableCursor]="'default'" [mapTypeId]="'hybrid'" [latitude]="lat" [longitude]="lng" [zoom]="zoom"
+            (mapClick)="updateGeo($event)" (zoomChange)="updateZoom($event)">
+            <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+          </agm-map>
+
+          <!-- DETAILS SUPLEMENTAIRES -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS SUPLEMENTAIRES
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && type !== 'TERRAIN' && type !== 'IMMEUBLE'">
+                <label for="nbrPiece">Nombre de pièce</label>
+                <input formControlName="nbrPiece" id="nbrPiece" type="number" class="form-control"
+                  placeholder="Nombre de pièce">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && type !== 'TERRAIN'">
+                <label for="nbrParking">Nombre de parking</label>
+                <input formControlName="nbrParking" id="nbrParking" type="number" class="form-control"
+                  placeholder="Nombre de parking">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && type !== 'TERRAIN' && type !== 'IMMEUBLE'">
+                <label for="salleEau">Nombre de salle d'eau</label>
+                <input formControlName="salleEau" id="salleEau" type="number" class="form-control"
+                  placeholder="Nombre de salle d'eau">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && type !== 'TERRAIN'">
+                <label for="nbrNiveau">Nombre de niveau</label>
+                <input formControlName="nbrNiveau" id="nbrNiveau" type="number" class="form-control"
+                  placeholder="Nombre de niveau">
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE' && type !== 'TERRAIN'">
+                <label for="jardin">Jardin ?</label>
+                <select class="form-control" id="jardin" formControlName="jardin">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="disponible === 'VENTE'  && type !== 'TERRAIN'">
+                <label for="piscine">Piscine ?</label>
+                <select class="form-control" id="piscine" formControlName="piscine">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="angle">A l'angle ?</label>
+                <select class="form-control" id="angle" formControlName="angle">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="pres_eau">Près de l'eau ?</label>
+                <select class="form-control" id="presEau" formControlName="presEau">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="f.presEau.value">
+                <label for="distanceEau">Distance de l'eau (m) ?</label>
+                <input formControlName="distanceEau" type="number" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.distanceEau.errors,
+                    'is-valid': submit && f.distanceEau.valid
+                  }" placeholder="Distance de l'eau">
+                <div class="invalid-feedback" *ngIf="submit && f.distanceEau.errors">
+                  <div *ngIf="f.distanceEau.errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="piedsEau">Pieds dans l'eau ?</label>
+                <select class="form-control" id="piedsEau" formControlName="piedsEau">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="bordureVoie">Bordure de grande voie ?</label>
+                <select class="form-control" id="bordureVoie" formControlName="bordureVoie">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="f.bordureVoie.value">
+                <label for="distanceRoute">Distance de la route (m) ?</label>
+                <input formControlName="distanceRoute" type="number" class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.distanceRoute.errors,
+                    'is-valid': submit && f.distanceRoute.valid
+                  }" placeholder="Distance de la route">
+                <div class="invalid-feedback" *ngIf="submit && f.distanceRoute.errors">
+                  <div *ngIf="f.distanceRoute.errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="terreFerme">Terre ferme ?</label>
+                <select class="form-control" id="terreFerme" formControlName="terreFerme">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="basFond">Bas fond ?</label>
+                <select class="form-control" id="basFond" formControlName="basFond">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="ecole">Ecole a proximité ?</label>
+                <select class="form-control" id="ecole" formControlName="ecole">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="marche">Marché a proximité ?</label>
+                <select class="form-control" id="marche" formControlName="marche">
+                  <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <!-- DETAILS ATTRIBUTION -->
+          <div class="row" *ngIf="!edit">
+            <span class="badge badge-secondary my-2 f-14 width">
+              ATTRIBUER LE BIEN A DES AGENTS
+            </span>
+          </div>
+          <div class="form-group" *ngIf="!edit">
+            <div class="row mb-2">
+              <div class="col-md mt-4">
+                <dual-list (destinationChange)="setData()" [sort]="keepSorted" [source]="source" [key]="key"
+                  [display]="display" [filter]="true" [(destination)]="confirmed" height="265px" [format]="format"
+                  [disabled]="disabled">
+                </dual-list>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAILS FICHIER -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              AJOUT DE FICHIERS
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="row mb-2">
+                <div class="flex-grow-0" style="min-width: 30%">
+                  <app-image-uploader (filesd)="loadfile($event)" [maxSize]="2"
+                    (imageUploaded)="setParam('photoUuid',$event)"
+                    [photo]="house ? house.photo : null "></app-image-uploader>
+                </div>
+                <div class="col-md">
+                  <label>Pièces et documents à joindre</label>
+                  <app-folder-uploader (filesd)="files($event)" [maxSize]="3"
+                    (filesUploaded)="setParam('folderUuid',$event)" [path]="'bien'" [etat]="edit ? 'edit': 'add'"
+                    [folder]="edit && house ? house?.folder : null">
+                  </app-folder-uploader>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 centered-content"
+              *ngIf="!edit && disponible === 'LOCATION'">
+              <div class="btn-group mt-10">
+                <button type="button" class="btn btn-primary" awNextStep>
+                  Suivant <i class="feather icon-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <aw-wizard-step stepTitle="Locative" *ngIf="!edit && disponible === 'LOCATION'">
+          <!-- DETAILS CONCERNANT LES LOCATIVES DU BIEN -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              DETAILS CONCERNANT LES LOCATIVES DU BIEN
+            </span>
+          </div>
+          <ng-container *ngIf="!f.isBlock.value">
+            <div formArrayName="rentals">
+              <!-- LABEL DU TABLEAU DES LOCATIVES -->
+              <div class="form-group">
+                <div class="row">
+                  <div class="col" *ngIf="f.numerotation.value == 1">
+                    <label>Numérotation <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col" *ngIf="f.type.value == 'IMMEUBLE'">
+                    <label>Niveau <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col">
+                    <label>N° Porte <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col">
+                    <label>Type de locative <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col">
+                    <label>Loyer <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col">
+                    <label>Charge <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col">
+                    <label>Pièce <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col">
+                    <label>Superficie</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group" *ngFor="let locat of rental.controls; let i=index" [formGroupName]="i">
+                <div class="row">
+                  <div class="col" *ngIf="f.numerotation.value == 1">
+                    <select (change)="onChangeNum(locat)" class="form-control" id="numerotation{{i}}"
+                      formControlName="numerotation" [ngClass]="{
+                        'is-invalid': submit && locat.get('numerotation').errors,
+                        'is-valid': submit && locat.get('numerotation').valid
+                      }">
+                      <option *ngFor="let item of numRow" [label]="item">{{item}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && locat.get('numerotation').errors">
+                      <div *ngIf="locat.get('numerotation').errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col" *ngIf="f.type.value == 'IMMEUBLE'">
+                    <select class="form-control" id="niveau{{i}}"
+                      formControlName="niveau" [ngClass]="{
+                        'is-invalid': submit && locat.get('niveau').errors,
+                        'is-valid': submit && locat.get('niveau').valid
+                      }">
+                      <option *ngFor="let item of niveauRow" [label]="item">{{item}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && locat.get('niveau').errors">
+                      <div *ngIf="locat.get('niveau').errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <input type="text" formControlName="porte" class="form-control" id="porte{{i}}" [ngClass]="{
+                        'is-invalid': submit && locat.get('porte').errors,
+                        'is-valid': submit && locat.get('porte').valid
+                      }" placeholder="N° Porte">
+                    <div class="invalid-feedback" *ngIf="submit && locat.get('porte').errors">
+                      <div *ngIf="locat.get('porte').errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <select (change)="onChangeNum(locat)" class="form-control" id="type{{i}}" formControlName="type"
+                      [ngClass]="{
+                        'is-invalid': submit && locat.get('type').errors,
+                        'is-valid': submit && locat.get('type').valid
+                      }">
+                      <optgroup *ngFor="let item of typeRow" [label]="item.label">
+                        <option *ngFor="let row of item.type" [value]="row.value">{{row.label}}</option>
+                      </optgroup>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && locat.get('type').errors">
+                      <div *ngIf="locat.get('type').errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <input (change)="onChangeNum(locat)" type="number" step="5000" formControlName="montant"
+                      class="form-control" id="montant{{i}}" [ngClass]="{
+                        'is-invalid': submit && locat.get('montant').errors,
+                        'is-valid': submit && locat.get('montant').valid
+                      }" placeholder="Montant loyer">
+                    <div class="invalid-feedback" *ngIf="submit && locat.get('montant').errors">
+                      <div *ngIf="locat.get('montant').errors.required">{{required.novide}}</div>
+                      <div *ngIf="locat.get('montant').errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <input (change)="onChangeNum(locat)" type="number" step="5000" formControlName="charge"
+                      class="form-control" id="charge{{i}}" [ngClass]="{
+                        'is-invalid': submit && locat.get('charge').errors,
+                        'is-valid': submit && locat.get('charge').valid
+                      }" placeholder="Montant charge">
+                    <div class="invalid-feedback" *ngIf="submit && locat.get('charge').errors">
+                      <div *ngIf="locat.get('charge').errors.required">{{required.novide}}</div>
+                      <div *ngIf="locat.get('charge').errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <input (change)="onChangeNum(locat)" type="number" formControlName="piece" class="form-control"
+                      id="piece{{i}}" [ngClass]="{
+                        'is-invalid': submit && locat.get('piece').errors,
+                        'is-valid': submit && locat.get('piece').valid
+                      }" placeholder="Pièce">
+                    <div class="invalid-feedback" *ngIf="submit && locat.get('piece').errors">
+                      <div *ngIf="locat.get('piece').errors.required">{{required.novide}}</div>
+                      <div *ngIf="locat.get('piece').errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <input (change)="onChangeNum(locat)" type="number" step="100" class="form-control"
+                      id="superficie{{i}}" placeholder="Superficie">
+                    <div class="invalid-feedback" *ngIf="submit && locat.get('superficie').errors">
+                      <div *ngIf="locat.get('superficie').errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="f.isBlock.value">
+            <!-- Entête avec le nombre de blocs -->
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label for="nbrBlock">Nombre de blocs <span class="asterix">*</span></label>
+                <input (ngModelChange)="onChangeBlock()" formControlName="nbrBlock" type="number"
+                  class="form-control" [ngClass]="{
+                    'is-invalid': submit && f.nbrBlock.errors,
+                    'is-valid': submit && f.nbrBlock.valid
+                  }" placeholder="Nombre de blocs">
+                <div class="invalid-feedback" *ngIf="submit && f.nbrBlock.errors">
+                  <div *ngIf="f.nbrBlock.errors.required">{{required.novide}}</div>
+                  <div *ngIf="f.nbrBlock.errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-3 d-flex align-items-end">
+                <button type="button" class="btn btn-primary" (click)="addBlock()" [disabled]="block.controls.length >= f.nbrBlock.value">
+                  <i class="fas fa-plus-circle"></i> Ajouter un bloc
+                </button>
+              </div>
+            </div>
+          
+            <!-- Tableau d'entête pour les blocs -->
+            <div class="card mb-3">
+              <div class="card-header bg-secondary text-white">
+                <h6 class="mb-0">DETAILS CONCERNANT LES LOCATIVES DU BIEN</h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Libellé <span class="asterix">*</span></th>
+                        <th>Type de locative <span class="asterix">*</span></th>
+                        <th>Loyer <span class="asterix">*</span></th>
+                        <th>Charge <span class="asterix">*</span></th>
+                        <th>Pas de porte <span class="asterix">*</span></th>
+                        <th>Superficie<span class="asterix">*</span></th>
+                        <th>Nombre de locatives <span class="asterix">*</span></th>
+                        <th>Pièce <span class="asterix">*</span></th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody formArrayName="blocks">
+                      <tr *ngFor="let bloc of block.controls; let i=index" [formGroupName]="i">
+                        <td>
+                          <input type="text" formControlName="libelle" class="form-control" 
+                            [ngClass]="{
+                              'is-invalid': submit && bloc.get('libelle').errors,
+                              'is-valid': submit && bloc.get('libelle').valid
+                            }" placeholder="Libellé du bloc">
+                          <div class="invalid-feedback" *ngIf="submit && bloc.get('libelle').errors">
+                            <div *ngIf="bloc.get('libelle').errors.required">{{required.novide}}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <select class="form-control" formControlName="type"
+                            [ngClass]="{
+                              'is-invalid': submit && bloc.get('type').errors,
+                              'is-valid': submit && bloc.get('type').valid
+                            }">
+                            <optgroup *ngFor="let item of typeRow" [label]="item.label">
+                              <option *ngFor="let row of item.type" [value]="row.value">{{row.label}}</option>
+                            </optgroup>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="submit && bloc.get('type').errors">
+                            <div *ngIf="bloc.get('type').errors.required">{{required.novide}}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <input type="number" step="5000" formControlName="montant"
+                            class="form-control" [ngClass]="{
+                              'is-invalid': submit && bloc.get('montant').errors,
+                              'is-valid': submit && bloc.get('montant').valid
+                            }" placeholder="Montant loyer">
+                          <div class="invalid-feedback" *ngIf="submit && bloc.get('montant').errors">
+                            <div *ngIf="bloc.get('montant').errors.required">{{required.novide}}</div>
+                            <div *ngIf="bloc.get('montant').errors.pattern">{{required.nolettre}}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <input type="number" step="5000" formControlName="charge"
+                            class="form-control" [ngClass]="{
+                              'is-invalid': submit && bloc.get('charge').errors,
+                              'is-valid': submit && bloc.get('charge').valid
+                            }" placeholder="Montant charge">
+                          <div class="invalid-feedback" *ngIf="submit && bloc.get('charge').errors">
+                            <div *ngIf="bloc.get('charge').errors.required">{{required.novide}}</div>
+                            <div *ngIf="bloc.get('charge').errors.pattern">{{required.nolettre}}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <input type="number" step="5000" formControlName="pasPorte"
+                            class="form-control" [ngClass]="{
+                              'is-invalid': submit && bloc.get('pasPorte').errors,
+                              'is-valid': submit && bloc.get('pasPorte').valid
+                            }" placeholder="Montant Pas de porte">
+                          <div class="invalid-feedback" *ngIf="submit && bloc.get('pasPorte').errors">
+                            <div *ngIf="bloc.get('pasPorte').errors.required">{{required.novide}}</div>
+                            <div *ngIf="bloc.get('pasPorte').errors.pattern">{{required.nolettre}}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <input type="number" step="5000" formControlName="superficie"
+                            class="form-control" [ngClass]="{
+                              'is-invalid': submit && bloc.get('superficie').errors,
+                              'is-valid': submit && bloc.get('superficie').valid
+                            }" placeholder="Superficie">
+                          <div class="invalid-feedback" *ngIf="submit && bloc.get('superficie').errors">
+                            <div *ngIf="bloc.get('superficie').errors.required">{{required.novide}}</div>
+                            <div *ngIf="bloc.get('superficie').errors.pattern">{{required.nolettre}}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <input type="number" formControlName="nbrLocative"
+                            class="form-control" [ngClass]="{
+                              'is-invalid': submit && bloc.get('nbrLocative').errors,
+                              'is-valid': submit && bloc.get('nbrLocative').valid
+                            }" placeholder="Nombre de locatives">
+                          <div class="invalid-feedback" *ngIf="submit && bloc.get('nbrLocative').errors">
+                            <div *ngIf="bloc.get('nbrLocative').errors.required">{{required.novide}}</div>
+                            <div *ngIf="bloc.get('nbrLocative').errors.pattern">{{required.nolettre}}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <input type="number" formControlName="piece" class="form-control"
+                            [ngClass]="{
+                              'is-invalid': submit && bloc.get('piece').errors,
+                              'is-valid': submit && bloc.get('piece').valid
+                            }" placeholder="Pièce">
+                          <div class="invalid-feedback" *ngIf="submit && bloc.get('piece').errors">
+                            <div *ngIf="bloc.get('piece').errors.required">{{required.novide}}</div>
+                            <div *ngIf="bloc.get('piece').errors.pattern">{{required.nolettre}}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-success mr-2" (click)="generateLocatives(i)">
+                            <i class="fas fa-sync"></i> Générer
+                          </button>
+                          <button type="button" class="btn btn-sm btn-danger" (click)="removeBlock(i)">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          
+            <!-- Liste des locatives générées par blocs avec système d'accordéon -->
+            <div *ngIf="rental.controls.length > 0">
+              <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">
+                  <h6 class="mb-0">LISTE DES LOCATIVES GÉNÉRÉES</h6>
+                </div>
+                <div class="card-body">
+                  <div formArrayName="rentals">
+                    <!-- Accordéon pour grouper les locatives par bloc -->
+                    <div *ngFor="let blocName of getUniqueBlockNames()" class="mb-3">
+                      <div class="card">
+                        <div class="card-header" role="button" (click)="toggleBlockCollapse(blocName)">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">{{ blocName }}</h6>
+                            <span><i class="fas" [ngClass]="isBlockCollapsed(blocName) ? 'fa-chevron-down' : 'fa-chevron-up'"></i></span>
+                          </div>
+                        </div>
+                        <div class="card-body" [ngClass]="{'d-none': isBlockCollapsed(blocName)}">
+                          <div class="table-responsive">
+                            <table class="table table-bordered">
+                              <thead class="thead-light">
+                                <tr>
+                                  <th>N° Porte</th>
+                                  <th>Type de locative</th>
+                                  <th>Loyer</th>
+                                  <th>Charge</th>
+                                  <th>Pas de porte</th>
+                                  <th>Superficie</th>
+                                  <th>Pièce</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngFor="let locat of getBlockLocatives(blocName); let i=index" [formGroupName]="getLocativeIndex(locat)">
+                                  <td>
+                                    <input type="text" formControlName="porte" class="form-control" placeholder="N° Porte">
+                                  </td>
+                                  <td>
+                                    <select (change)="onChangeNum(locat)" class="form-control" formControlName="type">
+                                      <optgroup *ngFor="let item of typeRow" [label]="item.label">
+                                        <option *ngFor="let row of item.type" [value]="row.value">{{row.label}}</option>
+                                      </optgroup>
+                                    </select>
+                                  </td>
+                                  <td>
+                                    <input (change)="onChangeNum(locat)" type="number" step="5000" formControlName="montant"
+                                      class="form-control" placeholder="Montant loyer">
+                                  </td>
+                                  <td>
+                                    <input (change)="onChangeNum(locat)" type="number" step="5000" formControlName="charge"
+                                      class="form-control" placeholder="Montant charge">
+                                  </td> 
+                                  <td>
+                                    <input (change)="onChangeNum(locat)" type="number" step="5000" formControlName="pasPorte"
+                                      class="form-control" placeholder="Pas de porte">
+                                  </td> 
+                                  <td>
+                                    <input (change)="onChangeNum(locat)" type="number" step="5000" formControlName="superficie"
+                                      class="form-control" placeholder="Superficie">
+                                  </td> 
+                                  <td>
+                                    <input (change)="onChangeNum(locat)" type="number" formControlName="piece" 
+                                      class="form-control" placeholder="Pièce">
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button type="button" class="btn btn-warning" awPreviousStep>
+                <i class="feather icon-arrow-left"></i> Précédent
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+      </aw-wizard>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="onReset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

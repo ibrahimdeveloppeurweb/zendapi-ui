@@ -1,0 +1,129 @@
+<div class="modal-header">
+    <h5 class="modal-title">Ajout d'une réponse officielle</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-success my-2 f-14 width">REPONSE OFFICIELLE</span>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Prospect <span class="asterix">*</span></label>
+                        <app-entity-finder [class]="'Prospect'" [groups]="['prospect']"
+                            [required]="true" [selected]="prospectSelected" [disabled]="edit" (uuid)="setProspectUuid($event)"
+                            [placeholder]="'Sélectionnez un prospect'">
+                        </app-entity-finder>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="reservation">Pré réservation  <span class="asterix">*</span></label>
+                        <select class="form-control" id="reservation" formControlName="reservation"
+                            [ngClass]="{'is-invalid': submit && f.reservation.errors,'is-valid': submit && f.reservation.valid }">
+                            <option *ngFor="let item of reservation" [ngValue]="item?.value">{{item?.label}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.reservation.errors">
+                            <div *ngIf="f.reservation.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="statut">Statut <span class="asterix">*</span></label>
+                        <select class="form-control" id="statut" formControlName="statut"
+                            [ngClass]="{'is-invalid': submit && f.statut.errors,'is-valid': submit && f.statut.valid }">
+                            <option *ngFor="let item of statutRow" [ngValue]="item?.value">{{item?.label}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.statut.errors">
+                            <div *ngIf="f.statut.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="disponibilite">Disponibilité <span class="asterix">*</span></label>
+                        <select class="form-control" id="disponibilite" formControlName="disponibilite"
+                            [ngClass]="{'is-invalid': submit && f.disponibilite.errors,'is-valid': submit && f.disponibilite.valid }">
+                            <option *ngFor="let item of disponibiliteRow" [ngValue]="item?.value">{{item?.label}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.disponibilite.errors">
+                            <div *ngIf="f.disponibilite.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="evaluation">Évaluation <span class="asterix">*</span></label>
+                        <select class="form-control" id="evaluation" formControlName="evaluation"
+                            [ngClass]="{'is-invalid': submit && f.evaluation.errors,'is-valid': submit && f.evaluation.valid }">
+                            <option *ngFor="let item of evaluationRow" [ngValue]="item.value">{{item.label}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.evaluation.errors">
+                            <div *ngIf="f.evaluation.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4" *ngIf="f.evaluation.value === 'Favorable'">
+                        <label for="bien">Le bien vient-il de chez nous ? <span class="asterix">*</span></label>
+                        <select class="form-control" id="bien" formControlName="bien"
+                            [ngClass]="{'is-invalid': submit && f.bien.errors,'is-valid': submit && f.bien.valid }">
+                            <option *ngFor="let item of bienRow" [ngValue]="item.value">{{item.label}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.bien.errors">
+                            <div *ngIf="f.bien.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="objet">Objet <span class="asterix">*</span></label>
+                        <input type="text" class="form-control" id="objet" formControlName="objet"
+                            [ngClass]="{'is-invalid': submit && f.objet.errors, 'is-valid': submit && f.objet.valid }"
+                            placeholder="Entrez l'objet du besoin" />
+                        <div class="invalid-feedback" *ngIf="submit && f.objet.errors">
+                            <div *ngIf="f.objet.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <label for="Commentaire">Commentaire <span class="asterix">*</span></label>
+                <app-tinymce formControlName="description" id="description" #tinymce='tinymce' aria-placeholder="Contenu du message"></app-tinymce>
+                <div class="invalid-feedback" *ngIf="submit && f.description.errors">
+                    <div *ngIf="f.description.errors.required">{{required.novide}}</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label>Pièces et documents à joindre</label>
+                        <app-folder-uploader
+                            [maxSize]="3"
+                            (filesd)="files($event)"
+                            (filesUploaded)="setParam('folderUuid',$event)"
+                            [path]="'demande'"
+                            [etat]="edit ? 'edit': 'add'"
+                            [folder]="edit && fundRequest ? fundRequest?.folder : null">
+                        </app-folder-uploader>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="onReset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+    </div>
+</form>

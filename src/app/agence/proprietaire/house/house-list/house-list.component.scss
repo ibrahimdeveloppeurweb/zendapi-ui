@@ -1,0 +1,14 @@
+.cover-img-block .img-fluid {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-img-block {
+  height: 200px;
+  width: 320px;
+  max-width: 100%;
+}

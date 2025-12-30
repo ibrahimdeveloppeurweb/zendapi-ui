@@ -1,0 +1,139 @@
+
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+
+    <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+      <div *ngIf="validate && dataSelected.length>0" class="btn-rental float-right mb-2">
+        <button (click)="onConfirme()"  type="submit" class="btn btn-success m-1">
+          Valider <i class="feather icon-check-square"></i>
+        </button>
+      </div>
+      <div class="table-responsive"  >
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions"
+          class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+               <th>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input id="selectAll" class="form-check-input" formControlName="valueOne" type="checkbox" id="checkAll"
+                    (change)="onCheckAll($event)">
+                  </div>
+                </div>
+              </th>
+              <th>Locative</th>
+              <th *ngIf="locataire">Locataire</th>
+              <th>Type</th>
+              <th>Periode</th>
+              <th>Etat</th>
+              <th>Montant Pas de porte</th>
+              <th>Payé</th>
+              <th>Restant</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of contracts; let i = index">
+               <td>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input formControlName="checked" class="form-check-input"  type="checkbox" id="check{{i}}"
+                    (change)="onCheckItem(item)">
+                  </div>
+                </div>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.house?.nom}}</span> <br />
+                  <span *ngFor="let rental of item?.rentals">{{rental?.libelle}} - Superficie : {{rental?.superficie}} m² - {{rental?.piece}} pièce(s): <br /></span>
+                  Propriétaire : {{item?.owner?.searchableTitle}} <br />
+                  Référence contrat : {{item?.code}}
+                </p>
+              </td>
+              <td *ngIf="locataire">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.tenant?.searchableTitle}}</span> <br /> Type :
+                  {{item?.tenant?.type}}<br /> Telephone : {{item?.tenant?.telephone}}
+                </p>
+              </td>
+              <td>{{item?.type}}</td>
+              <td>{{item?.periode}}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-danger' : item?.etat === 'RESILIE',
+                  'badge-success' : item?.etat === 'ACTIF',
+                  'badge-warning' : item?.etat === 'INACTIF'
+                  }">
+                  {{item?.etat}}
+                </span><br />
+                <span class="ml-1 badge badge-light-danger" *ngIf="item?.etatLieux !=''">
+                  <small>{{ item?.etatLieux}}</small>
+                </span><br />
+                <span class="ml-1 badge badge-light-{{item?.signed !== null ? 'success' : 'danger'}}">
+                  <small>{{item?.signed !== null ? 'Contrat signé' : 'Contrat non signé'}}</small>
+                </span>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.pasPorte|number}} {{global.device}}</span> <br />
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-success">{{item?.entranceInvoice?.paye|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-danger">{{item?.entranceInvoice?.impaye|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="table-action">
+                <div class="overlay-edit">
+                  <!--<button *ngxPermissionsOnly="'CONTRACT:SHOW'" (click)="showContract(item)" type="button"
+                    class="btn btn-icon btn-secondary ml-1" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="CONTRACT:EDIT">
+                    <button *ngIf="item?.etat === 'INACTIF' || item?.etat === 'ACTIF'" (click)="editContract(item)" type="button"
+                      class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                      <i class="feather icon-edit-2"></i>
+                    </button>
+                  </ng-template>-->
+                  <button *ngIf="item?.etat === 'INACTIF'" (click)="activateContract(item)" type="button"
+                    class="btn btn-icon ml-1 btn-success" ngbTooltip="Activer">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <!--<button *ngxPermissionsOnly="'CONTRACT:PRINTER:SHOW'" (click)="printerContract(item)" type="button"
+                    class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                  <button *ngIf="item?.etat !== 'RESILIE'" type="button" (click)="uploadContract(item)"
+                    class="btn btn-icon btn-info ml-1" ngbTooltip="charger le contrat signé">
+                    <i class="feather icon-upload-cloud"></i>
+                  </button>-->
+                  <ng-template ngxPermissionsOnly="CONTRACT:DELETE">
+                    <button *ngIf="item?.etat !== 'RESILIE'" type="button"
+                      (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td [attr.colspan]="locataire ? '6' : '5'" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-warning"> {{total | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{paye | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{impaye | number}} {{global.device}}</td>
+              <td *ngIf="action"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </form>
+
+  </app-card>
+</div>

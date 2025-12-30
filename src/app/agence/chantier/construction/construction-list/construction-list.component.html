@@ -1,0 +1,298 @@
+<div class="row justify-content-center">
+    <!-- FILTRE DE RECHERCHE -->
+    <div class="width btn-filter-construction">
+        <ng-template
+            [ngxPermissionsOnly]="['CONSTRUCTION:LIST', 'QUOTE:LIST', 'FUNDING:LIST', 'PRODUCTION:LIST', 'PAYMENT:FUNDING:LIST']">
+            <app-search [type]="true" [typeRow]="typeRow" [inputs]="inputs" (typeEvent)="onChangeLoad($event)"
+                (filterEvent)="onFilter($event)" (onSearchChange)="searchChanged($event)"></app-search>
+        </ng-template>
+    </div>
+    <ng-template
+        [ngxPermissionsExcept]="['CONSTRUCTION:LIST', 'QUOTE:LIST', 'FUNDING:LIST', 'PRODUCTION:LIST', 'PAYMENT:FUNDING:LIST']">
+        <div class="col-md-12">
+            <app-no-droit [title]="'intervention'"></app-no-droit>
+        </div>
+    </ng-template>
+
+    <!-- BOUTONS DE GESTION -->
+    <div *ngIf="list == 'SYNDIC'" class="col-sm-12 mb-4 btn-all-construction">
+        <div class="first">
+            <div class="second">
+                <div class="btn-Intervention">
+                    <div *ngxPermissionsOnly="['QUOTE:NEW']" class="btn-group m-1" ngbDropdown
+                        ngbTooltip="Cliquez ici pour ajouter  Maintenance / Renovation / Entretien">
+                        <button (click)="addConstruction('type','SYNDIC')" class="btn btn-primary" type="button">
+                            Créer une Intervention <i class="fas fa-paint-roller"></i>
+                        </button>
+
+                    </div>
+                </div>
+                <!-- <div class="btn-owner">
+                    <div *ngxPermissionsOnly="'OWNER:NEW'" class="btn-group m-1" ngbDropdown
+                      ngbTooltip="Cliquez ici pour ajouter un propriétaire">
+                      <button class="btn btn-primary" ngbDropdownToggle type="button">
+                        Propriétaire <i class="feather icon-user"></i>
+                      </button>
+                      <div ngbDropdownMenu>
+                        <a class="dropdown-item" (click)="addOwner('PARTICULIER')">PARTICULIER</a>
+                        <a class="dropdown-item" (click)="addOwner('ENTREPRISE')">ENTREPRISE</a>
+                      </div>
+                    </div>
+                  </div> -->
+                <div class="btn-Quote">
+                    <div *ngxPermissionsOnly="['CONSTRUCTION:NEW']" class="btn-group m-1" ngbDropdown
+                        ngbTooltip="Cliquez ici pour ajouter un devis">
+                        <button (click)="addQuote('SYNDIC')" class="btn btn-primary" type="button">
+                            Créer un Devis <i class="fas fa-clipboard"></i>
+                        </button>
+
+                    </div>
+                </div>
+                <div class="btn-InvoiceCo">
+                    <button *ngxPermissionsOnly="['CONSTRUCTION:NEW']" (click)="addBon('SYNDIC')" type="button"
+                        class="btn btn-warning m-1" ngbTooltip="Cliquez ici pour ajouter un bon de commande">
+                        Créer un Bon de commande <i class="fas fa-clipboard"></i>
+                    </button>
+                </div>
+                <div class="btn-InvoiceCo">
+                    <button *ngxPermissionsOnly="['CONSTRUCTION:NEW']" (click)="addInvoiceCo('SYNDIC')" type="button"
+                        class="btn btn-primary m-1" ngbTooltip="Cliquez ici pour ajouter une facture">
+                        Créer une Facture <i class="fas fa-clipboard"></i>
+                    </button>
+                </div>
+                <!-- <div *ngIf="!autorisation?.SYNDIC" class="btn-Funding">
+                    <button  *ngxPermissionsOnly="['FUNDING:NEW']" (click)="addFunding()" type="button"
+                        class="btn btn-success m-1" ngbTooltip="Cliquez ici pour ajouter un financement">
+                        Financement <i class="fas fa-wallet"></i>
+                    </button>
+                </div> -->
+                <div class="btn-Realization" data-hint="" data-hintposition="top-right">
+                    <button *ngxPermissionsOnly="['PRODUCTION:NEW']" (click)="addProduction()" type="button"
+                        class="btn btn-warning m-1" ngbTooltip="Cliquez ici pour ajouter une realisation">
+                        Réalisation <i class="feather icon-folder"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group float-right m-1 btn-outil-construction" ngbDropdown>
+            <button class="btn btn-warning" ngbDropdownToggle type="button">
+                Outils <i class="fas fa-tools"></i>
+            </button>
+            <div class="dropdown-menu-right" ngbDropdownMenu>
+                <a *ngxPermissionsOnly="['CONSTRUCTION:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()"
+                    ngbTooltip="Cliquez ici pour imprimer le listing">
+                    Imprimer <i class="feather icon-printer"></i>
+                </a>
+                <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+                    Exporter <i class="fa fa-file-excel"></i>
+                </a>
+                <a class="dropdown-item" [hidden]="visible" (click)="onImport()"
+                    ngbTooltip="Cliquez ici pour importer un fichier">
+                    Importer <i class="feather icon-download"></i>
+                </a>
+                <a class="dropdown-item" [hidden]="visible" (click)="onModel()"
+                    ngbTooltip="Cliquez ici pour génerer un modèle">
+                    Génerer <i class="feather icon-upload"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="list == 'LOCATIVE'" class="col-sm-12 mb-4 btn-all-construction">
+        <div class="first">
+            <div class="second">
+                <div class="btn-Intervention">
+                    <div *ngxPermissionsOnly="['QUOTE:NEW']" class="btn-group m-1" ngbDropdown
+                        ngbTooltip="Cliquez ici pour ajouter  Maintenance / Renovation / Entretien">
+                        <button (click)="addConstruction('type','LOCATIVE')" class="btn btn-primary" type="button">
+                            Créer une Intervention <i class="fas fa-paint-roller"></i>
+                        </button>
+
+                    </div>
+                </div>
+                <!-- <div class="btn-owner">
+                    <div *ngxPermissionsOnly="'OWNER:NEW'" class="btn-group m-1" ngbDropdown
+                      ngbTooltip="Cliquez ici pour ajouter un propriétaire">
+                      <button class="btn btn-primary" ngbDropdownToggle type="button">
+                        Propriétaire <i class="feather icon-user"></i>
+                      </button>
+                      <div ngbDropdownMenu>
+                        <a class="dropdown-item" (click)="addOwner('PARTICULIER')">PARTICULIER</a>
+                        <a class="dropdown-item" (click)="addOwner('ENTREPRISE')">ENTREPRISE</a>
+                      </div>
+                    </div>
+                  </div> -->
+                <div class="btn-Quote">
+                    <div *ngxPermissionsOnly="['CONSTRUCTION:NEW']" class="btn-group m-1" ngbDropdown
+                        ngbTooltip="Cliquez ici pour ajouter un devis">
+                        <button (click)="addQuote('LOCATIVE')" class="btn btn-primary" type="button">
+                            Créer un Devis <i class="fas fa-clipboard"></i>
+                        </button>
+
+                    </div>
+                </div>
+                <div class="btn-InvoiceCo">
+                    <button *ngxPermissionsOnly="['CONSTRUCTION:NEW']" (click)="addBon()" type="button"
+                        class="btn btn-warning m-1" ngbTooltip="Cliquez ici pour ajouter un bon de commande">
+                        Créer un Bon de commande <i class="fas fa-clipboard"></i>
+                    </button>
+                </div>
+                <div class="btn-InvoiceCo">
+                    <button *ngxPermissionsOnly="['CONSTRUCTION:NEW']" (click)="addInvoiceCo()" type="button"
+                        class="btn btn-primary m-1" ngbTooltip="Cliquez ici pour ajouter une facture">
+                        Créer une Facture <i class="fas fa-clipboard"></i>
+                    </button>
+                </div>
+                <div  class="btn-Funding">
+                    <button *ngxPermissionsOnly="['FUNDING:NEW']" (click)="addFunding()" type="button"
+                        class="btn btn-success m-1" ngbTooltip="Cliquez ici pour ajouter un financement">
+                        Financement <i class="fas fa-wallet"></i>
+                    </button>
+                </div>
+                <div class="btn-Realization" data-hint="" data-hintposition="top-right">
+                    <button *ngxPermissionsOnly="['PRODUCTION:NEW']" (click)="addProduction()" type="button"
+                        class="btn btn-warning m-1" ngbTooltip="Cliquez ici pour ajouter une realisation">
+                        Réalisation <i class="feather icon-folder"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group float-right m-1 btn-outil-construction" ngbDropdown>
+            <button class="btn btn-warning" ngbDropdownToggle type="button">
+                Outils <i class="fas fa-tools"></i>
+            </button>
+            <div class="dropdown-menu-right" ngbDropdownMenu>
+                <a *ngxPermissionsOnly="['CONSTRUCTION:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()"
+                    ngbTooltip="Cliquez ici pour imprimer le listing">
+                    Imprimer <i class="feather icon-printer"></i>
+                </a>
+                <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+                    Exporter <i class="fa fa-file-excel"></i>
+                </a>
+                <a class="dropdown-item" [hidden]="visible" (click)="onImport()"
+                    ngbTooltip="Cliquez ici pour importer un fichier">
+                    Importer <i class="feather icon-download"></i>
+                </a>
+                <a class="dropdown-item" [hidden]="visible" (click)="onModel()"
+                    ngbTooltip="Cliquez ici pour génerer un modèle">
+                    Génerer <i class="feather icon-upload"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- LISTE DES INTERVENTIONS -->
+    <div class="width list-construction">
+        <ng-template ngxPermissionsOnly="CONSTRUCTION:LIST">
+            <div class="col-md-12" *ngIf="type === 'INTERVENTION' && constructions && constructions.length === 0">
+                <span class="badge badge-primary mb-4 f-14 width" ngbTooltip="(Maintenance / Renovation / Entretien)">
+                    LISTE DES INTERVENTIONS
+                </span>
+                <app-no-data [title]="'Aucune intervention trouvée'"
+                    *ngIf="type === 'INTERVENTION' && constructions && constructions.length === 0"></app-no-data>
+            </div>
+            <div class="col-md-12" *ngIf="type === 'INTERVENTION' && constructions && constructions.length > 0">
+                <span class="badge badge-primary mb-4 f-14 width" ngbTooltip="(Maintenance / Renovation / Entretien)">
+                    LISTE DES INTERVENTIONS </span>
+                <app-card [hidHeader]="true" cardClass="card-datatable">
+                    <app-construction-table [constructions]="constructions" >  </app-construction-table>
+                 </app-card>
+            </div>
+        </ng-template>
+    </div>
+    <ng-template ngxPermissionsExcept="CONSTRUCTION:LIST"
+        [ngxPermissionsOnly]="['QUOTE:LIST', 'FUNDING:LIST', 'PRODUCTION:LIST', 'PAYMENT:FUNDING:LIST']">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'INTERVENTION'" [title]="'liste intervention'"></app-no-droit>
+        </div>
+    </ng-template>
+
+    <!-- LISTE DES DEVIS -->
+    <ng-template ngxPermissionsOnly="QUOTE:LIST">
+        <div class="col-md-12" *ngIf="type === 'DEVIS' && quotes && quotes.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES DEVIS
+            </span>
+            <app-no-data [title]="'Aucun devis trouvé'"
+                *ngIf="type === 'DEVIS' && quotes && quotes.length === 0"></app-no-data>
+        </div>
+        <app-quote-list style="width: 100%;" [quotes]="quotes" [mode]="list"
+            *ngIf="type === 'DEVIS' && quotes && quotes.length > 0"></app-quote-list>
+    </ng-template>
+    <ng-template ngxPermissionsExcept="QUOTE:LIST">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'DEVIS'" [title]="'liste devis'"></app-no-droit>
+        </div>
+    </ng-template>
+
+    <!-- LISTE DES BONS DE COMMANDE -->
+    <ng-template ngxPermissionsOnly="QUOTE:LIST">
+        <div class="col-md-12" *ngIf="type === 'BON' && bons && bons.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES BON DE COMMANDE
+            </span>
+            <app-no-data [title]="'Aucun bon de commande trouvé'"  
+                *ngIf="type === 'BON' && bons && bons.length === 0"></app-no-data>
+        </div>
+        <app-quote-list style="width: 100%;" [quotes]="bons" [isBon]="true"
+            *ngIf="type === 'BON' && bons && bons.length > 0"></app-quote-list>
+    </ng-template>
+    <ng-template ngxPermissionsExcept="QUOTE:LIST">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'BON'" [title]="'liste bons de commande'"></app-no-droit>
+        </div>
+    </ng-template>
+
+    <!-- LISTE DES FACTURE -->
+    <ng-template ngxPermissionsOnly="INVOICE:CO:LIST">
+        <div class="col-md-12" *ngIf="type === 'FACTURE' && invoiceCos && invoiceCos.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES FACTURES
+            </span>
+            <app-no-data [title]="'Aucune facture trouvé'"
+                *ngIf="type === 'FACTURE' && invoiceCos && invoiceCos.length === 0"></app-no-data>
+        </div>
+        <app-invoice-co-list style="width: 100%;" [invoiceCos]="invoiceCos"
+            *ngIf="type === 'FACTURE' && invoiceCos && invoiceCos.length > 0"></app-invoice-co-list>
+    </ng-template>
+    <ng-template ngxPermissionsExcept="INVOICE:CO:LIST">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'FACTURE'" [title]="'liste factures'"></app-no-droit>
+        </div>
+    </ng-template>
+
+    <!-- LISTE DES FINANCEMENT -->
+    <ng-template ngxPermissionsOnly="FUNDING:LIST">
+        <div class="col-md-12" *ngIf="type === 'FINANCEMENT' && fundings && fundings.length === 0">
+            <span class="badge badge-success mb-4 f-14 width">
+                LISTE DES FINANCEMENTS
+            </span>
+            <app-no-data [title]="'Aucun financement trouvé'"
+                *ngIf="type === 'FINANCEMENT' && fundings && fundings.length === 0"></app-no-data>
+        </div>
+        <app-funding-list style="width: 100%;" [fundings]="fundings"
+            *ngIf="type === 'FINANCEMENT' && fundings && fundings.length > 0"></app-funding-list>
+    </ng-template>
+    <ng-template ngxPermissionsExcept="FUNDING:LIST">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'FINANCEMENT'" [title]="'liste financement'"></app-no-droit>
+        </div>
+    </ng-template>
+
+    <!-- LISTE DES PRODUCTIONS -->
+    <ng-template ngxPermissionsOnly="PRODUCTION:LIST">
+        <div class="col-md-12" *ngIf="type === 'REALISATION' && productions && productions.length === 0">
+            <span class="badge badge-warning mb-4 f-14 width">
+                LISTE DES REALISATION
+            </span>
+            <app-no-data [title]="'Aucune réalisation trouvée'"
+                *ngIf="type === 'REALISATION' && productions && productions.length === 0"></app-no-data>
+        </div>
+        <app-production-list style="width: 100%;" [productions]="productions"
+            *ngIf="type === 'REALISATION' && productions && productions.length > 0"></app-production-list>
+    </ng-template>
+    <ng-template ngxPermissionsExcept="PRODUCTION:LIST">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'REALISATION'" [title]="'liste production'"></app-no-droit>
+        </div>
+    </ng-template>
+</div>

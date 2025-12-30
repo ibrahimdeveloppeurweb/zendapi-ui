@@ -1,0 +1,95 @@
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <br/>
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+        <tr>
+          <th>Locative</th>
+          <th *ngIf="locataire">Locataire</th>
+          <th>Etat</th>
+          <th>Période</th>
+          <th>Montant</th>
+          <th>Payé</th>
+          <th>Restant</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of penalities">
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.invoice?.contract?.rental?.libelle}}</span> <br />
+                Superficie : {{item?.invoice?.contract?.rental?.superficie}} m² - {{item?.invoice?.contract?.rental?.piece}} pièce(s): <br />
+                Propriétaire : {{item?.invoice?.contract?.rental?.house?.owner?.searchableTitle}}
+              </p>
+            </td>
+            <td *ngIf="locataire">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.invoice?.contract?.tenant?.searchableTitle}}</span> <br />
+                Type : {{item.invoice?.contract?.tenant?.type}}<br />
+                Telephone : {{item.invoice?.contract?.tenant?.telephone}}
+              </p>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-danger' : item?.invoice?.etat === 'IMPAYE',
+              'badge-primary' : item?.invoice?.etat === 'ATTENTE',
+              'badge-warning' : item?.invoice?.etat === 'EN COURS',
+              'badge-success' : item?.invoice?.etat === 'SOLDE'
+              }">{{payment(item?.invoice?.etat)}}</span>
+            </td>
+            <td>
+              {{item?.libelle}} <br />
+              <span *ngIf="item?.invoice?.contract.etat !== 'ACTIF'" class="ml-1 badge" [ngClass]="{
+              'badge-light-danger' : item?.invoice?.contract.etat === 'RESILIE',
+              'badge-light-warning' : item?.invoice?.contract.etat === 'INACTIF'
+              }"><small>{{item?.invoice?.statut}}</small></span>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary font-weight-blod">{{item?.invoice?.montant|number}} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-success font-weight-blod">{{item?.invoice?.paye|number}} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-danger font-weight-blod">{{item?.invoice?.impaye|number}} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showPenality(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button *ngxPermissionsOnly="'PENALITY:PRINTER:SHOW'" (click)="printerPenality(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="PENALITY:DELETE">
+                  <button *ngIf="item?.invoice?.contract?.etat !== 'RESILIE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4"class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-primary"> {{total | number}} {{global.device}}</td>
+            <td class="font-weight-bold font-size-40 text-success"> {{paye | number}} {{global.device}}</td>
+            <td class="font-weight-bold font-size-40 text-danger"> {{impaye | number}} {{global.device}}</td>
+            <td *ngIf="action"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

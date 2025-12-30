@@ -1,0 +1,163 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12 mb-2">
+      <!-- DETAILS SUR LE DEVIS  -->
+      <div class="row">
+        <span class="badge badge-warning my-2 f-14 width"> DETAILS SUR L'INTERVENTION </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label>Intervention <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Construction'" [groups]="['construction']"
+              [required]="true" [selected]="currentConstruction"
+              [disabled]="this.edit" (uuid)="setConstructionUuid($event)">
+            </app-entity-finder>
+          </div>
+          <div class="invalid-feedback" *ngIf="submit && f.construction.errors">
+            <div *ngIf="f.construction.errors.required">{{required.novide}}</div>
+          </div>
+          <div class="col-md-3">
+            <label>Bien </label>
+            <input type="text" class="form-control p-2 text-warning" readonly [value]="construction?.rental ? construction?.house?.searchableTitle : construction?.rental?.libelle">
+          </div>
+          <div class="col-md-3">
+            <label for="montant">Montant </label>
+            <input type="text" class="form-control p-2 text-warning " readonly [value]="construction ? construction?.budget: ''">
+          </div>
+          <div class="col-md-3">
+            <label for="etat">Etat<span class="asterix">*</span></label>
+            <select formControlName="etat" class="form-control" id="etat">
+              <option [ngValue]="'EN COURS'">EN COURS </option>
+              <option [ngValue]="'TERMINER'">TERMINER</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESSION GLOBALE  -->
+    <div class="col-sm-12 mb-3">
+      <div class="row py-2">
+        <div class="col-md-12">
+          <label class="mb-1"><strong>Progression globale :</strong></label>
+          <div class="progress px-0" style="height: 25px;">
+            <div class="progress-bar" [class]="changeColor(prct)" role="progressbar" [style.width]="prct + '%'"  aria-valuenow="prct"  aria-valuemin="0" aria-valuemax="100">
+              <strong>{{prct}}%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12" formArrayName="options" *ngIf="f.construction.value">
+      <div *ngFor="let item of option.controls; let c = index" [formGroupName]="c">
+        <div class="row mb-2">
+          <div class="col-md-10">
+            <span class="badge badge-primary my-2 f-14 width">{{ item.get('devis').value }}</span>
+          </div>
+          <div class="col-md-2 text-right">
+            <button type="button" class="btn btn-sm btn-success my-1" (click)="addSubOption(c)" title="Ajouter une tâche">
+              <i class="fas fa-plus"></i> Ajouter tâche
+            </button>
+          </div>
+        </div>
+        
+        <!-- Barre de progression pour ce devis -->
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label class="mb-1 small"><strong>Progression du devis :</strong></label>
+            <div class="progress px-0" style="height: 20px;">
+              <div class="progress-bar" [class]="changeColor(getQuoteProgress(c))" role="progressbar" [style.width]="getQuoteProgress(c) + '%'"  aria-valuenow="getQuoteProgress(c)"  aria-valuemin="0" aria-valuemax="100">
+                {{getQuoteProgress(c)}}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-12">
+            <div formArrayName="suboptions">
+              <div class="row align-items-center mb-3" *ngFor="let subItem of subOption(c).controls; let i = index" [formGroupName]="i">
+                <div class="col-md-12">
+                  <div class="row align-items-center">
+                    <div class="col-md-1 text-center">
+                      <input (change)="onCheckItem(subItem, c)" formControlName="checked" class="form-check-input" type="checkbox" [id]="'checked' + i + item.get('uuid').value">
+                    </div>
+                    <div class="col-md-5">
+                      <label class="title-result-show mb-0" style="cursor: pointer;" [for]="'checked' + i + item.get('uuid').value">
+                        <span *ngIf="!subItem.get('libelle').disabled">Tache {{ i+1 }}: </span>
+                        <input *ngIf="!subItem.get('libelle').disabled" type="text" formControlName="libelle" class="form-control form-control-sm d-inline-block" style="width: auto; min-width: 250px;" placeholder="Nom de la tâche">
+                        <span *ngIf="subItem.get('libelle').disabled">Tache {{ i+1 }}: {{ subItem.get('libelle').value }}</span>
+                      </label>
+                    </div>
+                    <div class="col-md-5" *ngIf="subItem.get('checked').value">
+                      <div class="d-flex align-items-center">
+                        <input 
+                          type="file" 
+                          class="form-control form-control-sm" 
+                          style="font-size: 0.8rem; flex: 1;"
+                          [id]="'file' + c + i"
+                          #fileInput
+                          (change)="onFileSelected($event, subItem)"
+                          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                          title="Télécharger un fichier">
+                        <button 
+                          *ngIf="subItem.get('fileSrc')?.value" 
+                          type="button" 
+                          class="btn btn-sm btn-danger ml-1" 
+                          (click)="removeFile(subItem, fileInput)"
+                          title="Supprimer le fichier">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                      <div *ngIf="subItem.get('fileName')?.value" class="mt-1">
+                        <small class="text-muted">
+                          <i class="fas fa-file"></i> {{ subItem.get('fileName').value }}
+                        </small>
+                      </div>
+                    </div>
+                    <div class="col-md-5" *ngIf="!subItem.get('checked').value">
+                      <span class="text-muted small">Cochez pour ajouter un fichier</span>
+                    </div>
+                    <div class="col-md-1 text-right">
+                      <button *ngIf="!subItem.get('checked').disabled" type="button" class="btn btn-sm btn-danger" (click)="removeSubOption(c, i)" title="Supprimer cette tâche">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Aperçu de l'image si c'est une image -->
+                  <div class="row mt-2" *ngIf="subItem.get('fileSrc')?.value && subItem.get('fileSrc').value.startsWith('data:image')">
+                    <div class="col-md-12">
+                      <img [src]="subItem.get('fileSrc').value" alt="Aperçu" style="max-width: 150px; max-height: 150px; border-radius: 4px; border: 1px solid #ddd;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

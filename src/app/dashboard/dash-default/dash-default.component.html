@@ -1,0 +1,443 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width"
+    [dateD]="true"
+    [dateF]="true"
+    [type]="true"
+    [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+  </app-filter>
+
+  <!-- ANALYTICS -->
+  <div class="col-xl-6 col-sm-12">
+    <div class="row">
+      <!-- PROPRIETAIRE  -->
+      <div class="col-md-6" (click)="onViewer('OWNER')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="text-c-yellow">{{ widget?.proprietaire?.tout }}</h4>
+              <h6 class="text-muted m-b-0">{{ widget?.proprietaire?.tout > 1 ? 'Propriétaires' : 'Propriétaire' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-user f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-7">
+                <p class="text-white m-b-0">{{ widget?.proprietaire?.actif }} {{ widget?.proprietaire?.actif > 1 ? 'Actifs' : 'Actif' }}</p>
+              </div>
+              <div class="col-5 text-right">
+                <p class="text-white m-b-0">{{ widget?.proprietaire?.inactif }} {{ widget?.proprietaire?.inactif > 1 ? 'Inactifs' : 'Inactif' }}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- PROPRIETAIRE END -->
+
+      <!-- LOCATAIRE -->
+      <div class="col-md-6"  (click)="onViewer('TENANT')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="text-c-red">{{ widget?.locataire?.tout }}</h4>
+              <h6 class="text-muted m-b-0">{{ widget?.locataire?.tout > 1 ? 'Locataires' : 'Locataire' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-user f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-7">
+                <p class="text-white m-b-0">{{ widget?.locataire?.actif }} {{ widget?.locataire?.actif > 1 ? 'Actifs' : 'Actif' }}</p>
+              </div>
+              <div class="col-5 text-right">
+                <p class="text-white m-b-0">{{ widget?.locataire?.inactif }} {{ widget?.locataire?.inactif > 1 ? 'Inactifs' : 'Inactif' }}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- LOCATAIRE END -->
+
+      <!-- CLIENT -->
+      <div class="col-md-6"  (click)="onViewer('CUSTOMER')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="text-c-blue">{{ widget?.client?.tout }}</h4>
+              <h6 class="text-muted m-b-0">{{ widget?.client?.tout > 1 ? 'Clients' : 'Client' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-file-text f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-7">
+                <p class="text-white m-b-0">{{ widget?.client?.actif }} {{ widget?.client?.actif > 1 ? 'Actifs' : 'Actif' }}</p>
+              </div>
+              <div class="col-5 text-right">
+                <p class="text-white m-b-0">{{ widget?.client?.inactif }} {{ widget?.client?.inactif > 1 ? 'Inactifs' : 'Inactif' }}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- CLIENT END -->
+
+      <!-- LOCATIVE -->
+      <div class="col-md-6"  (click)="onViewer('LOCATIVE')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="text-c-green">{{ widget?.locative?.tout }}</h4>
+              <h6 class="text-muted m-b-0">{{ widget?.locative?.tout > 1 ? 'Locatives' : 'Locative' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-7">
+                <p class="text-white m-b-0">{{ widget?.locative?.dispo }} {{ widget?.locative?.dispo > 1 ? 'Disponibles' : 'Disponible' }}</p>
+              </div>
+              <div class="col-5 text-right">
+                <p class="text-white m-b-0">{{ widget?.locative?.occup }} {{ widget?.locative?.occup > 1 ? 'Occupées' : 'Occupée' }}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- LOCATIVE END -->
+    </div>
+  </div>
+
+  <!-- DEBUT WIDGET CONTRAT ET MANDAT -->
+  <div class="col-xl-6 col-sm-12">
+    <div class="row">
+      <div class="col-sm-6"  (click)="onViewer('CONTRAT')">
+        <app-card [hidHeader]="true" cardClass="support-bar overflow-hidden" blockClass="p-0" [isCardFooter]="true" footerClass="bg-primary text-white">
+          <div class="p-20 pb-0">
+            <h2 class="m-0">{{ widget?.contrat?.tout }}</h2>
+            <h6 class="text-muted m-b-0">{{ widget?.contrat?.tout > 1 ? 'Contrats' : 'Contrat' }}</h6>
+            <p class="mb-3 mt-3">Total contrat par mois.</p>
+          </div>
+          <app-apex-chart chartID="support-chart-1" [chartConfig]="this.bandeC"></app-apex-chart>
+          <div class="app-card-footer">
+            <div class="row text-center">
+              <div class="col">
+                <h4 class="m-0 text-white">{{ widget?.contrat?.actif }}</h4>
+                <span>{{ widget?.contrat?.actif > 1 ? 'Actifs' : 'Actif' }}</span>
+              </div>
+              <div class="col">
+                <h4 class="m-0 text-white">{{ widget?.contrat?.inactif }}</h4>
+                <span>{{ widget?.contrat?.inactif > 1 ? 'Inactifs' : 'Inactif' }}</span>
+              </div>
+              <div class="col">
+                <h4 class="m-0 text-white">{{ widget?.contrat?.resilie }}</h4>
+                <span>{{ widget?.contrat?.resilie > 1 ? 'Resiliés' : 'Resilié' }}</span>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <div class="col-sm-6"  (click)="onViewer('MANDAT')">
+        <app-card [hidHeader]="true" cardClass="support-bar overflow-hidden" blockClass="p-0" [isCardFooter]="true" footerClass="bg-success text-white">
+          <div class="p-20 pb-0">
+            <h2 class="m-0">{{ widget?.mandat?.tout }}</h2>
+            <h6 class="text-muted m-b-0">{{ widget?.mandat?.tout > 1 ? 'Mandats' : 'Mandat' }}</h6>
+            <p class="mb-3 mt-3">Total mandat par mois.</p>
+          </div>
+          <app-apex-chart chartID="support-chart-2" [chartConfig]="this.bandeM"></app-apex-chart>
+          <div class="app-card-footer">
+            <div class="row text-center">
+              <div class="col">
+                <h4 class="m-0 text-white">{{ widget?.mandat?.valide }}</h4>
+                <span>{{ widget?.mandat?.valide > 1 ? 'Validés' : 'Validé' }}</span>
+              </div>
+              <div class="col">
+                <h4 class="m-0 text-white">{{ widget?.mandat?.invalide }}</h4>
+                <span>{{ widget?.mandat?.invalide > 1 ? 'Invalides' : 'Invalide' }}</span>
+              </div>
+              <div class="col">
+                <h4 class="m-0 text-white">{{ widget?.mandat?.resilie }}</h4>
+                <span>{{ widget?.mandat?.resilie > 1 ? 'Resiliés' : 'Resilié' }}</span>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+    </div>
+  </div>
+  <!-- FIN WIDGET CONTRAT ET MANDAT -->
+
+  <!-- GRAPHE -->
+  <div class="col-xl-12 col-sm-12 mb-4">
+    <lib-highcharts-angular [Highcharts]="Highcharts" [options]="barBasicChartOptions"
+      style="width: 100%; height: 450px; display: block;"></lib-highcharts-angular>
+  </div>
+  <!-- GRAPHE END -->
+
+  <!-- BIENS -->
+  <div class="col-xl-12 col-sm-12">
+    <div class="row">
+      <!-- BIENS -->
+      <div class="col-md-3"  (click)="onViewer('BIENS')">
+        <app-card [hidHeader]="true" cardClass="bg-c-yellow order-card">
+          <h6 class="text-white">{{ widget?.bien > 1 ? 'Biens immobiliers' : 'Bien immobilier' }}</h6>
+          <h2 class="text-white">{{ widget?.bien }} </h2>
+          <i class="card-icon feather icon-home"></i>
+        </app-card>
+      </div>
+      <!-- BIENS END -->
+
+      <!-- TICKET -->
+      <div class="col-md-3"  (click)="onViewer('TICKET')">
+        <app-card [hidHeader]="true" cardClass="bg-c-green order-card">
+          <h6 class="text-white">{{ widget?.ticket > 1 ? 'Tickets' : 'Ticket' }}</h6>
+          <h2 class="text-white"> {{ widget?.ticket }}</h2>
+          <i class="card-icon feather icon-clipboard"></i>
+        </app-card>
+      </div>
+      <!-- TICKET END -->
+
+      <!-- INTERVENTION -->
+      <div class="col-md-3"  (click)="onViewer('INTERVENTION')">
+        <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+          <h6 class="text-white">{{ widget?.chantier > 1 ? 'Interventions' : 'Intervention' }}</h6>
+          <h2 class="text-white">{{ widget?.chantier }}</h2>
+          <i class="card-icon feather icon-tag"></i>
+        </app-card>
+      </div>
+      <!-- INTERVENTION END -->
+
+      <!-- FOURNISSEUR -->
+      <div class="col-md-3"  (click)="onViewer('FOURNISSEUR')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">{{ widget?.fournisseur > 1 ? 'Fournisseurs' : 'Fournisseur' }}</h6>
+          <h2 class="text-white">{{ widget?.fournisseur}}</h2>
+          <i class="card-icon feather icon-user"></i>
+        </app-card>
+      </div>
+      <!-- FOURNISSEUR END -->
+    </div>
+  </div>
+  <!--BIENS END -->
+
+  <!-- 10 DERNIERS LOCATAIRES -->
+  <div class="col-xl-6 col-md-12"  (click)="onViewer('TENANT')">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-success my-2 f-14 formBadge width"> LISTE DES 10 DERNIERS LOCATAIRES</span>
+      </div>
+      <div class="col-md-12">
+        <div *ngIf="etat && listing?.tenant.length > 0" class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Nom et prenoms/Raison sociale</th>
+                <th>Status</th>
+                <th>Solde</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tenant of listing?.tenant" (click)="showTenant(tenant)">
+                <td class="align-middle">
+                  <div class="d-inline-block align-middle">
+                    <img *ngIf="tenant?.type === 'PARTICULIER' && tenant?.sexe === 'Masculin'" class="img-radius wid-40 align-top m-r-15" [src]="tenant.photoSrc ? publicUrl+'/'+tenant.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                    <img *ngIf="tenant?.type === 'PARTICULIER' && tenant?.sexe === 'Féminin'" class="img-radius wid-40 align-top m-r-15" [src]="tenant.photoSrc ? publicUrl+'/'+tenant.photoSrc : 'assets/images/avatar-mlle.jpeg'"  onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+                    <img *ngIf="tenant?.type === 'ENTREPRISE' && tenant?.photoSrc" class="img-radius wid-40 align-top m-r-15" [src]="tenant.photoSrc ? publicUrl+'/'+tenant.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                    <i *ngIf="tenant?.type === 'ENTREPRISE' && !tenant?.photoSrc" class="fas fa-building fa-3x"></i>
+                    <div class="d-inline-block">
+                      <h6>{{ tenant?.searchableTitle }}</h6>
+                      <span class="m-0 d-inline-block align-middle">
+                        <i class="fa fa-phone"></i>{{ tenant?.telephone }} - {{ tenant?.type }}
+                      </span><br/>
+                      <span> Code : {{ tenant?.code }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge badge-{{ tenant?.etat === 'ACTIF' ? 'success' : 'danger' }}">{{ tenant?.etat }}</span>
+                </td>
+                <td class="text-warning">{{ tenant?.impaye|number }} {{ global.device }}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                <td class="font-weight-bold font-size-40 text-success"> {{ totalTenant |number}} {{global.device}}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <app-no-data [title]="'Aucun locataire trouvée'" *ngIf="listing?.tenant && listing?.tenant?.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div>
+  <!-- 10 DERNIERS LOCATAIRES END-->
+
+  <!-- 10 DERNIERS PROPRIETAIRE -->
+  <div class="col-xl-6 col-md-12"  (click)="onViewer('OWNER')">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-warning my-2 f-14 formBadge width"> LISTE DES 10 DERNIERS PROPRIETAIRES</span>
+      </div>
+      <div class="col-md-12">
+        <div *ngIf="etat && listing?.owner.length > 0" class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Nom et prenoms/Raison sociale</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr  *ngFor="let owner of listing?.owner" (click)="showOwner(owner)">
+                <td class="align-middle">
+                  <div class="d-inline-block align-middle">
+                    <img *ngIf="owner?.type === 'PARTICULIER' && owner?.sexe === 'Masculin'" class="img-radius wid-40 align-top m-r-15" [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                    <img *ngIf="owner?.type === 'PARTICULIER' && owner?.sexe === 'Féminin'" class="img-radius wid-40 align-top m-r-15" [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-mlle.jpeg'"  onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+                    <img *ngIf="owner?.type === 'ENTREPRISE' && owner?.photoSrc" class="img-radius wid-40 align-top m-r-15" [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                    <i *ngIf="owner?.type === 'ENTREPRISE' && !owner?.photoSrc" class="fas fa-building fa-3x"></i>
+                    <div class="d-inline-block">
+                      <h6>{{ owner?.searchableTitle }}</h6>
+                      <span class="m-0 d-inline-block align-middle">
+                        <i class="fa fa-phone"></i>{{ owner?.telephone }} - {{ owner?.type }}
+                      </span><br/>
+                      <span> Code : {{ owner?.code }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge badge-{{ owner?.etat === 'ACTIF' ? 'success' : 'danger' }}">{{ tenant?.etat }}</span>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <app-no-data class="width" [title]="'Aucun locataire trouvé'" *ngIf="listing?.owner && listing?.owner?.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div>
+  <!-- 10 DERNIERS PROPRIETAIRE END-->
+
+  <!-- 10 DERNIERS QUITTANCE DE LOYER SOLDE -->
+  <div class="col-xl-6 col-md-12"  (click)="onViewer('LOYER')">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-success my-2 f-14 formBadge width"> LISTE DES 10 DERNIERS QUITTANCES DE SOLDE</span>
+      </div>
+      <div class="col-md-12">
+        <div *ngIf="etat && listing?.rentS?.length > 0" class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Locataire</th>
+                <th>Locative</th>
+                <th>Periode</th>
+                <th>Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rentS of listing.rentS" (click)="showRent(rentS)">
+                <td>
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{rentS?.contract?.tenant?.searchableTitle}}</span> <br />
+                    Type : {{rentS?.contract?.tenant?.type}}<br />
+                    Telephone : {{rentS?.contract?.tenant?.telephone}}
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{rentS?.contract?.rental?.libelle}}</span> <br />
+                    Superficie : {{rentS?.contract?.rental?.superficie}} m² - {{rentS?.contract?.rental?.piece}} pièce(s): <br />
+                    Propriétaire : {{rentS?.contract?.rental?.house?.owner?.searchableTitle}}
+                  </p>
+                </td>
+                <td>
+                  {{rentS?.mois}} <br />
+                  <span *ngIf="rentS?.type === 'AVANCE'" class="badge badge-primary">{{rentS?.type}}</span>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-primary font-weight-blod">{{rentS?.invoice?.montant|number}} {{global.device}}</span>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                <td class="font-weight-bold font-size-40 text-success"> {{ totalRentS |number}} {{global.device}}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <app-no-data class="width" [title]="'Aucune quittance trouvée'" *ngIf="listing?.rentS && listing?.rentS?.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div>
+  <!-- 10 DERNIERS QUITTANCE DE LOYER SOLDE END -->
+
+  <!--10 DERNIERS QUITTANCE EN ATTENTE DE PAIEMENT -->
+  <div class="col-xl-6 col-md-12"  (click)="onViewer('ATTENTE')">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-primary my-2 f-14 formBadge width"> LISTE DES 10 DERNIERS QUITTANCES EN ATTENTE DE PAIEMENT</span>
+      </div>
+      <div class="col-md-12">
+        <div *ngIf="etat && listing?.rentA?.length > 0" class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Locataire</th>
+                <th>Locative</th>
+                <th>Periode</th>
+                <th>Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rentA of listing.rentA" (click)="showRent(rentA)">
+                <td>
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{rentA?.contract?.tenant?.searchableTitle}}</span> <br />
+                    Type : {{rentA?.contract?.tenant?.type}}<br />
+                    Telephone : {{rentA?.contract?.tenant?.telephone}}
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{rentA?.contract?.rental?.libelle}}</span> <br />
+                    Superficie : {{rentA?.contract?.rental?.superficie}} m² - {{rentA?.contract?.rental?.piece}} pièce(s): <br />
+                    Propriétaire : {{rentA?.contract?.rental?.house?.owner?.searchableTitle}}
+                  </p>
+                </td>
+                <td>
+                  {{rentA?.mois}} <br />
+                  <span *ngIf="rentA?.type === 'AVANCE'" class="badge badge-primary">{{rentA?.type}}</span>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-primary font-weight-blod">{{rentA?.invoice?.montant|number}} {{global.device}}</span>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                <td class="font-weight-bold font-size-40 text-success"> {{ totalRentA |number}} {{global.device}}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <app-no-data class="width" [title]="'Aucune quittance trouvée'" *ngIf="listing?.rentA && listing?.rentA?.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div>
+  <!-- 10 DERNIERS QUITTANCE EN ATTENTE DE PAIEMENT END -->
+
+</div>

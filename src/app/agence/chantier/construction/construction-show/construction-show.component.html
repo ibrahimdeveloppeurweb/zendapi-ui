@@ -1,0 +1,703 @@
+<div class="user-profile user-card mb-4" *ngIf="construction">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md mt-md-4 mt-4">
+          
+          <!-- DÉTAILS RÉSUMÉS DE L'INTERVENTION -->
+          <div class="row mb-4">
+            <div class="col-md-6 col-lg-3 mb-3">
+              <div class="d-flex flex-column">
+                <small class="text-muted mb-1">Référence</small>
+                <strong class="text-dark">{{ construction?.code }}</strong>
+              </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3 mb-3">
+              <div class="d-flex flex-column">
+                <small class="text-muted mb-1">Libellé</small>
+                <strong class="text-dark">{{ construction?.nom }}</strong>
+              </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3 mb-3">
+              <div class="d-flex flex-column">
+                <small class="text-muted mb-1">État</small>
+                <span class="badge" [ngClass]="{
+                  'badge-danger': construction?.etat === 'PREVU',
+                  'badge-warning': construction?.etat === 'EN COURS',
+                  'badge-success': construction?.etat === 'ACHEVE'
+                }">{{ construction?.etat }}</span>
+              </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3 mb-3">
+              <div class="d-flex flex-column">
+                <small class="text-muted mb-1">Période</small>
+                <strong class="text-dark">
+                  {{ construction?.dateD | date: 'd/MM/y' }} - {{ construction?.dateF | date: 'd/MM/y' }}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="tabs-wrapper">
+            <div class="tabs-scrollable">
+              <ul class="nav nav-tabs details-tabs" id="tabShowIntervention" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'INTERVENTION'}"
+                     (click)="onChangeLoad('INTERVENTION')" id="details-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="details" aria-selected="true">
+                    <i class="far fa-eye"></i> Détails
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'DEVIS'}"
+                     (click)="onChangeLoad('DEVIS')" id="devis-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="devis" aria-selected="true">
+                    <i class="fas fa-clipboard"></i> Dévis prestataire
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'DEVIS_OWNER'}"
+                     (click)="onChangeLoad('DEVIS_OWNER')" id="devis-owner-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="devis-owner" aria-selected="true">
+                    <i class="fas fa-clipboard"></i> Dévis propriétaire 
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'BON'}"
+                     (click)="onChangeLoad('BON')" id="bon-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="bon" aria-selected="true">
+                    <i class="fas fa-clipboard"></i> Bon de commande 
+                  </a>
+                </li>
+             <!--    <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'FACTURE'}"
+                     (click)="onChangeLoad('FACTURE')" id="facture-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="facture" aria-selected="true">
+                    <i class="fas fa-clipboard"></i> Factures prestataire
+                  </a>
+                </li> -->
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'FACTURE_OWNER'}"
+                     (click)="onChangeLoad('FACTURE_OWNER')" id="facture-owner-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="facture-owner" aria-selected="true">
+                    <i class="fas fa-clipboard"></i> Factures 
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'FINANCEMENT'}"
+                     (click)="onChangeLoad('FINANCEMENT')" id="financement-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="financement" aria-selected="false">
+                    <i class="fas fa-wallet"></i> Financement
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'REALISATION'}"
+                     (click)="onChangeLoad('REALISATION')" id="realisation-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="realisation" aria-selected="false">
+                    <i class="fas fa-folder"></i> Réalisation
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'PAIEMENT'}"
+                     (click)="onChangeLoad('PAIEMENT')" id="paiement-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="paiement" aria-selected="false">
+                    <i class="fas fa-money-bill-wave"></i> Paiement
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'TICKET'}"
+                     (click)="onChangeLoad('TICKET')" id="ticket-tab" data-toggle="tab"
+                     href="javascript:" role="tab" aria-controls="ticket" aria-selected="false">
+                    <i class="feather icon-file-text"></i> Ticket
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+
+    <div class="btn-group float-right m-1 btn-outil-construction">
+      <button *ngIf="activeTab == 'DEVIS'" (click)="addQuote('LOCATIVE')" type="button" class="btn btn-primary m-1">
+        Créer un Devis <i class="fas fa-clipboard"></i>
+      </button>
+      <button *ngIf="activeTab == 'DEVIS_OWNER'" (click)="addQuoteOwner('LOCATIVE')" type="button" class="btn btn-primary m-1">
+        Créer un Devis proprietaire <i class="fas fa-clipboard"></i>
+      </button>
+      <button *ngIf="activeTab == 'BON'" (click)="addBon()" type="button" class="btn btn-warning m-1">
+        Créer un Bon de commande <i class="fas fa-clipboard"></i>
+      </button>
+      <button *ngIf="activeTab == 'BON_OWNER'" (click)="addBonOwner()" type="button" class="btn btn-warning m-1">
+        Créer un Bon de commande proprietaire <i class="fas fa-clipboard"></i>
+      </button>
+      <button *ngIf="activeTab == 'FACTURE'" (click)="addInvoiceCo()" type="button" class="btn btn-primary m-1">
+        Créer une Facture <i class="fas fa-clipboard"></i>
+      </button>
+      <button *ngIf="activeTab == 'FACTURE_OWNER'" (click)="addInvoiceOwner()" type="button" class="btn btn-primary m-1">
+        Créer une Facture proprietaire <i class="fas fa-clipboard"></i>
+      </button>
+      <button *ngIf="activeTab == 'FINANCEMENT'" (click)="addFunding()" type="button" class="btn btn-success m-1">
+        Financement <i class="fas fa-wallet"></i>
+      </button>
+      <button *ngIf="activeTab == 'REALISATION'" (click)="addProduction()" type="button" class="btn btn-warning m-1">
+        Réalisation <i class="feather icon-folder"></i>
+      </button>
+   
+    </div>
+  </div>
+</div>
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="row" *ngIf="activeTab !== 'INTERVENTION' && activeTab !== 'TICKET'">
+  <ng-template [ngxPermissionsOnly]="['QUOTE:LIST', 'FUNDING:LIST', 'PRODUCTION:LIST', 'PAYMENT:FUNDING:LIST']">
+    <app-filter class="width"
+      [name]="name"
+      [nameTitle]="nameTitle"
+      [user]="true"
+      [userTitle]="userTitle"
+      [etat]="true"
+      [etatRow]="etatRow"
+      [etatTitle]="etatTitle"
+      [categorie]="true"
+      [categorieRow]="categorieRow"
+      [categorieTitle]="categorieTitle"
+      [dateD]="true"
+      [dateF]="true"
+      [create]="true"
+      [min]="true"
+      [minTitle]="minTitle"
+      [max]="true"
+      [maxTitle]="maxTitle"
+      [ordre]="true"
+      [code]="true"
+      [count]="true"
+      [type]="true"
+      [typeRow]="typeRow" [uuid]="construction?.uuid" (filterEvent)="onFilter($event)">
+    </app-filter>
+  </ng-template>
+  <ng-template [ngxPermissionsExcept]="['QUOTE:LIST', 'FUNDING:LIST', 'PRODUCTION:LIST', 'PAYMENT:FUNDING:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'intervention details'"></app-no-droit>
+    </div>
+  </ng-template>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+
+      <!-- ==================== DÉTAILS INTERVENTION ==================== -->
+      <ng-template ngxPermissionsOnly="QUOTE:SHOW">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'INTERVENTION'}"
+            id="profil" role="tabpanel" aria-labelledby="profil-tab">
+          <div class="card">
+            <div class="col-md-12 mt-2 text center">
+              <div class="d-flex">
+                <!-- COL GAUCHE -->
+                <div class="flex-fill">
+                  <p>
+                    <circle-progress
+                    [percent]="getEvolution()"
+                    [radius]="90"
+                    [toFixed]="1"
+                    [titleFontSize]="10"
+                    [outerStrokeWidth]="5"
+                    [innerStrokeWidth]="3"
+                    [outerStrokeColor]="getEvolution() >= 65 ? '#3FBD0D' : getEvolution() > 35 ? '#F0DD35' : '#EC0F0F'"
+                    [innerStrokeColor]="'#95cde4'"
+                    [animation]="true"
+                    [showSubtitle]="false"
+                    [animationDuration]="300"
+                    ></circle-progress>
+                  </p>
+                </div>
+                <!-- COL MILLIEU -->
+                <div class="flex-fill">
+                  <p *ngIf="construction?.trustee">
+                    <span class="title-show">Syndic : </span>
+                    <span class="title-result-show">
+                      <span class="badg badge-light-warninge">{{ construction?.trustee?.nom}}
+                      </span>
+                    </span>
+                  </p>
+                  <p>
+                    <span class="title-show">Référence : </span>
+                    <span class="title-result-show">{{ construction?.code }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Libellé : </span>
+                    <span class="title-result-show">{{ construction?.nom }}</span>
+                  </p>
+                  <p *ngIf="construction?.houseCo">
+                    <span class="title-show">Lot : </span>
+                    <span class="title-result-show">{{ construction?.houseCo?.nom }}</span>
+                  </p>
+                  <p *ngIf="construction?.homeCo">
+                    <span class="title-show">Maison ou appartement : </span>
+                    <span class="title-result-show">{{ construction?.homeCo?.nom }}</span>
+                  </p>
+                  <p *ngIf="construction?.nature">
+                    <span class="title-show">Nature de l'intervention : </span>
+                    <span class="title-result-show">{{ construction?.nature?.libelle }}</span>
+                  </p>
+                  <p *ngIf="construction?.infrastructure">
+                    <span class="title-show">Infrastructure : </span>
+                    <span class="title-result-show">{{ construction?.infrastructure?.nom }}</span>
+                  </p>
+                  <p *ngIf="construction?.type!='SYNDIC'">
+                    <span class="title-show">Proprietaire : </span>
+                    <span class="title-result-show">{{ construction?.owner?.nom }}</span>
+                  </p>
+                  <p *ngIf="construction?.type!='SYNDIC'">
+                    <span class="title-show">Type d'intervention : </span>
+                    <span class="title-result-show">{{ construction?.type }}</span>
+                  </p>
+                  <p *ngIf="construction?.type!='SYNDIC'">
+                    <span class="title-show">Bien concerné :</span>
+                    <span class="title-result-show">{{ construction?.house?.nom }}</span>
+                  </p>
+                  <p *ngIf="construction?.rental">
+                    <span class="title-show">Locative concerné :</span>
+                    <span class="title-result-show">{{ construction?.rental?.libelle }}</span>
+                  </p>
+                  <p *ngIf="construction?.type!='SYNDIC'">
+                    <span class="title-show">Budget estimé : </span>
+                    <span class="title-result-show text-warning">{{ construction?.montant | number }} {{ global.device }}</span>
+                  </p>
+                  <p *ngIf="construction?.type!='SYNDIC'">
+                    <span class="title-show">Budget réel : </span>
+                    <span class="title-result-show text-warning">{{ construction?.budget | number }} {{ global.device }}</span>
+                  </p>
+                </div>
+                <!-- COL DROITE -->
+                <div class="flex-fill">
+                  <p>
+                    <span class="title-show">Etat : </span>
+                    <span class="title-result-show">
+                      <span class="badge" [ngClass]="{
+                        'badge-danger' : construction?.etat === 'PREVU',
+                        'badge-warning' : construction?.etat === 'EN COURS',
+                        'badge-success' : construction?.etat === 'ACHEVE'
+                        }">{{ construction?.etat }}
+                      </span>
+                    </span>
+                  </p>
+                  <p>
+                    <span class="title-show">Date de début : </span>
+                    <span class="title-result-show">{{ construction?.dateD| date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Date de fin : </span>
+                    <span class="title-result-show">{{ construction?.dateF| date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Durée : </span>
+                    <span class="title-result-show">{{ timelapse(construction?.dateD,construction?.dateF)}}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Description : </span>
+                    <span class="title-result-show">{{ construction?.description}}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Crée le : </span>
+                    <span class="title-result-show">{{ construction?.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                    <span class="title-show ml-5"> Par : </span>
+                    <span class="title-result-show">{{ construction?.create }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Modifié le : </span>
+                    <span class="title-result-show">{{ construction?.updatedAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                    <span class="title-show ml-5"> Par : </span>
+                    <span class="title-result-show">{{ construction?.update }}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button *ngxPermissionsOnly="'CONSTRUCTION:EDIT'" (click)="editConstruction(construction)" type="button" class="btn btn-primary" ngbTooltip="Modifier">
+                  Modifier <i class="feather icon-edit-2"></i>
+                </button>
+                <button *ngxPermissionsOnly="'CONSTRUCTION:PRINTER:SHOW'" (click)="printerConstruction(construction)" type="submit" class="btn btn-warning" ngbTooltip="Imprimer">
+                  Imprimer <i class="feather icon-printer"></i>
+                </button>
+                <button *ngxPermissionsOnly="'CONSTRUCTION:DELETE'" (click)="delete(construction)" type="button" class="btn btn-danger text-left" data-dismiss="modal"
+                  ngbTooltip="Supprimer">
+                  Supprimer <i class="feather icon-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="QUOTE:SHOW" [ngxPermissionsOnly]="['QUOTE:LIST', 'FUNDING:LIST', 'PRODUCTION:LIST', 'PAYMENT:FUNDING:LIST']">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'INTERVENTION'" [title]="'liste devis'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- ==================== DEVIS PRESTATAIRE ==================== -->
+      <ng-template ngxPermissionsOnly="QUOTE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'DEVIS'}"
+            id="devis" role="tabpanel" aria-labelledby="devis-tab">
+          <div class="row">
+            <!-- LISTE DES DEVIS -->
+            <div class="col-md-12" *ngIf="quotes && quotes.length === 0">
+              <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES DEVIS PRESTATAIRE
+              </span>
+              <app-no-data [title]="'Aucun devis trouvé'"></app-no-data>
+            </div>
+            <div class="col-md-12">
+              <div class="row" *ngIf="quotes && quotes.length > 0">
+                <app-quote-list [quotes]="quotes" [prestataire]="true" [construction]="constructionVal" class="width"></app-quote-list>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="QUOTE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'DEVIS'" [title]="'liste devis'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- ==================== DEVIS PROPRIÉTAIRE ==================== -->
+      <ng-template ngxPermissionsOnly="QUOTE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'DEVIS_OWNER'}"
+            id="devis-owner" role="tabpanel" aria-labelledby="devis-owner-tab">
+          <div class="row">
+            <!-- LISTE DES DEVIS PROPRIÉTAIRE -->
+            <div class="col-md-12" *ngIf="quoteOwners && quoteOwners.length === 0">
+              <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES DEVIS PROPRIÉTAIRE
+              </span>
+              <app-no-data [title]="'Aucun devis propriétaire trouvé'"></app-no-data>
+            </div>
+            <div class="col-md-12">
+              <div class="row" *ngIf="quoteOwners && quoteOwners.length > 0">
+                <app-quote-owner-list 
+                  [quoteOwners]="quoteOwners" 
+                  [construction]="constructionVal" 
+                  [isBon]="false"
+                  class="width">
+                </app-quote-owner-list>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="QUOTE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'DEVIS_OWNER'" [title]="'liste devis propriétaire'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- ==================== BON DE COMMANDE PRESTATAIRE ==================== -->
+      <ng-template ngxPermissionsOnly="QUOTE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'BON'}"
+            id="bons" role="tabpanel" aria-labelledby="bons-tab">
+          <div class="row">
+            <!-- LISTE DES BONS DE COMMANDES -->
+            <div class="col-md-12" *ngIf="bons && bons.length === 0">
+              <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES BONS DE COMMANDE PRESTATAIRE
+              </span>
+              <app-no-data [title]="'Aucun bon de commande trouvé'"></app-no-data>
+            </div>
+            <div class="col-md-12">
+              <div class="row" *ngIf="bons && bons.length > 0">
+                <app-quote-list [quotes]="bons" [prestataire]="true" [isBon]="true" [construction]="constructionVal" class="width"></app-quote-list>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="QUOTE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'BON'" [title]="'liste bons de commande'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- ==================== BON DE COMMANDE PROPRIÉTAIRE ==================== -->
+      <ng-template ngxPermissionsOnly="QUOTE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'BON_OWNER'}"
+            id="bon-owner" role="tabpanel" aria-labelledby="bon-owner-tab">
+          <div class="row">
+            <!-- LISTE DES BONS DE COMMANDE PROPRIÉTAIRE -->
+            <div class="col-md-12" *ngIf="bonOwners && bonOwners.length === 0">
+              <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES BONS DE COMMANDE PROPRIÉTAIRE
+              </span>
+              <app-no-data [title]="'Aucun bon de commande propriétaire trouvé'"></app-no-data>
+            </div>
+            <div class="col-md-12">
+              <div class="row" *ngIf="bonOwners && bonOwners.length > 0">
+                <app-quote-owner-list 
+                  [quoteOwners]="bonOwners" 
+                  [construction]="constructionVal"
+                  [isBon]="true"
+                  class="width">
+                </app-quote-owner-list>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="QUOTE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'BON_OWNER'" [title]="'liste bons de commande propriétaire'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- ==================== FACTURES PRESTATAIRE ==================== -->
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'FACTURE'}"
+          id="facture" role="tabpanel" aria-labelledby="facture-tab">
+        <div class="row">
+          <!-- LISTE DES FACTURES -->
+          <div class="col-md-12" *ngIf="invoices && invoices.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES FACTURES PRESTATAIRE
+            </span>
+            <app-no-data [title]="'Aucune facture trouvée'"></app-no-data>
+          </div>
+          <app-invoice-co-list *ngIf="invoices && invoices.length > 0" [invoiceCos]="invoices" [prestataire]="prestataire" class="width"></app-invoice-co-list>
+        </div>
+      </div>
+
+      <!-- ==================== FACTURES PROPRIÉTAIRE ==================== -->
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'FACTURE_OWNER'}"
+          id="facture-owner" role="tabpanel" aria-labelledby="facture-owner-tab">
+        <div class="row">
+          <!-- LISTE DES FACTURES PROPRIÉTAIRE -->
+          <div class="col-md-12" *ngIf="invoicesOwners && invoicesOwners.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES FACTURES PROPRIÉTAIRE
+            </span>
+        
+             <app-no-data [title]="'Aucune facture trouvée'"></app-no-data>
+          </div>
+          <div class="col-md-12">
+              <div class="row" *ngIf="invoicesOwners && invoicesOwners.length > 0">
+                <app-invoice-owner-list
+                  [invoiceOwners]="invoicesOwners" 
+                  [construction]="constructionVal"
+                  class="width">
+                </app-invoice-owner-list>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <!-- ==================== FINANCEMENT ==================== -->
+      <ng-template ngxPermissionsOnly="FUNDING:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'FINANCEMENT'}"
+            id="financement" role="tabpanel" aria-labelledby="financement-tab">
+          <div class="row">
+            <!-- LISTE DES FINANCEMENT -->
+            <div class="col-md-12" *ngIf="type === 'FINANCEMENT' && fundings && fundings.length === 0">
+              <span class="badge badge-info mb-4 f-14 width"> LISTE DES FINANCEMENT </span>
+              <app-no-data [title]="'Aucun financement trouvée'"></app-no-data>
+            </div>
+            <div class="col-md-12" *ngIf="fundings">
+                <div class="row" *ngIf="fundings && fundings.length > 0">
+                  <app-funding-list [fundings]="fundings" [construction]="constructionVal" [action]="true" class="width"></app-funding-list>
+                </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="FUNDING:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'FINANCEMENT'" [title]="'liste financement'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- ==================== RÉALISATION ==================== -->
+      <ng-template ngxPermissionsOnly="PRODUCTION:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'REALISATION'}"
+              id="realisation" role="tabpanel" aria-labelledby="realisation-tab">
+            <div class="row">
+              <!-- LISTE DES REALISATION -->
+              <div class="col-md-12" *ngIf="productions && productions.length === 0">
+                <span class="badge badge-warning mb-4 f-14 width">
+                  LISTE DES REALISATION
+                </span>
+                <app-no-data [title]="'Aucune realisation trouvée'"></app-no-data>
+              </div>
+              <div class="col-md-12">
+                <div class="row" *ngIf="productions && productions.length > 0">
+                  <app-production-list [productions]="productions" [action]="true" [construction]="constructionVal" class="width"></app-production-list>
+                </div>
+              </div>
+            </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="PRODUCTION:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'REALISATION'" [title]="'liste production'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- ==================== PAIEMENT ==================== -->
+      <ng-template ngxPermissionsOnly="PAYMENT:FUNDING:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'PAIEMENT'}"
+          id="paiement" role="tabpanel" aria-labelledby="paiement-tab">
+          <div class="row">
+            <!-- LISTE DES PAIEMENTS -->
+            <div class="col-md-12" *ngIf="payments && payments.length === 0">
+              <span class="badge badge-success mb-4 f-14 width">
+                LISTE DES PAIEMENTS
+              </span>
+              <app-no-data [title]="'Aucun paiement de financement trouvé'"></app-no-data>
+            </div>
+            <app-payment-funding-list [payments]="payments" [construction]="'SHOW'" class="width" *ngIf="payments && payments.length > 0"></app-payment-funding-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="PAYMENT:FUNDING:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'PAIEMENT'" [title]="'liste paiement financement'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <!-- ==================== TICKET ==================== -->
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'TICKET'}"
+        id="ticket" role="tabpanel" aria-labelledby="ticket-tab">
+        <div class="card">
+          <div *ngIf="ticket" class="col-md-12 mt-2 text center">
+            <div class="border border-2 rounded p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                  <div class="flex-grow-1 d-flex flex-column justify-content-start">
+                      <h6> Status: <span
+                              class="badge badge-{{ticket?.etat == 'OUVER' ? 'danger' : ticket?.etat == 'EN COURS' ? 'warning' : 'success'}}">{{
+                              ticket?.etat }} </span></h6>
+                  </div>
+              </div>
+              <div class="d-flex">
+                  <div class="flex-fill">
+                      <p>
+                          <span>Ticket ID: </span>
+                          <span><b># {{ ticket?.code }}</b></span>
+                      </p>
+                      <p>
+                          <span>Ticket soumis par: </span>
+                          <span><b>{{ ticket?.type === "AUTRES" ? 'TIERS PERSONNE' : ticket?.type}}</b></span>
+                      </p>
+                      <p>
+                          <span>Plaignant</span>
+                          <span><b> {{ ticket?.libelle }}</b></span>
+                      </p>
+                      <p>
+                          <span>Catégorie: </span>
+                          <span><b> {{ ticket?.category?.libelle }}</b></span>
+                      </p>
+                      <p>
+                          <span>Niveau d'urgence: </span>
+                          <span
+                              class="badge badge-{{ticket?.urgence == 'URGENT' ? 'danger' : ticket?.urgence == 'IMPORTANT' ? 'danger' : 'warning'}}">
+                              {{ ticket?.urgence }}
+                          </span>
+                      </p>
+                  </div>
+                  <div class="flex-fill">
+                      <p>
+                          <span>Qualification: </span>
+                          <span
+                              class="badge badge-{{ticket?.qualifier == 'NON' ? 'warning' : ticket?.qualifier == 'NON' ? 'warning' : 'success'}}">{{
+                              ticket?.qualifier }} </span>
+                      </p>
+                      <p>
+                          <span>Bien: </span>
+                          <span><b> {{ ticket?.house?.searchableTitle ? ticket?.house?.searchableTitle : "N/A"
+                                  }}</b></span>
+                      </p>
+                      <p>
+                          <span>Locative: </span>
+                          <span><b> {{ ticket?.rental?.libelle ? ticket?.rental?.libelle : "N/A" }}</b></span>
+                      </p>
+                      <p>
+                          <span>Ressource: </span>
+                          <span><b> {{ ticket?.ressource?.libelle ? ticket?.ressource?.libelle : "N/A"
+                                  }}</b></span>
+                      </p>
+                      <p>
+                          <span>Service Concerner: </span>
+                          <span><b> {{ ticket?.service?.nom ? ticket?.service?.nom : "N/A" }}</b></span>
+                      </p>
+                      <p>
+                          <span>Assigner à : </span>
+                          <span><b> {{ ticket?.user?.libelle ? ticket?.user?.libelle : "N/A" }}</b></span>
+                      </p>
+                  </div>
+                  <div class="flex-fill">
+                      <p>
+                          <span>Crée le: </span>
+                          <span><b> {{ticket?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                                  'fr-FR'}}</b></span>
+                      </p>
+                      <p>
+                          <span>Par: </span>
+                          <span><b> {{ticket?.create}}</b></span>
+                      </p>
+                      <p>
+                          <span>Modifié le: </span>
+                          <span><b> {{ticket?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                                  'fr-FR'}}</b></span>
+                      </p>
+                      <p>
+                          <span>Par: </span>
+                          <span><b> {{ticket?.update}}</b></span>
+                      </p>
+                  </div>
+              </div>
+              <div>
+                  <p>
+                      <span><b>Description: </b> </span> <br>
+                      <span class="comment-content">
+                          <span [innerHTML]=ticket?.description></span>
+                      </span>
+                  </p>
+              </div>
+              <div class="col-md" *ngIf="ticket">
+                  <span class="badge badge-primary mb-4 f-14 width">PIECES JOINTES</span>
+                  <div class="row">
+                      <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                          <app-folder-uploader (click)="showFile(ticket?.folder)" [maxSize]="3"
+                              [folder]="ticket?.folder" [etat]="'show'" [allowFileUpload]="false"
+                              [allowDownload]="true">
+                          </app-folder-uploader>
+                      </div>
+                      <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                          <div class="row">
+                              <div class="col-sm-12 mb-2">
+                                  <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                                      <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                                  </button>
+                              </div>
+                          </div>
+                          <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                          </ngx-doc-viewer>
+                      </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

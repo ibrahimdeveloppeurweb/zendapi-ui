@@ -1,0 +1,38 @@
+<div class="input-group mb-3">
+  <div *ngIf="country" class="input-group-prepend">
+    <div style="margin-right: 5px;">
+      <div class="mt-2" ngbDropdown>
+        <span class="mt-1" ngbDropdownToggle type="button">
+          <img [attr.disabled]="selected ? true : null" width="20" height="20" [src]="'assets/images/countries/'+country?.isoCode2+'.png'"
+            onerror="this.onerror=null; this.src='assets/images/select-default.jpg'">
+        </span>
+        <div ngbDropdownMenu>
+          <div class="search-content">
+            <input type="text" class="search-input" [(ngModel)]="search" id="searchReference" [placeholder]="placeholder">
+          </div>
+          <a class="dropdown-item cursor-pointer" *ngFor="let item of countries | CountryFilter: search" (click)="onSelect(item); clear()">
+            <img width="20" height="20" [src]="'assets/images/countries/'+item?.isoCode2+'.png'" onerror="this.onerror=null; this.src='assets/images/select-default.jpg'"/>
+            <span class="ml-2"><small>{{item?.nom}}</small></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--<input *ngIf="!selected" [id]="name" [name]="name" [attr.disabled]="disabled ? true : null" (change)="onValue($event)"
+    [textMask]="{mask: mask, showMask: true}" type="text" class="form-control"
+    [ngClass]="{'is-invalid': valid === false, 'is-valid': valid === true}" [attr.required]="required">-->
+  <input *ngIf="!selected" [id]="name" [name]="name" [attr.disabled]="disabled ? true : null"
+         [(ngModel)]="contact"
+         (ngModelChange)="onValue($event)"
+         [textMask]="{mask: mask, showMask: true}" type="text" class="form-control"
+         [ngClass]="{'is-invalid': valid === false, 'is-valid': valid === true}" [attr.required]="required">
+  <input *ngIf="selected" [value]="selected" [attr.disabled]="selected ? true : null" type="text" class="form-control">
+  <div *ngIf="selected" class="input-group-prepend">
+    <div style="margin-left:10px; margin-top: 10px; color: #4680ff; cursor: pointer;">
+      <i class="fas fa-pencil-alt" (click)="clear()"></i>
+    </div>
+  </div>
+  <div *ngIf="!valid" class="invalid-feedback" >
+    <div>Veuillez respecter le format.</div>
+  </div>
+</div>

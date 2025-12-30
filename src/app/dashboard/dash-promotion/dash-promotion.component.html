@@ -1,0 +1,336 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width"
+    [dateD]="true"
+    [dateF]="true"
+    [name]="true"
+    [nameTitle]="'Promotion'"
+    [type]="true"
+    [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+  </app-filter>
+
+  <!-- ANALYTICS -->
+  <div class="col-xl-12 col-sm-12">
+    <div class="row">
+      <!-- PROMOTION  -->
+      <div class="col-md-3" (click)="openModal('DASH_PROMOTION', ['Programme'], [ widget?.promotion?.nbr])">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ widget?.promotion?.nbr > 1 ? 'Promotions' : 'Promotion' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.promotion?.nbr }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ widget?.promotion?.mtn |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- PROMOTION END -->
+      <!-- MAISON OCCUPE -->
+      <div class="col-md-3" (click)="openModal('DASH_HOME', ['Occupes'], [ widget?.houseV?.nbr ])">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ widget?.houseV?.nbr > 1 ? 'Maisons occupées' : 'Maison occupée' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.houseV?.nbr }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ widget?.houseV?.mtn |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON OCCUPE END -->
+      <!-- MAISON RESERVER -->
+      <div class="col-md-3" (click)="openModal('DASH_HOME', ['Reserve'], [ widget?.houseR?.nbr  ])">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ widget?.houseR?.nbr > 1 ? 'Maisons reservées' : 'Maison reservée' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-sm-4">
+                <p class="text-white m-b-0">{{ widget?.houseR?.nbr }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ widget?.houseR?.mtn |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON OCCUPE END -->
+      <!-- MAISON DISPONIBLE -->
+      <div class="col-md-3" (click)="openModal('DASH_HOME', ['Disponible'], [ widget?.houseD?.nbr ])">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ widget?.houseD?.nbr > 1 ? 'Maisons disponibles' : 'Maison disponible' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-sm-4">
+                <p class="text-white m-b-0">{{ widget?.houseD?.nbr }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ widget?.houseD?.mtn |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON DISPONIBLE END -->
+      <div class="col-xl-6 col-sm-12">
+        <div class="row">
+          <!-- CHIFFRE AFFAITRE -->
+          <div class="col-md-6"(click)="openModal('DASH_PROMOTION', ['Chiffre d affaire'], [ widget?.montantCa],null,'ChiffreA')">
+            <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+              <h6 class="text-white">Chiffre d'affaire</h6>
+              <h5 class="text-white">{{ widget?.montantCa |number}} {{global.device}}</h5>
+              <i class="card-icon fas fa-piggy-bank"></i>
+            </app-card>
+          </div>
+          <!-- CHIFFRE AFFAITRE END -->
+          <!-- MARGE -->
+          <div class="col-md-6"(click)="openModal('DASH_PROMOTION', ['Marge'], [ widget?.montantMa],null,null,'Marge')">
+            <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+              <h6 class="text-white">Marge</h6>
+              <h5 class="text-white">{{ widget?.montantMa |number}} {{global.device}}</h5>
+              <i class="card-icon fas fa-random"></i>
+            </app-card>
+          </div>
+          <!-- MARGE END -->
+          <!-- COUT DE CONSTRUCTION -->
+          <div class="col-md-6"(click)="openModal('DASH_PROMOTION', ['Coût de construction'], [ widget?.montantCc],null,null,null,'coutC')">
+            <app-card [hidHeader]="true" cardClass="bg-c-yellow order-card">
+              <h6 class="text-white">Coût de construction</h6>
+              <h5 class="text-white">{{ widget?.montantCc |number}} {{global.device}}</h5>
+              <i class="card-icon fas fa-chevron-up"></i>
+            </app-card>
+          </div>
+          <!-- COUT DE CONSTRUCTION END -->
+          <!-- COUT DE REVIEINT -->
+          <div class="col-md-6"(click)="openModal('DASH_PROMOTION', ['Coût de construction'], [ widget?.montantCr],null,null,null,null,'chiffreR')">
+            <app-card [hidHeader]="true" cardClass="bg-c-green order-card">
+              <h6 class="text-white">Coût de revient</h6>
+              <h5 class="text-white">{{ widget?.montantCr |number}} {{global.device}}</h5>
+              <i class="card-icon fas fa-chevron-down"></i>
+            </app-card>
+          </div>
+          <!-- COUT DE REVIEINT END -->
+        </div>
+      </div>
+      <div class="col-xl-6 col-sm-12 ">
+        <app-card cardTitle="DIAGRAMME CIRCULAIRE D'OCCUPATION DES MAISONS" [options]="false">
+          <div #doughnutChart>
+            <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData" style="height: 290px;"></chart>
+          </div>
+        </app-card>
+    </div>
+    </div>
+  </div>
+
+  <!-- GRAPHE -->
+  <div class="col-xl-12 col-sm-12 mb-4">
+    <lib-highcharts-angular [Highcharts]="Highcharts" [options]="barBasicChartOptions"
+      style="width: 100%; height: 450px; display: block;"></lib-highcharts-angular>
+  </div>
+  <!-- GRAPHE END -->
+
+  <!--DIAGRAMME DES ECHEANCIERS -->
+  <div class="col-xl-12">
+    <app-card cardTitle="DIAGRAMME D'EVOLUTION DES ECHEANCIERS" [options]="false">
+      <lib-highcharts-angular [Highcharts]="Highcharts" [options]="lineBasicChartOptions" style="width: 100%; height: 350px; display: block;"></lib-highcharts-angular>
+    </app-card>
+  </div>
+  <!-- DIAGRAMME DES ECHEANCIERS END -->
+
+  <!--TABLEAU DES ECHEANCIERS -->
+  <div class="col-xl-12 col-md-12">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-primary my-2 f-14 formBadge width"> TABLEAU DES ECHEANCIERS</span>
+      </div>
+      <div class="col-md-12">
+        <div *ngIf="etat && echeanciers?.length > 0" class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Periode</th>
+                <th>Echéancier (prévisionnel)</th>
+                <th>Echéancier reglé</th>
+                <th>Pourcentage (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let echeancier of echeanciers">
+                <td>
+                  <p class="m-0 d-inline-block align-middle font-16">Echéancier de {{ echeancier?.periode}}</p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">{{ echeancier?.prev |number}} {{global.device}}</p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16"> {{ echeancier?.reg |number}} {{global.device}}</p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16"> {{ echeancier?.prc}} %</p>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr></tr>
+            </tfoot>
+          </table>
+        </div>
+        <app-no-data class="width" [title]="'Aucun echéancier trouvée'" *ngIf="echeanciers && echeanciers.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div>
+  <!-- TABLEAU DES ECHEANCIERS END -->
+
+  <!-- 10 DERNIERS QUITTANCE DE LOYER SOLDE -->
+  <!-- <div class="col-xl-6 col-md-12">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-success my-2 f-14 formBadge width"> LISTE DES 10 DERNIERS QUITTANCES DE SOLDE</span>
+      </div>
+      <div class="col-md-12">
+        <div *ngIf="etat && listing?.rentS?.length > 0" class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Locataire</th>
+                <th>Locative</th>
+                <th>Periode</th>
+                <th>Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rentS of listing.rentS" (click)="showRent(rentS)">
+                <td>
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{rentS?.contract?.tenant?.searchableTitle}}</span> <br />
+                    Type : {{rentS?.contract?.tenant?.type}}<br />
+                    Telephone : {{rentS?.contract?.tenant?.telephone}}
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{rentS?.contract?.rental?.libelle}}</span> <br />
+                    Superficie : {{rentS?.contract?.rental?.superficie}} m² - {{rentS?.contract?.rental?.piece}} pièce(s): <br />
+                    Propriétaire : {{rentS?.contract?.rental?.house?.owner?.searchableTitle}}
+                  </p>
+                </td>
+                <td>
+                  {{rentS?.mois}} <br />
+                  <span *ngIf="rentS?.type === 'AVANCE'" class="badge badge-primary">{{rentS?.type}}</span>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-primary font-weight-blod">{{rentS?.invoice?.montant|number}} {{global.device}}</span>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                <td class="font-weight-bold font-size-40 text-success"> {{ totalRentS |number}} {{global.device}}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <app-no-data class="width" [title]="'Aucune quittance trouvée'" *ngIf="listing?.rentS && listing?.rentS?.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div> -->
+  <!-- 10 DERNIERS QUITTANCE DE LOYER SOLDE END -->
+
+  <!--10 DERNIERS QUITTANCE EN ATTENTE DE PAIEMENT -->
+  <!-- <div class="col-xl-6 col-md-12">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-primary my-2 f-14 formBadge width"> LISTE DES 10 DERNIERS QUITTANCES EN ATTENTE DE PAIEMENT</span>
+      </div>
+      <div class="col-md-12">
+        <div *ngIf="etat && listing?.rentA?.length > 0" class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Locataire</th>
+                <th>Locative</th>
+                <th>Periode</th>
+                <th>Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rentA of listing.rentA" (click)="showRent(rentA)">
+                <td>
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{rentA?.contract?.tenant?.searchableTitle}}</span> <br />
+                    Type : {{rentA?.contract?.tenant?.type}}<br />
+                    Telephone : {{rentA?.contract?.tenant?.telephone}}
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{rentA?.contract?.rental?.libelle}}</span> <br />
+                    Superficie : {{rentA?.contract?.rental?.superficie}} m² - {{rentA?.contract?.rental?.piece}} pièce(s): <br />
+                    Propriétaire : {{rentA?.contract?.rental?.house?.owner?.searchableTitle}}
+                  </p>
+                </td>
+                <td>
+                  {{rentA?.mois}} <br />
+                  <span *ngIf="rentA?.type === 'AVANCE'" class="badge badge-primary">{{rentA?.type}}</span>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-primary font-weight-blod">{{rentA?.invoice?.montant|number}} {{global.device}}</span>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                <td class="font-weight-bold font-size-40 text-success"> {{ totalRentA |number}} {{global.device}}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <app-no-data class="width" [title]="'Aucune quittance trouvée'" *ngIf="listing?.rentA && listing?.rentA?.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div> -->
+  <!-- 10 DERNIERS QUITTANCE EN ATTENTE DE PAIEMENT END -->
+
+</div>

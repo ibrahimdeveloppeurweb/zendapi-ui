@@ -1,0 +1,1276 @@
+<div class="modal-header">
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <button class="btn btn-Warning btn-sm" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer">
+      Imprimer <i class="feather icon-printer"></i>
+    </button>
+  </div>
+  <div *ngIf="(entity === 'SOLDE_AGENCY' ||entity === 'COMMISSION_LOYER' ||entity === 'CAUTION_AGENCY' ||entity === 'TVA_COMMISSION_AGENCY' ||entity === 'DEPENSE_AGENCY' ||
+    entity === 'CIE_SODECI_AGENCY' ||entity === 'HONORAIRE_AGENCE_AGENCY' ||entity === 'TIMBRES_FISCAUX_AGENCY' ||entity === 'DROIT_ENREGISTREMENT_AGENCY' ||
+    entity === 'FRAIS_DOSSIER_AGENCY' ||entity === 'FRAIS_ASSURANCE_AGENCY' ||entity === 'AUTRE_AGENCY' ||entity === 'SOLDE_OWNER' ||entity === 'LOYER'
+    ||entity === 'CAUTION_OWNER' ||entity === 'COMMISSION_OWNER')">
+    <div class="col-md-12">
+      <span class="badge badge-primary my-2 f-14 formBadge width">{{ title }}</span>
+    </div>
+    <div class="col-md-12" *ngIf="wallets && wallets.length > 0">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>ID</th>
+              <th>DATE</th>
+              <th>LIBELLE</th>
+              <th>DÉBIT</th>
+              <th>CRÉDIT</th>
+              <th>SOLDE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of wallets">
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">{{ item?.id }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.date| date: "d MMMM y 'à' h:mm:ss" : '' :
+                  'fr-FR' }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">{{ item?.libelle }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.debit|number }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.credit|number }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.soldeNew|number }}</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="wallets && wallets.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="wallets && wallets.length === 0"></app-no-data>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <!-- MENU TABS PROPRIETAIRE -->
+    <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowOwner" role="tablist">
+      <li class="nav-item" *ngFor="let item of tabsL; let i=index">
+        <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === this.entity+ '-'+item}"
+          (click)="onChangeLoad(this.entity+ '-'+item)" id="{{this.entity+ '-'+item}}-tab" data-toggle="tab" href="javascript:" role="tab"
+          aria-controls="{{this.entity+ '-'+item}}" aria-selected="true">
+          <span  *ngIf="chiffreA == null  && marge == null && chiffreR == null && coutC == null"> {{ item }} {{tabsV[i] }} </span>
+          <span  *ngIf="chiffreA != null"> {{ " Chiffre d'affraire "}} ({{ tabsV[i] }} {{global.device}}) </span>
+          <span  *ngIf="marge != null"> {{ " Marge "}} ({{ tabsV[i] }} {{global.device}}) </span>
+          <span  *ngIf="coutC != null"> {{ " Coût de construction "}} ({{ tabsV[i] }} {{global.device}}) </span>
+          <span  *ngIf="chiffreR != null"> {{ "Coût de revient "}} ({{ tabsV[i] }} {{global.device}}) </span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_OWNER'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Référence</th>
+                <th>Nom</th>
+                <th>Type</th>
+                <th>Etat</th>
+                <th>À reverser</th>
+                <th>Déjà perçu</th>
+                <th>Crée le</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of array">
+                <td>{{item?.code}}</td>
+                <td class="align-middle">
+                  <p class="m-2 d-inline-block align-middle font-16">
+                    <span class="text-primary">{{ item?.nom }}</span> <br />
+                    Email : {{ item?.email ? item?.email : 'N/A' }} <br />
+                    Contact : {{ item?.telephone ? item?.telephone : 'N/A' }}
+                  </p>
+                </td>
+                <td>
+                  <span class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item?.type}}</span>
+                </td>
+                <td>
+                  <span class="badge badge-{{ item?.etat === 'INACTIF' ? 'danger': (item?.etat === 'AUCUN MANDAT' ? 'warning' : 'success') }}">
+                    {{ item?.etat }}
+                  </span>
+                </td>
+                <td class="align-middle">
+                  <span class="text-danger">{{item?.impaye|number}} {{global.device}}</span>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{item?.reverse|number}} {{global.device}}</span>
+                  </p>
+                </td>
+                <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+         
+              </tr>
+            </tbody>
+          </table>
+        </div>
+     
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_TENANT'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Référence</th>
+                <th>Nom</th>
+                <th>Type</th>
+                <th>Etat</th>
+                <th>Doit</th>
+                <th>Crée le</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of array">
+                <td>{{item?.code}}</td>
+                <td class="align-middle">
+                  <p class="m-2 d-inline-block align-middle font-16">
+                    <span class="text-primary">{{ item?.nom }}</span> <br />
+                    Email : {{ item?.email ? item?.email : 'N/A' }} <br />
+                    Contact : {{ item?.telephone ? item?.telephone : 'N/A' }}
+                  </p>
+                </td>
+                <td>
+                  <span class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item?.type}}</span>
+                </td>
+                <td>
+                  <span class="badge badge-{{ item?.etat === 'INACTIF' ? 'danger': (item?.etat === 'AUCUN MANDAT' ? 'warning' : 'success') }}">
+                    {{ item?.etat }}
+                  </span>
+                </td>
+                <td class="align-middle">
+                  <span class="text-danger">{{item?.impaye|number}} {{global.device}}</span>
+                </td>
+                <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_CONTRACT'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive"  >
+          <table  datatable [dtOptions]="dtOptions"
+            class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+            
+                <th>Locative</th>
+                <th *ngIf="locataire">Locataire</th>
+                <th>Type</th>
+                <th>Periode</th>
+                <th>Etat</th>
+                <th>Crée le</th>
+                <th>Montant Caution</th>
+                <th>Payé</th>
+                <th>Restant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of array; let i = index">
+            
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{item?.rental?.libelle}}</span> <br /> Superficie :
+                    {{item?.rental?.superficie}} m² - {{item?.rental?.piece}} pièce(s): <br /> Propriétaire :
+                    {{item?.rental?.house?.owner?.searchableTitle}} <br /> Référence contrat : {{item?.code}}
+                  </p>
+                </td>
+                <td *ngIf="locataire">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{item?.tenant?.searchableTitle}}</span> <br /> Type :
+                    {{item?.tenant?.type}}<br /> Telephone : {{item?.tenant?.telephone}}
+                  </p>
+                </td>
+                <td>{{item?.type}}</td>
+                <td>{{item?.periode}}</td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'badge-danger' : item?.etat === 'RESILIE',
+                    'badge-success' : item?.etat === 'ACTIF',
+                    'badge-warning' : item?.etat === 'INACTIF'
+                    }">
+                    {{item?.etat}}
+                  </span><br />
+                  <span class="ml-1 badge badge-light-danger" *ngIf="item?.etatLieux !=''">
+                    <small>{{ item?.etatLieux}}</small>
+                  </span><br />
+                  <span class="ml-1 badge badge-light-{{item?.signed !== null ? 'success' : 'danger'}}">
+                    <small>{{item?.signed !== null ? 'Contrat signé' : 'Contrat non signé'}}</small>
+                  </span>
+                </td>
+                <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{item?.entranceInvoice?.montant|number}} {{global.device}}</span> <br />
+                    <span > reversé: <span class="badge badge--{{ item?.entranceInvoice?.etat === 'SOLDE' ? 'success' : 'danger'}}">
+                      {{item.entranceInvoice.etat === "SOLDE" ? "OUI" : "NON"}}</span>
+                    </span> <br />
+                    <span>reversé á : {{ item?.cautionReverser }}</span>
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-success">{{item?.entranceInvoice?.paye|number}} {{global.device}}</span>
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-danger">{{item?.entranceInvoice?.impaye|number}} {{global.device}}</span>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+        
+          </table>
+        </div>
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_MANDAT'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive">
+          <table  datatable [dtOptions]="dtOptions"
+            class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Bien</th>
+                <th>Type</th>
+                <!-- <th>Commission</th> -->
+                <th>Montant</th>
+                <th>Etat</th>
+                <th>Crée le</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of array; let i = index">
+                <td class="align-middle">
+                  <img [src]="item?.photoSrc ? item?.photoSrc : 'assets/images/house-default.png'" alt="{{item?.libelle}}"
+                    class="rounded mr-2 ml-0" height="48" />
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{item?.house?.nom}}</span> <br /> Superficie : {{item?.house?.superficie}}
+                    m² <br /> Propriétaire : {{item?.house?.owner?.nom}}
+                  </p>
+                </td>
+                <td>
+                  <span *ngIf="item?.type === 'VENTE'" class="badge badge-light-primary">Vente</span>
+                  <span *ngIf="item?.type === 'LOCATION'" class="badge badge-light-warning">Location</span>
+                </td>
+                <!-- <td class="align-middle">
+                  <span class="text-warning" *ngIf="item?.facturation == 'PRC'">{{ item?.commission }} %</span>
+                  <span class="text-warning" *ngIf="item?.facturation == 'MTN'">{{ item?.commission|number }} {{global.device}}</span>
+                </td> -->
+                <td class="align-middle">
+                  <span *ngIf="item?.montantCom" class="text-warning">
+                    {{ item?.montantCom|number }} {{global.device}}
+                  </span>
+                  <span *ngIf="!item?.montantCom" class="text-warning">NON DEFINI</span>
+                </td>
+                <td>
+                  <span *ngIf="item?.etat" class="badge badge-success" [ngClass]="{
+                    'badge-success' : item?.etat === 'VALIDE',
+                    'badge-warning' : item?.etat === 'INVALIDE',
+                    'badge-danger' : item?.etat === 'RESILIE'
+                  }">{{validation(item?.etat)}}</span><br />
+                  <span class="ml-1 badge badge-light-{{item?.signed !== null ? 'success' : 'danger'}}">
+                    <small>{{item?.signed !== null ? 'Mandat signé' : 'Mandat non signé'}}</small>
+                  </span>
+                </td>
+                <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+             
+              </tr>
+            </tbody>
+         
+          </table>
+        </div>
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_CUSTOMER'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Référence</th>
+                <th>Nom</th>
+                <th>Type</th>
+                <th>Etat</th>
+                <th>À reverser</th>
+                <th>Déjà perçu</th>
+                <th>Crée le</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of array">
+                <td>{{item?.code}}</td>
+                <td class="align-middle">
+
+                  <p class="m-2 d-inline-block align-middle font-16">
+                    <span class="text-primary">{{ item?.nom }}</span> <br />
+                    Email : {{ item?.email ? item?.email : 'N/A' }} <br />
+                    Contact : {{ item?.telephone ? item?.telephone : 'N/A' }}
+                  </p>
+                </td>
+                <td>
+                  <span class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item?.type}}</span>
+                </td>
+                <td>
+                  <span class="badge badge-{{ item?.etat === 'INACTIF' ? 'danger': (item?.etat === 'AUCUN MANDAT' ? 'warning' : 'success') }}">
+                    {{ item?.etat }}
+                  </span>
+                </td>
+                <td class="align-middle">
+                  <span class="text-danger">{{item?.impaye|number}} {{global.device}}</span>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{item?.reverse|number}} {{global.device}}</span>
+                  </p>
+                </td>
+                <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+         
+              </tr>
+            </tbody>
+          </table>
+        </div>
+     
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_LOCATIVE'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive">
+          <table  datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Bien</th>
+                <th>Occupant</th>
+                <th>Etat</th>
+                <th>Crée le</th>
+                <th>Loyer net</th>
+                <th>Charge</th>
+                <th>Loyer brut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of array">
+                <td class="align-middle">
+                  <img [src]="item?.photoSrc ? item?.photoSrc : 'assets/images/house-default.png'" alt="{{item?.libelle}}"
+                    title="{{item?.libelle}}" class="rounded mr-2 ml-0" height="48" />
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-primary">{{item?.libelle}}</span> <br />
+                    Superficie : {{item?.superficie}} m² - {{item?.piece}} pièce(s): <br />
+                    Propriétaire : {{item?.house?.owner?.nom}}
+                  </p>
+                </td>
+                <td>{{item?.occupant}}</td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                  'badge-success' : item?.etat === 'DISPONIBLE',
+                  'badge-warning' : item?.etat === 'RESERVE',
+                  'badge-danger' : item?.etat === 'OCCUPE'
+                  }">{{item?.etat}}</span>
+                </td>
+                <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-warning">{{item?.montant|number}} {{global.device}}</span>
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <span class="text-success">{{item?.charge|number}} {{global.device}}</span>
+                </td>
+                <td class="align-middle">
+                  <span class="text-danger">{{item?.total|number}} {{global.device}}</span>
+                </td>
+        
+              </tr>
+            </tbody>
+        
+          </table>
+        </div>
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_TICKET'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table  datatable [dtOptions]="dtOptions"
+          class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Reference</th>
+              <th>Objet</th>
+              <th>Catégorie </th>
+              <th>Etat</th>
+              <th>Priorité</th>
+              <th>qualification</th>
+              <th>Date de Création</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array">
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">Ticket N° {{ item?.code }}</span> <br />
+                  Plaignant : {{ item?.libelle }}<br />
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  {{ item?.objet }}
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  {{ item?.category?.libelle }}
+                </p>
+              </td>
+              <td class="align-middle">
+                <span class="badge badge-{{item?.etat == 'OUVER' ? 'danger' : item?.etat == 'EN COURS' ? 'warning' : 'success'}}"> {{ item?.etat }}</span>
+              </td>
+              <td class="align-middle">
+                <span class="badge badge-{{item?.urgence == 'URGENT' ? 'danger' : item?.urgence == 'IMPORTANT' ? 'danger' : 'warning'}}"> 
+                  {{ item?.urgence }}
+                </span>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="badge badge-warning" *ngIf="item?.qualifier === 'NON'">EN ATTENTE DE QUALIFICATION</span> <br />
+                  <span class="badge badge-success" *ngIf="item?.qualifier === 'OUI'">QUALIFIER</span> <br />
+                  <span   *ngIf="item?.qualifier === 'OUI'" >Le :  {{item?.qualifiedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span> <br />
+                  <span   *ngIf="item?.qualifier === 'OUI'">Par :  {{item?.qualifieBy?.nom}} {{item?.qualifieBy?.prenom}}</span> <br />
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span >Crée Le : {{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span> <br />
+                  <span >Par : {{item?.create}}</span> <br />
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        
+        </table>
+      </div>
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_IMMOBILIER'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive">
+          <table  datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Bien</th>
+                <th>Type bien</th>
+                <th>Etat</th>
+                <th>Crée le</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of array">
+                <td class="align-middle">
+                  <!-- <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/house-default.png'" alt="{{ item?.nom }}"
+                  title="{{ item?.nom }}" class="rounded mr-2 ml-0" height="48" /> -->
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-primary">{{item?.libelle}}</span> <br />
+                    Superficie : {{item?.superficie}} m² - {{item?.piece}} pièce(s): <br />
+                    Propriétaire : {{item?.owner?.nom}}  <br />
+                    Situé: {{ item?.quartier + ' - ' + item?.commune+ ' - ' + item?.ville }}
+                  </p>
+                </td>
+                <td>
+                  <span class="badge badge-light-{{ item.disponible === 'LOCATION' ? 'info' : 'secondary' }}">
+                    {{ item?.disponible === 'LOCATION' ? 'En location' : 'En vente' }}
+                  </span>
+                </td>
+                <td>
+                  <span *ngIf="item?.disponible === 'VENTE'" class="badge" [ngClass]="{
+                    'badge-success' : item?.etat === 'DISPONIBLE',
+                    'badge-warning' : item?.etat === 'RESERVE',
+                    'badge-danger' : item?.etat === 'VENDU'
+                    }">
+                    {{ item?.etat }}
+                  </span>
+                </td>
+                <td class="align-middle">
+                  <span >Crée Le : {{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span> <br />
+                  <span >Par : {{item?.create}}</span> <br />
+                </td>
+              </tr>
+            </tbody>
+        
+          </table>
+        </div>
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_INTERVENTION'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions"
+              class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                  <tr>
+                      <th>Bien</th>
+                      <th>Libellé</th>
+                      <th>Etat</th>
+                      <th>Crée le</th>
+                      <th>Montant</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let item of array">
+                      <td class="align-middle">
+                          <p class="m-0 d-inline-block align-middle font-16">
+                              <span class="text-primary">{{item?.rental ? item?.rental?.libelle :
+                                  item?.house?.searchableTitle}}</span>
+                              <span class="text-primary">{{item?.trustee ? item?.trustee?.nom :
+                                  ''}}</span>
+                              <span *ngIf="item?.rental!=null || item?.house!=null">
+                                  <br /> <span>
+                                      Superficie : {{item?.rental
+                                      ? item?.rental?.superficie : item?.house?.superficie}} m² -
+                                      {{item?.rental
+                                      ? item?.rental?.piece : item?.house?.nbrPiece}} pièce(s)
+                                  </span>
+                              </span>
+                              <span *ngIf="item?.houseCo!=null">
+                                  <br /> <span>Lot : {{item?.houseCo?.nom}}</span>
+                              </span>
+                              <span *ngIf="item?.homeCo!=null">
+                                  <br /> <span>Villa ou appartement : {{item?.homeCo?.nom}}</span>
+                              </span>
+                              <span *ngIf="item?.infrastructure!=null">
+                                  <br /> <span>Infrastructure : {{item?.infrastructure?.nom}}</span>
+                              </span>
+                              <span *ngIf="item?.nature!=null">
+                                  <br /> <span>Nature : {{item?.nature?.libelle}}</span>
+                              </span>
+                              <span *ngIf="house!=null">
+                                  <br /> <span>Propriétaire
+                                      : {{item?.house?.owner?.searchableTitle}}</span>
+                              </span>
+                          </p>
+                      </td>
+                      <td class="align-middle">
+                          <p class="m-0 d-inline-block align-middle font-16">
+                              <span class="text-primary">{{item?.nom}}</span><br /> Durée:
+                              {{timelapse(item?.dateD, item?.dateF)}} <br /> Début: {{item?.dateD|date: "d MMMM y" : '' : 'fr-FR'}} - Fin: {{item?.dateF|date: "d MMMM y" : '' :
+                              'fr-FR'}}
+                          </p>
+                      </td>
+               
+                      <td>
+                          <span class="badge" [ngClass]="{
+                          'badge-danger' : item?.etat === 'STOPPER',
+                          'badge-primary' : item?.etat === 'EN COURS',
+                          'badge-warning' : item?.etat === 'PREVU',
+                          'badge-success' : item?.etat === 'TERMINER'
+                          }"> {{ item?.etat === 'EN COURS' ? 'EN COURS DE REALISATION' : item?.etat }}
+                          </span>
+                      </td>
+                      <td>{{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                      <td>
+                          <p class="m-0 d-inline-block align-middle font-16">
+                              <span class="text-warning">{{item?.budget|number}} {{global.device}}</span>
+                          </p>
+                      </td>
+                
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tabsL.length > 0 ">
+    <div *ngIf="entity === 'DASH_FOURNISSEUR'">
+      <div class="col-md-12" *ngIf="array && array.length > 0">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions"
+              class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                  <tr>
+                      <th>Libellé</th>
+                      <th>Crée le</th>
+                      <th>Solde</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let item of array">
+                
+                      <td class="align-middle">
+                        <p class="m-2 d-inline-block align-middle font-16">
+                          <span class="text-primary">{{ item?.nom }}</span> <br />
+                          Contact : {{ item?.telephone ? item?.telephone : 'N/A' }} <br />
+                          Type : <span class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item.type}}</span>
+                        </p>
+                      </td>
+                      <td>{{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                      <td>
+                        <h5 class="mb-1 mt-3"><span class="badge badge-warning">
+                          {{ item?.solde | number }} XOF
+                        </span></h5>
+                      </td>
+                
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+      </div>
+      <div class="col-md-12" *ngIf="array && array.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'"
+          *ngIf="array && array.length === 0"></app-no-data>
+      </div>
+    </div>
+  </div>
+
+ 
+  <div *ngIf="tabsL.length > 0 ">
+    <!-- || entity === 'DASH_PAYMENT'  -->
+  <div *ngIf="entity === 'DASH_REPAYMENT'">
+    <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+        
+              <th >Proprietaire</th>
+              <th>Libelle</th>
+              <th>Etat</th>
+              <th>Creé le</th>
+              <th>Montant</th>
+              <th>Commission</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array; let i = index">
+      
+              <td   class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.owner?.searchableTitle}}</span> <br />
+                  Type : {{item?.owner?.type}} <br />
+                  Telephone : {{item?.owner?.telephone}}
+                </p>
+              </td>
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span>Reversement N° {{item?.code}}</span>
+                </p><br/>
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span>Bien: {{ item?.house?.nom }}</span>
+                </p><br/>
+                <span *ngIf="item.type === 'VENTE'" class="badge badge-light-primary">Vente</span>
+                <span *ngIf="item.type === 'LOCATION'" class="badge badge-light-warning">Location</span>
+              </td>
+              <td>
+                <span *ngIf="item?.etat" class="badge "
+                  [ngClass]="{
+                    'badge-success' : item?.etat === 'VALIDE',
+                    'badge-danger' : item?.etat === 'INVALIDE'
+                  }">{{validation(item?.etat)}}</span>
+              </td>
+              <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+              <td class="align-middle">
+                <span class="text-warning"> {{ item?.montant|number }} {{global.device}} </span>
+              </td>
+              <td class="align-middle">
+                <span class="text-warning"> {{ item?.commission|number }} {{global.device}} </span>
+              </td>
+            
+            </tr>
+          </tbody>
+      
+        </table>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="array && array.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="array && array.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tabsL.length > 0 ">
+<div *ngIf="entity === 'DASH_PAYMENT'">
+  <div class="col-md-12" *ngIf="array && array.length > 0">
+    <div class="table-responsive">
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+          <tr>
+     
+            <th>Locative</th>
+            <th >Locataire</th>
+            <th>N° facture</th>
+            <th>Etat</th>
+            <th>Facture concernée</th>
+            <th>Date</th>
+            <th>Crée le</th>
+            <th>Montant</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of array; let i = index">
+       
+            <td class="align-middle">
+              <p *ngIf="item?.invoice?.contract" class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.invoice?.contract?.rental?.libelle}}</span><br />
+                Superficie : {{item?.invoice?.contract?.rental?.house?.superficie}} m² - {{item?.invoice?.contract?.rental?.house?.piece}} pièce(s): <br />
+                Propriétaire : {{item?.invoice?.contract?.rental?.house?.owner?.searchableTitle}}
+              </p>
+              <p *ngIf="item?.invoice?.short" class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.invoice?.short?.rental?.libelle}}</span><br />
+                Superficie : {{item?.invoice?.short?.rental?.house?.superficie}} m² - {{item?.invoice?.short?.rental?.house?.piece}} pièce(s): <br />
+                Propriétaire : {{item?.invoice?.short?.rental?.house?.owner?.searchableTitle}}
+              </p>
+            </td>
+            <td >
+              <p *ngIf="item?.invoice?.contract" class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.invoice?.contract?.tenant?.searchableTitle}}</span> <br /> Type : {{item?.invoice?.contract?.tenant?.type}}<br /> Telephone : {{item?.invoice?.contract?.tenant?.telephone}}
+              </p>
+              <p *ngIf="item?.invoice?.short" class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.invoice?.short?.tenant?.searchableTitle}}</span> <br /> Type : {{item?.invoice?.short?.tenant?.type}}<br /> Telephone : {{item?.invoice?.short?.tenant?.telephone}}
+              </p>
+            </td>
+            <td>{{ item?.invoice?.code}}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-success' : item?.etat === 'VALIDE',
+              'badge-danger' : item?.etat === 'INVALIDE'
+              }">{{validation(item?.etat)}}</span> <br />
+              <span class="badge " [ngClass]="{
+              'badge-light-success' : item?.status === 'CONFIRMER',
+              'badge-light-danger' : item?.status === 'ATTENTE'
+              }"><small>{{confirmation(item?.status)}}</small></span>
+            </td>
+            <td>
+              {{ item?.invoice?.libelle}}
+              <span *ngIf="item?.invoice?.contract && item?.invoice?.contract?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                'badge-light-danger' : item?.invoice?.contract?.etat === 'RESILIE',
+                'badge-light-warning' : item?.invoice?.contract?.etat === 'INACTIF',
+                'badge-light-primary' : item?.invoice?.contract?.etat === 'ACTIF'
+              }"><small>{{item?.invoice?.contract?.etat}}</small></span>
+
+              <!-- CONTRAT A VOURT TERME -->
+              <br *ngIf="item?.invoice?.short && item?.invoice?.short?.etat !== 'ACTIF'" />
+              <span *ngIf="item?.invoice?.short && item?.invoice?.short?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                'badge-light-danger' : item?.invoice?.short?.etat === 'RESILIE',
+                'badge-light-warning' : item?.invoice?.short?.etat === 'INACTIF',
+                'badge-light-primary' : item?.invoice?.short?.etat === 'ACTIF'
+              }"><small>{{item?.invoice?.short?.etat}}</small></span>
+            </td>
+            <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+            <td>{{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+            <td><span class="text-warning">{{item?.montant|number}} {{global.device}}</span></td>
+           
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr>
+            <td [attr.colspan]="locataire ? '8' : '7'" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-success"> {{total | number}} {{global.device}}</td>
+            <td *ngIf="action"></td>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12" *ngIf="array && array.length === 0">
+    <app-no-data class="width" [title]="'Aucun élément trouvée'"
+      *ngIf="array && array.length === 0"></app-no-data>
+  </div>
+</div>
+</div>
+
+   
+
+<div *ngIf="tabsL.length > 0 ">
+  <div *ngIf="entity === 'DASH_FACTURE' ">
+    <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table  datatable [dtOptions]="dtOptions"
+          class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Locative</th>
+              <th >Locataire</th>
+              <th>Libelle</th>
+              <th>Etat</th>
+              <th>Crée le</th>
+              <th>Montant</th>
+              <th>Payé</th>
+              <th>Restant</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array">
+              <td class="align-middle">
+                <p *ngIf="item?.contract" class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.contract?.rental?.libelle}}</span> <br />
+                  Superficie : {{item?.contract?.rental?.superficie}} m² - {{item?.contract?.rental?.piece}} pièce(s):
+                  <br />
+                  Propriétaire : {{item?.contract?.rental?.house?.owner?.searchableTitle}}
+                </p>
+                <p *ngIf="item?.short" class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.short?.rental?.libelle}}</span> <br />
+                  Superficie : {{item?.short?.rental?.superficie}} m² - {{item?.short?.rental?.piece}} pièce(s):
+                  <br />
+                  Propriétaire : {{item?.short?.rental?.house?.owner?.searchableTitle}}
+                </p>
+              </td>
+              <td>
+                <p *ngIf="item?.contract" class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.contract?.tenant?.searchableTitle}}</span> <br />
+                  Type : {{item?.contract?.tenant?.type}}<br />
+                  Telephone : {{item?.contract?.tenant?.telephone}}
+                </p>
+                <p *ngIf="item?.short" class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.short?.tenant?.searchableTitle}}</span> <br />
+                  Type : {{item?.short?.tenant?.type}}<br />
+                  Telephone : {{item?.short?.tenant?.telephone}}
+                </p>
+              </td>
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">{{ item?.libelle }}</p>
+                <br *ngIf="item?.contract && item?.contract?.etat !== 'ACTIF'" />
+                <span *ngIf="item?.contract && item?.contract?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                  'badge-light-danger' : item?.contract?.etat === 'RESILIE',
+                  'badge-light-warning' : item?.contract?.etat === 'INACTIF',
+                  'badge-light-primary' : item?.contract?.etat === 'ACTIF'
+                }"><small>{{item?.statut}}</small></span>
+      
+                <!-- CONTRAT A VOURT TERME -->
+                <br *ngIf="item?.short && item?.short?.etat !== 'ACTIF'" />
+                <span *ngIf="item?.short && item?.short?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                  'badge-light-danger' : item?.short?.etat === 'RESILIE',
+                  'badge-light-warning' : item?.short?.etat === 'INACTIF',
+                  'badge-light-primary' : item?.short?.etat === 'ACTIF'
+                }"><small>{{item?.statut}}</small></span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="{
+                'badge-danger' : item?.etat === 'IMPAYE',
+                'badge-primary' : item?.etat === 'ATTENTE',
+                'badge-warning' : item?.etat === 'EN COURS',
+                'badge-success' : item?.etat === 'SOLDE'
+                }">{{PAYMENT(item.etat)}}</span>
+              </td>
+              <td>{{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+              <td class="align-middle">
+                <span class="text-primary font-weight-blod">{{item?.montant|number}} {{global.device}}</span>
+              </td>
+              <td class="align-middle">
+                <span class="text-success font-weight-blod">{{item?.paye|number}} {{global.device}}</span>
+              </td>
+              <td class="align-middle">
+                <span class="text-danger font-weight-blod">{{item.impaye|number}} {{global.device}}</span>
+              </td>
+           
+            </tr>
+          </tbody>
+   
+        </table>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="array && array.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="array && array.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tabsL.length > 0 ">
+  <div *ngIf="entity === 'DASH_PROMOTION'">
+    <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table  datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Bien</th>
+              <th>Etat</th>
+              <th *ngIf="chiffreA != null">Montant</th>
+              <th *ngIf="marge != null">Montant</th>
+              <th *ngIf="chiffreR != null">Montant</th>
+              <th *ngIf="coutC != null">Montant</th>
+              <th>Crée le</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array">
+              <td class="align-middle">
+                <!-- <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/house-default.png'" alt="{{ item?.nom }}"
+                title="{{ item?.nom }}" class="rounded mr-2 ml-0" height="48" /> -->
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">{{item?.libelle}}</span> <br />
+                  <span  *ngIf="item.parent != null" >Sous promotion: {{ item?.libelle }}  <br /></span>
+                  <span *ngIf="item.parent != null" >Promotion: {{ item?.parent?.libelle }}  <br /></span> 
+                  Superficie : {{item?.superficie}} m² - {{item?.piece}} pièce(s): <br />
+                 
+                  Situé: {{ item?.quartier + ' - ' + item?.commune+ ' - ' + item?.ville }}
+                </p>
+              </td>
+              
+              <td>
+                <span  class="badge" [ngClass]="{
+                  'badge-success' : item?.etat === 'DISPONIBLE',
+                  'badge-warning' : item?.etat === 'RESERVE',
+                  'badge-danger' : item?.etat === 'VENDU'
+                  }">
+                  {{ item?.etat }}
+                </span>
+              </td>
+              <td *ngIf="chiffreA != null" class="text-warning">{{item?.montantCa|number}} {{global.device}}</td>
+              <td *ngIf="marge != null"  class="text-warning">{{item?.montantMarge|number}} {{global.device}}</td>
+              <td *ngIf="chiffreR != null" class="text-warning">{{item?.montantCr|number}} {{global.device}}</td>
+              <td *ngIf="coutC != null" class="text-warning">{{item?.montantCc|number}} {{global.device}}</td>
+              <td class="align-middle">
+                <span >Crée Le : {{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span> <br />
+                <span >Par : {{item?.create}}</span> <br />
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-warning"> {{ total|number }} {{global.device}}</td>
+              <td colspan="2" *ngIf="action"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="array && array.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="array && array.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tabsL.length > 0 ">
+  <div *ngIf="entity === 'DASH_HOME'">
+    <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table  datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Bien</th>
+              <th>Etat</th>
+              <th>Crée le</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array">
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">{{item?.promotion?.libelle}}</span> <br />
+                  <span  *ngIf="item.parent != null" >Sous promotion: {{ item?.promotion?.libelle }}  <br /></span>
+                  <span *ngIf="item.parent != null" >Promotion: {{ item?.parent?.libelle }}  <br /></span> 
+                  Superficie : {{item?.superficie}} m² - {{item?.piece}} pièce(s): <br />
+                </p>
+              </td>
+         
+              <td>
+                <span  class="badge" [ngClass]="{
+                  'badge-success' : item?.etat === 'DISPONIBLE',
+                  'badge-warning' : item?.etat === 'RESERVE',
+                  'badge-danger' : item?.etat === 'VENDU'
+                  }">
+                  {{ item?.etat }}
+                </span>
+              </td>
+              <td class="align-middle">
+                <span >Crée Le : {{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span> <br />
+                <span >Par : {{item?.create}}</span> <br />
+              </td>
+            </tr>
+          </tbody>
+      
+        </table>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="array && array.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="array && array.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tabsL.length > 0 ">
+  <div *ngIf="entity === 'DASH_LOT'">
+    <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Bien</th>
+              <th>Etat</th>
+              <th>Progression</th>
+              <th>Montant</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array">
+              <td class="align-middle">
+                <img [src]="item?.islet?.subdivision?.photoSrc ? item?.islet?.subdivision?.photoSrc : 'assets/images/promotion-default.jpg'" alt="{{item?.islet?.subdivision?.nom}}"
+                  title="{{item?.islet?.subdivision?.nom}}" class="rounded mr-2 ml-0" height="48" />
+                <p *ngIf="!item?.commune"  class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">{{  item?.islet?.searchableTitle  }}</span> <br />
+                  {{ item?.islet?.searchableDetail }} <br />
+                </p>
+                <p *ngIf="item?.commune" class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">{{ item?.nom }}</span> <br />
+                  Situé: {{ item?.quartier + ' - ' + item?.commune+ ' - ' + item?.ville }} <br />
+                  {{ item?.nbrIlot }} Ilot(s) - {{ item?.nbrLot }} Lot(s) 
+                </p>
+              </td>
+              <td>
+                <span *ngIf="item?.espace" class="badge mr-1" [ngClass]="{ 'badge-danger' : item?.espace }">{{ 'ESPACE VERT' }}</span>
+                <span *ngIf="!item?.espace" class="badge" [ngClass]="{
+                  'badge-secondary' : item?.etat === 'INDISPONIBLE',
+                  'badge-warning' : item?.etat === 'RESERVE',
+                  'badge-danger' : item?.etat === 'VENDU',
+                  'badge-success' : item?.etat === 'DISPONIBLE'
+                  }">{{item?.etat}}</span>
+              </td>
+              <td>
+                <p *ngIf="item?.folderCustomer">
+                  <ngb-progressbar *ngIf="item?.folderCustomer?.prcEcheancier" type="primary" [showValue]="true" [value]="item?.folderCustomer?.prcEcheancier" ngbTooltip="Echéance"></ngb-progressbar>
+                  <ngb-progressbar *ngIf="item?.folderCustomer?.prcEtatA" type="primary" [showValue]="true" [value]="item?.folderCustomer?.prcEtatA" ngbTooltip="Etat d'avancement"></ngb-progressbar>
+                </p>
+                <span *ngIf="!item?.folderCustomer">INDEFINI</span>
+              </td>
+              
+              <td>
+                <span class="text-success font-weight-bold">{{item?.valeur|number}} {{global.device}}</span>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{total | number}} {{global.device}}</td>
+              <td *ngIf="action"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="array && array.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="array && array.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tabsL.length > 0 ">
+  <div *ngIf="entity === 'DASH_PROSPECT'">
+    <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Référence</th>
+              <th>Nom</th>
+              <th>Status</th>
+              <th>Crée le</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array">
+              <td>{{item?.code}}</td>
+              <td class="align-middle">
+                <p class="m-2 d-inline-block align-middle font-16">
+                  <span class="text-primary">{{ item?.nom }}</span> <br />
+                  Email : {{ item?.email ? item?.email : 'N/A' }} <br />
+                  Contact : {{ item?.telephone ? item?.telephone : 'N/A' }}
+                </p>
+              </td>
+              <td>
+                <span class="badge badge-{{ item.status == 'LOCATION' ? 'info': 'secondary' }}">{{item?.status}}</span>
+              </td>
+              <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+       
+            </tr>
+          </tbody>
+        </table>
+      </div>
+   
+    </div>
+    <div class="col-md-12" *ngIf="array && array.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="array && array.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tabsL.length > 0 ">
+  <div *ngIf="entity === 'DASH_RESERVATION'">
+    <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Référence</th>
+              <th>Prospect</th>
+              <th>Type</th>
+              <th>Crée le</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array">
+              <td>{{item?.code}}</td>
+              <td class="align-middle">
+                <p class="m-2 d-inline-block align-middle font-16">
+                  <span class="text-primary">{{ item?.prospect?.libelle }}</span> <br />
+                  Email : {{ item?.prospect?.email ? item?.prospect?.email : 'N/A' }} <br />
+                  Contact : {{ item?.prospect?.telephone ? item?.prospect?.telephone : 'N/A' }}
+                </p>
+              </td>
+              <td>
+                <span class="badge badge-secondary">{{item?.mode}}</span>
+              </td>
+              <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+       
+            </tr>
+          </tbody>
+        </table>
+      </div>
+   
+    </div>
+    <div class="col-md-12" *ngIf="array && array.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="array && array.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tabsL.length > 0 ">
+  <div *ngIf="entity === 'DASH_RESERVATION'">
+    <div class="col-md-12" *ngIf="array && array.length > 0">
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Référence</th>
+              <th>Prospect</th>
+              <th>Type</th>
+              <th>Crée le</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of array">
+              <td>{{item?.code}}</td>
+              <td class="align-middle">
+                <p class="m-2 d-inline-block align-middle font-16">
+                  <span class="text-primary">{{ item?.prospect?.libelle }}</span> <br />
+                  Email : {{ item?.prospect?.email ? item?.prospect?.email : 'N/A' }} <br />
+                  Contact : {{ item?.prospect?.telephone ? item?.prospect?.telephone : 'N/A' }}
+                </p>
+              </td>
+              <td>
+                <span class="badge badge-secondary">{{item?.mode}}</span>
+              </td>
+              <td class="align-middle">{{item?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+       
+            </tr>
+          </tbody>
+        </table>
+      </div>
+   
+    </div>
+    <div class="col-md-12" *ngIf="array && array.length === 0">
+      <app-no-data class="width" [title]="'Aucun élément trouvée'"
+        *ngIf="array && array.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>
+
+  
+
+
+
+</div>

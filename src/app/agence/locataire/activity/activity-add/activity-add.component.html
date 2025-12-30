@@ -1,0 +1,57 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label for="objet">Objet <span class="asterix"></span></label>
+                            <input type="text" formControlName="objet" class="form-control" id="objet"
+                            [ngClass]="{'is-invalid': submit && f.objet.errors,'is-valid': submit && f.objet.valid}" placeholder="Objet">
+                            <div class="invalid-feedback" *ngIf="submit && f.objet.errors">
+                                <div *ngIf="f.objet.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label for="description">Description </label>
+                            <app-tinymce formControlName="description" id="description" #tinymce='tinymce' aria-placeholder="Contenu du message"></app-tinymce>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row mb-2">
+                    <div class="col-md">
+                        <label>Pièces et documents à joindre</label>
+                        <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                        [path]="'note'" [etat]="edit ? 'edit': 'add'" [folder]="edit && note ? note?.folder : null">
+                        </app-folder-uploader>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="onReset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Type de maison : </span>
+        <span class="title-result-show">{{homeType?.libelle}}</span>
+      </p>
+      <p>
+        <span class="title-show">Description : </span>
+        <span class="title-result-show">{{homeType?.description}}</span>
+      </p>
+    </div>
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Crée le : </span>
+        <span class="title-result-show">{{ homeType?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ homeType?.create }}</span>
+      </p>
+      <p>
+        <span class="title-show">Modifié le : </span>
+        <span class="title-result-show">{{ homeType?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ homeType?.update }}</span>
+      </p>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template *ngxPermissionsOnly="'HOME:TYPE:EDIT'">
+    <button (click)="editHome(homeType)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+</div>

@@ -1,0 +1,504 @@
+<div class="row btn-page">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="row px-3 pt-3">
+        <div class="col-lg-5">
+          <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-ride="carousel">
+            <div class="carousel-inner">
+              <div class="carousel-item" [ngClass]="{'active': viewImage === 1}">
+                <img *ngIf="!home?.photoSrc" src="assets/images/house-default.png" alt="" class="d-block w-100">
+                <img *ngIf="home?.photoSrc"  src="{{publicUrl+'/'+house?.photoSrc}}" alt="" class="d-block w-100">
+              </div>
+              <div *ngFor="let item of files" class="carousel-item" [ngClass]="{'active': viewImage === item.id}">
+                <img *ngIf="item?.fullPath"  src="{{publicUrl+'/'+item?.fullPath}}" alt="" class="d-block w-100">
+              </div>
+            </div>
+            <ol class="carousel-indicators position-relative">
+              <li data-target="#carouselExampleCaptions" data-slide-to="0" class="w-25 h-auto active" (click)="this.viewImage = 1" [ngClass]="{'active': viewImage === 1}">
+                <img *ngIf="!home?.photoSrc" src="assets/images/house-default.png" alt="" class="d-block wid-50">
+                <img *ngIf="home?.photoSrc"  src="{{publicUrl+'/'+house?.photoSrc}}" alt="" class="d-block wid-50">
+              </li>
+              <li *ngFor="let item of files" data-target="#carouselExampleCaptions" data-slide-to="1" class="w-25 h-auto" (click)="this.viewImage = item.id" [ngClass]="{'active': viewImage === item.id}">
+                <img *ngIf="item?.fullPath"  src="{{publicUrl+'/'+item?.fullPath}}" alt="" class="d-block wid-50">
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <form class="pl-lg-4">
+            <h2>
+              <span class="badge badge-light-{{ home?.etat === 'DISPONIBLE' ? 'info' : 'secondary' }}">
+                {{ home?.etat === 'DISPONIBLE' ? 'Disponible' : 'Vendu' }}
+              </span>
+            </h2><br />
+            <h3 class="mt-0">{{ home?.searchableTitle }} de la promotion {{ home?.promotion?.libelle }} <a href="javascript: void(0);" class="text-muted"><i class="mdi mdi-square-edit-outline ml-2"></i></a> </h3>
+            <p class="mb-1">Crée le {{ home?.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}} par {{ home?.create}}</p>
+            <div class="mt-4">
+              <h6>Valeur:</h6>
+              <h3>{{ home?.montant | number }} {{global.device}}</h3>
+            </div>
+          </form>
+          <div class="mt-3 mb-0">
+            <ng-template *ngxPermissionsOnly="'HOME:EDIT'">
+              <button (click)="editHome(home)" class="btn btn-primary">
+                Modifier <i class="feather icon-edit-2"></i>
+              </button>
+            </ng-template>
+            <ng-template *ngxPermissionsOnly="'HOME:PRINTER:SHOW'">
+              <button (click)="printerHome(home)" class="btn btn-warning">
+                Imprimer <i class="feather icon-printer"></i>
+              </button>
+            </ng-template>
+
+            <!-- <button class="btn btn-success" (click)="visite3D()" type="button"
+              ngbTooltip="Effectuer une visite 3d de la promotion">
+              Visite 3D <i class="fa fa-cube"></i>
+            </button> -->
+          </div>
+        </div>
+        <div class="col-lg-12">
+          <div class="d-flex">
+            <!-- COL GAUCHE -->
+            <div class="flex-fill">
+              <p>
+                <span class="title-show">Code : </span>
+                <span class="title-result-show">{{home?.code}}</span>
+              </p>
+              <p>
+                <span class="title-show">Montant : </span>
+                <span class="title-result-show">{{home?.montant | number }} {{global.device}} </span>
+              </p>
+              <p>
+                <span class="title-show">Type de maison : </span>
+                <span class="title-result-show">{{home?.type?.libelle}}</span>
+              </p>
+              <p>
+                <span class="title-show">Promotion : </span>
+                <span class="title-result-show">{{home?.promotion?.libelle}}</span>
+              </p>
+            </div>
+            <!-- COL CENTRE -->
+            <div class="flex-fill">
+              <p>
+                <span class="title-show">Superficie : </span>
+                <span class="title-result-show">{{home?.superficie}} m²</span>
+              </p>
+              <p>
+                <span class="title-show">Lot : </span>
+                <span class="title-result-show">N° {{home?.lot}}</span>
+              </p>
+              <p>
+                <span class="title-show">Etat : </span>
+                <span class="badge title-show" [ngClass]="{
+                  'badge-success' : home?.etat === 'DISPONIBLE',
+                  'badge-warning' : home?.etat === 'RESERVE',
+                  'badge-danger' : home?.etat ===  'VENDU'
+                  }">{{ home?.etat}}
+                </span>
+              </p>
+              <p>
+                <span class="title-show">Ilot : </span>
+                <span class="title-result-show">N° {{home?.ilot}}</span>
+              </p>
+            </div>
+            <!-- COL GAUCHE -->
+            <div class="flex-fill">
+              <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{ home?.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+              </p>
+              <p>
+                <span class="title-show">Par : </span>
+                <span class="title-result-show">{{ home?.create }}</span>
+              </p>
+              <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ home?.updatedAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+              </p>
+              <p>
+                <span class="title-show">Par : </span>
+                <span class="title-result-show">{{ home?.update }}</span>
+              </p>
+            </div>
+          </div>
+          <div>
+            <ngb-tabset [destroyOnHide]="false">
+
+              <!-- TAB ECHEANCIERS / AVANCES -->
+              <ngb-tab *ngIf="home?.etat === 'VENDU'">
+                <ng-template ngbTabTitle>
+                  <b>Dossiers</b>
+                </ng-template>
+                <ng-template ngbTabContent>
+                  <div class="d-flex mt-3">
+                    <!-- COL GAUCHE -->
+                    <div class="flex-fill">
+                      <p>
+                        <span class="title-show">Dossier N° : </span>
+                        <span class="title-result-show">{{home?.folderCustomer?.code}}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Acquereur : </span>
+                        <span class="title-result-show"(click)="showCustomer(home?.acquereur)">{{home?.acquereur}}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Chargé d'affaire : </span>
+                        <span class="title-result-show">{{home?.folderCustomer?.charge?.nom}}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Etat : </span>
+                        <span class="badge title-show" [ngClass]="{
+                          'badge-success' : home?.folderCustomer?.etat === 'VALIDE',
+                          'badge-danger' : home?.folderCustomer?.etat === 'INVALIDE',
+                          'badge-primary' : home?.folderCustomer?.etat ===  'RESILIE'
+                          }">{{ home?.folderCustomer?.etat}}
+                        </span>
+                      </p>
+                    </div>
+                    <!-- COL MILIEU -->
+                    <div class="flex-fill">
+                      <p>
+                        <span class="title-show">Montant : </span>
+                        <span class="title-result-show">{{home?.folderCustomer?.montant | number }} {{global.device}} </span>
+                      </p>
+                      <p>
+                        <span class="title-show">avance : </span>
+                        <span class="title-result-show text-warning">{{ home?.folderCustomer?.montantAvance | number }} {{ global.device }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Frais de dossier : </span>
+                        <span class="title-result-show text-warning">{{ home?.folderCustomer?.montantFrais | number }} {{ global.device }}</span>
+                      </p>
+                    </div>
+                    <!-- COL GAUCHE -->
+                    <div class="flex-fill">
+                      <p>
+                        <span class="title-show">Motif : </span>
+                        <span class="title-result-show">
+                          <span class="badge badge">{{ home?.folderCustomer?.motif == 'PROPRIETAIRE' ? 'BIEN EN VENTE': home?.folderCustomer?.motif}}</span>
+                        </span>
+                      </p>
+                      <p>
+                        <span class="title-show">modalite : </span>
+                        <span class="title-result-show">{{ home?.folderCustomer?.modalite }}</span>
+                      </p>
+                      <p *ngIf="home?.folderCustomer?.modalite === 'ECHEANCE'" >
+                        <span class="title-show">Nombre de mois : </span>
+                        <span class="title-result-show">{{ home?.folderCustomer?.nbrMois }}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="home?.folderCustomer?.echeances.length > 0">
+                    <!-- TABLEAU DES ECHEANCIERS -->
+                    <div class="col-md-12">
+                      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                        DETAILS DES ECHEANCIERS
+                      </span>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                          <thead class="thead-light">
+                            <tr>
+                              <th>Description</th>
+                              <th>Etat</th>
+                              <th>Montant</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of home?.folderCustomer?.echeances" >
+                              <td>{{item?.description }}</td>
+                              <td>{{item.etat}}</td>
+                              <td>{{item.montant | number}} {{global.device}} </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="home?.folderCustomer?.advances.length > 0">
+                    <!-- TABLEAU DES AVANCES -->
+                    <div class="col-md-12">
+                      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                        DETAILS DES AVANCEMENTS
+                      </span>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                          <thead class="thead-light">
+                            <tr>
+                              <th>Libelle</th>
+                              <th>Pourcentage (%)</th>
+                              <th>Etat</th>
+                              <th>Montant</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of home?.folderCustomer?.advances" >
+                              <td>{{item?.libelle }}</td>
+                              <td>{{item.prc}} %</td>
+                              <td>{{item.etat}}</td>
+                              <td>{{item.montant | number}} {{global.device}} </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-tab>
+
+              <!-- TAB FACTURE -->
+              <ngb-tab *ngIf="home?.etat === 'VENDU'">
+                <ng-template ngbTabTitle>
+                  <b>Factures</b>
+                </ng-template>
+                <ng-template ngbTabContent>
+                  <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                    DETAILS DE LA FACTURE
+                  </span>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                      <thead class="thead-light">
+                        <tr>
+                          <th>Désignation</th>
+                          <th>Prix u.</th>
+                          <th>Qte</th>
+                          <th>Tva</th>
+                          <th>Remise</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of home?.folderCustomer?.invoice?.options" >
+                          <td><p class="m-0 d-inline-block align-middle font-16">{{item?.libelle}}</p></td>
+                          <td>
+                            <p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.prix |number}} {{global.device}}</span></p>
+                          </td>
+                          <td>{{item?.qte}}</td>
+                          <td>{{item?.tva}} %</td>
+                          <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.remise |number }} {{global.device}}</span></td>
+                          <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.total |number}} {{global.device}}</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <table class="table table-responsive invoice-table invoice-total">
+                        <tbody>
+                        <tr>
+                          <th>TOTAL HT : </th>
+                          <td>{{ home?.folderCustomer?.invoice?.montantHt | number }} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL REMISE : </th>
+                          <td>{{ home?.folderCustomer?.invoice?.montantRemise | number }} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL TVA : </th>
+                          <td>{{ home?.folderCustomer?.invoice?.montantTva | number }} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL PAYE : </th>
+                          <td> {{ home?.folderCustomer?.invoice?.paye | number }} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL IMPAYE : </th>
+                          <td  class="text-danger"> {{ home?.folderCustomer?.invoice?.impaye | number }} {{global.device}}</td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <table class="width mb-3">
+                    <tbody>
+                      <tr class="border-bottom-success">
+                        <td></td>
+                        <td colspan="5" class="text-right font-weight-bold"></td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr class="border border-success">
+                        <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+                        <td class="font-weight-bold font-size-default text-right">{{ home?.folderCustomer?.invoice?.montant | number }} {{global.device}}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </ng-template>
+              </ngb-tab>
+
+              <!-- TAB PAIEMENT -->
+              <ngb-tab *ngIf="home?.etat === 'VENDU' && payments">
+                <ng-template ngbTabTitle>
+                  <b>Paiements</b>
+                </ng-template>
+                <ng-template ngbTabContent>
+                  <table class="table table-sm table-striped table-bordered nowrap table-hover my-3">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Tiers</th>
+                        <th>Mode</th>
+                        <th>Etat</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Montant</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of payments">
+                        <td>{{ item?.tiers }}</td>
+                        <td>{{ item?.mode }}</td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                          'badge-success' : item.etat === 'VALIDE',
+                          'badge-danger' : item.etat === 'INVALIDE'
+                          }">{{ item?.etat }}</span>
+                        </td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                            'badge-light-success' : item?.status === 'CONFIRMER',
+                            'badge-light-danger' : item?.status === 'ATTENTE'
+                          }">{{ item?.status }}</span>
+                        </td>
+                        <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+                        <td><span class="text-warning">{{item?.montant | number}} {{global.device}}</span></td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                        <td class="font-weight-bold font-size-40 text-success"> {{total | number}} {{global.device}}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </ng-template>
+              </ngb-tab>
+
+              <!-- TAB TRAVAUX -->
+              <ngb-tab *ngIf="home?.tasks.length > 0">
+                <ng-template ngbTabTitle>
+                  <b>Travaux</b>
+                </ng-template>
+                <ng-template ngbTabContent>
+                  <table class="table table-sm table-striped table-bordered nowrap table-hover mt-4">
+                    <thead class="thead-light">
+                      <tr>
+                          <th>Date Début</th>
+                          <th>Date Fin</th>
+                          <th>Nbre de Jours</th>
+                          <th>Etat</th>
+                          <th>Evolution physique</th>
+                          <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="align-middle text-center">
+                            <p class="m-0 d-inline-block align-middle font-16">
+                              <span class="text-primary">{{home?.dateTravaux?.dateD | date: "d MMMM y" : '' : 'fr-FR'}}</span>
+                            </p>
+                        </td>
+                        <td class="align-middle text-center">
+                            <p class="m-0 d-inline-block align-middle font-16">
+                                <span class="text-danger">{{home?.dateTravaux?.dateF | date: "d MMMM y" : '' : 'fr-FR'}}</span>
+                            </p>
+                        </td>
+                        <td class="align-middle text-center">
+                            <p class="m-0 d-inline-block align-middle font-16">
+                              <span class="text-warning">{{home?.dateTravaux?.duree}}</span>
+                            </p>
+                        </td>
+                        <td class="align-middle text-center">
+                          <span *ngIf="home?.statut" class="badge" [ngClass]="{
+                            'badge-secondary' : home?.statut === 'EN COURS',
+                            'badge-danger' : home?.statut === 'EN ATTENTE',
+                            'badge-success' : home?.statut === 'TERMINER'
+                            }">{{home?.statut}}</span>
+                        </td>
+                        <td class="align-middle text-center">
+                              <circle-progress
+                              [percent]="home?.evolution"
+                              [radius]="30"
+                              [toFixed]="1"
+                              [titleFontSize]="10"
+                              [outerStrokeWidth]="5"
+                              [innerStrokeWidth]="3"
+                              [outerStrokeColor]="home?.evolution >= 65 ? '#3FBD0D' : home?.evolution > 35 ? '#F0DD35' : '#EC0F0F'"
+                              [innerStrokeColor]="'#95cde4'"
+                              [animation]="true"
+                              [showSubtitle]="false"
+                              [animationDuration]="300"
+                          ></circle-progress>
+                        </td>
+                        <td class="align-middle text-center">
+                          <button (click)="showReport(home)" type="button" class="btn btn-icon btn-info"
+                            ngbTooltip="Rapports journaliers">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button (click)="show(home, 'EDIT')" type="button" class="btn btn-icon btn-secondary ml-1"
+                          ngbTooltip="Modifier le DQ">
+                          <i class="fa fa-calendar"></i>
+                          </button>
+                          <button  (click)="show(home, 'SHOW')" type="button" class="btn btn-icon btn-warning ml-1"
+                            ngbTooltip="Détails des travaux ">
+                            <i class="fa fa-calendar"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <app-task-list class="width" [homes]="[home]" *ngIf="home && home.length > 0"></app-task-list>
+                  <!-- <table class="table table-sm table-striped table-bordered nowrap table-hover my-3">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Tiers</th>
+                        <th>Mode</th>
+                        <th>Etat</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Montant</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of payments">
+                        <td>{{ item?.tiers }}</td>
+                        <td>{{ item?.mode }}</td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                          'badge-success' : item.etat === 'VALIDE',
+                          'badge-danger' : item.etat === 'INVALIDE'
+                          }">{{ item?.etat }}</span>
+                        </td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                            'badge-light-success' : item?.status === 'CONFIRMER',
+                            'badge-light-danger' : item?.status === 'ATTENTE'
+                          }">{{ item?.status }}</span>
+                        </td>
+                        <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+                        <td><span class="text-warning">{{item?.montant | number}} {{global.device}}</span></td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                        <td class="font-weight-bold font-size-40 text-success"> {{total | number}} {{global.device}}</td>
+                      </tr>
+                    </tfoot>
+                  </table> -->
+                </ng-template>
+              </ngb-tab>
+            </ngb-tabset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+  </div>
+</div>

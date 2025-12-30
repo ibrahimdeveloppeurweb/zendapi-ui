@@ -1,0 +1,150 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- FILTRE -->
+      <div class="row mb-2">
+        <div class="col-12">
+          <span class="badge badge-warning my-2 f-14 width">SÉLECTIONNER LA PÉRIODE</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="row mb-2 align-items-end">
+          <div class="col-md-4">
+            <label for="house">Bien concerné <span class="asterix">*</span></label>
+            <select
+              (ngModelChange)="selectHouse($event)"
+              [ngModel]="f.house.value"
+              formControlName="house"
+              class="form-control"
+              id="house">
+              <option [ngValue]="null">Sélectionnez un bien</option>
+              <option *ngFor="let item of houses" [ngValue]="item.uuid">
+                {{ item.nom }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="dateD">Date début <span class="asterix">*</span></label>
+            <input
+              class="form-control"
+              type="date"
+              formControlName="dateD"
+              id="dateD" />
+          </div>
+
+          <div class="col-md-3">
+            <label for="dateF">Date fin <span class="asterix">*</span></label>
+            <input
+              class="form-control"
+              type="date"
+              formControlName="dateF"
+              id="dateF" />
+          </div>
+
+          <div class="col-md-2 d-flex">
+            <button
+              type="button"
+              (click)="onLoadData()"
+              class="btn btn-primary w-100"
+              [disabled]="form.invalid">
+              <i class="feather icon-filter"></i> Filtrer
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Print Button (only if data loaded) -->
+      <div class="row mb-3" *ngIf="options.length > 0">
+        <div class="col-md-12 text-right">
+          <button
+            type="button"
+            (click)="print()"
+            class="btn btn-warning"
+            ngbTooltip="Cliquez ici pour imprimer le relevé">
+            <i class="feather icon-printer"></i> Imprimer
+          </button>
+        </div>
+      </div>
+
+      <!-- Transactions Table -->
+      <div class="row" *ngIf="f.owner.value">
+        <div class="col-12">
+          <span class="badge badge-warning my-2 f-14 width">TRANSACTIONS</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div
+            class="table-responsive"
+            *ngIf="transactionsWithRunningBalance.length > 0; else noData">
+            <table class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Libellé</th>
+                  <th>Débit</th>
+                  <th>Crédit</th>
+                  <th>Solde</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of transactionsWithRunningBalance; let i = index">
+                  <td>#{{ i + 1 }}</td>
+                  <td>
+                    <span *ngIf="item.date && !item.dateO">{{ item.date | date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                    <span *ngIf="item.dateO">{{ item.dateO | date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                  </td>
+                  <td>
+                    <p class="m-0 d-inline-block align-middle font-16">{{ item.libelle }}</p>
+                  </td>
+                  <td class="align-middle text-danger">
+                    <p class="m-0 font-16">
+                      {{ (item.debit || 0) | number }} {{ global.device }}
+                    </p>
+                  </td>
+                  <td class="align-middle text-success">
+                    <p class="m-0 font-16">
+                      {{ (item.credit || 0) | number }} {{ global.device }}
+                    </p>
+                  </td>
+                  <td class="align-middle font-weight-bold">
+                    <p class="m-0 font-16">
+                      {{ item.runningBalance | number }} {{ global.device }}
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #noData>
+            <div class="alert alert-info text-center mt-4" role="alert">
+              <i class="feather icon-info mr-2"></i>
+              Aucune transaction disponible pour la période sélectionnée.
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="onClose()">
+      <i class="feather icon-x-circle mr-1"></i> Fermer
+    </button>
+  </div>
+</form>

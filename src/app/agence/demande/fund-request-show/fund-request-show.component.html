@@ -1,0 +1,113 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Réference : </span>
+        <span class="title-result-show">{{ fund?.code }}</span>
+      </p>
+      <p>
+        <span class="title-show">Trésorerie : </span>
+        <span class="title-result-show">
+          <span class="badge badge">{{ fund?.treasury?.nom }}</span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Demandeur : {{ fund?.code }}</span>
+        <span class="title-result-show"></span>
+      </p>
+      <p>
+        <span class="title-show">Date : </span>
+        <span class="title-result-show">{{ fund?.date|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+      </p>
+      <p>
+        <span class="title-show">Etat : </span>
+        <span class="title-result-show">
+          <span class="badge badge-{{ fund.etat === 'DECAISSER' ? 'success' : 'danger'}}"> {{ fund.etat }} </span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Status : </span>
+        <span class="title-result-show">
+          <span class="badge badge-{{ fund?.status === 'CONFIRMER' ? 'success' : 'danger'}}"> {{ fund?.status }} </span>
+        </span>
+      </p>
+    </div>
+    <!-- COL DROITE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Motif : </span>
+        <span class="title-result-show">{{ fund?.motif }}</span>
+      </p>
+      <p>
+        <span class="title-show">Details : </span>
+        <span class="title-result-show">
+          <span class="badge badge">{{ fund?.details }}</span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Montant : </span>
+        <span class="title-result-show text-warning">
+          <span class="badge badge">{{ fund?.montant |number }} {{ global.device }}</span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Decaissé : </span>
+        <span class="title-result-show text-warning">
+          <span class="badge badge">{{ fund?.montantD |number }} {{ global.device }}</span>
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Crée le : </span>
+        <span class="title-result-show">{{ fund?.createdAt }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ fund?.create }}</span>
+      </p>
+      <p>
+        <span class="title-show">Modifié le : </span>
+        <span class="title-result-show">{{ fund?.updatedAt }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ fund?.update }}</span>
+      </p>
+      <p>
+        <span class="title-show">Validé le : </span>
+        <span class="title-result-show">{{ fund?.validateAt }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ fund?.validate }}</span>
+      </p>
+    </div>
+  </div>
+
+  <table class="table border">
+    <tbody>
+      <tr><td class="text-right font-weight-bold font-size-default"> {{ fund?.montantD |number }} {{ global.device }} </td></tr>
+    </tbody>
+  </table>
+
+  <div class="row mb-2">
+    <div class="col-md">
+      <span class="badge badge-primary mb-2 f-14 width">FICHE DE DOSSIER</span>
+      <app-folder-uploader
+        [maxSize]="3"
+        [folder]="fund?.folder"
+        [etat]="'show'"
+        [allowFileUpload]="false" [allowDownload]="true">
+      </app-folder-uploader>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <button *ngxPermissionsOnly="'FUND:REQUEST:PRINTER:SHOW'" (click)="printerFund(fund)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

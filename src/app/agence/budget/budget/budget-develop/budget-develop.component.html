@@ -1,0 +1,113 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL MILLIEU -->
+    <div class="flex-fill">
+      <p><span class="title-show bold">Code: </span> {{ budget.code }}</p>
+      <p>
+        <span class="title-show bold">Libellé: </span> {{ budget?.libelle }}
+      </p>
+      <p>
+        <span class="title-show bold">Etat: </span>
+        <span class="badge badge-{{
+            budget?.etat === 'TERMINE' ? 'first' :
+            budget?.etat === 'VALIDE' ? 'success' :                     
+            budget?.etat === 'ATTENTE' ? 'warning' :
+            budget?.etat === 'BROUILLON' ? 'info' :
+            budget?.etat === 'EN COURS' ? 'primary' : 'info'          
+          }}">{{budget?.etat}}</span>
+      </p>
+    </div>
+    <!-- COL DROITE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show bold">Crée le: </span>
+        <span class="title-result-show">{{
+          budget?.createdAt | date : "d MMMM y 'à' h:mm:ss" : "" : "fr-FR"
+          }}</span>
+        <span class="title-show bold ml-5">Par: </span>
+        <span class="title-result-show">{{ budget?.create }}</span>
+      </p>
+      <p>
+        <span class="title-show bold">Modifié le: </span>
+        <span class="title-result-show">{{
+          budget?.updatedAt | date : "d MMMM y 'à' h:mm:ss" : "" : "fr-FR"
+          }}</span>
+        <span class="title-show bold ml-5">Par: </span>
+        <span class="title-result-show">{{ budget?.update }}</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="col-md-12">
+    <span class="badge badge-info my-2 f-14 formBadge width">
+      SAISIE DU BUDGET</span>
+  </div>
+  
+  <form autocomplete="off" [formGroup]="form">
+    <div class="p-3">
+      <div formArrayName="options">     
+        <div class="table-responsive m-0">          
+            <table class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+              <tr>                
+                <th class="text-center vertical-center">
+                  <span class="mb-5">Catégorie de charge</span>
+                </th>              
+                <th class="text-center vertical-center">
+                  <span class="mb-5">Type de charge</span>
+                </th>
+                <th class="text-center vertical-center">
+                  <span class="mb-5">Budget</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of options.controls; let i = index" [formGroupName]="i">              
+                <td>{{ item?.get("libelleCategory").value }}</td>            
+                <td>
+                  {{ item?.get("libelleType").value }}
+                  <br>
+                  code: {{ item?.get("codeType").value }}   
+                </td>                
+                <td class="text-danger text-center" *ngIf="budget.etat ==='BROUILLON' " >
+                  <input type="number" (change)="onChangeMontant()" id="budgetP{{ i }}" formControlName="budgetP"
+                    class="form-control" min="0" />
+                  {{item?.get("budgetP").value | number}}
+                </td>
+                <td class="text-center" *ngIf="budget.etat !='BROUILLON'">
+                  <input type="number" id="budgetV{{ i }}" (change)="onChangeMontant()"  formControlName="budgetV"
+                    class="form-control" min="0" />
+                  {{item?.get("budgetV").value | number}}
+                </td>
+              </tr>
+            </tbody>
+            <tr>
+              <td colspan="2" class="text-primary text-center m-r-10">TOTAL</td>
+              <td class="text-center"  *ngIf="budget.etat ==='BROUILLON'"> {{ budgetTotalP | number }} {{global.device}}</td>
+              <td class="text-center" *ngIf="budget.etat !='BROUILLON'"> {{ budgetTotalV | number }} {{global.device}}</td>              
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <hr class="m-0" />
+    <div class="modal-footer">    
+      <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary" data-dismiss="modal">
+        <i class="ion-md-close-circle"></i> Fermer
+      </button>
+      <button (click)="onConfirme(budget,'BROUILLON','BROUILLON')" class="btn btn-warning mx-2">
+        <i class="fas fa-save"></i> Brouillon
+      </button>
+      <button (click)="onConfirme(budget,'EN COURS','VALIDE')" type="submit" class="btn btn-primary x-2">
+        <i class="fas fa-save"></i> Enregistrer
+      </button>
+    </div>
+  </form>
+</div>

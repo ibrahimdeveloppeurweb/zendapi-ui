@@ -1,0 +1,123 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-warning my-2 f-14 width"> INFORMATIONS SUR LE MANDAT </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="syndic">Syndic <span class="asterix">*</span></label>
+                            <select class="form-control" id="syndic" formControlName="syndic"
+                                [ngClass]="{'is-invalid': submit && f.syndic.errors,'is-valid': submit && f.syndic.valid}">
+                                <option *ngFor="let item of syndics" [ngValue]="item.uuid">{{item.nom}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.syndic.errors">
+                                <div *ngIf="f.syndic.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="honoraire">Honoraire <span class="asterix">*</span></label>
+                            <select (ngModelChange)="onChange($event)" class="form-control" id="honoraire" formControlName="honoraire"
+                                [ngClass]="{'is-invalid': submit && f.honoraire.errors,'is-valid': submit && f.honoraire.valid}">
+                                <option *ngFor="let item of honoraires" [ngValue]="item.value">{{item.label}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.honoraire.errors">
+                                <div *ngIf="f.honoraire.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="valeur">{{labelValeur}} <span class="asterix">*</span></label>
+                            <input min="0" type="number" class="form-control" formControlName="valeur" id="valeur"
+                            [ngClass]="{'is-invalid': submit && f.valeur.errors,'is-valid': submit && f.valeur.valid}" placeholder="{{labelValeur}}">
+                            <div class="invalid-feedback" *ngIf="submit && f.valeur.errors">
+                                <div *ngIf="f.valeur.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="periodicite">Périodicité <span class="asterix">*</span></label>
+                            <select class="form-control" id="periodicite" formControlName="periodicite"
+                                [ngClass]="{'is-invalid': submit && f.periodicite.errors,'is-valid': submit && f.periodicite.valid}">
+                                <option *ngFor="let item of periodicites" [ngValue]="item.value">{{item.label}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.periodicite.errors">
+                                <div *ngIf="f.periodicite.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="date">Date d'attribution du mandat <span class="asterix">*</span></label>
+                            <input type="date" class="form-control" formControlName="date" id="date"
+                            [ngClass]="{'is-invalid': submit && f.date.errors,'is-valid': submit && f.date.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                                <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <div class="position-relative form-group">
+                                <label for="anneeEx">Année d'exercice <span class="asterix mr-2">*</span></label>
+                                <select name="anneeEx" [(ngModel)]="defaultAnnee" formControlName="anneeEx" id="anneeEx" class="form-control">
+                                  <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="submit && f.anneeEx.errors">
+                                  <div *ngIf="f.anneeEx.errors.required">{{required.novide}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="badge badge-warning my-2 f-14 width"> DETAILS SUR LES TERMES DU MANDATS</span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <div class="position-relative form-group">
+                            <label for="dateD">Date de début du mandat <span class="asterix">*</span></label>
+                            <input type="date" class="form-control" formControlName="dateD" id="dateD"
+                            [ngClass]="{'is-invalid': submit && f.dateD.errors,'is-valid': submit && f.dateD.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.dateD.errors">
+                                <div *ngIf="f.dateD.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="position-relative form-group">
+                            <label for="dateF">Date de fin du mandat <span class="asterix">*</span></label>
+                            <input type="date" class="form-control" formControlName="dateF" id="dateF"
+                            [ngClass]="{'is-invalid': submit && f.dateF.errors,'is-valid': submit && f.dateF.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.dateF.errors">
+                                <div *ngIf="f.dateF.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+        Enregistrer <i class="feather icon-save p-1"></i>
+        </button>
+    </div>
+</form>

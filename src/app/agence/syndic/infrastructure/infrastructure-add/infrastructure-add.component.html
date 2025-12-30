@@ -1,0 +1,138 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-dark my-2 f-14 width"> INFORMATIONS SUR L'INFRASTRUCTURE </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <!-- <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label>Syndic <span class="asterix">*</span></label>
+                            <app-entity-finder [class]="'Trustee'" [namespace]="'Trustee'" [groups]="['trustee']"
+                            [required]="true" [selected]="currentSyndic"
+                            (uuid)="setSyndicUuid($event)">
+                            </app-entity-finder>
+                        </div>
+                    </div> -->
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="syndic">Syndic <span class="asterix">*</span></label>
+                            <select (ngModelChange)="setSyndicUuid($event)" class="form-control" id="syndic" formControlName="syndic"
+                                [ngClass]="{'is-invalid': submit && f.syndic.errors,'is-valid': submit && f.syndic.valid}">
+                                <option *ngFor="let item of syndics" [ngValue]="item.uuid">{{item.nom}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.syndic.errors">
+                                <div *ngIf="f.syndic.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="position-relative form-group">
+                          <label for="lot">Lot </label>
+                          <select class="form-control" id="lot" formControlName="lot"
+                              [ngClass]="{'is-invalid': submit && f.lot.errors,'is-valid': submit && f.lot.valid}">
+                              <option *ngFor="let item of lots" [ngValue]="item.uuid">{{item.nom}} {{item?.type ? '-' : ''}} {{item?.type === 'VERTICAL' ? 'Vertical' : item?.type === 'HORIZONTAL' ? 'Horizontal' : item?.type === 'APPARTEMENT' ? 'Appartement' : item?.type}}</option>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="submit && f.lot.errors">
+                              <div *ngIf="f.lot.errors.required">{{required.novide}}</div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="nom">Libellé <span class="asterix">*</span></label>
+                            <input type="text" class="form-control" formControlName="nom" id="nom"
+                            [ngClass]="{'is-invalid': submit && f.nom.errors,'is-valid': submit && f.nom.valid}" placeholder="Libellé">
+                            <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+                                <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="position-relative form-group">
+                          <label for="type">Type d'infrastructure<span class="asterix">*</span></label>
+                          <select class="form-control" id="type" formControlName="type"
+                              [ngClass]="{'is-invalid': submit && f.type.errors,'is-valid': submit && f.type.valid}">
+                              <option *ngFor="let item of types" [ngValue]="item.value">{{item.label}}</option>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                              <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="position-relative form-group">
+                            <label for="hauteur">Hauteur (m)</label>
+                            <input type="number" class="form-control" formControlName="hauteur" id="hauteur"
+                            [ngClass]="{'is-invalid': submit && f.hauteur.errors,'is-valid': submit && f.hauteur.valid}" placeholder="Hauteur">
+                            <div class="invalid-feedback" *ngIf="submit && f.hauteur.errors">
+                                <div *ngIf="f.hauteur.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="position-relative form-group">
+                            <label for="superficie">Superficie (m²) <span class="asterix">*</span></label>
+                            <input type="number" class="form-control" formControlName="superficie" id="superficie"
+                            [ngClass]="{'is-invalid': submit && f.superficie.errors,'is-valid': submit && f.superficie.valid}" placeholder="Superficie">
+                            <div class="invalid-feedback" *ngIf="submit && f.superficie.errors">
+                                <div *ngIf="f.superficie.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="position-relative form-group">
+                          <label for="etat">Etat </label>
+                          <select class="form-control" id="" formControlName="etat"
+                              [ngClass]="{'is-invalid': submit && f.etat.errors,'is-valid': submit && f.etat.valid}">
+                              <option *ngFor="let item of etats" [ngValue]="item.value">{{item.label}}</option>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="submit && f.etat.errors">
+                              <div *ngIf="f.etat.errors.required">{{required.novide}}</div>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label for="description">Description </label>
+                            <textarea autosize class="form-control" id="description" formControlName="description" rows="1" placeholder="Saisir le text..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+              <span class="badge badge-dark my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLÉMENTAIRES</span>
+            </div>
+            <div class="form-group">
+              <div class="row mb-2">
+              <div class="flex-grow-0" style="min-width: 30%">
+                  <app-image-uploader (filesd)="loadfile($event)" (imageUploaded)="setParam('photoUuid',$event)"
+                  [photo]="edit && infrastructure ? infrastructure.photo : null"></app-image-uploader>
+              </div>
+              <div class="col-md">
+                  <label>Pièces et documents à joindre</label>
+                  <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                  [path]="'infrastructure'" [etat]="edit ? 'edit': 'add'" [folder]="edit && infrastructure ? infrastructure?.folder : null">
+                  </app-folder-uploader>
+              </div>
+              </div>
+          </div>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+        Enregistrer <i class="feather icon-save p-1"></i>
+        </button>
+    </div>
+</form>

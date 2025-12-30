@@ -1,0 +1,180 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modale" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR LE PRODUIT -->
+      <div class="row">
+        <span class="badge badge-warning my-2 f-14 width">
+          INFORMATIONS GENERALES
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <label for="prix">Type <span class="asterix">*</span></label>
+            <select formControlName="type" class="form-control" id="type" [ngClass]="{
+                'is-invalid': submit && f.type.errors,
+                'is-valid': submit && f.type.valid
+              }">
+              <option [value]="null" selected>Selectionnez un type</option>
+              <option *ngFor="let item of typeRow" [value]="item.value">
+                {{ item.label }}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+              <div *ngIf="f.type.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="prix">Etat Achat <span class="asterix">*</span></label>
+            <select formControlName="etat" class="form-control" id="etat" [ngClass]="{
+                'is-invalid': submit && f.etat.errors,
+                'is-valid': submit && f.etat.valid
+              }">
+              <option [value]="null" selected>Selectionnez un etat</option>
+              <option *ngFor="let item of AchatRow" [value]="item.value">
+                {{ item.label }}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.etat.errors">
+              <div *ngIf="f.etat.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="libelle">Désignation <span class="asterix">*</span></label>
+            <input formControlName="libelle" class="form-control" id="libelle" [ngClass]="{
+                'is-invalid': submit && f.libelle.errors,
+                'is-valid': submit && f.libelle.valid
+              }" [placeholder]="'Libellé'" (change)="onDesignationChange()" />
+            <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+              <div *ngIf="f.libelle.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="prix">Famille <span class="asterix">*</span></label>
+            <app-entity-finder [namespace]="'Client'" [class]="'Family'" [groups]="['family']" [required]="true"
+              [selected]="familySelected" (uuid)="setFamilyUuid($event)"
+              [placeholder]="'Selectionez une famille'">
+            </app-entity-finder>
+          </div>
+          <div class="mt-4">
+            <button (click)="addFamily()" class="btn btn-primary">
+              <i class="fas fa-plus-circle"></i>
+            </button>
+          </div>
+          <div class="col-md-3">
+            <label for="subFamily">Sous-famille<span class="asterix">*</span></label>
+            <input type="text" *ngIf="show == true && sousFamille.length != 0"  readonly="edit"  [value]="sousFamille" class="form-control" id="subFamily">
+            <ng-select *ngIf="show == false  && sousFamille.length == 0" formControlName="subFamily" [(ngModel)]="selecteSubFamily" class="mt-2">
+                <ng-option *ngFor="let item of subFamilys" [value]="item.uuid" >{{item?.libelle}}</ng-option>
+            </ng-select>
+            <div class="invalid-feedback" *ngIf="submit && f.subFamily.errors">
+              <div *ngIf="f.subFamily.errors.required">
+                {{ required.novide }}
+              </div>
+            </div>
+          </div>
+          <div class="mt-4" *ngIf="show == false && sousFamille.length == 0">
+            <button (click)="addSubFamily()" class="btn btn-primary">
+              <i class="fas fa-plus-circle"></i>
+            </button>
+          </div>
+          <div class="col-md-2">
+            <label for="prix">Unité <span class="asterix">*</span></label>
+            <input formControlName="unite" class="form-control" id="unite" type="text" [ngClass]="{
+                'is-invalid': submit && f.unite.errors,
+                'is-valid': submit && f.unite.valid
+              }" placeholder="Unité de la ressource" />
+            <div class="invalid-feedback" *ngIf="submit && f.unite.errors">
+              <div *ngIf="f.unite.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label for="prix">Prix d'achat HT </label>
+            {{ f.prix.value | number }}
+            <input formControlName="prix" class="form-control" id="prix" type="number" step="1000" [min]="0"
+              [ngClass]="{
+                'is-invalid': submit && f.prix.errors,
+                'is-valid': submit && f.prix.valid
+              }" placeholder="Prix unitaire" />
+            <div class="invalid-feedback" *ngIf="submit && f.prix.errors">
+              <div *ngIf="f.prix.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="prix">Prix de vente HT</label>
+            {{ f.prixVHT.value | number }}
+            <input formControlName="prixVHT" class="form-control" id="prixVHT" type="number" step="1000" [min]="0"
+              [ngClass]="{
+                'is-invalid': submit && f.prixVHT.errors,
+                'is-valid': submit && f.prixVHT.valid
+              }" placeholder="Prix de vente" />
+            <div class="invalid-feedback" *ngIf="submit && f.prixVHT.errors">
+              <div *ngIf="f.prixVHT.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="prix">Stock Physique</label>
+            {{ f.stock.value | number }}
+            <input formControlName="stock" class="form-control" id="stock" type="number" step="1000" [min]="0"
+              [ngClass]="{
+                'is-invalid': submit && f.stock.errors,
+                'is-valid': submit && f.stock.valid
+              }" placeholder="Stock physique" />
+            <div class="invalid-feedback" *ngIf="submit && f.stock.errors">
+              <div *ngIf="f.stock.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="prix">Stock Alerte</label>
+            {{ f.stockAlerte.value | number }}
+            <input formControlName="stockAlerte" class="form-control" id="stockAlerte" type="number" step="1000"
+              [min]="0" [ngClass]="{
+                'is-invalid': submit && f.stockAlerte.errors,
+                'is-valid': submit && f.stockAlerte.valid
+              }" placeholder="Stock Alerte" />
+            <div class="invalid-feedback" *ngIf="submit && f.stockAlerte.errors">
+              <div *ngIf="f.stockAlerte.errors.required">
+                {{ required.novide }}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="prix">Compte comptable </label>
+            <app-entity-finder [namespace]="'Accounting'" [class]="'Account'" [groups]="['account']" [required]="true"
+              [selected]="accountSelected" (uuid)="setAccountUuid($event)"
+              [placeholder]="'Selectionez un compte comptable'">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-4">
+            <label for="numero">Numéro compte auxiliaire </label>
+            <input formControlName="numero" class="form-control" id="numero" [ngClass]="{
+                'is-invalid': submit && f.numero.errors,
+                'is-valid': submit && f.numero.valid
+              }" [placeholder]="'Numéro compte auxiliaire'" />
+            <div class="invalid-feedback" *ngIf="submit && f.numero.errors">
+              <div *ngIf="f.numero.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

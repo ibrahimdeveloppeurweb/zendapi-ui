@@ -1,0 +1,376 @@
+<div class="card card-box rounded border-0 p-3">
+    <div class="py-0">
+        <h3 class="text-center">Comptes par défaut</h3>
+    </div>
+    <hr class="border-2">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+            <div class="col-md-12">
+                <div class="row"> 
+                    <span class="badge badge-secondary my-2 f-14 width"> Tiers | Utilisateurs </span> 
+                </div>
+                <div class="form-group">
+                    <div class="mb-2"> 
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les tiers "syndics"
+                                    </span>
+                                    <span class="ml-2" ngbTooltip="Le compte comptable dédié défini sur la fiche tiers sera utilisé pour l'affectation du compte auxiliaire uniquement. Celui-ci sera utilisé pour la comptabilité générale et comme valeur par défaut de la comptabilité auxiliaire si le compte comptable syndic dédié du tiers n'est pas défini.">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentSyndic"
+                                (uuid)="setSyndicUuid($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les tiers "fournisseurs"
+                                    </span>
+                                    <span class="ml-2" ngbTooltip="Le compte de comptabilité dédié défini sur la fiche Tiers sera utilisé pour la comptabilité auxiliaire uniquement. Celui-ci sera utilisé pour le grand livre et comme valeur par défaut de la comptabilité auxiliaire si le compte de comptabilité fournisseur dédié au tiers n'est pas défini.">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentFournisseur"
+                                (uuid)="setcurrentFournisseur($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les tiers "salariés"
+                                    </span>
+                                    <span class="ml-2" ngbTooltip="Le compte dédié défini sur la fiche utilisateur sera utilisé en tant que compte comptable de tiers (Compte auxiliaire).">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentSalarie"
+                                (uuid)="setcurrentSalarie($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row"> 
+                    <span class="badge badge-secondary my-2 f-14 width"> Produit </span> 
+                </div>
+                <div class="form-group">
+                    <div class="mb-2"> 
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les produits vendus (utilisé si non défini dans la fiche produit)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentProduitVendu"
+                                (uuid)="setcurrentProduitVendu($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les produits vendus et exportés hors de la CEE (utilisé si non définie dans la fiche produit)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentProduitVenduExport"
+                                (uuid)="setcurrentProduitVenduExport($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les produits achetés dans le même pays (utilisé si non défini dans la fiche produit)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentProduitAchete"
+                                (uuid)="setcurrentProduitAchete($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les produits achetés et importés hors de la CEE (utilisé si non défini dans la fiche produit)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentProduitAcheteImport"
+                                (uuid)="setcurrentProduitAcheteImport($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row"> 
+                    <span class="badge badge-secondary my-2 f-14 width"> Service </span> 
+                </div>
+                <div class="form-group">
+                    <div class="mb-2"> 
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les services vendus (utilisé si non défini dans la fiche service)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentServiceVendu"
+                                (uuid)="setcurrentServiceVendu($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les services vendus et exportés hors de la CEE (utilisé si non définie dans la fiche produit)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentServiceVenduExport"
+                                (uuid)="setcurrentServiceVenduExport($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les services achetés dans le pays (utilisé si non défini dans la fiche service)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentServiceAchat"
+                                (uuid)="setcurrentServiceAchat($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les services achetés et importés hors de la CEE (utilisé si non défini dans la fiche service)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentServiceAcheteImport"
+                                (uuid)="setcurrentServiceAcheteImport($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row"> 
+                    <span class="badge badge-secondary my-2 f-14 width"> Autres </span> 
+                </div>
+                <div class="form-group">
+                    <div class="mb-2"> 
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour la TVA sur les achats (utilisé s'il n'est pas défini dans la configuration du dictionnaire TVA)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentTvaSurAchat"
+                                (uuid)="setcurrentTvaSurAchat($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour la TVA sur les ventes (utilisé s'il n'est pas défini dans la configuration du dictionnaire TVA)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentTvaSurVente"
+                                (uuid)="setcurrentTvaSurVente($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour le paiement de la TVA	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentPaiementTva"
+                                (uuid)="setcurrentPaiementTva($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les virements internes	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentVirementInterne"
+                                (uuid)="setcurrentVirementInterne($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable pour la comptabilisation des dons	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentComptabilisationDon"
+                                (uuid)="setcurrentComptabilisationDon($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable à utiliser par défaut pour le capital (module emprunt)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentCapital"
+                                (uuid)="setcurrentCapital($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable à utiliser par défaut pour les intérêts (module emprunt)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentInteret"
+                                (uuid)="setcurrentInteret($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable à utiliser par défaut pour l'assurance (module emprunt)	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentAssurance"
+                                (uuid)="setcurrentAssurance($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                        <hr class="border-1">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="bold">
+                                    <span class="text-box">
+                                        Compte comptable par défaut pour les opérations en attente	
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <app-entity-finder [class]="'Account'" [namespace]="'Accounting'" [groups]="['account']"
+                                [required]="true" [selected]="currentOperation"
+                                (uuid)="setcurrentOperation($event)">
+                                </app-entity-finder>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+                Enregistrer <i class="feather icon-save p-1"></i>
+            </button>
+        </div>
+    </form>
+</div>

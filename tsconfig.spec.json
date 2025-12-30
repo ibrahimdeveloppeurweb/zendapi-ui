@@ -1,0 +1,48 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "paths": {
+      "@dashboard/*": ["./app/dashboard/*"],
+      "@agence/*": ["./app/agence/*"],
+      "@auth/*": ["./app/auth/*"],
+      "@locataire/*": ["./app/agence/locataire/*"],
+      "@validation/*": ["./app/validation/*"],
+      "@proprietaire/*": ["./app/agence/proprietaire/*"],
+      "@parametre/*": ["./app/agence/parametre/*"],
+      "@modal/*": ["./app/agence/modal/*"],
+      "@localisation/*": ["./app/agence/localisation/*"],
+      "@promotion/*": ["./app/agence/promotion/*"],
+      "@travaux/*": ["./app/agence/travaux/*"],
+      "@lotissement/*": ["./app/agence/lotissement/*"],
+      "@tresorerie/*": ["./app/agence/tresorerie/*"],
+      "@demande/*": ["./app/agence/demande/*"],
+      "@utilisateur/*": ["./app/security/utilisateur/*"],
+      "@client/*": ["./app/agence/client/*"],
+      "@extra/*": ["./app/agence/extra/*"],
+      "@reclamation/*": ["./app/agence/reclamation/*"],
+      "@chantier/*": ["./app/agence/chantier/*"],
+      "@prestataire/*": ["./app/agence/prestataire/*"],
+      "@rapport/*": ["./app/agence/rapport/*"],
+      "@model/*": ["./app/model/*"],
+      "@service/*": ["./app/service/*"],
+      "@theme/*": ["./app/theme/*"],
+      "@shared/*": ["./app/theme/shared/*"],
+      "@layout/*": ["./app/theme/layout/*"],
+      "@env/*": ["./environments/*"],
+      "@appRoot/*": ["./app/*"]
+    },
+    "types": [
+      "jasmine"
+    ]
+  },
+  "files": [
+    "src/test.ts",
+    "src/polyfills.ts"
+  ],
+  "include": [
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts"
+, "src/app/service/rdv/rdv.ts"  ]
+}

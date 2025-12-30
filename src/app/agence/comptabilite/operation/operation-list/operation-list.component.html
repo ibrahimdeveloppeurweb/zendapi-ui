@@ -1,0 +1,104 @@
+<div class="row justify-content-center">
+    <!-- FILTRE DE RECHERCHE -->
+    <!-- <div class="width btn-filter-achat">
+        <app-filter class="width"
+            [name]="true"
+            [nameTitle]="nameTitle"
+            [user]="true"
+            [userTitle]="userTitle"
+            [etat]="true"
+            [etatRow]="etatRow"
+            [etatTitle]="etatTitle" [categorie]="true" [categorieRow]="categorieRow" [categorieTitle]="categorieTitle" [dateD]="true" [dateF]="true" [create]="true"
+            [min]="true" [minTitle]="minTitle" [max]="true" [maxTitle]="maxTitle" [ordre]="true" [code]="true" [count]="true" [type]="true" [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+        </app-filter>
+    </div> -->
+
+
+    <div class="width list-journaux">
+        <div  *ngIf="type === 'JOURNAUX'" class="col-md-12">
+            <span class="badge badge-primary mb-4 f-14 width">
+                OPERATIONS
+            </span>
+            <div>
+                <app-card [hidHeader]="true" cardClass="card-datatable" *ngIf="operations && operations.length > 0">
+                    <div class="table-responsive m-0">
+                        <table datatable [dtOptions]="dtOptions" class="table table-striped m-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Pièce (Réference de l'objet source)</th>
+                                <th>Compte comptable</th>
+                                <th>Compte auxiliaire</th>
+                                <th>Libellé opération</th>
+                                <th>Mode de réglement</th>
+                                <th>Débit</th>
+                                <th>Crédit</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of operations">
+                                    <td>
+                                        <span>
+                                            {{ item?.dateOp | date:'dd/MM/yyyy' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            N/A
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-light-dark" *ngIf="item?.creditedAccount">
+                                            {{ item?.creditedAccount?.numero ? item?.creditedAccount?.numero : 'N/A (A définir)' }}
+                                        </span>
+                                        <span class="badge badge-light-dark" *ngIf="item?.debitedAccount">
+                                            {{ item?.debitedAccount?.numero ? item?.debitedAccount?.numero : 'N/A (A définir)' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-light-dark" *ngIf="item?.auxiliaryC">
+                                            {{ item?.auxiliaryC?.numero ? item?.auxiliaryC?.numero : 'N/A (A définir)' }}
+                                        </span>
+                                        <span class="badge badge-light-dark" *ngIf="item?.auxiliaryD">
+                                            {{ item?.auxiliaryD?.numero ? item?.auxiliaryD?.numero : 'N/A (A définir)' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="title-show text-warning">
+                                            {{ item?.libelle }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-light-primary">
+                                            {{ item?.mode ? item?.mode : 'N/A (A définir)' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="title-result-show text-warning" *ngIf="!item?.creditedAmount && item?.debitedAmount">
+                                            {{ item?.debitedAmount | number }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="title-result-show text-warning" *ngIf="item?.creditedAmount && !item?.debitedAmount">
+                                            {{ item?.creditedAmount | number }}
+                                        </span>
+                                    </td>
+                                    <td class="table-action">
+                                      <div class="overlay-edit">
+                                        <button *ngIf="!item.isVentilated" (click)="edit(item)" type="button" class="btn btn-icon btn-primary ml-1">
+                                          <i class="feather icon-edit-2"></i>
+                                        </button>
+                                      </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </app-card>
+
+                <app-no-data *ngIf="operations && operations.length === 0" [title]="'Aucune opération trouvée'"></app-no-data>
+            </div>
+        </div>
+    </div>
+</div>

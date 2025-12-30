@@ -1,0 +1,445 @@
+<div class="row">
+    <div class="col-sm-12">
+      <div class="card email-card">
+        <div class="card-header">
+            <div class="mail-header">
+              <div class="row align-items-center">
+                <div class="col-xl-2 col-md-3">
+                  <a href="javascript:" class="b-brand">
+                    <div class="b-bg">
+                        <i class="fas fa-mailbox"></i> <i class="fas fa-message-sms"></i>
+                    </div>
+                    <span class="b-title text-muted">MAIL / SMS</span>
+                  </a>
+                </div>
+                <div class="col-xl-10 col-md-9">
+                  <div class="input-group mb-0"></div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="mail-body">
+                <div class="row">
+                    <div class="col-xl-3 col-md-3">
+                      <div class="mb-3">
+                        <a [ngClass]="{'active': isMail === 'new'}" (click)="add()" class="btn btn-primary rounded p-2"><i class="fas fa-pen font-size-xxl"></i> Nouveau message</a>
+                      </div>
+                      <ul class="mb-2 nav nav-tab flex-column nav-pills" role="tablist" aria-orientation="vertical">
+                        <li class="nav-item mail-section">
+                          <a class="nav-link text-left" [ngClass]="{'active': isMail === 'sent' || isMail === 'showEnvoi' }" (click)="onChange('MAIL', 'sent', 'ENVOYE', 'ONCHANGING')" data-toggle="pill" href="javascript:" role="tab">
+                            <span><i class="feather icon-navigation"></i> Messages envoyés</span><span *ngIf="isMail === 'sent'">&nbsp;&nbsp;<span *ngIf="isSubMail === 'primary'">Mail {{sends?.length}}</span><span *ngIf="isSubMail === 'secondary'">Sms {{sends?.length}}</span></span>
+                          </a>
+                        </li>
+                        <li class="nav-item mail-section">
+                          <a class="nav-link text-left" [ngClass]="{'active': isMail === 'waiting' || isMail === 'showAttente'}" (click)="onChange('TOUT', 'waiting', 'ATTENTE', 'ONCHANGING')" data-toggle="pill" href="javascript:" role="tab">
+                            <span><i class="fas fa-clock"></i> En attente</span>&nbsp;&nbsp;<span *ngIf="isMail === 'waiting'"> {{sends?.length}}</span>
+                          </a>
+                        </li>
+                        <li class="nav-item mail-section">
+                          <a class="nav-link text-left" [ngClass]="{'active': isMail === 'trash' || isMail === 'showCorbeil'}" (click)="onChange('TOUT', 'trash', 'CORBEILLE', 'ONCHANGING')" data-toggle="pill" href="javascript:" role="tab">
+                            <span><i class="feather icon-trash-2"></i> Corbeille</span>&nbsp;&nbsp;<span *ngIf="isMail === 'trash'"> {{sends?.length}}</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="col-xl-9 col-md-9 inbox-right content-body">
+                      <div class="row">
+                        <div class="width alert" [ngClass]="{
+                          'alert-success' : setting?.nbrSms >= 1000 && setting?.nbrSms >= 701,
+                          'alert-primary' : setting?.nbrSms <= 700 && setting?.nbrSms >= 401,
+                          'alert-warning' : setting?.nbrSms <= 400 && setting?.nbrSms >= 101,
+                          'alert-danger' : setting?.nbrSms <= 100
+                          }" role="alert">
+                          <span *ngIf="setting?.nbrSms >= 1000 && setting?.nbrSms >= 701">Vous disposez de <span class="alert-link"> {{ setting?.nbrSms }}</span> SMS.</span>
+                          <span *ngIf="setting?.nbrSms <= 700 && setting?.nbrSms >= 401">Vous disposez encore de <span class="alert-link"> {{ setting?.nbrSms }}</span> SMS.</span>
+                          <span *ngIf="setting?.nbrSms <= 400 && setting?.nbrSms >= 101">Vous disposez maintenant de <span class="alert-link"> {{ setting?.nbrSms }}</span> SMS. Pensez déjà à vous recharger !</span>
+                          <span *ngIf="setting?.nbrSms <= 100 && setting?.nbrSms > 0">Attention ! Vous disposez maintenant de <span class="alert-link"> {{ setting?.nbrSms }}</span> SMS. Veuillez vous approcher de votre fournisseur afin de vous créditer !</span>
+                          <span *ngIf="setting?.nbrSms === 0">Attention ! Vous disposez d'aucun SMS. Veuillez vous approcher de votre fournisseur afin de vous créditer !</span>
+                        </div>
+                      </div>
+                      <div class="tab-content p-0">
+                          <!-- BLOC D'ENVOI SMS OU MAIL -->
+                          <div class="tab-pane fade" [ngClass]="{'show active': isMail === 'new'}" role="tabpanel">
+                              <div class="card card-box p-3">
+                                  <div class="tab-content" id="v-pills-tabContent">
+                                      <div class="mail-body-content">
+                                          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                                              <div class="form-material">
+                                                  <div class="alert-primary mb-1">
+                                                      <div class="col-md-12 mt-2 text-center p-2">
+                                                      <h5 class="text-black">Nombre <span *ngIf="f.type.value === 'MAIL'">d'adresse(s) e-mail</span><span *ngIf="f.type.value === 'SMS'">de numéro de téléphone</span> récupérée(s) : {{nbMail}}</h5>
+                                                      </div>
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <div class="row">
+                                                          <div class="col-md-6">
+                                                              <label for="type">Type d'envoi<span class="asterix mr-2">*</span></label>
+                                                              <select (change)="onType()" class="form-control" id="type" formControlName="type"
+                                                                  [ngClass]="{ 'is-invalid': submit && f.type.errors,'is-valid': submit && f.type.valid}">
+                                                                  <option *ngFor="let item of typeRow" [value]="item?.value">{{item?.label}}</option>
+                                                              </select>
+                                                          </div>
+                                                          <div class="col-md-6">
+                                                              <label for="personalise">Destinataire<span class="asterix mr-2">*</span></label>
+                                                              <select (change)="onChangePersonalite($event.target.value)" class="form-control"  placeholder="" formControlName="personalise" ID="personalise"  [ngClass]="{
+                                                                  'is-invalid': submit && f.personalise.errors, 'is-valid': submit && f.personalise.valid }">
+                                                                  <option *ngFor="let item of personalites" [value]="item.value" [disabled]="item.disabled"> {{item?.label}}</option>
+                                                              </select>
+                                                          </div>
+                                                          <div *ngIf="f.personalise.value === 'PROPRIETAIRE' || f.personalise.value === 'LOCATAIRE' || f.personalise.value === 'CLIENT' || f.personalise.value === 'PROSPECT'" class="col-md-{{f.categorie.value === 'TOUT_PROPRIETAIRE' || f.categorie.value === 'TOUT_LOCATAIRE'|| f.categorie.value === 'TOUT_PROSPECT' || f.categorie.value === 'IMPAYE' || f.categorie.value === 'TOUT_CLIENT' || f.categorie.value === null ? '12' : '6'}}">
+                                                              <label for="categorie">Catégorie <span class="asterix">*</span></label>
+                                                              <select (ngModelChange)="onChangeCategorie($event)" class="form-control"  placeholder="" formControlName="categorie" id="categorie"  [ngClass]="{
+                                                                  'is-invalid': submit && f.categorie.errors, 'is-valid': submit && f.categorie.valid }">
+                                                                  <option *ngFor="let item of typageRow" [value]="item.value" [disabled]="item.disabled"> {{item?.label}}</option>
+                                                              </select>
+                                                          </div>
+                                                          <div *ngIf="visible === 'DEFINIR_PROPRIETAIRE' || visible === 'DEFINIR_LOCATIAIRE' || visible === 'DEFINIR_CLIENT' || visible === 'DEFINIR_PROSPECT'" class="col-md-6">
+                                                              <label for="email">{{textePersonne}} <span class="asterix">*</span></label>
+                                                              <ng-select [multiple]="true" (ngModelChange)="definirPerosonne($event)" class="form-control" formControlName="email" [ngClass]="{
+                                                                  'is-invalid': submit && f.email.errors, 'is-valid': submit && f.categorie.valid }">
+                                                                  <ng-option *ngFor="let item of categorieRow" [value]="f.type.value === 'MAIL' ? item.email : item.telephone" >{{item?.nom}} {{f.type.value === 'MAIL' ? item.email ? '' : ' - (Pas de email)' : item?.telephone ? '' : ' - (Pas de numéro)'}}</ng-option>
+                                                              </ng-select>
+                                                          </div>
+                                                          <div *ngIf="visible === 'LOCATIAIRE_PROPRIETAIRE' || visible === 'TOUT_LOTISSEMENT'" class="col-md-6">
+                                                              <label for="email">{{textePersonne}} <span class="asterix">*</span></label>
+                                                              <select (ngModelChange)="onChangeTiers($event, visible)" class="form-control" formControlName="email"[ngClass]="{
+                                                                  'is-invalid': submit && f.email.errors, 'is-valid': submit && f.email.valid }">
+                                                                  <option *ngFor="let item of categorieRow" [value]="item.uuid" >{{item?.nom}}</option>
+                                                              </select>
+                                                          </div>
+                                                          <div *ngIf="visible === 'TOUT_PROMOTION'" class="col-md-6">
+                                                              <label for="email">{{textePersonne}} <span class="asterix">*</span></label>
+                                                              <select (change)="onChangeTiers($event.target.value, visible)" class="form-control" formControlName="email"[ngClass]="{
+                                                                  'is-invalid': submit && f.email.errors, 'is-valid': submit && f.email.valid }">
+                                                                  <option *ngFor="let item of categorieRow" [value]="item.uuid" >{{item?.libelle}}</option>
+                                                              </select>
+                                                          </div>
+                                                          <div *ngIf="visible === 'ETAT_PROSPECT'" class="col-md-6">
+                                                              <label for="email">{{textePersonne}} <span class="asterix">*</span></label>
+                                                              <select (change)="onChangeTiers($event.target.value, visible)" class="form-control" formControlName="email"[ngClass]="{
+                                                                  'is-invalid': submit && f.email.errors, 'is-valid': submit && f.email.valid }">
+                                                                  <option *ngFor="let item of categorieRow" [value]="item.uuid" >{{item?.libelle}}</option>
+                                                              </select>
+                                                          </div>
+                                                          <div *ngIf="visible === 'LOCATIAIRE_IMPAYE'" class="col-md-6">
+                                                              <label for="email">{{textePersonne}} <span class="asterix">*</span></label>
+                                                              <select (change)="onChangeTiers($event.target.value, visible)" class="form-control" formControlName="email"[ngClass]="{
+                                                                  'is-invalid': submit && f.email.errors, 'is-valid': submit && f.email.valid }">
+                                                                  <option *ngFor="let item of categorieRow" [value]="item.value" >{{item?.label}}</option>
+                                                              </select>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                                  <div *ngIf="f.personalise.value === 'DEFINIR'" class="form-group">
+                                                      <div class="alert-warning mb-1">
+                                                          <div class="col-md-12 mt-2 text-center p-2">
+                                                            <h6 class="text-black">
+                                                              Afin de saisir plusieurs
+                                                              <span *ngIf="f.type.value === 'MAIL'">adresses e-mail</span>
+                                                              <span *ngIf="f.type.value === 'SMS'">numéros de téléphone</span>,
+                                                              veuillez les séparer en utilisant une virgule ou un espace blanc.
+                                                            </h6>
+                                                          </div>
+                                                      </div>
+                                                      <div class="row">
+                                                          <div class="col-md-12">
+                                                              <div class="form-group">
+                                                                  <label for="destinataire">{{f.type.value === 'MAIL' ? 'À' : 'Numéro'}} <span class="asterix mr-2">*</span></label>
+                                                                  <input (change)="onDestinataire($event)" type="email" class="form-control" formControlName="destinataire" id="destinataire"
+                                                                  [placeholder]="f.type.value === 'MAIL' ? 'Email du ou des destinataire(s)' : 'Numéro du ou des destinataire(s)'"
+                                                                  [ngClass]="{ 'is-invalid': submit && f.destinataire.errors, 'is-valid': submit && f.destinataire.valid }">
+                                                                  <div class="invalid-feedback" *ngIf="submit && f.destinataire.errors">
+                                                                      <div *ngIf="f.destinataire.errors.required">{{required.novide}}</div>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <label for="objet">Objet</label>
+                                                      <input type="text" class="form-control" formControlName="objet" id="objet" placeholder="Objet"
+                                                      [ngClass]="{ 'is-invalid': submit && f.objet.errors, 'is-valid': submit && f.objet.valid }">
+                                                      <div class="invalid-feedback" *ngIf="submit && f.objet.errors">
+                                                          <div *ngIf="f.objet.errors.required">{{required.novide}}</div>
+                                                      </div>
+                                                  </div>
+                                                  <app-tinymce *ngIf="f.type.value === 'MAIL'" formControlName="content" id="content" #tinymce='tinymce' aria-placeholder="Contenu du message"></app-tinymce>
+
+                                                  <!-- component.html -->
+                                                  <div *ngIf="f.type.value === 'SMS'" class="row m-2">
+                                                    <div class="width alert" [ngClass]="{
+                                                      'alert-primary' : wordCount <= maxSms,
+                                                      'alert-warning' : wordCount > maxSms
+                                                      }" role="alert">
+                                                      Nombre de caractères : <span class="alert-link"> {{ wordCount }}</span>. Sachant qu'un SMS peut contenir au maximum <span class="alert-link">{{ maxSms }} caractères</span>.
+                                                    </div>
+                                                  </div>
+
+                                                  <textarea *ngIf="f.type.value === 'SMS'" (input)="countWords()" class="form-control" formControlName="content" id="content" placeholder="Contenu du message" rows="10"></textarea>
+                                                  <div class="float-right mt-3">
+                                                      <button [disabled]="form.invalid" type="submit" class="btn waves-effect waves-light btn-primary">Envoyer <i class="ion-md-send"></i></button>
+                                                  </div>
+                                              </div>
+                                          </form>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- BLOC ATTENTE DE SMS ET MAIL  -->
+                          <div class="tab-pane fade" [ngClass]="{'show active': isMail === 'waiting'}" role="tabpanel">
+                              <div class="card card-box p-3">
+                              <!-- <p class="mb-0"> -->
+                                  <ul class="nav nav-pills nav-fill mb-0" role="tablist">
+                                      <li class="nav-item">
+                                          <a class="nav-link" [ngClass]="{'active': isSubMail === 'primary'}" (click)="onChange('TOUT', 'primary', 'ATTENTE', 'ONCHANGE')" data-toggle="pill" href="javascript:" role="tab" aria-selected="true">
+                                              <span><i class="fas fa-clock"></i>En attente</span>
+                                          </a>
+                                      </li>
+                                  </ul>
+                                  <div class="tab-pane fade show active" id="pills-starred" role="tabpanel">
+                                      <div class="mail-body-content table-responsive">
+
+                                          <div *ngIf="sends && sends.length === 0">
+                                              <div class="p-3">
+                                                  <h5 class="d-flex justify-content-center align-items-center mt-2 bold">Aucun message en attente.</h5>
+                                                  <hr class="my-1">
+                                              </div>
+                                          </div>
+                                          <table *ngIf="sends && sends.length > 0" class="table table-hover table-striped text-nowrap m-0 table-with-100-percent">
+                                              <tbody>
+                                                  <tr *ngFor="let send of sends" class="unread">
+                                                      <td>
+                                                          <div class="check-star">
+                                                              <div class="form-group d-inline">
+                                                                  <div class="checkbox checkbox-primary checkbox-fill d-inline">
+                                                                      <input type="checkbox" name="checkbox-s-in-49">
+                                                                      <label for="checkbox-s-infill-49" class="cr"></label>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </td>
+                                                      <td >
+                                                          <span *ngIf="send?.personalise === 'PROPRIETAIRE'">Propriétaire(s)</span>
+                                                          <span *ngIf="send?.personalise === 'LOCATAIRE'">Locataire(s)</span>
+                                                          <span *ngIf="send?.personalise === 'CLIENT'">Client(s)</span>
+                                                          <span *ngIf="send?.personalise === 'PROSPECT'">Prospect(s)</span>
+                                                          <span *ngIf="send?.personalise === 'DEFINIR'"><span *ngIf="send?.type === 'MAIL'">Mail(s) définir</span><span *ngIf="send?.type === 'SMS'">Numéro(s) définir</span></span>
+                                                          &nbsp;<span class="text-black">{{send.destinataire.length}}</span>
+                                                      </td>                                                        <td [innerHTML]=onSubStringLongName(send?.content) style="width: 30%;"></td>
+                                                      <td class="email-time">{{send?.createdAt| date: "d MMMM y 'à' H:mm " : '' : 'fr-FR'}}</td>
+                                                      <td class="btn waves-light btn-icon btn-rounded btn-outline-secondary" tooltip="Détail de l'envoi" (click)="onShow(send, 'ATTENTE')">
+                                                          <i class="fas fa-eye"></i>
+                                                      </td>
+                                                      <td class="btn waves-light btn-icon btn-rounded btn-outline-secondary" tooltip="Renvoyer" (click)="onSend(send)">
+                                                          <i class="feather icon-navigation"></i>
+                                                      </td>
+                                                      <td class="btn waves-light btn-icon btn-rounded btn-outline-secondary" tooltip="Placer dans la corbeille" (click)="onCorbeille(send, 'CORBEILLE')">
+                                                          <i class="feather icon-trash-2"></i>
+                                                      </td>
+                                                  </tr>
+                                              </tbody>
+                                          </table>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- BLOC SMS ET MAIL ENVOYES  -->
+                          <div class="tab-pane fade" [ngClass]="{'show active': isMail === 'sent'}" role="tabpanel">
+                              <div class="card card-box">
+                                  <form [formGroup]="formFiltre" (ngSubmit)="onFilter()">
+                                      <div class="content-body p-2">
+                                        <div class="col-md-12 form-group">
+                                            <div class="row">
+                                              <div class="col-md-3 group-principal">
+                                                  <div class="label-group">
+                                                    <label for="type" class="label-filter">Type </label>
+                                                  </div>
+                                                  <select formControlName="type" class="form-control"
+                                                      [ngClass]="{ 'is-invalid': submit && g.type.errors,'is-valid': submit && g.type.valid}">
+                                                    <option *ngFor="let item of typeRow" [value]="item.value">{{item?.label}}</option>
+                                                  </select>
+                                                </div>
+                                              <div class="col-md-3 group-principal">
+                                                <div class="label-group">
+                                                  <label for="personaliseFiltre" class="label-filter">Personnalisation </label>
+                                                </div>
+                                                <select formControlName="personaliseFiltre" class="form-control"
+                                                  [ngClass]="{ 'is-invalid': submit && g.personaliseFiltre.errors,'is-valid': submit && g.personaliseFiltre.valid}">
+                                                  <option *ngFor="let item of filtres" [value]="item.value">{{item?.label}}</option>
+                                                </select>
+                                              </div>
+                                              <div class="col-md-3 group-principal">
+                                                <div class="label-group">
+                                                  <label for="adresse" class="label-filter">Adresse mail / Numéro</label>
+                                                </div>
+                                                <input type="text" class="form-control" id="adresse" formControlName="adresse" placeholder="Adresse Mail / Numéro " [ngClass]="{ 'is-invalid': submit && g.adresse.errors, 'is-valid': submit && g.adresse.valid }">
+                                              </div>
+                                              <div class="col-md-3 group-principal">
+                                                  <div class="label-group">
+                                                    <label for="mois" class="label-filter">Date </label>
+                                                  </div>
+                                                  <input type="date" class="form-control" id="mois" formControlName="mois" placeholder="mois" [ngClass]="{ 'is-invalid': submit && g.mois.errors, 'is-valid': submit && g.mois.valid }">
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-row-reverse">
+                                          <button type="submit" class="btn btn-primary text-white m-1">
+                                            Filtrer <i class="pe-7s-filter"></i>
+                                          </button>
+                                        </div>
+                                      </div>
+                                  </form>
+                              </div>
+                              <div class="card card-box p-2">
+                                  <div class="mail-body-content table-responsive">
+                                      <ul class="nav nav-pills nav-fill mb-0" role="tablist">
+                                          <li class="nav-item">
+                                              <a class="nav-link" [ngClass]="{'active': isSubMail === 'primary'}" (click)="onChange('MAIL', 'primary', 'ENVOYE', 'ONCHANGE')" id="pills-primary-tab" data-toggle="pill" href="javascript:" role="tab" aria-controls="pills-primary" aria-selected="true">
+                                              <span><i class="feather icon-navigation"></i> Mail envoyés</span>
+                                              </a>
+                                          </li>
+                                          <li class="nav-item">
+                                              <a class="nav-link" [ngClass]="{'active': isSubMail === 'secondary'}" (click)="onChange('SMS', 'secondary', 'ENVOYE', 'ONCHANGE')" id="pills-primary-tab" data-toggle="pill" href="javascript:" role="tab" aria-controls="pills-primary" aria-selected="true">
+                                              <span><i class="feather icon-navigation"></i> SMS envoyés</span>
+                                              </a>
+                                          </li>
+                                      </ul>
+                                      <div *ngIf="sends && sends.length === 0">
+                                          <div class="p-3">
+                                              <h5 *ngIf="isSubMail === 'primary'" class="d-flex justify-content-center align-items-center mt-2 bold">Aucun mail envoyé pour l'instant.</h5>
+                                              <h5 *ngIf="isSubMail === 'secondary'" class="d-flex justify-content-center align-items-center mt-2 bold">Aucun sms envoyé pour l'instant.</h5>
+                                          </div>
+                                      </div>
+                                      <table *ngIf="sends && sends.length > 0" class="table table-hover table-striped text-nowrap m-0 table-with-100-percent">
+                                          <tbody>
+                                              <tr *ngFor="let send of sends" class="unread">
+                                                  <td>
+                                                      <div class="check-star">
+                                                          <div class="form-group d-inline">
+                                                              <div class="checkbox checkbox-primary checkbox-fill d-inline">
+                                                                  <input type="checkbox" name="checkbox-s-in-49">
+                                                                  <label for="checkbox-s-infill-49" class="cr"></label>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </td>
+                                                  <td >
+                                                      <span *ngIf="send?.personalise === 'PROPRIETAIRE'">Propriétaire(s)</span>
+                                                      <span *ngIf="send?.personalise === 'LOCATAIRE'">Locataire(s)</span>
+                                                      <span *ngIf="send?.personalise === 'CLIENT'">Client(s)</span>
+                                                      <span *ngIf="send?.personalise === 'DEFINIR'"><span *ngIf="send?.type === 'MAIL'">Mail(s) définir</span><span *ngIf="send?.type === 'SMS'">Numéro(s) définir</span></span>
+                                                      &nbsp;<span class="text-black">{{send.destinataire.length}}</span>
+                                                  </td>
+                                                  <td [innerHTML]=onSubStringLongName(send?.content) style="width: 30%;"></td>
+                                                  <td class="email-time">{{send?.createdAt| date: "d MMMM y 'à' H:mm " : '' : 'fr-FR'}}</td>
+                                                  <td class="btn waves-light btn-icon btn-rounded btn-outline-secondary" tooltip="Détail de l'envoi" (click)="onShow(send, 'ENVOI')">
+                                                      <i class="fas fa-eye"></i>
+                                                  </td>
+                                                  <td class="btn waves-light btn-icon btn-rounded btn-outline-secondary" tooltip="Placer dans la corbeille" (click)="onCorbeille(send, 'CORBEILLE')">
+                                                      <i class="feather icon-trash-2"></i>
+                                                  </td>
+                                              </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- BLOC CORBEILLE  -->
+                          <div class="tab-pane fade" [ngClass]="{'show active': isMail === 'trash'}" role="tabpanel">
+                              <div class="card card-box p-3">
+                                  <div class="mail-body-content table-responsive">
+                                      <ul class="nav nav-pills nav-fill mb-0" id="pills-tab" role="tablist">
+                                      <li class="nav-item">
+                                          <a class="nav-link" [ngClass]="{'active': isSubMail === 'primary'}" (click)="onChange('TOUT', 'primary', 'CORBEILLE', 'ONCHANGE')" id="pills-primary-tab" data-toggle="pill" href="javascript:" role="tab" aria-controls="pills-primary" aria-selected="true">
+                                          <span><i class="feather icon-trash-2"></i> Corbeille</span>
+                                          </a>
+                                      </li>
+                                      </ul>
+                                      <div *ngIf="sends && sends.length === 0">
+                                          <div class="p-3">
+                                              <h5 class="d-flex justify-content-center align-items-center mt-2 bold">Aucun message dans la corbeille.</h5>
+                                              <hr class="my-1">
+                                          </div>
+                                      </div>
+                                      <table *ngIf="sends && sends.length > 0" class="table table-hover table-striped text-nowrap m-0 table-with-100-percent">
+                                          <tbody>
+                                              <tr *ngFor="let send of sends" class="unread">
+                                                  <td>
+                                                      <div class="check-star">
+                                                          <div class="form-group d-inline">
+                                                              <div class="checkbox checkbox-primary checkbox-fill d-inline">
+                                                                  <input type="checkbox" name="checkbox-s-in-49">
+                                                                  <label for="checkbox-s-infill-49" class="cr"></label>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </td>
+                                                  <td >
+                                                      <span *ngIf="send?.personalise === 'PROPRIETAIRE'">Propriétaire(s)</span>
+                                                      <span *ngIf="send?.personalise === 'LOCATAIRE'">Locataire(s)</span>
+                                                      <span *ngIf="send?.personalise === 'CLIENT'">Client(s)</span>
+                                                      <span *ngIf="send?.personalise === 'DEFINIR'"><span *ngIf="send?.type === 'MAIL'">Mail(s) définir</span><span *ngIf="send?.type === 'SMS'">Numéro(s) définir</span></span>
+                                                      &nbsp;<span class="text-black">{{send.destinataire.length}}</span>
+                                                  </td>                                                    <td [innerHTML]=onSubStringLongName(send?.content) style="width: 30%;"></td>
+                                                  <td class="email-time">{{send?.createdAt| date: "d MMMM y 'à' H:mm " : '' : 'fr-FR'}}</td>
+                                                  <td class="btn waves-light btn-icon btn-rounded btn-outline-secondary" tooltip="Détail de l'envoi" (click)="onShow(send, 'CORBEIL')">
+                                                      <i class="fas fa-eye"></i>
+                                                  </td>
+                                                  <td class="btn waves-light btn-icon btn-rounded btn-outline-secondary" tooltip="Restaurer" (click)="onCorbeille(send, 'RESTAURER')">
+                                                      <i class="fas fa-recycle"></i>
+                                                  </td>
+                                                  <td class="btn waves-light btn-icon btn-rounded btn-outline-secondary" tooltip="Supprimer définitivement" (click)="delete(send)">
+                                                      <i class="feather icon-trash-2"></i>
+                                                  </td>
+                                              </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </div>
+                          </div>
+                          <!--BLOC DETAIL DU MAIL ET SMS-->
+                          <div class="tab-pane fade" [ngClass]="{'show active': isMail === 'showEnvoi' || isMail === 'showCorbeil' || isMail === 'showAttente'}" role="tabpanel">
+                              <div class="card card-box p-3">
+                                  <div class="m-2 border-1 rounded m-1 p-1">
+                                      <h5>Détail du <span>{{dataShow?.type === 'MAIL' ? 'mail' : 'sms'}} : </span>&nbsp;<span>{{dataShow?.code}}</span></h5>
+                                      <div class="{{dataShow?.etat === 'ENVOYE' ? 'alert-success' : dataShow?.etat === 'ATTENTE' ? 'alert-warning' : dataShow?.etat === 'CORBEILLE' ? 'alert-danger' : 'alert-secondary'}} mb-1">
+                                          <div class="col-md-12 mt-2 text-center p-2">
+                                              <span>
+                                                  <h5 class="text-{{dataShow?.etat === 'ENVOYE' ? 'success' : dataShow?.etat === 'ATTENTE' ? 'warning' : dataShow?.etat === 'CORBEILLE' ? 'danger' : 'secondary'}}">{{dataShow?.etat === 'ENVOYE' ? 'Envoyé' : dataShow?.etat === 'ATTENTE' ? 'En attente' : dataShow?.etat === 'CORBEILLE' ? 'En attente de suppression' : 'Non défini'}}</h5>
+                                              </span>
+                                          </div>
+                                      </div>
+                                      <hr class="my-1">
+                                      <div class="alert-white mb-1">
+                                          <div class="col-md-12 mt-2 text-center p-2">
+                                          <h5 class="text-black">Type : {{dataShow?.type === 'MAIL' ? 'Mail' : 'Sms'}}, Date d'envoi : {{dataShow?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}</h5>
+                                          </div>
+                                      </div>
+                                      <hr class="my-1">
+                                      <div>
+                                          <h4>Destinataire(s)</h4>
+                                      </div>
+                                      <hr class="my-1">
+                                      <div class="alert-secondary mb-1">
+                                          <div class="col-md-12 mt-2 text-center p-2">
+                                              <h5 class="text-black">{{dataShow?.destinataire}}</h5>
+                                          </div>
+                                      </div>
+                                      <hr class="my-1">
+                                      <h6 *ngIf="dataShow?.type === 'MAIL'" class="text-center">Objet : {{dataShow?.objet}}</h6>
+                                      <hr class="my-1">
+                                      <h5>Contenu du message : </h5>
+                                        <hr class="my-1">
+                                      <div [innerHTML]=dataShow?.content></div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>

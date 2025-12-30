@@ -1,0 +1,131 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+      <div class="col-md-12">
+          <div class="form-group">
+              <div class="row mb-2">
+                  <div class="col-md-12">
+                      <div class="position-relative form-group">
+                          <label for="type">Comment voulez-vous ajouter les données ? <span class="asterix">*</span></label>
+                          <select class="form-control" id="type" formControlName="type" (change)="onChangeType()"
+                              [ngClass]="{'is-invalid': submit && f.type.errors,'is-valid': submit && f.type.valid}">
+                              <option [value]="null">Selectionner</option>
+                              <option [value]="'MANUEL'">Entrer les coordonnées depuis notre formulaire </option>
+                              <option [value]="'DESSINER'">Effectuer le dessins sur la maps pour recuperer les coordonnées</option>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                              <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <span class="badge badge-success my-2 f-14 width"> Tableau de coordonnées </span>
+              </div>
+              <div *ngIf="f.type.value === 'IMPORT'">
+                  <div class="d-flex justify-content-center align-items-center">
+                      <div class="text-center">
+                          <div style="display: flex;">
+                              <label>
+                              <input type="file" id="upload-image-one" name="file" (change)="onFileChangeOne($event)">
+                              <div style="padding:5px 10px;background: #4680ff;border:none;color:white;margin-top:10px;">
+                                  Veuillez joindre un fichier excel (.xls)<i class="fas fa-plus"></i>
+                              </div>
+                              </label>
+                          </div>
+                      </div>
+                      <div class="text-center ml-1">
+                          <button (click)="onModel()" type="button" class="btn btn-info text-left">Model <i class="fas fa-file"></i> </button>
+                      </div>
+                  </div>
+              </div>
+              <div *ngIf="f.type.value === 'MANUEL'">
+                  <div class="row mb-2">
+                      <div class="col-md-8">
+                        <div class="position-relative form-group">
+                            <label for="entity">{{ label }} <span class="asterix">*</span></label>
+                            <select class="form-control" id="entity" formControlName="entity" (change)="onLoadData($event.target.value)"
+                                [ngClass]="{'is-invalid': submit && f.entity.errors,'is-valid': submit && f.entity.valid}">
+                                <option [value]="null">Selectionner</option>
+                                <option *ngFor="let item of arrays" [value]="item?.uuid"> {{ item?.searchableTitle }} </option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.entity.errors">
+                                <div *ngIf="f.entity.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4'">
+                          <label for="type">Combien de coté a votre surface</label>
+                          <input type="number" (change)="onChangeNumber()" class="form-control" formControlName="nb" id="nb" placeholder="Nombre de coté">
+                      </div>
+                  </div>
+              </div>
+              <div *ngIf="f.type.value === 'IMPORT' || f.type.value === 'MANUEL'" formArrayName="coordonnees">
+                  <ng-container *ngIf="coordonnees.length > 0">
+                      <div class="fom-group">
+                        <div class="row">
+                          <div class="col-md-2">
+                            <label for="type">N° <span class="asterix">*</span></label>
+                          </div>
+                          <div class="col-md-5">
+                            <label for="ilot">Latitude</label>
+                          </div>
+                          <div class="col-md-5">
+                            <label for="lot">Longitude <span class="asterix">*</span></label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group" *ngFor="let item of coordonnees.controls; let i=index" [formGroupName]="i">
+                        <div class="row">
+                          <div class="col-md-2">
+                            <input type="text" formControlName="point" class="form-control pl-2 font-weight-bold" id="point{{i}}"
+                              [ngClass]="{
+                                'is-invalid': submit && item.get('point').errors,
+                                'is-valid': submit && item.get('point').valid
+                              }" placeholder="N°">
+                          </div>
+                          <div class="col-md-5">
+                            <input type="number" formControlName="lat" class="form-control" id="lat{{i}}"
+                              [ngClass]="{
+                                'is-invalid': submit && item.get('lat').errors,
+                                'is-valid': submit && item.get('lat').valid
+                              }" placeholder="lat">
+                              <div class="invalid-feedback" *ngIf="submit && item.get('lat').errors">
+                                <div *ngIf="item.get('lat').errors.pattern">{{required.nolettre}}</div>
+                              </div>
+                          </div>
+                          <div class="col-md-5">
+                            <input type="number" formControlName="lng" class="form-control" id="lng{{i}}"
+                              [ngClass]="{
+                                'is-invalid': submit && item.get('lng').errors,
+                                'is-valid': submit && item.get('lng').valid
+                              }" placeholder="lng">
+                              <div class="invalid-feedback" *ngIf="submit && item.get('lng').errors">
+                                <div *ngIf="item.get('lng').errors.pattern">{{required.nolettre}}</div>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                  </ng-container>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+          Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="onReset()" type="button" class="btn btn-warning">
+          Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+          Enregistrer <i class="feather icon-save"></i>
+      </button>
+  </div>
+</form>

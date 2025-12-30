@@ -1,0 +1,155 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR LE DOSSIER -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width"> DETAILS DU DOSSIER </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="customer">Client <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Customer'" [groups]="['customer']" [required]="true"
+              (uuid)="setCustomerUuid($event)" [selected]="customerSelected" [disabled]="edit">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-3">
+            <label for="folder">Dossier <span class="asterix">*</span></label>
+            <select *ngIf="!edit" class="form-control" id="folder" formControlName="folder" (change)="setFolder($event.target.value)"
+              [ngClass]="{ 'is-invalid': submit && f.folder.errors, 'is-valid': submit && f.folder.valid }"
+              [attr.disabled]="edit || !f.customer.value ? true : null">
+              <option [value]="null" selected>Selectionnez un dossier</option>
+              <option *ngFor="let item of folders" [value]="item?.uuid">{{item?.libelle}}</option>
+            </select>
+            <input *ngIf="edit" type="text" class="form-control p-2 text-uppercase font-weight-bold"
+             [value]="folder?.libelle" readonly>
+            <div class="invalid-feedback" *ngIf="submit && f.folder.errors">
+              <div *ngIf="f.folder.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="date">Date <span class="asterix">*</span></label>
+            <input type="date" formControlName="date" class="form-control" id="date"
+              [ngClass]="{
+                'is-invalid': submit && f.date.errors,
+                'is-valid': submit && f.date.valid
+              }">
+            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+              <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label>Pénalité à deduire (%)</label>
+            <input (change)="onCalcul()" type="number" formControlName="penalite" class="form-control" id="penalite"
+              [ngClass]="{
+                'is-invalid': submit && f.penalite.errors,
+                'is-valid': submit && f.penalite.valid
+              }">
+            <div class="invalid-feedback" *ngIf="submit && f.penalite.errors">
+              <div *ngIf="f.penalite.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="f.folder.value" class="row">
+        <span class="badge badge-secondary my-2 f-14 width formBadge">
+          FACTURE DE RESILIATION
+        </span>
+      </div>
+      <div *ngIf="f.folder.value && folder" class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Désignation</th>
+                  <th>Payé</th>
+                  <th>Impayé</th>
+                  <th>total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{folder?.invoice?.libelle }}</td>
+                  <td class="text-danger">{{folder?.invoice?.paye | number}} {{global.device}} </td>
+                  <td>{{folder?.invoice?.impaye | number}} {{global.device}} </td>
+                  <td>{{folder?.invoice?.montant | number}} {{global.device}} </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label>MONTANT DES BIENS</label>
+          <input type="text" class="form-control p-2 font-weight-bold py-2 font-weight-bold text-danger text-right fs-1"
+           [value]="folder?.montantBien|number" readonly>
+        </div>
+        <div class="col-md-4">
+          <label>{{ f.signe.value === 'POSITIF' ? 'MONTANT A RENDRE AU CLIENT' : 'MONTANT A REMBOURSER PAR LE CLIENT'}}</label>
+          <input type="text" class="form-control font-weight-bold py-2 font-weight-bold text-danger text-right fs-1"
+           [value]="f.montantRendre.value|number" readonly>
+        </div>
+        <div class="col-md-4">
+          <label>MONTANT PERCU PAR L'AGENCE</label>
+          <input type="text" class="form-control p-2 font-weight-bold py-2 font-weight-bold text-danger text-right fs-1"
+           [value]="f.montantDeduire.value|number" readonly>
+        </div>
+        <div class="col-md-12 mt-2">
+          <!-- TOTAL TTC A RENDRE -->
+          <div class="row">
+            <div class="col-sm-12">
+              <table class="table table-responsive invoice-table invoice-total">
+                <tbody>
+                <tr>
+                  <th>TOTAL HT : </th>
+                  <td>{{ f.montantHt.value | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL REMISE : </th>
+                  <td>{{ f.montantRemise.value | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL TVA : </th>
+                  <td>{{ f.montantTva.value | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL TTC : </th>
+                  <td>{{ f.montantTtc.value | number }}</td>
+                </tr>
+                <tr class="text-info">
+                  <td>
+                    <hr/>
+                    <h2 class="text-primary m-r-10">TOTAL :</h2>
+                  </td>
+                  <td>
+                    <hr/>
+                    <h2 class="text-success">{{ f.montantRendre.value | number }}</h2>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button [disabled]="edit" (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

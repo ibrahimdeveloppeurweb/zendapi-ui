@@ -1,0 +1,254 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="width btn-filter-promotion">
+    <ng-template [ngxPermissionsOnly]="['PROMOTION:LIST', 'HOME:LIST', 'HOME:TYPE:LIST']">
+      <app-filter class="width"
+        [name]="true"
+        [nameTitle]="nameTitle"
+        [user]="true"
+        [userTitle]="userTitle"
+        [bien]="ilot"
+        [bienTitle]="ilotTitle"
+        [autre]="lot"
+        [autreTitle]="lotTitle"
+        [etat]="true"
+        [etatRow]="etatRow"
+        [etatTitle]="etatTitle"
+        [categorie]="false"
+        [dateD]="true"
+        [dateF]="true" [create]="true"
+        [min]="mtnFiltre"
+        [minTitle]="minTitle"
+        [max]="mtnFiltre" [maxTitle]="maxTitle" [ordre]="true" [code]="true" [count]="true" [type]="true" [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+      </app-filter>
+    </ng-template>
+  </div>
+  <ng-template [ngxPermissionsExcept]="['PROMOTION:LIST', 'HOME:LIST', 'HOME:TYPE:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'Promotion'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- BOUTONS DE GESTION -->
+  <div class="col-sm-12 mb-4 btn-all-promotion">
+    <div class="first">
+      <div class="second">
+        <div class="btn-promotion">
+          <button *ngxPermissionsOnly="['PROMOTION:NEW']" class="btn btn-primary" (click)="addPromotion()" type="button" ngbTooltip="Cliquez ici pour ajouter une promotion">
+            Promotion <i class="fas fa-city"></i>
+          </button>
+        </div>
+        <div class="btn-building">
+          <button (click)="addBuilding()" type="button" class="btn btn-info m-1" ngbTooltip="Cliquez ici pour ajouter un bâtiment">
+            Bâtiment <i class="fas fa-building"></i>
+          </button>
+        </div>
+        <div class="btn-home">
+          <button *ngxPermissionsOnly="['HOME:NEW']" (click)="addHome()" type="button" class="btn btn-secondary m-1" ngbTooltip="Cliquez ici pour ajouter une maison">
+            Maison / Appartement <i class="fas fa-home"></i>
+          </button>
+        </div>
+        <div class="btn-group float-right m-1" ngbDropdown >
+          <button class="btn btn-warning" ngbDropdownToggle type="button">
+            Type <i class="fas fa-plus"></i>
+          </button>
+          <div class="dropdown-menu-right" ngbDropdownMenu>
+            <a class="dropdown-item" (click)="addHomeType()" ngbTooltip="Cliquez ici pour ajouter le type de maison">
+              Type de maison
+            </a>
+            <a class="dropdown-item" (click)="addWorksite()" ngbTooltip="Cliquez ici pour ajouter le type de chantier">
+              Type de chantier
+            </a>
+          </div>
+        </div>
+        <div class="btn-rapport" *ngxPermissionsOnly="['REPORT:NEW']">
+          <button (click)="addReport()" type="button" class="btn btn-success m-1" ngbTooltip="Cliquez ici pour ajouter un rapport">
+            Rapport <i class="fas fa-file-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="btn-group float-right m-1 btn-outil-promotion" ngbDropdown>
+      <button class="btn btn-warning" ngbDropdownToggle type="button">
+        Outils <i class="fas fa-tools"></i>
+      </button>
+      <div class="dropdown-menu-right" ngbDropdownMenu>
+        <a *ngxPermissionsOnly="['PROMOTION:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer le listing">
+          Imprimer <i class="feather icon-printer"></i>
+        </a>
+        <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+          Exporter <i class="fa fa-file-excel"></i>
+        </a>
+        <a class="dropdown-item" (click)="onImport()" ngbTooltip="Cliquez ici pour importer un fichier">
+          Importer <i class="feather icon-download"></i>
+        </a>
+        <a class="dropdown-item" (click)="onModel()" ngbTooltip="Cliquez ici pour génerer un modèle">
+          Génerer <i class="feather icon-upload"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTE DES PROMOTIONS -->
+  <div class="width list-promotion">
+    <ng-template ngxPermissionsOnly="PROMOTION:LIST">
+      <div class="col-md-12" *ngIf="type === 'PROMOTION'">
+        <span class="badge badge-primary mb-4 f-14 width">
+          LISTE DES PROMOTIONS
+        </span>
+        <app-no-data [title]="'Aucune promotion trouvée'" *ngIf="type === 'PROMOTION' && promotions.length === 0"></app-no-data>
+        <div class="row">
+          <div class="col-lg-4 col-md-4" *ngFor="let item of promotions">
+            <app-card [customHeader]="true" headerClass="border-0 p-2 pb-0" [options]="false" cardClass="user-card user-card-1" blockClass="pt-0 users-contact">
+              <div class="app-card-header">
+                <div class="row align-items-end">
+                  <div class="col text-left pb-3"></div>
+                  <div class="col text-right pb-3">
+                    <span class="badge" [ngClass]="{
+                      'badge-success' : item?.etat === 'DISPONIBLE',
+                      'badge-danger' : item?.etat === 'INDISPONIBLE'
+                      }">
+                      {{ item?.etat }}
+                    </span>
+                  </div>
+                </div>
+                <div class="cover-img-block">
+                  <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/promotion-default.jpg'" alt="{{ item?.libelle }}"
+                    title="{{ item?.libelle }}" class="img-fluid size-img-house"
+                    onerror="this.onerror=null; this.src='assets/images/promotion-default.jpg'"
+                  >
+                </div>
+              </div>
+              <div class="text-center">
+                <p>
+                  <span class="text-xs fs">Etat de paiement échéancier.</span>
+                  <ngb-progressbar type="primary" [showValue]="true" [value]="item?.prcEcheancier" ngbTooltip="Etat de paiement échéancier"></ngb-progressbar>
+                </p>
+                <p>
+                  <span class="text-xs fs">Taux de progression financier VFA.</span>
+                  <ngb-progressbar type="primary" [showValue]="true" [value]="item?.prcEtatA" ngbTooltip="Taux de progression financier VFA"></ngb-progressbar>
+                </p>
+                <h5 class="mb-1 mt-3" *ngIf="item.parent == null">{{ item?.libelle }}</h5>
+                <h5 class="mb-1 mt-3" *ngIf="item.parent != null"> Sous promotion: {{ item?.libelle }}</h5>
+                <h5 class="mb-1 mt-3" *ngIf="item.parent != null"> Promotion: {{ item?.parent?.libelle }}</h5>
+                <h6 class="mb-1 mt-3">Situé: {{ item?.quartier + ' - ' + item?.commune+ ' - ' + item?.ville }}</h6>
+                <h6 class="mb-1 mt-3">Valeur Maison: {{ item?.valeurMaison}} {{global.device}}</h6>
+              </div>
+              <div class="row mb-2">
+                  <div class="col text-left">
+                      <p class="mb-0">{{ item?.code }}</p>
+                  </div>
+                  <div class="col text-right text-primary">
+                      <p class="mb-0">{{ item?.nbrMaison }} Maison(s) </p>
+                  </div>
+              </div>
+              <div class="row align-content">
+                <div class="col text-right">
+                  <button *ngxPermissionsOnly="['PROMOTION:SHOW']" (click)="showPromotion(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="['PROMOTION:EDIT']" (click)="editPromotion(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="['PROMOTION:PRINTER:SHOW']" (click)="printerPromotion(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                  <!-- <button (click)="visite3D(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Visite 3D">
+                    <i class="fas fa-cube"></i>
+                  </button> -->
+                  <button (click)="genererOffre(item)" type="button" class="btn btn-icon btn-secondary ml-1" ngbTooltip="Génerer les offres">
+                    <i class="feather icon-upload"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="['PROMOTION:DELETE']">
+                    <button *ngIf="item?.isDelete" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </div>
+            </app-card>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template ngxPermissionsExcept="PROMOTION:LIST" [ngxPermissionsOnly]="['HOME:LIST', 'HOME:TYPE:LIST']">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'PROMOTION'" [title]="'liste promotion'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES BATIMENT -->
+  <ng-template ngxPermissionsOnly="HOME:LIST">
+    <div class="col-md-12" *ngIf="type === 'BUILDING' && buildings.length === 0">
+      <span class="badge badge-info mb-4 f-14 width">
+        LISTE DES BÂTIMENTS
+      </span>
+      <app-no-data [title]="'Aucune bâtiment trouvée'" *ngIf="type === 'BUILDING' && buildings.length === 0"></app-no-data>
+    </div>
+    <app-building-list class="width" [buildings]="buildings" *ngIf="type === 'BUILDING'"></app-building-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="HOME:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'BUILDING'" [title]="'liste bâtiment'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES MAISON -->
+  <ng-template ngxPermissionsOnly="HOME:LIST">
+    <div class="col-md-12" *ngIf="type === 'MAISON' && homes.length === 0">
+      <span class="badge badge-secondary mb-4 f-14 width">
+        LISTE DES MAISONS
+      </span>
+      <app-no-data [title]="'Aucune maison trouvée'" *ngIf="type === 'MAISON' && homes.length === 0"></app-no-data>
+    </div>
+    <app-home-list class="width" [homes]="homes" *ngIf="type === 'MAISON'"></app-home-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="HOME:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'MAISON'" [title]="'liste maison'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES TYPES DE MAISON -->
+  <ng-template ngxPermissionsOnly="HOME:TYPE:LIST">
+    <div class="col-md-12" *ngIf="type === 'HOMETYPE' && homeTypes.length === 0">
+      <span class="badge badge-warning mb-4 f-14 width">
+        LISTE DES TYPES DE MAISONS
+      </span>
+      <app-no-data [title]="'Aucun type de maison trouvé'" *ngIf="type === 'HOMETYPE' && homeTypes.length === 0"></app-no-data>
+    </div>
+    <app-home-type-list class="width" [homeTypes]="homeTypes" *ngIf="type === 'HOMETYPE'  && homeTypes && homeTypes.length > 0"></app-home-type-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="HOME:TYPE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'HOMETYPE'" [title]="'liste type maison'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES TYPES DE CHANTIER -->
+  <ng-template ngxPermissionsOnly="HOME:TYPE:LIST">
+    <div class="col-md-12" *ngIf="type === 'TYPE_CHANTIER'">
+      <app-no-data [title]="'Aucun type de chantier trouvé'" *ngIf="worksites.length === 0"></app-no-data>
+    </div>
+    <app-worksite-list class="width" [worksites]="worksites" *ngIf="type === 'TYPE_CHANTIER' && worksites && worksites.length > 0"></app-worksite-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="HOME:TYPE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'TYPE_CHANTIER'" [title]="'liste type chantier'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES RAPPORTS -->
+  <ng-template ngxPermissionsOnly="REPORT:LIST">
+    <div class="col-md-12" *ngIf="type === 'RAPPORT'">
+      <app-no-data [title]="'Aucun rapport trouvé'" *ngIf="reports.length === 0"></app-no-data>
+    </div>
+    <app-report-list class="width" [reports]="reports" *ngIf="type === 'RAPPORT' && reports && reports.length > 0"></app-report-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="REPORT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'RAPPORT'" [title]="'liste rapport'"></app-no-droit>
+    </div>
+  </ng-template>
+</div>

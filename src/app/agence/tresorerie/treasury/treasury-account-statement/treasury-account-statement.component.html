@@ -1,0 +1,100 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <div class="row">
+      <span class="badge badge-success my-2 f-14 formBadge width"> DÉTAILS DU REVELÉ DE COMPTE </span>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <form autocomplete="off" [formGroup]="form">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-6">
+                <app-entity-finder [class]="'Treasury'" [groups]="['treasury']" [required]="true"
+                  [label]="'Trésorerie'" (uuid)="setTreasuryUuid($event)"
+                  [selected]="selectedTreasury"
+                  [placeholder]="'Selectionez une trésorerie'">
+                </app-entity-finder>
+              </div>
+              <div class="col-md-2">
+                <label for="dateD">Date début</label>
+                <input class="form-control" type="date" formControlName="dateD" id="dateD" [required]="true" />
+              </div>
+              <div class="col-md-2">
+                <label for="dateF">Date Fin</label>
+                <input class="form-control" type="date" formControlName="dateF" id="dateF" [required]="true" />
+              </div>
+              <div class="col-md-2 mt-4">
+                <button type="button" (click)="loadStatements()" class="btn btn-block btn-primary">
+                  <div *ngIf="isLoadingStatements" class="float-left mt-1 spinner"></div>
+                  <div class="float-center"><i class="feather icon-filter"></i> Filtrer</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- AFFICHAGE DES RESULATS DE LA RECHERCHE -->
+    <div *ngIf="statements && statements.length > 0">
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width">
+          RELEVÉ DE COMPTE DU
+          <span *ngIf="statements && statements.length > 0 && f.dateD.value && f.dateF.value">
+            {{ f.dateD.value }} - {{ f.dateF.value }}
+          </span>
+        </span>
+      </div>
+
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Désignation</th>
+              <th>Recette</th>
+              <th>Dépense</th>
+            </tr>
+          </thead>
+          <tbody class="task-page">
+            <tr *ngFor="let item of statements; let i = index">
+              <td>{{ item?.date | date: "d MMMM y" : '' : 'fr-FR' }}</td>
+              <td>{{ item?.libelle }}</td>
+              <td>
+                {{ item?.type === 'CREDIT' ? item?.montant : '' }}
+              </td>
+              <td>
+                {{ item?.type === 'DEBIT' ? item?.montant : '' }}
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td [attr.colspan]="2" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{totalC | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{totalD | number}} {{global.device}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <button [disabled]="statements && statements.length === 0" type="button" class="btn btn-warning" (click)="print()">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+  <button [disabled]="statements && statements.length === 0" type="button" class="btn btn-primary" (click)="export()">
+    Exporter <i class="fa fa-file-excel"></i>
+  </button>
+</div>

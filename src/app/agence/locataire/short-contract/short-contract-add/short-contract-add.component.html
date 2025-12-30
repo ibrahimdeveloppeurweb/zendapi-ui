@@ -1,0 +1,301 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <label>Locataire <span class="asterix">*</span></label>
+                    <app-entity-finder
+                        [class]="'Tenant'"
+                        [groups]="['tenant']"
+                        [required]="true"
+                        [selected]="tenantSelected"
+                        [disabled]="edit"
+                        (uuid)="setTenantUuid($event)"
+                        [placeholder]="'Selectionez un locataire'">
+                    </app-entity-finder>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label>Propriétaire <span class="asterix">*</span></label>
+                    <app-entity-finder
+                        [class]="'Owner'"
+                        [groups]="['owner']"
+                        [required]="true"
+                        [selected]="ownerSelected"
+                        [disabled]="edit"
+                        (uuid)="setOwnerUuid($event)"
+                        [placeholder]="'Selectionez un Propriétaire'">
+                    </app-entity-finder>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label for="house">Bien concerné <span class="asterix">*</span></label>
+                    <select *ngIf="!edit"
+                        (change)="selectHouse($event.target.value)"
+                        formControlName="house"
+                        class="form-control"
+                        id="house"
+                        [ngClass]="{'is-invalid': submit && f.house.errors, 'is-valid': submit && f.house.valid}">
+                        <option [value]="null" selected>Selectionnez un bien</option>
+                        <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+                    </select>
+                    <input *ngIf="edit" type="text" readonly [value]="contract?.rental?.house?.nom" class="form-control font-weight-bold">
+                    <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                        <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label for="rental">Locative <span class="asterix">*</span></label>
+                    <select *ngIf="!edit"
+                        [attr.disabled]="!f.house.value ? true : null"
+                        (change)="onChangeRental($event?.target?.value);"
+                        class="form-control"
+                        id="rental"
+                        formControlName="rental" [ngClass]="{'is-invalid': submit && f.rental.errors, 'is-valid': submit && f.rental.valid}">
+                        <option [value]="null" selected>Selectionnez la locative</option>
+                        <option *ngFor="let item of rentals" [value]="item.uuid">{{item.porte}}</option>
+                    </select>
+                    <input *ngIf="edit" type="text" readonly [value]="contract?.rental?.libelle" class="form-control font-weight-bold">
+                    <div class="invalid-feedback" *ngIf="submit && f.rental.errors">
+                        <div *ngIf="f.rental.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="type">Type de facturation <span class="asterix">*</span></label>
+                    <select
+                        (change)="onChangeType($event.target.value)"
+                        formControlName="type"
+                        class="form-control"
+                        id="type"
+                        [ngClass]="{'is-invalid': submit && f.type.errors, 'is-valid': submit && f.type.valid}">
+                        <option [value]="null" selected>Selectionnez un bien</option>
+                        <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                        <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="dateSign">Date de réservation <span class="asterix">*</span></label>
+                    <input
+                        type="datetime-local"
+                        formControlName="dateSign"
+                        class="form-control"
+                        id="dateSign"
+                        [ngClass]="{'is-invalid': submit && f.dateSign.errors, 'is-valid': submit && f.dateSign.valid}"
+                    />
+                    <div class="invalid-feedback" *ngIf="submit && f.dateSign.errors">
+                        <div *ngIf="f.dateSign.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="dateEntr">Date d'entrée <span class="asterix">*</span></label>
+                    <input
+                        (change)="onChangeDate()"
+                        type="datetime-local"
+                        formControlName="dateEntr"
+                        class="form-control"
+                        id="dateEntr"
+                        [ngClass]="{'is-invalid': submit && f.dateEntr.errors, 'is-valid': submit && f.dateEntr.valid}"
+                    />
+                    <div class="invalid-feedback" *ngIf="submit && f.dateEntr.errors">
+                        <div *ngIf="f.dateEntr.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="dateFin">Date de fin <span class="asterix">*</span></label>
+                    <input
+                        type="datetime-local"
+                        formControlName="dateFin"
+                        (change)="onChangeDate()"
+                        class="form-control"
+                        id="dateFin" [ngClass]="{'is-invalid': submit && f.dateFin.errors, 'is-valid': submit && f.dateFin.valid}"
+                    />
+                    <div class="invalid-feedback" *ngIf="submit && f.dateFin.errors">
+                        <div *ngIf="f.dateFin.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="echeance">Date d'echéance <span class="asterix">*</span></label>
+                    <input type="date" formControlName="echeance" class="form-control" id="echeance"
+                      [ngClass]="{'is-invalid': submit && f.echeance.errors, 'is-valid': submit && f.echeance.valid}"/>
+                    <div class="invalid-feedback" *ngIf="submit && f.echeance.errors">
+                      <div *ngIf="f.echeance.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="nbr">Nombre {{ f.type.value === 'JOURNALIER' ? 'de jours' : 'd\'heure'}} </label>
+                    <input type="number" formControlName="nbr" class="form-control" id="nbr" disabled>
+                </div>
+                <div class="col-md-3">
+                    <label for="loyer">Montant de la locative</label>
+                    <input (change)="onChangeDate()" type="number" formControlName="loyer" class="form-control bold text-danger" id="loyer" placeholder="Montant de la locative">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <span class="badge badge-secondary my-2 f-14 width">
+                        AJOUTER DES OPTIONS SUR CETTE FACTURE
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div formArrayName="options">
+                            <!-- LABEL DU TABLEAU DES OPTIONS -->
+                            <div class="form-group" *ngIf="option.length > 0">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Désignation <span class="asterix">*</span></label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Prix unitaire <span class="asterix">*</span></label>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label>Qté <span class="asterix">*</span></label>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label>TVA</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Remise</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Total</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" *ngFor="let opt of option.controls; let i=index" [formGroupName]="i">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <input type="text" formControlName="libelle" class="form-control p-2" id="libelle{{i}}"
+                                        [ngClass]="{
+                                            'is-invalid': submit && opt.get('libelle').errors,
+                                            'is-valid': submit && opt.get('libelle').valid
+                                        }" placeholder="Désignation">
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('libelle').errors">
+                                            <div *ngIf="opt.get('libelle').errors.required">{{required.novide}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input (change)="onChangeTotal()" type="number" formControlName="prix" class="form-control"
+                                            id="prix{{i}}" [ngClass]="{
+                                                'is-invalid': submit && opt.get('prix').errors,
+                                                'is-valid': submit && opt.get('prix').valid
+                                            }" placeholder="Prix unitaire">
+                                            <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                                            <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                                        </div>
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                                            <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                                            <div *ngIf="opt.get('prix').errors.pattern">{{required.nolettre}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <input (change)="onChangeTotal()" type="number" formControlName="qte" class="form-control"
+                                        id="qte{{i}}" [ngClass]="{
+                                            'is-invalid': submit && opt.get('qte').errors,
+                                            'is-valid': submit && opt.get('qte').valid
+                                        }" placeholder="Quantité" readonly>
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('qte').errors">
+                                            <div *ngIf="opt.get('qte').errors.required">{{required.novide}}</div>
+                                            <div *ngIf="opt.get('qte').errors.pattern">{{required.nolettre}}</div>
+                                            <div *ngIf="opt.get('qte').errors.pattern">{{required.positive}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <input (change)="onChangeTotal()" type="number" formControlName="tva" class="form-control p-2"
+                                        id="tva{{i}}" [ngClass]="{
+                                            'is-invalid': submit && opt.get('tva').errors,
+                                            'is-valid': submit && opt.get('tva').valid
+                                        }" placeholder="TVA">
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('tva').errors">
+                                            <div *ngIf="opt.get('tva').errors.pattern">{{required.nolettre}}</div>
+                                            <div *ngIf="opt.get('tva').errors.pattern">{{required.positive}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input (change)="onChangeTotal()" type="number" formControlName="remise" class="form-control"
+                                        id="remise{{i}}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="number" formControlName="total" class="form-control p-2" id="total{{i}}"
+                                        step="0.01" placeholder="TOTAL" readonly>
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('total').errors">
+                                            <div *ngIf="opt.get('total').errors.pattern">{{required.nolettre}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button *ngIf="i > 0" (click)="onDeleteOption(opt)" type="button" class="btn btn-icon btn-danger">
+                                            <i class="feather icon-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2 d-flex flex-row-reverse">
+                            <button (click)="onAddOption()" type="button" class="btn btn-primary">
+                                Ajouter <i class="feather icon-plus"></i>
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table class="table table-responsive invoice-table invoice-total">
+                                    <tbody>
+                                        <tr>
+                                            <th><span class="text-uppercase">{{f.type.value === 'HORAIRE' ? 'Nombre d\'heure' : 'Nombre de jour'}}</span> :</th>
+                                            <td>{{f.nbr.value | number}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>TOTAL HT :</th>
+                                            <td>{{ totalHT | number }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>TOTAL REMISE :</th>
+                                            <td>{{ totalRemise | number }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>TOTAL TVA :</th>
+                                            <td>{{ totalTva | number }}</td>
+                                        </tr>
+                                        <tr class="text-info">
+                                            <td>
+                                                <hr />
+                                                <h2 class="text-primary m-r-10">TOTAL :</h2>
+                                            </td>
+                                            <td>
+                                                <hr />
+                                                <h2 class="text-success">{{ totalTTC | number }}</h2>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="form.reset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+    </div>
+</form>

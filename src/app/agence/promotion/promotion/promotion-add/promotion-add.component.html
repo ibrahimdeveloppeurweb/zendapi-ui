@@ -1,0 +1,549 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <aw-wizard #wizard class="arc-wizard">
+        <!-- STEP 1 DU FORMULAIRE -->
+        <aw-wizard-step stepTitle="Promotion">
+          <!-- INFORMATION SUR LA PROMOTION -->
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14 width">
+              INFORMATION SUR LA PROMOTION
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <label for="type">
+                  Promotion parent
+                  <i class="fas fa-info-circle" placement="right" popoverTitle="Cette qu'il faut savoir"
+                  [ngbPopover]="'Ce Promotion sera une sous Promotion du Promotion parent'"></i>
+                </label>
+                <select formControlName="parent" class="form-control" id="promotion">
+                  <option [value]="null">Selectionner</option>
+                  <option *ngFor="let item of promotions" [value]="item?.uuid">{{item?.libelle}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="type">
+                  Type <span class="asterix">*</span>
+                  <i class="fas fa-info-circle" placement="right" popoverTitle="Ce qu'il faut savoir"
+                  [ngbPopover]="'Le Promotion de type A correspond à des Promotions constitué de maisons bases'"></i>
+                </label>
+                <select formControlName="type" class="form-control" id="type"
+                  [ngClass]="{
+                    'is-invalid': submit && f.type.errors,
+                    'is-valid': submit && f.type.valid
+                  }">
+                  <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                  <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="libelle">Libellé <span class="asterix">*</span></label>
+                <input type="text" class="form-control" formControlName="libelle" id="libelle"
+                  [ngClass]="{
+                    'is-invalid': submit && f.libelle.errors,
+                    'is-valid': submit && f.libelle.valid
+                  }" placeholder="Libellé">
+                <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                  <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="superficie">Superficie (m²) <span class="asterix">*</span></label>
+                <input type="number" min="0" class="form-control" formControlName="superficie" id="superficie"
+                  [ngClass]="{
+                    'is-invalid': submit && f.superficie.errors,
+                    'is-valid': submit && f.superficie.valid
+                  }" placeholder="Superficie (m²)">
+                <div class="invalid-feedback" *ngIf="submit && f.superficie.errors">
+                  <div *ngIf="f.superficie.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="surfaceBati">Surface bati <span class="asterix">*</span></label>
+                <input type="number" class="form-control" formControlName="surfaceBati" id="surfaceBati"
+                  [ngClass]="{
+                    'is-invalid': submit && f.surfaceBati.errors,
+                    'is-valid': submit && f.surfaceBati.valid
+                  }" placeholder="Surface bati ">
+                <div class="invalid-feedback" *ngIf="submit && f.surfaceBati.errors">
+                  <div *ngIf="f.surfaceBati.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="montantCr">Coût de revient </label>
+                <input type="number" class="form-control" formControlName="montantCr" id="montantCr"
+                  [ngClass]="{
+                    'is-invalid': submit && f.montantCr.errors,
+                    'is-valid': submit && f.montantCr.valid
+                  }" placeholder="Coût de revient">
+                <div class="invalid-feedback" *ngIf="submit && f.montantCr.errors">
+                  <div *ngIf="f.montantCr.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="montantCc">Coût de construction </label>
+                <input type="number" class="form-control" formControlName="montantCc" id="montantCc"
+                  [ngClass]="{
+                    'is-invalid': submit && f.montantCc.errors,
+                    'is-valid': submit && f.montantCc.valid
+                  }" placeholder="Coût de construction">
+                <div class="invalid-feedback" *ngIf="submit && f.montantCc.errors">
+                  <div *ngIf="f.montantCc.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="montantAdmin">Coût administratif </label>
+                <input type="number" class="form-control" formControlName="montantAdmin" id="montantAdmin"
+                  [ngClass]="{
+                    'is-invalid': submit && f.montantAdmin.errors,
+                    'is-valid': submit && f.montantAdmin.valid
+                  }" placeholder="Coût administratif">
+                <div class="invalid-feedback" *ngIf="submit && f.montantAdmin.errors">
+                  <div *ngIf="f.montantAdmin.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="montantVrd">Coût de construction VRD </label>
+                <input type="number" class="form-control" formControlName="montantVrd" id="montantVrd"
+                  [ngClass]="{
+                    'is-invalid': submit && f.montantVrd.errors,
+                    'is-valid': submit && f.montantVrd.valid
+                  }" placeholder="Coût de construction VRD">
+                <div class="invalid-feedback" *ngIf="submit && f.montantVrd.errors">
+                  <div *ngIf="f.montantVrd.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="nbrMaison">
+                  Nombre de {{ f.type.value === "TYPE_A" ? "maison" : "bâtiment" }} <span class="asterix">*</span>
+                </label>
+                <input [attr.disabled]="edit ? true : null" (ngModelChange)="onChangeHome()" type="number" min="0"
+                  class="form-control" formControlName="nbrMaison" id="nbrMaison"
+                  [ngClass]="{
+                    'is-invalid': submit && f.nbrMaison.errors,
+                    'is-valid': submit && f.nbrMaison.valid
+                  }" placeholder="Nombre de {{ f.type.value === 'TYPE_A' ? 'maison' : 'bâtiment' }}">
+                <div class="invalid-feedback" *ngIf="submit && f.nbrMaison.errors">
+                  <div *ngIf="f.nbrMaison.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="etat">Disponibilité <span class="asterix">*</span></label>
+                <select formControlName="etat" class="form-control" id="etat"
+                  [ngClass]="{
+                    'is-invalid': submit && f.etat.errors,
+                    'is-valid': submit && f.etat.valid
+                  }">
+                  <option *ngFor="let item of etatRow" [value]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.etat.errors">
+                  <div *ngIf="f.etat.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="date">Date <span class="asterix">*</span></label>
+                <input type="date" class="form-control" formControlName="date" id="date"
+                  [ngClass]="{
+                    'is-invalid': submit && f.date.errors,
+                    'is-valid': submit && f.date.valid
+                  }">
+                <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                  <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="isOffre">
+                  Souhaitez-vous publier les offres de cette promotion sur le site web public ? <span class="asterix">*</span>
+                </label>
+                <select class="form-control" id="isOffre"  formControlName="isOffre">
+                  <option [value]="'NON'">NON</option>
+                  <option [value]="'OUI'">OUI</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="f.isOffre.value === 'OUI'">
+                <label for="dateOffre">Date de publication<span class="asterix">*</span></label>
+                <input type="date" class="form-control" formControlName="dateOffre" id="dateOffre"
+                  [ngClass]="{
+                    'is-invalid': submit && f.dateOffre.errors,
+                    'is-valid': submit && f.dateOffre.valid
+                  }">
+                <div class="invalid-feedback" *ngIf="submit && f.dateOffre.errors">
+                  <div *ngIf="f.dateOffre.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOCATION -->
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14 width"> LOCALISATION </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <label for="ville">Ville <span class="asterix">*</span></label>
+                <input type="text" class="form-control" formControlName="ville" id="ville"
+                  [ngClass]="{
+                    'is-invalid': submit && f.ville.errors,
+                    'is-valid': submit && f.ville.valid
+                  }" placeholder="Ville">
+                <div class="invalid-feedback" *ngIf="submit && f.ville.errors">
+                  <div *ngIf="f.ville.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="commune">Commune <span class="asterix">*</span></label>
+                <input type="text" class="form-control" formControlName="commune" id="commune"
+                  [ngClass]="{
+                    'is-invalid': submit && f.commune.errors,
+                    'is-valid': submit && f.commune.valid
+                  }" placeholder="Commune">
+                <div class="invalid-feedback" *ngIf="submit && f.commune.errors">
+                  <div *ngIf="f.commune.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="quartier">Quartier <span class="asterix">*</span></label>
+                <input type="text" class="form-control" formControlName="quartier" id="quartier"
+                  [ngClass]="{
+                    'is-invalid': submit && f.quartier.errors,
+                    'is-valid': submit && f.quartier.valid
+                  }" placeholder="Quartier">
+                <div class="invalid-feedback" *ngIf="submit && f.quartier.errors">
+                  <div *ngIf="f.quartier.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="lng">Longitude</label>
+                <input type="text" class="form-control" formControlName="lng" id="lng" placeholder="Longitude">
+              </div>
+              <div class="col-md-3">
+                <label for="lat">Latitude</label>
+                <input type="text" class="form-control" formControlName="lat" id="lat" placeholder="Latitude">
+              </div>
+            </div>
+          </div>
+          <agm-map [draggableCursor]="'default'" [mapTypeId]="'hybrid'" [latitude]="lat" [longitude]="lng" [zoom]="zoom"
+          (mapClick)="updateGeo($event)" (zoomChange)="updateZoom($event)">
+            <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+          </agm-map>
+
+          <div class="row mb-2 mt-2">
+            <div class="flex-grow-0" style="min-width: 30%">
+              <app-image-uploader
+                (filesd)="loadfile($event)"
+                [type]="['image/png', 'image/jpg', 'image/jpeg']"
+                [maxSize]="20"
+                (imageUploaded)="setParam('photoUuid',$event)"
+                [photo]="promotion ? promotion.photo : null "></app-image-uploader>
+            </div>
+            <div class="col-md">
+              <label>Pièces et documents à joindre</label>
+              <app-folder-uploader
+                [maxSize]="20"
+                (filesd)="files($event)"
+                (filesUploaded)="setParam('folderUuid',$event)"
+                [type]="['image/png', 'image/jpg', 'image/jpeg']"
+                [path]="'promotion'"
+                [etat]="edit ? 'edit': 'add'"
+                [folder]="edit && promotion ? promotion?.folder : null">
+              </app-folder-uploader>
+            </div>
+          </div>
+
+          <div class="col-md-12 text-center mt-2" *ngIf="!edit && f.nbrMaison.value > 0">
+            <button type="button" awNextStep class="btn btn-primary">
+              Suivant <i class="feather icon-arrow-right"></i>
+            </button>
+          </div>
+        </aw-wizard-step>
+
+        <!-- STEP 2 DU FORMULAIRE -->
+        <aw-wizard-step stepTitle="{{ f.type.value === 'TYPE_A' ? 'maison' : 'bâtiment' }}" *ngIf="!edit && f.type.value !== 'TYPE_C'">
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14 width">
+              PARTIE RESERVE AUX {{ f.type.value === "TYPE_A" ? "MAISONS" : "BÂTIMENTS" }}
+            </span>
+          </div>
+          <!-- TABLEAU DES MAISONS -->
+          <div formArrayName="homes">
+            <div *ngIf="home.controls.length > 0" class="fom-group">
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="numero">N° <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-2">
+                  <label for="ilot">Ilot N° <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-3">
+                  <label for="type">Type de maison <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-2">
+                  <label for="montant">Montant <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-2">
+                  <label for="superficie">Superficie (m²) <span class="asterix">*</span></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" *ngFor="let item of home.controls; let i=index" [formGroupName]="i">
+              <div class="row">
+                <div class="col-md-2">
+                  <input type="number" formControlName="lot" class="form-control pl-2 font-weight-bold" id="numero{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('lot').errors,
+                      'is-valid': submit && item.get('lot').valid
+                    }" placeholder="Lot N°">
+                </div>
+                <div class="col-md-2">
+                  <input type="number" formControlName="ilot" class="form-control" id="ilot{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('ilot').errors,
+                      'is-valid': submit && item.get('ilot').valid
+                    }" placeholder="Ilot N°">
+                </div>
+                <div class="col-md-3">
+                  <app-entity-finder [class]="'HomeType'" [groups]="['homeType']" [required]="true"
+                    [disabled]="edit" (uuid)="setHomeTypeUuid($event, item)">
+                  </app-entity-finder>
+                </div>
+                <div class="col-md-2">
+                  <input type="number" step="5000" formControlName="montant" class="form-control" id="montant{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('montant').errors,
+                      'is-valid': submit && item.get('montant').valid
+                    }" placeholder="Montant">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('montant').errors">
+                    <div *ngIf="item.get('montant').errors.required">{{required.novide}}</div>
+                    <div *ngIf="item.get('montant').errors.pattern">{{required.nolettre}}</div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <input type="number" min="0" step="50" formControlName="superficie" class="form-control" id="superficie{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('superficie').errors,
+                      'is-valid': submit && item.get('superficie').valid
+                    }" placeholder="Superficie">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('superficie').errors">
+                    <div *ngIf="item.get('superficie').errors.required">{{required.novide}}</div>
+                    <div *ngIf="item.get('superficie').errors.pattern">{{required.nolettre}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLEAU DES BATIMENTS -->
+          <div formArrayName="buildings">
+            <div *ngIf="building.controls.length > 0" class="fom-group">
+              <div class="row">
+                <div class="col-md-8">
+                  <label for="libelle">Libellé <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-2">
+                  <label for="niveau">Niveau <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-2">
+                  <label for="superficie">Superficie </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" *ngFor="let item of building.controls; let j=index" [formGroupName]="j">
+              <div class="row">
+                <div class="col-md-8">
+                  <input type="text" formControlName="libelle" class="form-control pl-2" id="libelle{{j}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('libelle').errors,
+                      'is-valid': submit && item.get('libelle').valid
+                    }" placeholder="Libellé">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('libelle').errors">
+                    <div *ngIf="item.get('libelle').errors.required">{{required.novide}}</div>
+                    <div *ngIf="item.get('libelle').errors.pattern">{{required.nolettre}}</div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <input type="number" min="0" formControlName="niveau" class="form-control" id="niveau{{j}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('niveau').errors,
+                      'is-valid': submit && item.get('niveau').valid
+                    }" placeholder="Niveau">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('niveau').errors">
+                    <div *ngIf="item.get('niveau').errors.required">{{required.novide}}</div>
+                    <div *ngIf="item.get('niveau').errors.pattern">{{required.nolettre}}</div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <input type="number" min="0" step="50" formControlName="superficie" class="form-control" id="superficie{{j}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('superficie').errors,
+                      'is-valid': submit && item.get('superficie').valid
+                    }" placeholder="Superficie">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 centered-content mt-3">
+            <div class="btn-group mt-10">
+              <button type="button" awPreviousStep class="btn btn-warning">
+                <i class="feather icon-arrow-left"></i> Précedent
+              </button>
+              <button *ngIf="f.isOffre.value === 'OUI' && f.type.value === 'TYPE_A'" type="button" awNextStep class="btn btn-primary ml-1">
+                Suivant <i class="feather icon-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <!-- STEP 3 DU FORMULAIRE -->
+        <aw-wizard-step stepTitle="Offre" *ngIf="!edit && f.isOffre.value === 'OUI' && f.type.value === 'TYPE_A'">
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14 width"> Informations supplementaires</span>
+          </div>
+
+          <div class="row m-2 mb-2">
+            <span class="badge badge-secondary my-2 f-14 width"> Les informations relatives aux pièces du bien</span>
+            <form autocomplete="off" [formGroup]="pieceForm">
+              <div class="form-group">
+                <div class="row mb-2">
+                  <div class="col-md-3">
+                    <label for="chambre">Chambres </label>
+                    <input type="number" min="0" class="form-control" formControlName="chambre" id="chambre">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="douche">Douches </label>
+                    <input type="number" min="0" class="form-control" formControlName="douche" id="douche">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="salon">Salons </label>
+                    <input type="number" min="0" class="form-control" formControlName="salon" id="salon">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="garage">Garages </label>
+                    <input type="number" min="0" class="form-control" formControlName="garage" id="garage">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="cuisine">Cuisine </label>
+                    <input type="number" min="0" class="form-control" formControlName="cuisine" id="cuisine">
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="row m-2 mb-2" >
+            <span class="badge badge-secondary my-2 f-14 width"> Les informations relatives aux équipements du bien</span>
+            <div class="col-md-12">
+              <form autocomplete="off" [formGroup]="equipementForm">
+                <div class="form-group">
+                  <div class="row m-4">
+                    <div class="col-md-4">
+                      <p>
+                        <input class="form-check-input" id="wifi" type="checkbox" formControlName="wifi">
+                        <label for="wifi">WiFi </label>
+                      </p>
+                      <p>
+                        <input class="form-check-input" id="wifi" type="checkbox" formControlName="piscine">
+                        <label for="piscine">Piscine </label>
+                      </p>
+                      <p>
+                        <input class="form-check-input" id="securite" type="checkbox" formControlName="securite">
+                        <label for="securite">Gardien de Sécurité</label>
+                      </p>
+                    </div>
+                    <div class="col-md-4">
+                      <p>
+                        <input class="form-check-input" id="clim" type="checkbox" formControlName="clim">
+                        <label for="clim">Air Conditioner </label>
+                      </p>
+                      <p>
+                        <input class="form-check-input" id="urgence" type="checkbox" formControlName="urgence">
+                        <label for="urgence">Issue d'Urgence</label>
+                      </p>
+                      <p>
+                        <input class="form-check-input" id="incendie" type="checkbox" formControlName="incendie">
+                        <label for="incendie">Borne d'incendie </label>
+                      </p>
+                    </div>
+                    <div class="col-md-4">
+                      <p>
+                        <input class="form-check-input" id="parking" type="checkbox" formControlName="parking">
+                        <label for="parking">Parking </label>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="row m-4 mb-2">
+            <span class="badge badge-secondary my-2 f-14 width"> La gallerie du bien</span>
+            <div class="col-md-12">
+              <app-folder-upload
+                (filesUploaded)="uploadFile($event, 'GALLERY')"
+                [maxSize]="20"
+                [type]="['jpg', 'png', 'jpeg']"
+                [etat]="'add'"
+                [folder]="null" >
+              </app-folder-upload>
+            </div>
+          </div>
+          <div class="row m-2 mb-2">
+            <span class="badge badge-secondary my-2 f-14 width"> Video de presentation</span>
+            <div class="col-md-12">
+              <form autocomplete="off" [formGroup]="videoForm">
+                <div class="form-group">
+                    <div class="row">
+                      <div class="col-md-12">
+                      <label for="link">Lien de la vidéo <span class="asterix">*</span></label>
+                      <input type="text" class="form-control" formControlName="link" id="link">
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="row m-4 mb-2">
+            <span class="badge badge-secondary my-2 f-14 width"> Plan</span>
+            <div class="col-md-12">
+              <app-folder-upload-2
+                (filesUploaded)="uploadFile($event, 'PLAN')"
+                [maxSize]="20"
+                [type]="['jpg', 'png', 'jpeg']"
+                [etat]="'add'"
+                [folder]="null" >
+              </app-folder-upload-2>
+            </div>
+          </div>
+          <div class="col-sm-12 centered-content mt-3">
+            <div class="btn-group mt-10">
+              <button type="button" awPreviousStep class="btn btn-warning">
+                <i class="feather icon-arrow-left"></i> Précedent
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+      </aw-wizard>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

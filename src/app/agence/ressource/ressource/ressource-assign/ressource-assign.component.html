@@ -1,0 +1,114 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-primary my-2 f-14 width"> INFORMATIONS SUR LA RESSOURCE</span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <label for="type">Code de gestion </label>
+                        <input type="text" class="form-control" [value]="ressource?.codeGestion" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="type">Designation  </label>
+                        <input type="text" class="form-control" [value]="ressource?.libelle" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="type">Prix d’achat   </label>
+                        <input type="text" class="form-control" [value]="ressource?.prix|number" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <span class="badge badge-primary my-2 f-14 width"> SELECTION DE LA LOCATIVE</span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                      <label>Propriétaire <span class="asterix">*</span></label>
+                      <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true"
+                        [selected]="ownerSelected" (uuid)="setOwnerUuid($event)"
+                        [placeholder]="'Selectionez un Propriétaire'">
+                      </app-entity-finder>
+                    </div>
+                    <div class="col-md-4">
+                      <label for="house">Bien concerné <span class="asterix">*</span></label>
+                      <select  (change)="selectHouse($event.target.value)" formControlName="house" class="form-control"
+                        id="house" [ngClass]="{
+                          'is-invalid': submit && f.house.errors,
+                          'is-valid': submit && f.house.valid
+                        }">
+                        <option [value]="null" selected>Selectionnez un bien</option>
+                        <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                        <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <label for="rental">Locative <span class="asterix">*</span></label>
+                      <select [attr.disabled]="!f.house.value ? true : null"
+                        (ngModelChange)="onChangeRental($event)" class="form-control" id="rental"
+                        formControlName="rental" [ngClass]="{
+                          'is-invalid': submit && f.rental.errors,
+                          'is-valid': submit && f.rental.valid
+                        }">
+                        <option [value]="null" selected>Selectionnez la locative</option>
+                        <option *ngFor="let item of rentals" [value]="item.uuid">{{item.porte}}</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && f.rental.errors">
+                        <div *ngIf="f.rental.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="f.owner.value && f.house.value && f.rental.value">
+                <span class="badge badge-primary my-2 f-14 width"> EMPLACEMENT DE LA RESSOURCE</span>
+            </div>
+            <div class="form-group" *ngIf="f.owner.value && f.house.value && f.rental.value">
+                <div class="row mb-2">
+                    <div class="col-md-5">
+                        <label for="piece">Pieces <span class="asterix">*</span></label>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <ng-select  id="pieces" formControlName="piece" (change)="setPieceUuid($event)" [(ngModel)]="pieceSelected" >
+                                    <ng-option [value]="null"> Selectionner </ng-option>
+                                    <ng-option *ngFor="let item of pieces" [value]="item?.uuid">{{item?.libelle}}</ng-option>
+                                </ng-select>   
+                            </div>
+                            <div class="col-md-2">
+                                <span class="add" (click)="onAdd()"> <i class="fas fa-plus text-white fs-12"></i></span>
+                            </div>   
+                        </div>
+                        <div class="invalid-feedback" *ngIf="submit && f.piece.errors">
+                            <div *ngIf="f.piece.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                      <label for="emplacement">Emplacement de la ressource </label>
+                      <textarea class="form-control" name="emplacement" id="emplacement" formControlName="emplacement" placeholder="Emplacement de la ressource"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="onReset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+    </div>
+</form>

@@ -1,0 +1,294 @@
+<div class="row help-desk large-view">
+  <div class="col-md-12 mb-3">
+    <app-card [hidHeader]="true" >
+      <!-- AFFICHAGES DU FILTRE -->
+       <div class="d-flex justify-content-between align-items-center mb-3">
+        <div >
+          <div *ngFor="let item of filtersList" class="d-inline-block mr-1" ngbDropdown>
+            <ng-container *ngIf="item?.status">
+              <button class="btn btn-light btn-sm" type="button" ngbDropdownToggle>
+                <i class="text-primary" [ngClass]="item.icon"></i> {{ item?.libelle }}
+              </button>
+              <div ngbDropdownMenu class="p-1 w-20 custom-width">
+                <ng-template [ngTemplateOutlet]="content" [ngTemplateOutletContext]="{ item : item }"></ng-template>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <div ngbDropdown class="mr-1">
+            <button class="btn btn-link btn-sm" type="button" ngbDropdownToggle>
+              <i class="fas fa-plus text-primary"></i> Ajouter un filtre
+            </button>
+            <div class="p-2 custom-dropdown-menu" ngbDropdownMenu>
+              <div class="search-box">
+                <i class="fa fa-search "></i>
+                <input type="text" placeholder="Rechercher…" class="search-input" [(ngModel)]="searchTerm" (input)="filter()">
+              </div>
+              <div class="d-flex flex-column custom-container">
+                <div class="item-hover" *ngFor="let item of filterItems" (click)="addFilter(item)">
+                  <div class="d-flex justify-content-between custom-item">
+                    <span> <i class="text-primary" [ngClass]="item.icon"></i> {{ item?.libelle }}</span>
+                  </div>
+                  <hr class="custom-hr h-20">
+                </div>
+              </div>
+            </div>
+          </div>
+          <button (click)="onFilter()" class="btn btn-primary btn-sm" type="button">
+            <i class="fas fa-filter"></i> Filtrer
+          </button>
+        </div>
+
+       </div>
+      <!-- AFFICHAGES DES BUTTON -->
+      <div class="row mb-3">
+        <div class="col-md-12 filter-bar">
+          <nav class="navbar justify-content-between p-0 align-items-center">
+            <div class="btn-group btn-group-toggle text-left" ngbRadioGroup>
+              <button class="btn btn-primary" (click)="add()" ngbTooltip="Cliquez ici pour ajouter un ticket"> Ajouter un ticket <i
+                  class="fas fa-ticket-alt"></i>
+              </button>
+            </div>
+            <div class="btn-group btn-group-toggle" ngbRadioGroup data-toggle="buttons"  (click)="onView()" [(ngModel)]="view">
+              <label ngbButtonLabel class="btn btn-primary" [ngClass]="{'active': view === 'TABLE'}" ngbTooltip="Afficher en tableau">
+                <input ngbButton type="radio" value="TABLE"> <i class="fas fa-table m-0"></i>
+              </label>
+              <label ngbButtonLabel class="btn btn-primary" [ngClass]="{'active': view === 'CARD'}" ngbTooltip="Afficher en card">
+                <input ngbButton type="radio" value="CARD" > <i class="feather icon-grid m-0"></i>
+              </label>
+              <!-- <label *ngIf="activeTab === 'EN COURS'" ngbButtonLabel class="btn btn-primary" [ngClass]="{'active': view === 'KABAN'}" ngbTooltip="Afficher en kaban">
+                <input ngbButton type="radio" value="KABAN"> <i  class="feather icon-align-justify m-0"></i>
+              </label>
+              <label ngbButtonLabel class="btn btn-primary" [ngClass]="{'active': view === 'CALENDAR'}" ngbTooltip="Afficher en calendrier">
+                <input ngbButton type="radio" value="CALENDAR"> <i class="fas fa-calendar m-0"></i>
+              </label> -->
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <div style="border: 1px, solid, rgb(236, 232, 232); border-radius: 2px;">
+        <div class="row p-2">
+          <div class="col-md-12">
+            <span class="badge badge-primary my-2 f-14 width"> LISTE DES TICKETS </span>
+          </div>
+
+          <div class="col-md-12">
+            <ul class="nav nav-tabs profile-tabs nav-fill " id="tabShow" role="tablist">
+              <li class="nav-item text-black">
+                <a class="nav-link" [ngClass]="{'active': this.activeTab === 'OUVERT'}"  id="faire-tab" data-toggle="tab" href="javascript:" role="tab"
+                  aria-controls="faire" aria-selected="true" (click)="onTabs('OUVERT')">
+                  <i class="fas fa-play text-primary"></i> A FAIRE({{ faire ? faire : 0 }})
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [ngClass]="{'active': this.activeTab === 'EN COURS'}"  id="cours-tab" data-toggle="tab" href="javascript:" role="tab"
+                  aria-controls="cours" aria-selected="true" (click)="onTabs('EN COURS')">
+                  <i class="fas fa-spinner text-primary"></i> EN COURS({{ cours ? cours : 0 }})
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [ngClass]="{'active': this.activeTab === 'FERME'}"  id="FERME-tab" data-toggle="tab" href="javascript:" role="tab"
+                  aria-controls="FERME" aria-selected="true" (click)="onTabs('FERME')">
+                  <i class="fas fa-star text-primary"></i> FERMER({{ ferme ? ferme : 0 }})
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- AFFICHAGE DU TABS -->
+        <div class="row p-4">
+          <div class="col-md-12 order-md-2">
+            <div class="tab-content" id="myTabContent">
+              <!-- Boucle sur les différents états -->
+              <div *ngFor="let tab of ['OUVERT', 'EN COURS', 'FERME']"
+                  class="tab-pane fade"
+                  [ngClass]="{'show active': activeTab === tab}"
+                  [id]="tab.toLowerCase().replace(' ', '-')"
+                  role="tabpanel"
+                  [attr.aria-labelledby]="tab.toLowerCase().replace(' ', '-') + '-tab'">
+
+                <!-- Boucle sur les différentes vues -->
+                 <ng-container *ngIf="tickets?.length > 0">
+                    <ng-template *ngIf="view === 'TABLE'" [ngTemplateOutlet]="table"></ng-template>
+                    <ng-template *ngIf="view === 'CARD'" [ngTemplateOutlet]="card"></ng-template>
+                    <ng-template *ngIf="view === 'KABAN'" [ngTemplateOutlet]="kaban"></ng-template>
+                    <ng-template *ngIf="view === 'CALENDAR'" [ngTemplateOutlet]="calendar"></ng-template>
+                 </ng-container>
+                 <!-- Boucle sur les différentes vues -->
+                  <ng-container *ngIf="tickets?.length == 0">
+                    <div >
+                      <app-no-data [title]="'Aucun tickets trouvé'" *ngIf="tickets && tickets?.length === 0"></app-no-data>
+                    </div>
+
+                  </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+
+
+<ng-template #content let-item='item'>
+  <div class="d-flex justify-content-end text-end mb-1">
+    <i class="fas fa-trash text-danger" (click)="removeFilter(item)"></i>
+  </div>
+
+  <!-- TextBox Filter -->
+  <div *ngIf="item?.type === 'textbox'">
+    <ng-select [items]="item?.row" bindLabel="libelle" bindValue="uuid" [multiple]="true"
+      placeholder="Rechercher…" (change)="change(item, $event)">
+      <ng-template ng-option-tmp let-item="item">
+        {{ item.libelle }}
+      </ng-template>
+    </ng-select>
+  </div>
+
+  <!-- Text Filter -->
+  <div  *ngIf="item?.type === 'text'">
+    <input type="text" [placeholder]="item?.libelle" class="input-border w-100" (change)="change(item, $event?.target.value)">
+  </div>
+
+  <!-- date Filter -->
+  <div  *ngIf="item?.type === 'date'">
+    <input type="date" [placeholder]="item?.libelle" class="input-border w-100" (change)="change(item, $event?.target.value)">
+  </div>
+
+</ng-template>
+<ng-template #table>
+  <div class="row">
+    <div class="table-responsive">
+      <app-ticket-table [tickets]="tickets"  class="width"></app-ticket-table>
+    </div>
+  </div>
+</ng-template>
+<ng-template #card>
+  <div class="row">
+    <div class="col-md-4 mb-2" *ngFor="let item of tickets">
+      <div class="border border-2 rounded p-3 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="mr-2 position-relative d-inline-block">
+              <img class="img-radius img-fluid wid-80 hei-80" [src]="'assets/images/avatar-default.png'"
+                onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"
+                style="width: 80px; height: 80px; object-fit: cover;" />
+            </div>
+            <div class="flex-grow-1 ml-2 d-flex flex-column justify-content-start align-items-end">
+              <div>
+                <i class="fas fa-ruler mr-2"></i> <span class="badge badge-{{item?.etat == 'OUVERT' ? 'danger' : item?.etat == 'EN COURS' ? 'warning' : 'success'}}"> {{ item?.etat }}</span>
+              </div>
+              <div class="text-muted">
+                # {{ item?.code }}
+              </div>
+              <div>
+                <span class="rounded-circle bg-{{item?.urgence == 'URGENT' ? 'danger' : item?.urgence == 'IMPORTANT' ? 'primary' : 'warning'}} d-inline-block" 
+                style="width: 10px; height: 10px;"></span> {{ item?.urgence }}
+              </div>
+            </div>
+        </div>
+        <div class="flex-grow-1 mb-1">
+          {{ item?.objet }}
+        </div>
+        <div>
+          <p>
+            Plaignant: {{ item?.libelle }} <br>
+            Catégorie: {{ item?.category?.libelle }}
+          </p>
+        </div>
+        <div class="text-black">
+          <a href="javascript:void(0)" (click)="show(item)" class="mr-2 text-black"> <i class="fas fa-eye text-primary"></i> Voir </a>
+          <a href="javascript:void(0)" *ngIf="item?.qualifier === 'NON'"  (click)="edit(item)" class="mr-2" ngbTooltip="Editer">  <i class="feather icon-edit-2 text-primary"></i> Editer </a>
+          <a href="javascript:void(0)" *ngIf="item?.qualifier === 'NON'"  (click)="qualifier(item)" class="mr-2" ngbTooltip="Qualifier"> <i class="feather icon-share-2 text-success"></i> Qualifier </a>
+          <a href="javascript:void(0)" *ngIf="item?.etat != 'FERME'"  (click)="fermer(item)" class="mr-2" ngbTooltip="Cloturer">  <i class="fas fa-check-circle text-danger"></i> Cloturer </a>
+          <a href="javascript:void(0)" *ngIf="item?.qualifier === 'OUI' && item?.etat != 'FERME'"  (click)="note(item)" class="mr-2" ngbTooltip="Note">   <i class="fas fa-book text-secondary"></i> Note </a>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #kaban>
+</ng-template>
+<ng-template #calendar>
+  <div class="row">
+    <div class="col-sm-12">
+      <!-- <bryntum-calendar #calendar [resources]="events"  [events]="datas" ></bryntum-calendar> -->
+    </div>
+  </div>
+</ng-template>
+
+<div class="q-view" [ngClass]="showComment ? 'active' : ''">
+  <div class="overlay" (click)="this.showComment = !this.showComment"></div>
+  <div class="content">
+    <div class="card-body">
+      <!-- <h5> ID: # {{ ticket?.code }}</h5>
+      <h5>{{ ticket?.objet }}</h5> -->
+      <!-- <div class="border-bottom pb-3 pt-3">
+        <div class="row">
+          <div class="col-md-7">
+            <button *ngIf="ticket.etat!='FERME'" type="button" (click)="close(ticket)"
+              class="btn btn-outline-success btn-sm mr-2">Fermer
+              <i class="feather icon-check mr-1"></i>
+            </button>
+          </div>
+          <div class="col-md-5 text-right">
+          </div>
+        </div>
+      </div> -->
+    </div>
+    <div class="chat-card" #scrollMe style="height: 50%; overflow-y: auto;">
+      <div style="overflow: hidden;">
+        <div class="card-body">
+          <div *ngFor="let item of chats">
+            <div *ngIf="item?.user?.uuid == user?.uuid" class="row m-b-20 send-chat">
+              <div class="col">
+                <div class="msg">
+                  <p [innerHTML]="item?.message" class="m-b-0"></p>
+                  <img *ngFor="let image of item?.folder?.files" src="{{publicUrl+'/'+image?.fullPath}}" alt=""
+                    (click)="open(publicUrl+'/'+image?.fullPath)">
+                </div>
+                <p class="text-muted m-b-0"><i class="fa fa-clock-o m-r-10"></i>{{item?.user?.nom}}</p>
+              </div>
+              <div class="col-auto p-l-0">
+                <img src="assets/images/avatar-default.png" alt="user image" class="img-radius wid-40">
+              </div>
+            </div>
+            <div *ngIf="item?.user?.uuid != user?.uuid" class="row m-b-20 received-chat">
+              <div class="col-auto p-r-0">
+                <img src="assets/images/avatar-default.png" alt="user image" class="img-radius wid-40">
+              </div>
+              <div class="col">
+                <div class="msg">
+                  <p [innerHTML]="item.message" class="m-b-0"></p>
+                  <img *ngFor="let image of item?.folder?.files" src="{{publicUrl+'/'+image?.fullPath}}" alt=""
+                    (click)="open(publicUrl+'/'+image?.fullPath)">
+                </div>
+                <p class="text-muted m-b-0"><i class="fa fa-clock-o m-r-10"></i>{{item?.user?.nom}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="px-5">
+      <form >
+        <div class="form-group">
+          <input type="text" formControlName="message" placeholder="Message" name="task-insert" id="Project"
+            class="form-control">
+          <div class="form-icon">
+            <button type="submit" class="btn btn-primary btn-icon">
+              <i *ngIf="!loading" class="feather icon-message-circle"></i>
+              <span *ngIf="loading" role="status" class="spinner-border spinner-border-sm"></span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

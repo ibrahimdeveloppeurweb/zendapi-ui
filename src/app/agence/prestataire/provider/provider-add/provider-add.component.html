@@ -1,0 +1,387 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirm()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR LE BIEN CONCERNE -->
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width">
+          DETAILS SUR LE PRESTATAIRE/PRESTATAIRE
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <label for="groupe">Groupe <span class="asterix">*</span></label>
+            <select formControlName="groupe" class="form-control" id="groupe" [ngClass]="{
+                'is-invalid': submit && f.groupe.errors,
+                'is-valid': submit && f.groupe.valid
+              }">
+              <option [value]="'FOURNISSEUR'">FOURNISSEUR</option>
+              <option [value]="'PRESTATAIRE'">PRESTATAIRE</option>
+              <option [value]="'FOURNISSEUR_PRESTATAIRE'">FOURNISSEUR et PRESTATAIRE</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.groupe.errors">
+              <div *ngIf="f.groupe.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="type">Type de prestataire <span class="asterix">*</span></label>
+            <select formControlName="type" class="form-control" id="type" [ngClass]="{
+                'is-invalid': submit && f.type.errors,
+                'is-valid': submit && f.type.valid
+              }">
+              <option [value]="'PARTICULIER'">PARTICULIER</option>
+              <option [value]="'ENTREPRISE'">ENTREPRISE</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+              <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+            <div class="col-md d-flex ">
+              <div class="position-relative form-group flex-grow-1">
+                <label for="pays">Corps de metier <span class="asterix mr-2">*</span></label>
+                <app-entity-finder [class]="'Job'" [namespace]="'Provider'" [groups]="['job']" [required]="true"
+                  (uuid)="setJobUuid($event)" [selected]="jobSelected">
+                </app-entity-finder>
+              </div>
+
+              <div *ngIf="!edit" class="mt-4">
+                <button (click)="addJob($event)" class="btn btn-primary">
+                  <i class="fas fa-plus-circle"></i>
+                </button>
+              </div>
+            </div>
+             
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'PARTICULIER'" class="col-md-4">
+            <label for="civilite">Civilité </label>
+            <select formControlName="civilite" class="form-control" id="civilite" [ngClass]="{
+                'is-invalid': submit && f.civilite.errors,
+                'is-valid': submit && f.civilite.valid
+              }">
+              <option *ngFor="let item of civilityRow" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="nom">
+              {{f.type.value === 'PARTICULIER' ? 'Nom et prénoms' : 'Raison sociale'}}
+              <span class="asterix">*</span>
+            </label>
+            <input formControlName="nom" class="form-control" id="nom" [ngClass]="{
+                'is-invalid': submit && f.nom.errors,
+                'is-valid': submit && f.nom.valid
+              }" [placeholder]="f.type.value === 'PARTICULIER' ? 'Nom et prénoms' : 'Raison sociale'" (change)="onNomChange()">
+            <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+              <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'PARTICULIER'" class="col-md-4">
+            <label for="sexe">Genre </label>
+            <select formControlName="sexe" class="form-control" id="sexe" [ngClass]="{
+                'is-invalid': submit && f.sexe.errors,
+                'is-valid': submit && f.sexe.valid
+              }">
+              <option *ngFor="let item of sexRow" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div *ngIf="f.type.value === 'ENTREPRISE'" class="col-md-4">
+            <label for="ncc">N° Compte contribuable</label>
+            <input type="text" formControlName="ncc" class="form-control" id="ncc" placeholder="N° Compte contribuable">
+          </div>
+          <div *ngIf="f.type.value === 'ENTREPRISE'" class="col-md-4">
+            <label for="nrc">N° Registre de commerce</label>
+            <input type="text" formControlName="nrc" class="form-control" id="nrc"
+              placeholder="N° Registre de commerce">
+          </div>
+          <div class="col-md-4">
+            <label for="service">Service fournit <span class="asterix">*</span></label>
+            <input formControlName="service" class="form-control" id="service" [ngClass]="{
+                'is-invalid': submit && f.service.errors,
+                'is-valid': submit && f.service.valid
+              }" placeholder="Service fournit">
+            <div class="invalid-feedback" *ngIf="submit && f.service.errors">
+              <div *ngIf="f.service.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="domicile">
+              {{f.type.value === 'PARTICULIER' ? 'Domicile' : 'Siège sociale'}}
+            </label>
+            <input formControlName="domicile" class="form-control" id="domicile"
+              [placeholder]="f.type.value === 'PARTICULIER' ? 'Domicile' : 'Siège sociale'">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width">
+          LOCALISATION DU FOURNISSEUR/PRESTATAIRE
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-{{f.type.value === 'PARTICULIER'? '3': '4'}}">
+            <div class="position-relative form-group">
+              <label for="pays">Pays <span class="asterix mr-2">*</span></label>
+              <app-entity-finder [class]="'Country'" [namespace]="'Extra'" [groups]="['pays']" [required]="true"
+                (uuid)="setPaysUuid($event)" [selected]="paysSelected">
+              </app-entity-finder>
+            </div>
+          </div>
+          <div class="col-md-{{f.type.value === 'PARTICULIER'? '3': '4'}}">
+            <div class="position-relative form-group">
+              <label for="ville">Ville </label>
+              <input type="text" class="form-control" id="ville" formControlName="ville" placeholder="Ville"
+                [ngClass]="{ 'is-invalid': submit && f.ville.errors, 'is-valid': submit && f.ville.valid }">
+            </div>
+          </div>
+          <div class="col-md-{{f.type.value === 'PARTICULIER'? '3': '4'}}">
+            <div class="position-relative form-group">
+              <label for="commune">Commune </label>
+              <input type="text" class="form-control" id="commune" formControlName="commune" placeholder="Commune"
+                [ngClass]="{ 'is-invalid': submit && f.commune.errors, 'is-valid': submit && f.commune.valid }">
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'PARTICULIER'" class="col-md-3">
+            <div class="position-relative form-group">
+              <label for="quartier">Quartier </label>
+              <input type="text" class="form-control" id="quartier" formControlName="quartier" placeholder="Quartier"
+                [ngClass]="{ 'is-invalid': submit && f.quartier.errors, 'is-valid': submit && f.quartier.valid }">
+              <div class="invalid-feedback" *ngIf="submit && f.quartier.errors">
+                <div *ngIf="f.quartier.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width">
+          AUTRES
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-{{f.type.value === 'PARTICULIER'? '3': '4'}}">
+            <div class="position-relative form-group">
+              <label for="email">E-mail </label>
+              <input type="email" formControlName="email" class="form-control" id="email" placeholder="E-mail"
+                [ngClass]="{'is-invalid': submit && f?.email?.errors,'is-valid': submit && f?.email?.valid}">
+              <div class="invalid-feedback" *ngIf="submit && f?.email?.errors">
+                <div *ngIf="f?.email?.errors.required">{{required.novide}}</div>
+                <div *ngIf="f?.email?.errors.pattern">{{required.noemail}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-{{f.type.value === 'PARTICULIER'? '3': '4'}}">
+            <div class="position-relative form-group">
+              <label for="codePostal">Adresse postal </label>
+              <input type="text" class="form-control" id="codePostal" formControlName="codePostal"
+                placeholder="Adresse postal"
+                [ngClass]="{ 'is-invalid': submit && f.codePostal.errors, 'is-valid': submit && f.codePostal.valid }">
+            </div>
+          </div>
+          <div class="col-md-{{f.type.value === 'PARTICULIER'? '3': '4'}}">
+            <div class="position-relative form-group">
+              <label for="telephone">Contact </label>
+              <input type="text" class="form-control" id="telephone" formControlName="telephone" placeholder="225 XXXXXXXX"
+                [ngClass]="{ 'is-invalid': submit && f.telephone.errors, 'is-valid': submit && f.telephone.valid }">
+              <div class="invalid-feedback" *ngIf="submit && f.telephone.errors">
+                <div *ngIf="f.telephone.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-{{f.type.value === 'PARTICULIER'? '3': '4'}}">
+            <div class="position-relative form-group">
+              <label for="numRegistre">Numéro du registre </label>
+              <input type="text" class="form-control" id="numRegistre" formControlName="numRegistre"
+                placeholder="Numéro du registre">
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'PARTICULIER'" class="col-md-3">
+            <div class="position-relative form-group">
+              <label for="naturePiece">Nature de la pièce </label>
+              <select class="form-control" id="naturePiece" formControlName="naturePiece"
+                [ngClass]="{ 'is-invalid': submit && f.naturePiece.errors, 'is-valid': submit && f.naturePiece.valid }">
+                <option *ngFor="let item of pieceRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.naturePiece.errors">
+                <div *ngIf="f.naturePiece.errors.pattern">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'PARTICULIER'" class="col-md-3">
+            <div class="position-relative form-group">
+              <label for="numPiece">Numéro de la pièce </label>
+              <input type="text" class="form-control" id="numPiece" formControlName="numPiece"
+                placeholder="Numéro de la pièce"
+                [ngClass]="{ 'is-invalid': submit && f.numPiece.errors, 'is-valid': submit && f.numPiece.valid }">
+              <div class="invalid-feedback" *ngIf="submit && f.numPiece.errors">
+                <div *ngIf="f.numPiece.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'PARTICULIER'" class="col-md-3">
+            <div class="position-relative form-group">
+              <label for="dateDelivre">Date de délivrance: </label>
+              <input formControlName="dateDelivre" type="date" class="form-control" id="dateDelivre" [ngClass]="{
+                'is-invalid': submit && f.dateDelivre.errors,
+                'is-valid': submit && f.dateDelivre .valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.dateDelivre.errors">
+                <div *ngIf="f.dateDelivre.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'PARTICULIER'" class="col-md-3">
+            <div class="position-relative form-group">
+              <label for="dateExpire">Date d'expiration: </label>
+              <input formControlName="dateExpire" type="date" class="form-control" id="dateExpire" [ngClass]="{
+                'is-invalid': submit && f.dateExpire.errors,
+                'is-valid': submit && f.dateExpire .valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.dateExpire.errors">
+                <div *ngIf="f.dateExpire.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'ENTREPRISE'" class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="naturePiece">Nature de la pièce du représantant</label>
+              <select class="form-control" id="naturePiece" formControlName="naturePiece"
+                [ngClass]="{ 'is-invalid': submit && f.naturePiece.errors, 'is-valid': submit && f.naturePiece.valid }">
+                <option *ngFor="let item of pieceRow" [value]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.naturePiece.errors">
+                <div *ngIf="f.naturePiece.errors.pattern">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'ENTREPRISE'" class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="pieceRepresentant">La pièce du représentant</label>
+              <div class="custom-file">
+                <input type="file" id="pieceRepresentant" (change)="uploadPieceFiles($event)"
+                  formControlName="pieceRepresentant" class="custom-file-input">
+                <label class="custom-file-label" for="pieceRepresentant">{{ filePieceName?.name ? filePieceName?.name :
+                  'Selectionner le fichier'}}</label>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'ENTREPRISE'" class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="juridique">Forme juridique </label>
+              <input type="text" class="form-control" id="juridique" formControlName="juridique"
+                placeholder="Forme juridique"
+                [ngClass]="{ 'is-invalid': submit && f.juridique.errors, 'is-valid': submit && f.juridique.valid }">
+              <div class="invalid-feedback" *ngIf="submit && f.juridique.errors">
+                <div *ngIf="f.juridique.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'ENTREPRISE'" class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="compte">Compte contribuable </label>
+              <input type="text" class="form-control" id="compte" formControlName="compte"
+                placeholder="Compte contribuable"
+                [ngClass]="{ 'is-invalid': submit && f.compte.errors, 'is-valid': submit && f.compte.valid }">
+              <div class="invalid-feedback" *ngIf="submit && f.compte.errors">
+                <div *ngIf="f.compte.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="f.type.value === 'ENTREPRISE'" class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="prestation">Prestation </label>
+              <select class="form-control" id="prestation" formControlName="prestation"
+                [ngClass]="{ 'is-invalid': submit && f.prestation.errors, 'is-valid': submit && f.prestation.valid }">
+                <option *ngFor="let item of prestationRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.prestation.errors">
+                <div *ngIf="f.prestation.errors.pattern">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="registreCom">Registre de commerce</label>
+              <div class="custom-file">
+                <input type="file" id="registreCom" (change)="uploadRegistreFiles($event)" formControlName="registreCom"
+                  class="custom-file-input">
+                <label class="custom-file-label" for="registreCom">{{ fileRegistreName?.name ? fileRegistreName?.name :
+                  'Selectionner le fichier'}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="statutEntreprise">Statut de l'entreprise</label>
+              <div class="custom-file">
+                <input type="file" id="statutEntreprise" (change)="uploadStatutFiles($event)"
+                  formControlName="statutEntreprise" class="custom-file-input" [ngModel]="dataStatutEntre">
+                <label class="custom-file-label" for="statutEntreprise">{{ fileStatutName?.name ? fileStatutName?.name :
+                  'Selectionner le fichier'}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="dfe">DFE</label>
+              <div class="custom-file">
+                <input type="file" id="dfe" (change)="uploadDfeFiles($event)" formControlName="dfe"
+                  class="custom-file-input" [ngModel]="dataDfe">
+                <label class="custom-file-label" for="dfe">{{ fileDfeName?.name ? fileDfeName?.name : 'Selectionner le fichier DFE'}}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width">
+          INFORMATIONS COMPTABLE
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-6">
+            <label for="prix">Compte comptable </label>
+            <app-entity-finder [namespace]="'Accounting'" [class]="'Account'" [groups]="['account']" [required]="true"
+              [selected]="accountSelected" (uuid)="setAccountUuid($event)"
+              [placeholder]="'Selectionez un compte comptable'">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-4">
+            <label for="numero">Numéro compte auxiliaire </label>
+            <input formControlName="numero" class="form-control" id="numero" [ngClass]="{
+                'is-invalid': submit && f.numero.errors,
+                'is-valid': submit && f.numero.valid
+              }" [placeholder]="'Numéro compte auxiliaire'" />
+            <div class="invalid-feedback" *ngIf="submit && f.numero.errors">
+              <div *ngIf="f.numero.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,228 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('PAIEMENT')" type="button" class="btn btn-secondary w-100">
+        Paiements Locatifs <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.pay : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('PAIEMENT-VENTE')" type="button" class="btn btn-secondary w-100">
+        Paiements Vente <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.payCl : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('CONTRAT')" type="button" class="btn btn-secondary w-100">
+        Contrat Locatifs <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.cont : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('FOLDER')" type="button" class="btn btn-secondary w-100">
+        Dossier De Vente <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.fol : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('MANDAT')" type="button" class="btn btn-secondary w-100">
+        Mandat De Gestion <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.mandat : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('REVERSEMENT')" type="button" class="btn btn-secondary w-100">
+        Reversement <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.repay : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('ETAT')" type="button" class="btn btn-secondary w-100">
+        Etat des lieux <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.inv : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('RESILIATION')" type="button" class="btn btn-secondary w-100">
+        Resiliation De Contrat <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.resili :
+            0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('RESILIATION-DOSSIER')" type="button" class="btn btn-secondary w-100">
+        Resiliation De DOSSIER <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.resiliF :
+            0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('RENOUVELLEMENT')" type="button" class="btn btn-secondary w-100">
+        Renouvellement De Contrat <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.renew :
+            0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('APPROVISIONNEMNT')" type="button" class="btn btn-secondary w-100">
+        Approvisionnement <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget?.supplies : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('DEPENSE')" type="button" class="btn btn-secondary w-100">
+        Dépense <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget?.spents : 0}}</b></span>
+      </button>
+    </div>
+    <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('DEMANDE')" type="button" class="btn btn-secondary w-100">
+        Demande De Fond <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.funds : 0 }}</b></span>
+      </button>
+    </div>
+    <!-- <div class="col-md-3 mb-3">
+      <button (click)="onChangeLoad('MUTATION')" type="button" class="btn btn-secondary w-100">
+        Mutation De Dossier <span class="badge badge-warning ml-3"><b>{{this.widget ? this.widget.mutation : 0}}</b></span>
+      </button>
+    </div> -->
+  </div>
+
+  <div class="row justify-content-center">
+    <!-- FILTRE DE RECHERCHE -->
+    <app-filter class="width" [name]="name" [nameTitle]="nameTitle" [nameType]="nameType" [nameClass]="nameClass"
+      [nameNamespace]="nameNamespace" [nameGroups]="nameGroups" [autre]="autre" [autreTitle]="autreTitle"
+      [autreType]="autreType" [autreClass]="autreClass" [autreNamespace]="autreNamespace" [autreGroups]="autreGroups"
+      [bien]="bien" [bienTitle]="bienTitle" [bienType]="bienType" [bienClass]="bienClass"
+      [bienNamespace]="bienNamespace" [bienGroups]="bienGroups" [dateD]="true" [dateF]="true" [type]="true"
+      [typeDisabled]="true" [typeDefault]="default" [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)"
+      (filterEvent)="onFilter($event)">
+    </app-filter>
+
+    <!-- LISTE DES PAYEMENTS -->
+    <div class="col-md-12" *ngIf="type === 'PAIEMENT'">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES PAIEMENTS
+      </span>
+      <app-no-data class="width" [title]="'Aucun paiement trouvé'" *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-payment-list class="width" [payments]="datas" [locataire]="true" [validate]="true"
+      *ngIf="type === 'PAIEMENT' && datas && datas.length > 0"></app-payment-list>
+
+    <!-- LISTE DES PAYEMENTS CLIENT-->
+    <div class="col-md-12" *ngIf="type === 'PAIEMENT-VENTE'">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES PAIEMENTS
+      </span>
+      <app-no-data class="width" [title]="'Aucun paiement trouvé'" *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-payment-customer-list class="width" [payments]="datas"
+      *ngIf="type === 'PAIEMENT-VENTE' && datas && datas.length > 0" [validate]="true"  [customer]="false"></app-payment-customer-list>
+
+    <!-- LISTE DES DOSSIERS -->
+    <div class="col-md-12" *ngIf="type === 'FOLDER'">
+      <span class="badge badge-secondary mb-4 f-14 width">
+        LISTE DES DOSSIERS
+      </span>
+      <app-no-data class="width" [title]="'Aucun dossier trouvé'" *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-folder-list class="width" [folders]="datas" [customer]="true"  *ngIf="type === 'FOLDER' && datas && datas.length > 0"
+      [validate]="true"></app-folder-list>
+
+    <!-- LISTE DES CONTRACTS -->
+    <div class="col-md-12" *ngIf="type === 'CONTRAT'">
+      <span class="badge badge-secondary my-2 f-14 formBadge width">
+        LISTE DES CONTRATS
+      </span>
+
+      <app-no-data class="width" [title]="'Aucun contrat trouvé'" *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-contract-list class="width" [contracts]="datas" [locataire]="true" [validate]="true"
+      *ngIf="type === 'CONTRAT' && datas && datas.length > 0">
+    </app-contract-list>
+
+
+    <!-- LISTE DES ETAT DES LIEUX -->
+    <div class="col-md-12" *ngIf="type === 'ETAT'">
+      <span class="badge badge-info my-2 f-14 formBadge width">
+        LISTE DES ETATS DE LIEUX
+      </span>
+      <app-no-data class="width" [title]="'Aucun etat de lieux trouvé'"
+        *ngIf="type === 'ETAT' && datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-inventory-list class="width" [action]="true" [inventories]="datas" [locataire]="false" [validate]="true"
+      *ngIf="type === 'ETAT' && datas && datas.length > 0">
+    </app-inventory-list>
+
+    <!-- LISTE DES RENOUVELLEMENTS-->
+    <div class="col-md-12" *ngIf="type === 'RENOUVELLEMENT'">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES RENOUVELLEMENTS
+      </span>
+      <app-no-data class="width" [title]="'Aucun renouvellement trouvé'"
+        *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-renew-contract-list class="width" [renews]="datas" [locataire]="true" [validate]="true"
+      *ngIf="type === 'RENOUVELLEMENT' && datas && datas.length > 0">
+    </app-renew-contract-list>
+
+    <!-- LISTE DES RESILIATIONS -->
+    <div class="col-md-12" *ngIf="type === 'RESILIATION'">
+      <span class="badge badge-secondary my-2 f-14 formBadge width">
+        LISTE DES RESILIATIONS DE CONTRAT
+      </span>
+      <app-no-data class="width" [title]="'Aucune résiliation de contrat trouvé'"
+        *ngIf="type === 'RESILIATION' && datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-terminate-list class="width" [locataire]="true" [validate]="true" [terminates]="datas"
+      *ngIf="type === 'RESILIATION' &&   datas && datas.length > 0">
+    </app-terminate-list>
+
+    <!-- LISTE DES MANDATS -->
+    <div class="col-md-12" *ngIf="type === 'MANDAT'">
+      <span class="badge badge-warning mb-4 f-14 width">
+        LISTE DES MANDATS
+      </span>
+      <app-no-data [title]="'Aucun mandat trouvé'" *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-mandate-list  [owner]="true" [mandates]="datas" *ngIf="type === 'MANDAT' && datas && datas.length > 0" [validate]="true"
+      class="width">
+    </app-mandate-list>
+
+    <!-- LISTE DES REVERSEMENTS -->
+    <div class="col-md-12" *ngIf="type === 'REVERSEMENT'">
+      <span class="badge badge-success mb-4 f-14 width">
+        LISTE DES REVERSEMENTS
+      </span>
+      <app-no-data [title]="'Aucun réversement trouvé'" *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-repayment-list [owner]="true" [repayments]="datas" *ngIf="type === 'REVERSEMENT' && datas && datas.length > 0"
+      [validate]="true" class="width">
+    </app-repayment-list>
+
+    <!-- LISTE DES RESILIATIONS DE DOSSIER -->
+    <div class="col-md-12" *ngIf="type === 'RESILIATION-DOSSIER'">
+      <span class="badge badge-secondary my-2 f-14 formBadge width">
+        LISTE DES RESILIATIONS DE DOSSIER
+      </span>
+      <app-no-data [title]="'Aucune résiliation de dossier trouvée'" *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-folder-terminate-list class="width" [terminates]="datas" [validate]="true" [customer]="true"
+      *ngIf="type === 'RESILIATION-DOSSIER' && datas && datas.length > 0"></app-folder-terminate-list>
+
+    <!-- LISTE DES APPROVISIONNEMENTS -->
+    <div class="col-md-12" *ngIf="type === 'APPROVISIONNEMENT'">
+      <span class="badge badge-success mb-3 f-14 formBadge width">
+        LISTE DES APPROVISIONNEMENTS
+      </span>
+      <app-no-data [title]="'Aucun approvisionnement trouvé'" *ngIf="datas && datas.length === 0"></app-no-data>
+    </div>
+    <app-supply-list class="width" [action]="true" [supplies]="datas" *ngIf="type === 'APPROVISIONNEMENT' && datas && datas.length > 0"></app-supply-list>
+
+    <!-- LISTE DES DEPENSES -->
+    <div class="col-md-12" *ngIf="type === 'DEPENSE'">
+      <span class="badge badge-primary my-2 f-14 formBadge width">
+        LISTE DES DEPENSES
+      </span>
+    </div>
+    <app-spent-list class="width" [tresorerie]="false" [spents]="datas" *ngIf="type === 'DEPENSE' && datas && datas.length > 0"></app-spent-list>
+    
+    <!-- LISTE DES DEMANDES DE FONDS -->
+    <div class="col-md-12" *ngIf="type === 'DEMANDE'">
+      <!-- <span class="badge badge-primary my-2 f-14 formBadge width">
+        LISTE DES DEMANDES DE FONDS
+      </span> -->
+      <app-no-data class="width" [title]="'Aucun Demande trouvé'" *ngIf="datas && datas.length === 0"></app-no-data> 
+      
+    </div>
+    <app-fund-request-list class="width" [isfiltervisible]="false" [funds]="datas" [tresorerie]="false" 
+      *ngIf="type === 'DEMANDE' && datas"></app-fund-request-list>
+  </div>
+</div>

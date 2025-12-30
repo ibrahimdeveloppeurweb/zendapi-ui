@@ -1,0 +1,180 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-primary my-2 f-14 width"> INFORMATIONS GENERALES</span>
+            </div>
+
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="type">Type de la Ressource <span class="asterix">*</span></label>
+                        <select class="form-control" id="type" formControlName="type"
+                            [ngClass]="{ 'is-invalid': submit && f.type.errors, 'is-valid': submit && f.type.valid }">
+                            <option *ngFor="let item of Types" [value]="item.value">{{item.label}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                            <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="famille">Famille de ressource <span class="asterix">*</span></label>
+                        <app-entity-finder [class]="'Famille'" [groups]="['famille']" [isAutoCreate]="true"
+                          [required]="true" [selected]="familleSelected" (uuid)="setFamilleUuid($event)"
+                          [placeholder]="'Selectionez une famille'">
+                        </app-entity-finder>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="sousFamille">Sous Famille de ressource <span class="asterix">*</span></label>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <ng-select [required]="true" (change)="onChangeSousFamille($event)" id="sousFamille" formControlName="sousFamille" [(ngModel)]="sousFamilleSelected" >
+                                    <ng-option *ngFor="let item of sousFamilles" [value]="item.uuid">{{item?.libelle}}</ng-option>
+                                </ng-select>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="add" (click)="onAdd()"> <i class="fas fa-plus text-white fs-12"></i></span>
+                            </div>
+                        </div>
+                        <div class="invalid-feedback" *ngIf="submit && f.sousFamille.errors">
+                            <div *ngIf="f.sousFamille.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="codeGestion">Code de Gestion de la Ressource</label>
+                          <div class="d-flex">
+                            <input  [attr.disabled]="false" formControlName="preCode" class="form-control"  id="code"
+                            [ngClass]="{
+                              'is-invalid': submit && f.preCode.errors,
+                              'is-valid': submit && f.preCode.valid
+                            }" [placeholder]="'Codification'">
+                             <input  *ngIf="!edit" formControlName="postCode" class="form-control" id="postCode"  (input)="onInputChangePostCode($event)"
+                             [ngClass]="{ 
+                               'is-invalid': submit && f.postCode.errors,
+                               'is-valid': submit && f.postCode.valid
+                             }" [placeholder]="'Completez la codification '">
+            
+                          </div>
+                        <div class="invalid-feedback" *ngIf="submit && f.codeGestion.errors">
+                          <div *ngIf="f.codeGestion.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="libelle">Désignation de la Ressource </label>
+                        <input type="text" formControlName="libelle" class="form-control" id="libelle"
+                          [ngClass]="{'is-invalid': submit && f.libelle.errors,'is-valid': submit && f.libelle.valid}" placeholder="Désignation de la Ressource" />
+                        <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                          <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="unite">Unité de la Ressource</label>
+                        <input type="text" formControlName="unite" class="form-control" id="unite"
+                          [ngClass]="{'is-invalid': submit && f.unite.errors,'is-valid': submit && f.unite.valid}" placeholder="Unité de la Ressource" />
+                        <div class="invalid-feedback" *ngIf="submit && f.unite.errors">
+                          <div *ngIf="f.unite.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="prix">Prix d'achat</label>
+                        <input type="number" formControlName="prix" class="form-control" id="prix"
+                          [ngClass]="{'is-invalid': submit && f.prix.errors,'is-valid': submit && f.prix.valid}" placeholder="Prix d'achat" />
+                        <div class="invalid-feedback" *ngIf="submit && f.unite.errors">
+                          <div *ngIf="f.prix.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="immobilisation">Type d'Immobilisation <span class="asterix">*</span></label>
+                        <select class="form-control" id="immobilisation" formControlName="immobilisation"
+                            [ngClass]="{ 'is-invalid': submit && f.immobilisation.errors, 'is-valid': submit && f.immobilisation.valid }">
+                            <option *ngFor="let item of immobilisationRow" [value]="item.value">{{item.label}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.immobilisation.errors">
+                            <div *ngIf="f.immobilisation.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="methode">Méthode d'Evaluation Comptable <span class="asterix">*</span></label>
+                        <select class="form-control" id="methode" formControlName="methode"
+                            [ngClass]="{ 'is-invalid': submit && f.methode.errors, 'is-valid': submit && f.methode.valid }">
+                            <option *ngFor="let item of evalutions" [value]="item.value">{{item.label}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.methode.errors">
+                            <div *ngIf="f.methode.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                      <label for="description">Description </label>
+                      <textarea class="form-control" name="description" id="description" formControlName="description" placeholder="Description"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+              <span class="badge badge-primary my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLEMENTAIRES </span>
+            </div>
+            <div class="form-group">
+              <div class="row mb-2">
+                <div class="col-md-2">
+                  <app-image-uploader
+                    [maxSize]="2"
+                    (filesd)="loadfile($event)"
+                    [type]="['image/png', 'image/jpg', 'image/jpeg']"
+                    [photo]="edit && ressource ? ressource.photo : null"
+                    (imageUploaded)="setParam('photoUuid', $event)">
+                  </app-image-uploader>
+                </div>
+                <div class="col-md">
+                  <label class="ml-2">Pièces et documents à joindre</label>
+                  <div class="row">
+                    <div [ngClass]="fileT ? 'col-md-4' : 'col-md-12'">
+                      <app-folder-uploader
+                        [maxSize]="3"
+                        (click)="showFile(ressource?.folder)"
+                        (filesd)="files($event)"
+                        (filesUploaded)="setParam('folderUuid',$event)"
+                        [type]="['application/pdf']"
+                        [path]="'locataire'"
+                        [etat]="edit ? 'edit': 'add'"
+                        [folder]="edit && ressource ? ressource.folder : null">
+                      </app-folder-uploader>
+                    </div>
+
+                    <div [ngClass]="fileT ? 'col-md-8' : ''" *ngIf="fileT">
+                      <div class="row">
+                        <div class="col-sm-12 mb-2">
+                          <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                            <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                          </button>
+                        </div>
+                      </div>
+                      <ngx-doc-viewer [url]="fileT" viewer="url" style="width:100%;height: 64vh;">
+                      </ngx-doc-viewer>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="onReset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+
+    </div>
+</form>

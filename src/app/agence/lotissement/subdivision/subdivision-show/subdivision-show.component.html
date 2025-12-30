@@ -1,0 +1,280 @@
+<div class="user-profile user-card mb-4" *ngIf="subdivision">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/promotion-default.jpg'"
+                      alt="{{ item?.libelle }}" title="{{ item?.libelle }}"
+                      class="img-radius img-fluid wid-100 hei-100">
+
+                    <img class="img-radius img-fluid wid-100 hei-100"
+                      [src]="subdivision.photoSrc ? publicUrl+'/'+subdivision.photoSrc : 'assets/images/promotion-default.jpg'"
+                      alt="">
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 class="mb-1">{{ subdivision?.nom }}</h5>
+          <p class="mb-2 text-muted text-uppercase">{{ subdivision?.type }}</p>
+        </div>
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="media">
+                <i class="feather icon-map-pin mr-2 mt-1 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{subdivision?.localisation}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MENU TABS LOTISSEMENT -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowsubdivision" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'LOTISSEMENT'}"
+                (click)="onChangeLoad('LOTISSEMENT')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="fas fa-drafting-compass"></i> Lotissement
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'ILOT'}" (click)="onChangeLoad('ILOT')"
+                id="bien-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="bien" aria-selected="true">
+                <i class="fas fa-campground"></i> Ilot
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'LOT'}"
+                (click)="onChangeLoad('LOT')" id="locative-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="locative" aria-selected="false">
+                <i class="fas fa-circle-notch"></i> Lot
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'CARTE'}"
+                (click)="onChangeLoad('CARTE')" id="locative-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="locative" aria-selected="false">
+                <i class="fas fa-circle-notch"></i> Cartographie
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+    <button (click)="mapF()" type="button" class="btn btn-success m-1">
+      <i class="fas fa-map"></i> Ajouter les coordonnées des ilots
+    </button>
+    <!-- <button class="btn btn-success m-1" (click)="visite3D()" type="button"
+      ngbTooltip="Effectuer une visite 3d de la promotion">
+      Visite 3D <i class="fa fa-cube"></i>
+    </button> -->
+</div>
+</div>
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="row" *ngIf="activeTab !== 'LOTISSEMENT' && activeTab !== 'CARTE'">
+  <app-filter class="width" [bienTitle]="bienTitle" [bien]="bien" [user]="true" [userTitle]="userTitle" [name]="false"
+    [nameTitle]="nameTitle" [refTitle]="refTitle" [etat]="true" [etatRow]="etatRow" [etatTitle]="etatTitle"
+    [categorie]="true" [categorieRow]="categorieRow" [categorieTitle]="categorieTitle" [dateD]="true" [dateF]="true"
+    [create]="true" [min]="true" [minTitle]="minTitle" [max]="true" [maxTitle]="maxTitle" [ordre]="true" [code]="true"
+    [count]="true" [type]="true" [typeRow]="typeRow" [uuid]="subdivision.uuid" (filterEvent)="onFilter($event)">
+  </app-filter>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'LOTISSEMENT'}" id="lotissement"
+        role="tabpanel" aria-labelledby="lotissement-tab">
+        <div class="card">
+          <div class="col-md-12 mt-2 text center">
+            <div class="d-flex">
+              <!-- COL GAUCHE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Code : </span>
+                  <span class="title-result-show">{{subdivision?.code}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Nom : </span>
+                  <span class="title-result-show">{{subdivision?.nom}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Type de maison : </span>
+                  <span class="title-result-show">{{subdivision?.type}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Date : </span>
+                  <span class="title-result-show">{{subdivision?.date}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Superficie en hectare : </span>
+                  <span class="title-result-show">{{subdivision?.hectare}} H</span>
+                </p>
+                <p>
+                  <span class="title-show">Superficie en are : </span>
+                  <span class="title-result-show">{{subdivision?.are}} a</span>
+                </p>
+                <p>
+                  <span class="title-show">Superficie en centiare : </span>
+                  <span class="title-result-show">{{subdivision?.centiare}} ca</span>
+                </p>
+                <p>
+                  <span class="title-show">Nombre d'ilot : </span>
+                  <span class="title-result-show">{{subdivision?.nbrIlot}} ilot(s)</span>
+                </p>
+                <p>
+                  <span class="title-show">Nombre de lot : </span>
+                  <span class="title-result-show">{{subdivision?.nbrLot}} Lot(s)</span>
+                </p>
+              </div>
+              <!-- COL GAUCHE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Ville : </span>
+                  <span class="title-result-show">{{subdivision?.ville}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Commune : </span>
+                  <span class="title-result-show">{{subdivision?.commune}}</span>
+                </p>
+                <p>
+                  <span class="title-show">
+                    {{ subdivision?.type === 'RURAL' ? 'Village' : 'Quartier' }} :
+                  </span>
+                  <span class="title-result-show">{{subdivision?.quartier}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Etat : </span>
+                  <span class="badge title-show" [ngClass]="{
+                    'badge-danger' : subdivision?.etat === 'INDISPONIBLE',
+                    'badge-success' : subdivision?.etat ===  'DISPONIBLE'
+                    }">{{ subdivision?.etat}}
+                  </span>
+                </p>
+                <p>
+                  <span class="title-show">Longitude : </span>
+                  <span class="title-result-show">{{subdivision?.lng}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Latitude : </span>
+                  <span class="title-result-show">{{subdivision?.lat}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Crée le : </span>
+                  <span class="title-result-show">{{ subdivision?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ subdivision?.create }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Modifié le : </span>
+                  <span class="title-result-show">{{ subdivision?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ subdivision?.update }}</span>
+                </p>
+              </div>
+            </div>
+            <div class="col-md mb-2" *ngIf="subdivision">
+              <span class="badge badge-primary mb-4 f-14 width">FICHE DE DOSSIER</span>
+              <div class="row">
+                <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                  <app-folder-uploader (click)="showFile(subdivision.folder)" [maxSize]="3"
+                    [folder]="subdivision?.folder" [allowFileUpload]="false" [allowDownload]="true">
+                  </app-folder-uploader>
+                </div>
+                <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                  <div class="row">
+                    <div class="col-sm-12 mb-2">
+                      <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                        <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                      </button>
+                    </div>
+                  </div>
+                  <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                  </ngx-doc-viewer>
+
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button *ngxPermissionsOnly="'SUBDIVISION:EDIT'" (click)="editPromotion(subdivision)" type="button"
+                class="btn btn-primary" ngbTooltip="Modifier">
+                Modifier <i class="feather icon-edit-2"></i>
+              </button>
+              <button *ngxPermissionsOnly="'SUBDIVISION:PRINTER:SHOW'" (click)="printerSubdivision(subdivision)"
+                type="submit" class="btn btn-warning" ngbTooltip="Imprimer">
+                Imprimer <i class="feather icon-printer"></i>
+              </button>
+              <button *ngxPermissionsOnly="'SUBDIVISION:DELETE'" (click)="delete(subdivision)" type="button"
+                class="btn btn-danger text-left" data-dismiss="modal" ngbTooltip="Supprimer">
+                Supprimer <i class="feather icon-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'ILOT'}" id="ilot" role="tabpanel"
+        aria-labelledby="ilot-tab">
+        <div class="row">
+          <!-- LISTE DES ILOTS -->
+          <div class="col-md-12" *ngIf="islets && islets.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES ILOTS
+            </span>
+            <app-no-data [title]="'Aucun ilot trouvé'" *ngIf="islets && islets.length === 0"></app-no-data>
+          </div>
+          <app-islet-list [islets]="islets" *ngIf="islets && islets.length > 0" class="width"></app-islet-list>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'LOT'}" id="lot" role="tabpanel"
+        aria-labelledby="lot-tab">
+        <div class="row">
+          <!-- LISTE DES LOTS -->
+          <div class="col-md-12" *ngIf="lots && lots.length === 0">
+            <span class="badge badge-info mb-4 f-14 width">
+              LISTE DES LOTS
+            </span>
+            <app-no-data [title]="'Aucun lot trouvé'" *ngIf="lots && lots.length === 0"></app-no-data>
+          </div>
+          <app-lot-list [lots]="lots" *ngIf="lots && lots.length > 0" class="width"></app-lot-list>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'CARTE'}" id="carte" role="tabpanel" aria-labelledby="lot-tab">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card p-3">
+              <div id="map"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

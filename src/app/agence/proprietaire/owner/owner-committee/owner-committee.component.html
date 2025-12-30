@@ -1,0 +1,117 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <div class="row">
+      <span class="badge badge-success my-2 f-14 formBadge width"> DÉTAILS DES COMMISSIONS </span>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <form autocomplete="off" [formGroup]="form">
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <label for="house">Type</label>
+                <select formControlName="type" (change)="setType($event.target.value)"
+                  class="form-control" id="house">
+                  <option [value]="'SELECTED'">Individuel</option>
+                  <option [value]="'ALL'">Tout les propriétaires</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-3" *ngIf="f.type.value === 'SELECTED'">
+                <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="f.type.value === 'SELECTED' ? true : false"
+                  [label]="'Propriétaire'" (uuid)="setOwnerUuid($event)"
+                  [selected]="selectedOwner" [disabled]="f.type.value === 'ALL'"
+                  [placeholder]="'Selectionez un propriétaire'">
+                </app-entity-finder>
+              </div>
+              <div class="col-md-3">
+                <label for="house">Bien</label>
+                <select formControlName="house" (change)="setHouseUuid($event.target.value)"
+                  class="form-control" id="house">
+                  <option [value]="null">Tout les biens</option>
+                  <option *ngFor="let item of houses" [value]="item.uuid">{{ item.nom }}</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label for="dateD">Date début</label>
+                <input class="form-control" type="date" formControlName="dateD" id="dateD" [required]="true" />
+              </div>
+              <div class="col-md-2">
+                <label for="dateF">Date Fin</label>
+                <input class="form-control" type="date" formControlName="dateF" id="dateF" [required]="true" />
+              </div>
+              <div class="col-md-2 mt-4">
+                <button type="button" (click)="loadCommittees()" class="btn btn-block btn-primary">
+                  <div *ngIf="isLoadingCommittees" class="float-left mt-1 spinner"></div>
+                  <div class="float-center"><i class="feather icon-filter"></i> Filtrer</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- AFFICHAGE DES RESULATS DE LA RECHERCHE -->
+    <div *ngIf="committees && committees.length > 0">
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width">
+          COMMISSIONS
+        </span>
+      </div>
+
+      <div class="col-sm-12">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead>
+            <tr>
+              <th>Bien</th>
+              <th>Taux (%)</th>
+              <th>Total attendu</th>
+              <th>Total recouvré</th>
+              <th>Reste</th>
+              <th>Commission</th>
+              <!-- <th>Ecart</th> -->
+            </tr>
+          </thead>
+          <tbody class="task-page">
+            <tr *ngFor="let item of committees; let i = index">
+              <td>{{ item?.bien }}</td>
+              <td>{{ item?.taux | number }}</td>
+              <td>{{ item?.totalAttendu | number }}</td>
+              <td>{{ item?.totalRecouvre | number }}</td>
+              <td>{{ item?.reste | number }}</td>
+              <td>{{ item?.commission | number }}</td>
+              <!-- <td>{{ item?.ecart | number }}</td> -->
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="font-weight-bold font-size-40 text-right" colspan="2">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{ totalAttendu | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{ totalRecouvre | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{ reste | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{ commission | number}} {{global.device}}</td>
+              <!-- <td class="font-weight-bold font-size-40 text-success"> {{0 | number}} {{global.device}}</td> -->
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <button [disabled]="committees && committees.length === 0" type="button" class="btn btn-warning" (click)="print()">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

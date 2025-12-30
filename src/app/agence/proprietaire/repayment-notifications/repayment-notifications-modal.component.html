@@ -1,0 +1,111 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    <i class="feather icon-bell"></i> Notifications de Reversement
+  </h4>
+  <button type="button" class="close" aria-label="Close" (click)="close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'all'" (click)="switchTab('all')" style="cursor: pointer;">
+        <i class="feather icon-inbox"></i> Toutes
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'overdue'" (click)="switchTab('overdue')" style="cursor: pointer;">
+        <i class="feather icon-alert-triangle text-danger"></i> En retard
+      </a>
+    </li>
+  </ul>
+
+  <!-- Bouton "Tout marquer comme lu" -->
+  <div class="mb-3" *ngIf="notifications.length > 0">
+    <button class="btn btn-sm btn-outline-secondary" (click)="markAllAsRead()">
+      <i class="feather icon-check"></i> Tout marquer comme lu
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Chargement...</span>
+    </div>
+    <p class="mt-2">Chargement des notifications...</p>
+  </div>
+
+  <!-- Liste des notifications -->
+  <div *ngIf="!loading && notifications.length > 0" class="notification-list">
+    <div *ngFor="let notification of notifications" 
+         class="notification-item"
+         [ngClass]="getNotificationClass(notification)">
+      
+      <!-- Icône -->
+      <div class="notification-icon">
+        <i [class]="getNotificationIcon(notification)"></i>
+      </div>
+
+      <!-- Contenu -->
+      <div class="notification-content">
+        <h5 class="notification-title">{{ notification.title }}</h5>
+        <p class="notification-message">{{ notification.message }}</p>
+        
+        <div class="notification-meta">
+          <span class="meta-item">
+            <i class="feather icon-calendar"></i>
+            Date limite: <strong>{{ formatDate(notification.repaymentDueDate) }}</strong>
+          </span>
+          <span class="meta-item">
+            <i class="feather icon-dollar-sign"></i>
+            Montant: <strong>{{ formatAmount(notification.amount) }}</strong>
+          </span>
+          <span class="meta-item" *ngIf="notification.daysOverdue">
+            <i class="feather icon-clock text-danger"></i>
+            Retard: <strong class="text-danger">{{ notification.daysOverdue }} jour(s)</strong>
+          </span>
+        </div>
+
+        <div class="notification-details mt-2">
+          <span class="badge badge-secondary" *ngIf="notification.mandate?.house?.nom">
+            <i class="feather icon-home"></i> {{ notification.mandate.house.nom }}
+          </span>
+          <span class="badge badge-info" *ngIf="notification.owner?.nom">
+            <i class="feather icon-user"></i> {{ notification.owner.nom }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="notification-actions">
+        <button 
+          class="btn btn-sm btn-success" 
+          (click)="markAsRead(notification)"
+          ngbTooltip="Marquer comme lue">
+          <i class="feather icon-check"></i>
+        </button>
+        <button 
+          class="btn btn-sm btn-outline-secondary" 
+          (click)="dismiss(notification)"
+          ngbTooltip="Ignorer">
+          <i class="feather icon-x"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!loading && notifications.length === 0" class="empty-state text-center py-5">
+    <i class="feather icon-check-circle" style="font-size: 64px; color: #28a745;"></i>
+    <h4 class="mt-3">Aucune notification</h4>
+    <p class="text-muted">Vous n'avez aucune notification en attente</p>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">
+    Fermer
+  </button>
+</div>

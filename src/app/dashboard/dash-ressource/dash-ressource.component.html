@@ -1,0 +1,173 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width"
+  
+    [dateD]="true"
+    [dateF]="true"
+    [name]="true"
+    [nameTitle]="'Ressource'"
+    [type]="true"
+    [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+  </app-filter>
+  <!-- FILTRE DE RECHERCHE END-->
+
+  <!-- WIDGET DES NOMBRES -->
+  <div class="col-xl-3 col-md-6" (click)="ressourceModal(3)">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">Total resources</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-hammer"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <p class="text-white m-b-0">{{ ressources ? ressources.length : 0 }}</p>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-xl-3 col-md-6" (click)="ressourceModal(4)">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">En stock</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-home f-30 text-c-blue"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <h5 class="text-white">{{ stocks ? stocks:0 }} </h5>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-xl-3 col-md-6" (click)="ressourceModal(5)">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">En utilisation</h6>
+<!--          <h6 class="text-muted m-b-0">{{ widget?.proprietaire?.tout > 1 ? 'Propriétaires' : 'Propriétaire' }}</h6>-->
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-hammer"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <p class="text-white m-b-0">{{ useA ? useA : 0}}  {{useA > 1 ? 'Actifs' : 'Actif' }}</p>
+          </div>
+          <div class="col-5 text-right">
+            <p class="text-white m-b-0">{{ useI ? useI : 0}} {{ useI > 1 ? 'Inactifs' : 'Inactif' }}</p>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+
+  <div class="col-xl-3 col-md-6" (click)="ressourceModal(6)">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">Hors d'usage</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="feather icon-x-circle f-30 text-c-red"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <h5 class="text-white">{{ hors ? hors: 0}} </h5>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <!-- WIDGET DES NOMBRES end-->
+
+    <!-- DIAGRAMME CIRCULAIRE -->
+  <div class="col-md-6">
+    <app-card cardTitle="DIAGRAMME CIRCULAIRE DES DISPONIBILITÉS" [options]="false">
+      <div #doughnutChart>
+        <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData1" style="height: 345px;"></chart>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="DIAGRAMME CIRCULAIRE DES TAUX DE L'UTILISATION" [options]="false">
+      <div #doughnutChart>
+        <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData2" style="height: 345px;"></chart>
+      </div>
+    </app-card>
+  </div>
+  <!-- DIAGRAMME CIRCULAIRE -->
+<!-- DIFERRENTS TABLEAU DE LISTING PART 1 -->
+<div class="col-md-12">
+  <div class="row">
+    <div class="col-md-12">
+      <app-card [hidHeader]="true" cardClass="card-datatable" *ngIf="ressources && ressources.length > 0">
+        <div class="row">
+          <div class="table-responsive">
+            <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Reference</th>
+                  <th>Designation</th>
+                  <th>Catégorie</th>
+                  <th>Etat</th>
+                  <th>Date de Creation</th>
+                </tr>
+              </thead>
+                <tbody>
+                  <tr *ngFor="let item of ressources.slice(0,10)">
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        code de gestion : <b>{{ item?.codeGestion }}</b><br />
+                        Référence système : <b>{{ item?.code }}</b><br />
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        {{ item?.libelle }}
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        Famille : {{ item?.famille }}<br />
+                        Sous Famille : {{ item?.sousFamille?.libelle }}<br />
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="badge badge-warning">{{item?.etat}}</span>
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span >Crée Le : {{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span> <br />
+                        <span >Par : {{item?.create}}</span> <br />
+                      </p>
+                    </td>
+            
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </app-card>
+      <app-no-data [title]="'Aucune ressource trouvé'" *ngIf="ressources && ressources?.length === 0"></app-no-data>
+    </div>
+  </div>
+</div>

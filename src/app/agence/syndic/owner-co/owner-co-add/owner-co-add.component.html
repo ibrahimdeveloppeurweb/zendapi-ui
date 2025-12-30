@@ -1,0 +1,250 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width">
+          {{ type === 'ENTREPRISE' ? "DETAILS SUR L'ENTREPRISE" : "DETAILS SUR LE PARTICULIER" }}
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-{{type === 'PARTICULIER' ? 4 : 4}}">
+            <label for="prix">Code </label>
+            <input type="text" formControlName="code" class="form-control" id="code"
+            placeholder="Code coproprietaire">
+          </div>
+          <div class="col-md-{{type === 'PARTICULIER' ? 4 : 4}}" *ngIf="type === 'PARTICULIER'">
+            <label for="civilite">Civilité </label>
+            <select (change)="onSexe()" class="form-control" id="civilite" formControlName="civilite"
+              [ngClass]="{'is-invalid': submit && f.civilite.errors,'is-valid': submit && f.civilite.valid }">
+              <option *ngFor="let item of civilityRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.civilite.errors">
+              <div *ngIf="f.civilite.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-{{type === 'PARTICULIER' ? 4 : 4}}">
+            <label for="nom">
+              {{type === 'ENTREPRISE' ? 'Raison sociale' : 'Nom et prénoms' }} <span class="asterix">*</span>
+            </label>
+            <input type="text" formControlName="nom" class="form-control" id="nom"
+              [ngClass]="{'is-invalid': submit && f.nom.errors,'is-valid': submit && f.nom.valid}"
+              [placeholder]="type === 'ENTREPRISE' ? 'Raison sociale' : 'Nom et prénoms'" (change)="onNomChange()">
+            <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+              <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4" *ngIf="type === 'PARTICULIER'">
+            <label for="sexe">Sexe </label>
+            <input type="text" formControlName="sexe" class="form-control" id="sexe"
+              [ngClass]="{'is-invalid': submit && f.sexe.errors,'is-valid': submit && f.sexe.valid}"
+              placeholder="Ex: Masculin">
+            <div class="invalid-feedback" *ngIf="submit && f.sexe.errors">
+              <div *ngIf="f.sexe.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4" >
+            <label for="trustee">Syndic<span class="asterix">*</span></label>
+            <select  class="form-control" id="trustee" formControlName="trustee"
+              [ngClass]="{'is-invalid': submit && f.trustee.errors,'is-valid': submit && f.trustee.valid }">
+              <option *ngFor="let item of trustes" [ngValue]="item.uuid">{{item.nom}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.trustee.errors">
+              <div *ngIf="f.trustee.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <!--
+            <div class="col-md-4" *ngIf="type === 'ENTREPRISE'">
+              <label for="ncc">N° Compte contribuable</label>
+              <input type="text" formControlName="ncc" class="form-control" id="ncc" placeholder="N° Compte contribuable">
+            </div>
+            <div class="col-md-4" *ngIf="type === 'ENTREPRISE'">
+              <label for="nrc">N° Registre de commerce</label>
+              <input type="text" formControlName="nrc" class="form-control" id="nrc"
+                placeholder="N° Registre de commerce">
+            </div>
+          -->
+          <div class="col-md-{{type === 'PARTICULIER' ? 4 : 3}}">
+            <label for="telephone">
+              {{type === 'ENTREPRISE' ? 'Tel. Bureau' : 'Contact' }}
+            </label>
+            <app-contact-mask [selected]="telephoneSelected" (value)="setContact($event, 'telephone')"
+              [name]="'telephone'" [required]="true" [placeholder]="'Votre pays'"></app-contact-mask>
+            <div class="invalid-feedback" *ngIf="submit && f?.telephone?.errors">
+              <div *ngIf="f.telephone?.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3" formGroupName="user">
+            <label for="email">E-mail</label>
+            <input type="text" formControlName="email" class="form-control" id="email" placeholder="E-mail"
+              [ngClass]="{'is-invalid': submit && f.user?.email?.errors,'is-valid': submit && f?.user?.email?.valid}">
+            <div class="invalid-feedback" *ngIf="submit && f?.user?.email?.errors">
+              <div *ngIf="f.user?.email?.errors.pattern">{{required.noemail}}</div>
+            </div>
+          </div>
+          <div class="col-md-3" *ngIf="type === 'ENTREPRISE'">
+            <label for="codePostal">Boîte postale</label>
+            <input type="text" formControlName="codePostal" class="form-control" id="codePostal"
+              placeholder="Boîte postale">
+          </div>
+          <div class="col-md-{{type === 'PARTICULIER' ? 4 : 3}}">
+            <label for="autorisation">Autorisation de notifier </label>
+            <select class="form-control" id="autorisation" formControlName="autorisation"
+              [ngClass]="{'is-invalid': submit && f.autorisation.errors,'is-valid': submit && f.autorisation.valid }">
+              <option *ngFor="let item of autorisationRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.autorisation.errors">
+              <div *ngIf="f.autorisation.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="prix">Compte comptable </label>
+            <app-entity-finder [namespace]="'Accounting'" [class]="'Account'" [groups]="['account']" [required]="true"
+              [selected]="accountSelected" (uuid)="setAccountUuid($event)"
+              [placeholder]="'Selectionez un compte comptable'">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-4">
+            <label for="numero">Numéro compte auxiliaire </label>
+            <input formControlName="numero" class="form-control" id="numero" [ngClass]="{
+                'is-invalid': submit && f.numero.errors,
+                'is-valid': submit && f.numero.valid
+              }" [placeholder]="'Numéro compte auxiliaire'" />
+            <div class="invalid-feedback" *ngIf="submit && f.numero.errors">
+              <div *ngIf="f.numero.errors.required">{{ required.novide }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="ownerCoService.typeSyndic === 'SYNDIC'">
+        <div class="row">
+          <span class="badge badge-primary my-2 f-14 width">
+            SITUATION FINANCIÈRE
+          </span>
+        </div>
+        <div formArrayName="finances">
+          <form [formGroup]="typeLoadForm">
+            <div class="row">
+              <div class="col-md">
+                <label for="carte">Libelle <span class="asterix">*</span> </label>
+                <input type="text"  formControlName="libelle" class="form-control" id="libelle"
+                placeholder="Libelle">
+              </div>
+              <div class="col-md">
+                <label for="credit">Montant crédit</label>
+                <input type="number" formControlNam e="credit" class="form-control" id="credit"
+                  placeholder="Montant crédit ">
+              </div>
+              <div class="col-md">
+                <label for="debit">Montant débit</label>
+                <input type="text" formControlName="debit" class="form-control" id="debit"
+                  placeholder="Montant débit">
+              </div>
+              <div class="col-md">
+                <label for="date">Date <span class="asterix">*</span></label>
+                <input type="date" formControlName="date" class="form-control" id="date"
+                  placeholder="Date">
+              </div>
+            </div>
+            <br>
+            <div class="form-group text-right">
+              <button  (click)="addType()" class="btn btn-primary">
+                Ajouter
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-12">
+          <span class="badge badge-info my-2 f-14 formBadge width"> LISTE DES SITUATIONS FINANCIÈRES </span>
+        </div>
+        <div class="py-3">
+          <div class="table-responsive m-0">
+            <table class="table table-hover m-0">
+              <thead>
+                <tr>
+                  <th>Libelle</th>
+                  <th>Débit</th>
+                  <th>Crédit</th>
+                  <th>Date</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of finances.value; let i = index">
+                  <td>
+                    {{item?.libelle}}
+                  </td>
+                  <td>
+                    {{item?.credit|number}}
+                  </td>
+                  <td>
+                    {{item?.debit|number}}
+                  </td>
+                  <td>
+                    {{item?.date| date: 'dd-MM-yyyy'}}
+                  </td>
+                  <td class="text-center">
+                    <button type="button" (click)="onDelete(item, i)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-6">
+            <label for="codePostal">Montant crédit</label>
+            <input type="number" formControlName="soldeCredit" class="form-control" id="soldeDebit"
+              placeholder="Montant crédit ">
+          </div>
+          <div class="col-md-6">
+            <label for="codePostal">Montant débit</label>
+            <input type="text" formControlName="soldeDebit" class="form-control" id="soldeDebit"
+              placeholder="Montant débit">
+          </div>
+        </div>
+      </div> -->
+
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLEMENTAIRES </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="flex-grow-0" style="min-width: 30%">
+            <app-image-uploader (filesd)="loadfile($event)" (imageUploaded)="setParam('photoUuid',$event)"
+              [photo]="edit && ownerCo ? ownerCo.photo : null"></app-image-uploader>
+          </div>
+          <div class="col-md">
+            <label>Pièces et documents à joindre</label>
+            <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+              [path]="'proprietaire'" [etat]="edit ? 'edit': 'add'" [folder]="edit && ownerCo ? ownerCo?.folder : null">
+            </app-folder-uploader>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="onReset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

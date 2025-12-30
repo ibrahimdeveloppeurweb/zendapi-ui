@@ -1,0 +1,49 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./dist/out-tsc",
+    "paths": {
+      "@dashboard/*": ["./app/dashboard/*"],
+      "@validation/*": ["./app/validation/*"],
+      "@agence/*": ["./app/agence/*"],
+      "@auth/*": ["./app/auth/*"],
+      "@locataire/*": ["./app/agence/locataire/*"],
+      "@tresorerie/*": ["./app/agence/tresorerie/*"],
+      "@demande/*": ["./app/agence/demande/*"],
+      "@proprietaire/*": ["./app/agence/proprietaire/*"],
+      "@localisation/*": ["./app/agence/localisation/*"],
+      "@parametre/*": ["./app/agence/parametre/*"],
+      "@modal/*": ["./app/agence/modal/*"],
+      "@promotion/*": ["./app/agence/promotion/*"],
+      "@lotissement/*": ["./app/agence/lotissement/*"],
+      "@utilisateur/*": ["./app/security/utilisateur/*"],
+      "@client/*": ["./app/agence/client/*"],
+      "@chantier/*": ["./app/agence/chantier/*"],
+      "@extra/*": ["./app/agence/extra/*"],
+      "@reclamation/*": ["./app/agence/reclamation/*"],
+      "@prestataire/*": ["./app/agence/prestataire/*"],
+      "@rapport/*": ["./app/agence/rapport/*"],
+      "@model/*": ["./app/model/*"],
+      "@service/*": ["./app/service/*"],
+      "@theme/*": ["./app/theme/*"],
+      "@shared/*": ["./app/theme/shared/*"],
+      "@layout/*": ["./app/theme/layout/*"],
+      "@env/*": ["./environments/*"],
+      "@appRoot/*": ["./app/*"]
+    },
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "es2020",
+    "lib": [
+      "es2018",
+      "dom"
+    ]
+  }
+}

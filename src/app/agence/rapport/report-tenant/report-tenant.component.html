@@ -1,0 +1,27 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-report class="width"
+    [name]="true"
+    [nameTitle]="nameTitle"
+    [etat]="true"
+    [bien]="bien"
+    [bienTitle]="bienTitle"
+    [autre]="autre"
+    [autreTitle]="autreTitle"
+    [etat]="etat"
+    [etatTitle]="etatTitle"
+    [etatRow]="etatRow"
+    [categorie]="categorie"
+    [categorieRow]="categorieRow"
+    [categorieTitle]="categorieTitle"
+    [dateD]="true"
+    [dateF]="true"
+    [create]="true"
+    [type]="true"
+    [ordre]="true"
+    [count]="true"
+    [typeRow]="typeRow"
+    (typeEvent)="onChangeLoad($event)"
+    (filterEvent)="onFilter($event)">
+  </app-report>
+</div>

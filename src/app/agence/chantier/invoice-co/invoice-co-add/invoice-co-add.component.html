@@ -1,0 +1,428 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR L'INTERVENTION ET LE PRESTATAIRE -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width"> DETAILS SUR L'INTERVENTION</span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="numero">Reference facture fournisseur<span class="asterix">*</span></label>
+            <input formControlName="numero" class="form-control" id="numero" [ngClass]="{
+                  'is-invalid': submit && f.numero.errors,
+                  'is-valid': submit && f.numero .valid
+                }" placeholder="Numéro">
+            <div class="invalid-feedback" *ngIf="submit && f.numero.errors">
+              <div *ngIf="f.numero.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label>Fournisseur ou Prestataire <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Provider'" [groups]="['provider']" [required]="true"
+              [selected]="currentProvider" [disabled]="this.edit || !canChangeProvider"
+              (uuid)="setProviderUuid($event)">
+            </app-entity-finder>
+          </div>
+          <div *ngIf="!f.construction.value && type=='SYNDIC'" class="col-md-3">
+            <label>Syndic <span class="asterix">*</span></label>
+            <app-entity-finder [namespace]="'Trustee'" [class]="'Trustee'" [groups]="['trustee']" [required]="true"
+              [selected]="currentTrustee" [disabled]="this.edit || !canChangeSyndic" (uuid)="setTrusteeUuid($event)">
+            </app-entity-finder>
+          </div>
+          <!-- <div *ngIf="!edit && !f.construction.value" class="col-md-3">
+            <div *ngIf="isLoadingHouse" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <label for="house">Lot</label>
+            <select (change)="selectHouseCo()" formControlName="house" class="form-control" id="house"
+              [attr.disabled]="f.trustee.value ? null : 'true'" [ngClass]="{
+                'is-invalid': submit && f.house.errors,
+                'is-valid': submit && f.house.valid }">
+              <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+              <option *ngIf="houses.length > 0" [ngValue]="null">Selectionnez une copropriété </option>
+              <option *ngIf="houses.length === 0" [ngValue]="null">Ce Syndic ne possède aucune copropriété </option>
+              <option *ngFor="let house of houses" [ngValue]="house.uuid">{{house.nom}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+              <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+            </div>
+          </div> -->
+          <div *ngIf="edit && !f.construction.value && type=='SYNDIC'" class="col-md-3">
+            <label for="house">Lot</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ (house ? house.searchableTitle: '') + ' ' + (home? home.searchableTitle : '') }}" readonly>
+          </div>
+          <div *ngIf="!edit && !f.construction.value && type=='SYNDIC'" class="col-md-3">
+            <label for="home">Lot</label>
+            <ng-select (change)="onSelectCoproprieteChange($event)" formControlName="copropriete" [items]="coproprietes"
+              bindLabel="nomLot" [selectableGroup]="false" [groupBy]="groupingHelper" [groupValue]="groupValueHelper" [(ngModel)]="selectedCopriete">
+            </ng-select>
+          </div>
+          <!-- <div *ngIf="!edit && !f.construction.value" class="col-md-3">
+              <div *ngIf="isLoadingRental" class="spinner-container">
+                <div class="spinner"></div>
+              </div>
+              <label for="home">Villa ou Appartement</label>
+              <select formControlName="home" class="form-control" id="home"
+                [attr.disabled]="f.trustee.value ? null : 'true'">
+                <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+                <option *ngIf="homes.length > 0 && f.home.value" [ngValue]="null">Selectionnez une villa ou un appartement</option>
+                <option *ngIf="homes.length === 0 && f.home.value" [ngValue]="null">Ce Syndic ne possède aucune villa ou appartement </option>
+                <option *ngFor="let home of homes" [ngValue]="home.uuid">{{home.nom}}</option>
+              </select>
+            </div>
+            <div *ngIf="edit && !f.construction.value" class="col-md-3">
+              <label for="home">Villa ou Appartement</label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+                :value="{{ home ? home.nom : 'PAS DE VILLA OU APPARTEMENT'}}" readonly>
+            </div>-->
+          <div *ngIf="!edit && !f.construction.value && type=='SYNDIC'" class="col-md-3">
+            <div *ngIf="isLoadingRental" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <label for="infrastructure">Infrastructure</label>
+            <select formControlName="infrastructure" class="form-control" id="infrastructure"
+              [attr.disabled]="f.trustee.value ? null : 'true'">
+              <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+              <option *ngIf="infrastructures.length > 0 && f.infrastructure.value" [ngValue]="null">Selectionnez une
+                villa ou un appartement</option>
+              <option *ngIf="infrastructures.length === 0 && f.infrastructure.value" [ngValue]="null">Ce Syndic ne
+                possède aucune villa ou appartement </option>
+              <option *ngFor="let infrastructure of infrastructures" [ngValue]="infrastructure.uuid">
+                {{infrastructure.nom}}</option>
+            </select>
+          </div>
+          <div *ngIf="edit && !f.construction.value && type=='SYNDIC'" class="col-md-3">
+            <label for="infrastructure">Infrastructure</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ infrastructure ? infrastructure.nom : 'PAS D\'INFRASTRUCTURE'}}" readonly>
+          </div>
+          <div *ngIf="!edit && type=='SYNDIC'" class="col-md-3">
+            <div *ngIf="isLoadingTypeLoad" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <label for="ligneBudgetaire">Ligne Budgetaire <span *ngIf="!f.construction.value && type=='SYNDIC'"
+                class="asterix">*</span></label>
+            <select formControlName="ligneBudgetaire" class="form-control" id="ligneBudgetaire"
+              [attr.disabled]="f.trustee.value ? null : 'true'">
+              <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+              <option *ngIf="typeLoads.length > 0 && f.trustee.value" [ngValue]="null">Selectionnez un le Syndic
+              </option>
+              <option *ngIf="typeLoads.length === 0 && f.trustee.value" [ngValue]="null">Ce Syndic ne possède pas de
+                ligne budgetaire </option>
+              <option *ngFor="let typeLoad of typeLoads" [ngValue]="typeLoad.uuid">{{typeLoad.typeLoad.searchableTitle}}</option>
+            </select>
+          </div>
+          <div *ngIf="edit && type=='SYNDIC'" class="col-md-3">
+            <label for="ligneBudgetaire">Ligne Budgetaire<span class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ ligneBudgetaire ? ligneBudgetaire.typeLoad.searchableTitle : 'PAS DE LIGNE BUDGETAIRE'}}" readonly>
+          </div>
+          <div class="col-md-3">
+            <label>Intervention</label>
+            <app-entity-finder [class]="'Construction'" [groups]="['construction']" [required]="false"
+              [selected]="currentConstruction" [disabled]="this.edit" (uuid)="setConstructionUuid($event)">
+            </app-entity-finder>
+          </div>
+          <div *ngIf="type=='SYNDIC'" class="col-md-3">
+            <label for="effectuePaiement">Cette facture est elle payée? <span class="asterix">*</span></label>
+            <select (change)="onIsPaidChange($event)" formControlName="isPaid" (change)="onChangeEffectue()" class="form-control" [disabled]="edit">
+              <option [value]="'OUI'">OUI</option>
+              <option [value]="'NON'">NON</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="libelle">Libellé de la facture<span class="asterix">*</span></label>
+            <input formControlName="libelle" class="form-control" id="libelle" [ngClass]="{
+                  'is-invalid': submit && f.libelle.errors,
+                  'is-valid': submit && f.libelle .valid
+                }" placeholder="Libellé">
+            <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+              <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="echeance">Echéance <span class="asterix">*</span></label>
+            <input formControlName="echeance" type="date" class="form-control" id="echeance" [ngClass]="{
+                'is-invalid': submit && f.echeance.errors,
+                'is-valid': submit && f.echeance .valid
+              }">
+            <div class="invalid-feedback" *ngIf="submit && f.echeance.errors">
+              <div *ngIf="f.echeance.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="date ">Date de transmission <span class="asterix">*</span></label>
+            <input formControlName="date" class="form-control" id="date" type="date" [ngClass]="{
+                'is-invalid': submit && f.date.errors,
+                'is-valid': submit && f.date .valid
+              }">
+            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+              <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="date ">Type <span class="asterix">*</span></label>
+            <select formControlName="type" class="form-control" id="type" [ngClass]="{
+                  'is-invalid': submit && f.type.errors,
+                  'is-valid': submit && f.type.valid
+                }">
+              <option [value]="'FOURNITURE'">FOURNITURE</option>
+              <option [value]="'PRESTATION'">PRESTATION</option>
+              <option [value]="'FOURNITURE_PRESTATION'">FOURNITURE et PRESTATION</option>
+            </select>
+          </div>
+          <!-- <div class="col-md-3" *ngIf="f.type.value === 'PRESTATION'">
+            <label for="prestation">Prestation </label>
+            <input formControlName="prestation" (change)="onChangeTotal()" type="number" step="0.01"
+              class="form-control" id="prestation" [min]="0">
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <!-- DETAILS SUR LES OPTIONS -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width">DETAILS SUR LES OPTIONS</span>
+      </div>
+      <div class="form-group">
+        <div formArrayName="options">
+          <!-- LABEL DU TABLEAU DES OPTIONS -->
+          <div class="form-group" *ngIf="option.length > 0">
+            <div class="row">
+              <div class="col-md-3">
+                <label>Produit <span class="asterix">*</span></label>
+              </div>
+              <div class="col-md-2">
+                <label>Prix unitaire <span class="asterix">*</span></label>
+              </div>
+              <div class="col-md-1">
+                <label>Qté <span class="asterix">*</span></label>
+              </div>
+              <div class="col-md-1">
+                <label>TVA</label>
+              </div>
+              <div class="col-md-2">
+                <label>Remise</label>
+              </div>
+              <div class="col-md-2">
+                <label>Total TTC</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" *ngFor="let opt of option.controls; let i=index" [formGroupName]="i">
+            <div class="row">
+              <div class="col-md-3">
+                <ng-select formControlName="libelle" [addTag]="addProduct" [items]="products" [selectOnTab]="true"
+                  bindValue="libelle" bindLabel="libelle" labelForId="produit" (change)="onSelectChange(opt,$event)">
+                  <ng-template ng-tag-tmp let-search="searchTerm">
+                    <b>Ajouter</b>: {{search}}
+                  </ng-template>
+                </ng-select>
+              </div>
+              <div class="col-md-2">
+                <input (change)="onChangeTotal()" type="number" formControlName="prix" min="0" class="form-control"
+                  id="prix{{i}}" [ngClass]="{
+                      'is-invalid': submit && opt.get('prix').errors,
+                      'is-valid': submit && opt.get('prix').valid
+                    }" placeholder="Prix unitaire">
+                <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                  <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                </div>
+                <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                  <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                  <div *ngIf="opt.get('prix').errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-1">
+                <input (change)="onChangeTotal()" type="number" formControlName="qte" min="1" class="form-control"
+                  id="qte{{i}}" [ngClass]="{
+                      'is-invalid': submit && opt.get('qte').errors,
+                      'is-valid': submit && opt.get('qte').valid
+                    }" placeholder="Quantité">
+                <div class="invalid-feedback" *ngIf="submit && opt.get('qte').errors">
+                  <div *ngIf="opt.get('qte').errors.required">{{required.novide}}</div>
+                  <div *ngIf="opt.get('qte').errors.pattern">{{required.nolettre}}</div>
+                  <div *ngIf="opt.get('qte').errors.pattern">{{required.positive}}</div>
+                </div>
+              </div>
+              <div class="col-md-1">
+                <input (change)="onChangeTotal()" type="number" formControlName="tva" min="0" class="form-control p-2"
+                  id="tva{{i}}" [ngClass]="{
+                      'is-invalid': submit && opt.get('tva').errors,
+                      'is-valid': submit && opt.get('tva').valid
+                    }" placeholder="TVA">
+                <div class="invalid-feedback" *ngIf="submit && opt.get('tva').errors">
+                  <div *ngIf="opt.get('tva').errors.pattern">{{required.nolettre}}</div>
+                  <div *ngIf="opt.get('tva').errors.pattern">{{required.positive}}</div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <input (change)="onChangeTotal()" type="number" formControlName="remise" min="0" class="form-control"
+                  id="remise{{i}}">
+              </div>
+              <div class="col-md-2">
+                <input type="number" formControlName="total" class="form-control p-2" id="total{{i}}" min="0"
+                  step="0.01" placeholder="TOTAL" readonly>
+                <div class="invalid-feedback" *ngIf="submit && opt.get('total').errors">
+                  <div *ngIf="opt.get('total').errors.pattern">{{required.nolettre}}</div>
+                </div>
+              </div>
+              <div class="col-md-1">
+                <button (click)="onDelete(i)" type="button" class="btn btn-icon btn-danger">
+                  <i class="feather icon-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-2 d-flex flex-row-reverse">
+          <button (click)="addOption()" type="button" class="btn btn-primary">
+            Ajouter <i class="feather icon-plus"></i>
+          </button>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <table class="table table-responsive invoice-table invoice-total">
+              <tbody>
+                <tr>
+                  <th>TOTAL HT :</th>
+                  <td>{{ totalHT | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL REMISE :</th>
+                  <td>{{ totalRemise | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL TVA :</th>
+                  <td>{{ totalTva | number }}</td>
+                </tr>
+                <tr class="text-info">
+                  <td>
+                    <hr />
+                    <h2 class="text-primary m-r-10">TOTAL TTC :</h2>
+                  </td>
+                  <td>
+                    <hr />
+                    <h2 class="text-success">{{ totalTTC | number }}</h2>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="f.isPaid.value === 'OUI'">
+        <div class="row">
+          <span class="badge badge-secondary my-2 f-14 width"> DETAILS DU REGLEMENT </span>
+        </div>
+        <!-- DETAILS DU PAIEMENT -->
+        <div class="row">
+          <div class="col-md-3">
+            <label for="treasuryPaiement">Trésorerie<span class="asterix">*</span></label>
+            <select (change)="setTreasury()" formControlName="treasuryPaiement" class="form-control"> 
+              <option *ngFor="let treasurie of treasuries" [ngValue]="treasurie.uuid">{{treasurie.nom}}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="datePaiement">Date de paiement <span class="asterix">*</span></label>
+            <input type="date" formControlName="datePaiement" class="form-control" id="datePaiement" [ngClass]="{
+                'is-invalid': submit && f.datePaiement.errors,
+                'is-valid': submit && f.datePaiement.valid
+              }">
+            <div class="invalid-feedback" *ngIf="submit && f.datePaiement.errors">
+              <div *ngIf="f.datePaiement.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="modePaiement">Mode de paiement <span class="asterix">*</span></label>
+            <select (change)="onChangeLibelle()" class="form-control" formControlName="modePaiement" id="modePaiement"
+              #mySelectMode [ngClass]="{
+                'is-invalid': submit && f.modePaiement.errors,
+                'is-valid': submit && f.modePaiement.valid
+              }">
+              <option *ngFor="let item of modeRow" [value]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.modePaiement.errors">
+              <div *ngIf="f.modePaiement.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="effectuePaiement">Effectué par <span class="asterix">*</span></label>
+            <select (change)="onChangeEffectue()" class="form-control" formControlName="effectuePaiement"
+              id="effectuePaiement" [ngClass]="{
+                'is-invalid': submit && f.effectuePaiement.errors,
+                'is-valid': submit && f.effectuePaiement.valid
+              }">
+              <option [value]="'LUI MEME'">LUI MÊME</option>
+              <option [value]="'AUTRE'">AUTRE</option>
+            </select>
+          </div>
+          <div class="col-md-3" *ngIf="f.effectuePaiement.value === 'AUTRE'">
+            <label for="tiersPaiement">Fournisseur ou Prestataire <span class="asterix">*</span></label>
+            <input type="text" formControlName="tiersPaiement" class="form-control" id="tiersPaiement"
+              placeholder="Nom du tiers">
+          </div>
+          <div class="col-md-3" *ngIf="f.modePaiement.value !== 'ESPECE'">
+            <label for="source">{{ sourceTitle }}</label>
+            <input type="text" formControlName="sourcePaiement" class="form-control" id="source"
+              [placeholder]="sourceTitle">
+          </div>
+          <div class="col-md-3" *ngIf="f.modePaiement.value !== 'ESPECE'">
+            <label for="numeroPaiement">{{ numeroTitle }}</label>
+            <input type="text" formControlName="numeroPaiement" class="form-control" id="numeroPaiement"
+              [placeholder]="numeroTitle">
+          </div>
+        </div>
+        <div clas="row">
+          <div class="col-md-6 ml-md-auto">
+            <label for="montantPaiement">Montant <span class="asterix">*</span></label>
+            <input [attr.disabled]="isHidden ? true : null" type="number" min="0" step="0.01" (change)="onChangeMontant()"
+              formControlName="montantPaiement" id="montantPaiement"
+              class="form-control text-lg-right p-4 text-success text-h-danger font-weight-bold formBadgeLarge"
+              placeholder="Montant" [ngClass]="{
+                'is-invalid': submit && f.montantPaiement.errors,
+                'is-valid': submit && f.montantPaiement.valid
+              }">
+            <div class="invalid-feedback" *ngIf="submit && f.montantPaiement.errors">
+              <div *ngIf="f.montantPaiement.errors.required">{{required.novide}}</div>
+              <div *ngIf="f.montantPaiement.errors.pattern">{{required.novide}}</div>
+            </div>
+          </div>
+        </div>
+       </div>
+      <div class="row">
+        <div class="col-md">
+          <label>Pièces et documents à joindre</label>
+          <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+            [path]="'invoice'" [etat]="edit ? 'edit': 'add'" [folder]="edit && invoiceCo ? invoiceCo?.folder : null">
+          </app-folder-uploader>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

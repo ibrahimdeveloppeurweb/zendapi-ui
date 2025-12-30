@@ -1,0 +1,39 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <div class="row">
+        <span class="badge badge-info my-2 f-14 width">
+          DETAILS SUR LE NIVEAU
+        </span>
+      </div>
+      <div class="form-group row">
+        <div class="col-md-12">
+          <label for="libelle">Libelle<span class="asterix">*</span></label>
+          <input formControlName="libelle" class="form-control" id="libelle" type="text" [ngClass]="{
+            'is-invalid': submit && f.libelle.errors,
+            'is-valid': submit && f.libelle.valid
+          }">
+          <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+            <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+  </form>
+  

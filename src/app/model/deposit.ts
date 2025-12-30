@@ -1,0 +1,45 @@
+import {Invoice} from '@model/invoice';
+import {Folder} from '@model/folder';
+import { Treasury } from '@model/treasury';
+import {Tenant} from '@model/tenant';
+import { Contract } from './contract';
+import { FolderFiles } from '@model/folder-files';
+
+export interface Deposit {
+  uuid?: any;
+  id?: any;
+  folders?: FolderFiles;
+  folderUuid?: string;
+  code?: string;
+  etat?: string;
+  status?: string;
+  compte?: string;
+  treasury: Treasury;
+  invoice?: Invoice;
+  contract?: Contract;
+  montant?: number;
+  effectue?: string;
+  date?: string;
+  mode?: string;
+  checked?: boolean;
+  source?: string;
+  numero?: string;
+  telephone?: string;
+  type?: string;
+  reference?: string;
+  tiers?: string;
+  folder?: Folder;
+  createdAt?: string;
+  updatedAt?: string;
+  validateAt?: string;
+  create?: string;
+  update?: string;
+  validate?: string;
+  validation?: any;
+  wallet?: any;
+  owner?: any;
+  tenant?: any;
+  ageny?: any;
+  house?: any;
+  confiamtion?: any;
+}

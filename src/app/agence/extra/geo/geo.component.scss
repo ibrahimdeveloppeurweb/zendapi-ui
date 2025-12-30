@@ -1,0 +1,65 @@
+
+#map{
+    height: 100vh;
+    width: 100%;
+    position: relative;
+}
+.buttons-container {
+  position: absolute;
+  top: 20px;
+  left: 10px; 
+}
+.mapboxgl-ctrl-attrib {
+    display: none;
+}
+/* Styles pour le conteneur du select */
+.select-container {
+  position: relative;
+  display: inline-block;
+  width: 200px; /* Ajustez la largeur selon vos besoins */
+}
+
+/* Styles pour l'élément select */
+.select-container select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  appearance: none; /* Masque les styles natifs du navigateur */
+}
+
+/* Styles pour la flèche du select */
+.select-container::after {
+  content: '\25BC'; /* Code du symbole de flèche vers le bas */
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none; /* Permet de cliquer à travers la flèche */
+  color: #333;
+}
+
+/* Styles pour le hover du select */
+.select-container:hover select {
+  border-color: #999;
+}
+
+/* Styles pour le focus du select */
+.select-container select:focus {
+  outline: none;
+  box-shadow: 0 0 3px 1px rgba(0, 123, 255, 0.5); /* Exemple d'effet de mise en évidence lors du focus */
+}
+
+/* Styles pour les options du select */
+.select-container select option {
+  background-color: #fff;
+  color: #333;
+}
+
+/* Styles pour le hover des options du select */
+.select-container select option:hover {
+  background-color: #f2f2f2;
+}

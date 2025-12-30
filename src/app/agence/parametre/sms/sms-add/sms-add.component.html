@@ -1,0 +1,133 @@
+<div class="card mb-3">
+    <div class="card-header d-flex">
+      <div class="p-2">
+        <h4><i class="fas fa-comment-alt"></i> Paramètres sms </h4>
+      </div>
+      <div class="ml-auto p-2">
+        <ng-template ngxPermissionsOnly="SETTING:SMS:AGENCY">
+          <button (click)="editSms(true)" *ngIf="!edit" type="button" class="btn btn-icon btn-primary ml-1"
+            ngbTooltip="Modifier">
+            <i class="feather icon-edit-2"></i>
+          </button>
+        </ng-template>
+        <ng-template ngxPermissionsOnly="SETTING:SMS:AGENCY">
+          <button (click)="editSms(false)" *ngIf="edit" type="button" class="btn btn-icon btn-danger ml-1"
+            ngbTooltip="Fermer">
+            <i class="feather icon-x-circle"></i>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+    <div class="card-body p-3">
+      <div class="col-md-12">
+        <div class="row"><span class="badge badge-primary my-2 f-14 width">{{title}}</span></div>
+      </div>
+      <el-alert title="PARAMETREZ VOS MESSAGES D'ALERTES" type="info" :description={{textAlert}}></el-alert>
+      <div class="col-md alert alert-warning alert show" role="alert">
+        <i class="fa fa-info-circle fa-lg"></i><span class="mb-0 text-muted ml-3"><strong>{{textAlert}}</strong> </span>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="col-md-12">
+            <div class="form-group">
+              <div class="row mb-2">
+                <div class="col-md-6 mb-3">
+                  <label for="akwaba">AKWABA</label>
+                  <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="akwaba"
+                    formControlName="akwaba" rows="5" [ngClass]="{
+                      'is-invalid': !validAkwaba,
+                      'is-valid': validAkwaba
+                    }" ></textarea>
+                  <div class="invalid-feedback" *ngIf="submit && !validAkwaba">
+                    <div>{{required.akwaba}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="facture">FACTURE</label>
+                  <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="facture"
+                    formControlName="facture" rows="5" [ngClass]="{
+                      'is-invalid': !validFacture,
+                      'is-valid': validFacture
+                    }" ></textarea>
+                  <div class="invalid-feedback" *ngIf="submit && !validFacture">
+                    <div>{{required.facture}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="reversement">REVERSEMENT</label>
+                  <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="reversement"
+                    formControlName="reversement" rows="5" [ngClass]="{
+                      'is-invalid': !validReversement,
+                      'is-valid': validReversement
+                    }"></textarea>
+                  <div class="invalid-feedback" *ngIf="submit && !validReversement">
+                    <div>{{required.reversement}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="paiement">PAIEMENT</label>
+                  <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="paiement"
+                    formControlName="paiement" rows="5" [ngClass]="{
+                      'is-invalid': !validPaiement,
+                      'is-valid': validPaiement
+                    }"></textarea>
+                  <div class="invalid-feedback" *ngIf="submit && !validPaiement">
+                    <div>{{required.paiement}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="contrat">CONTRAT</label>
+                  <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="contrat"
+                    formControlName="contrat" rows="5" [ngClass]="{
+                      'is-invalid': !validContrat,
+                      'is-valid': validContrat
+                    }"></textarea>
+                  <div class="invalid-feedback" *ngIf="submit && !validContrat">
+                    <div>{{required.contrat}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="ticket">TICKET</label>
+                  <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="ticket"
+                    formControlName="ticket" rows="5" [ngClass]="{
+                      'is-invalid': !validTicket,
+                      'is-valid': validTicket
+                    }"></textarea>
+                  <div class="invalid-feedback" *ngIf="submit && !validTicket">
+                    <div>{{required.ticket}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="anniversaire">ANNIVERSAIRE</label>
+                  <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="anniversaire"
+                    formControlName="anniversaire" rows="5" [ngClass]="{
+                      'is-invalid': !validAnniversaire,
+                      'is-valid': validAnniversaire
+                    }"></textarea>
+                  <div class="invalid-feedback" *ngIf="submit && !validAnniversaire">
+                    <div>{{required.anniversaire}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="avis">AVIS</label>
+                  <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="avis"
+                    formControlName="avis" rows="5" [ngClass]="{
+                      'is-invalid': !validAvis,
+                      'is-valid': validAvis
+                    }"></textarea>
+                  <div class="invalid-feedback" *ngIf="submit && !validAvis">
+                    <div>{{required.avis}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" *ngIf="edit">
+          <button *ngxPermissionsOnly="'SETTING:SMS:AGENCY'" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>

@@ -1,0 +1,218 @@
+/**======================================================================
+=========================================================================
+Template Name: Able Pro Admin Template
+Author: Codedthemes
+File: style.css
+=========================================================================
+=========================================================================
+  == Table of Contents==
+	- Generic classes
+		-	Margin, Padding, Font class, text align, position, floating, overflow, background class, text color, display class, boarder class
+	- Theme Elements
+		-	Accordion, Button, tabs, typography, buttons, box shadow, Lable & Badges, Alert, Pagination, Breadcumb, Cards, Collapse,
+        -   Carousel, Grid, Progress, Model, tooltip, popover, Datepicker, Gridstack, lightbox, notification, Nestable, pnotify, rating,
+        -   Rangeslider, Slider, Syntax Highlighter, Tour, Treeview, Toolbar, Session Timeout, Session idle Timeout, offline, Animation
+    - Forms
+        -   Forms Elements, Advance Form Control, Validation, Masking, Wizard, Picker, Select
+	- Pages
+		-   authentication, Maintenance, Maps, Landing page messages, task, Todo, Notes, Charts, Icons, Gallery, Editors,
+        -   Invoice, Full Calender, File Upload,
+=================================================================================
+=================================================================================== */
+
+
+// Theme Font
+@import "themes/font/theme-font";
+
+// theme scrollbar
+@import "themes/plugin/perfect-scrollbar";
+
+// main framework
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "settings/custom-variables";
+@import "settings/theme-variables";
+
+// ng module
+@import "ng-module/ng-module";
+
+// bootstrap
+@import "~bootstrap/scss/bootstrap";
+
+
+// icon
+@import "themes/font/datta-icon";
+@import "themes/font/feather";
+@import "themes/font/fontawesome";
+@import "themes/font/cryptofont";
+
+// bootstrap css
+@import "themes/bootstrap-overlay/card";
+@import "themes/bootstrap-overlay/button";
+@import "themes/bootstrap-overlay/radiobox-checkbox";
+@import "themes/bootstrap-overlay/switches";
+@import "themes/bootstrap-overlay/badge";
+
+@import "themes/general";
+@import "themes/generic";
+@import "themes/plugin/animate";
+
+
+// theme layouts
+@import "themes/layouts/menu-lite";
+@import "themes/layouts/menu-ng";
+@import "layout-dark";
+@import "layout-rtl";
+
+// Dashboard Widgets
+@import "themes/dashboard/widget";
+
+// custom plugin
+@import "themes/plugin/sweatalert";
+@import "themes/plugin/lightbox";
+@import "themes/plugin/notification";
+@import "themes/plugin/pnotify";
+@import "themes/plugin/bar-rating";
+@import "themes/plugin/rangeslider";
+@import "themes/plugin/daterange";
+@import "themes/plugin/tags-input";
+@import "themes/plugin/maxlength";
+@import "themes/plugin/wizard";
+@import "themes/plugin/select2";
+@import "themes/plugin/data-tables";
+
+// Charts
+@import "themes/plugin/highcharts";
+@import "themes/plugin/peitychart";
+
+// pages
+@import "themes/pages/authentication";
+@import "themes/pages/maintaince";
+@import "themes/pages/pages";
+@import "themes/pages/help-desk";
+@import "themes/pages/fullcalender";
+@import "themes/pages/icon-lauouts";
+@import "themes/pages/user";
+@import "themes/pages/kanban";
+@import "themes/pages/avatar";
+@import "themes/pages/task-board";
+
+// custom
+@import "themes/custom";
+@import "./swal2.scss";
+
+
+.shadow-overflow-horizontal {
+  position: relative;
+
+  &::after,
+  &::before {
+    width: $spacer;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    position: absolute;
+    z-index: 4;
+    content: '';
+    background: linear-gradient(to right, rgba($white, 1) 20%, rgba($white, 0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$white', endColorstr='$white', GradientType=0);
+  }
+
+  &::after {
+    right: 0;
+    left: auto;
+
+    background: linear-gradient(to right, rgba($white, 0) 0%, rgba($white, 1) 80%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$white', endColorstr='$white', GradientType=0);
+  }
+
+}
+
+// Perfect Scrollbar
+
+perfect-scrollbar {
+  .ps__rail-x {
+    display: none;
+    opacity: 0;
+    height: 15px;
+    z-index: 5;
+    bottom: 0;
+    position: absolute;
+  }
+
+  .ps__rail-y {
+    display: none;
+    opacity: 0;
+    width: 15px;
+    z-index: 5;
+    right: 0;
+    position: absolute;
+  }
+
+  .ps--active-x > .ps__rail-x,
+  .ps--active-y > .ps__rail-y {
+    display: block;
+    background-color: transparent;
+  }
+
+  .ps:hover > .ps__rail-x,
+  .ps:hover > .ps__rail-y,
+  .ps--focus > .ps__rail-x,
+  .ps--focus > .ps__rail-y,
+  .ps--scrolling-x > .ps__rail-x,
+  .ps--scrolling-y > .ps__rail-y {
+    opacity: 0.6;
+  }
+
+  .ps .ps__rail-x:hover,
+  .ps .ps__rail-y:hover,
+  .ps .ps__rail-x:focus,
+  .ps .ps__rail-y:focus,
+  .ps .ps__rail-x.ps--clicking,
+  .ps .ps__rail-y.ps--clicking {
+    background-color: rgba($black, .4) !important;
+    opacity: 0.9;
+  }
+
+
+  .ps__thumb-x {
+    background-color: rgba($white, .4) !important;
+    border-radius: 1px !important;
+    height: 6px;
+    bottom: 2px;
+    position: absolute;
+  }
+
+  .ps__thumb-y {
+    background-color: rgba($white, .4) !important;
+    border-radius: 1px !important;
+    width: 6px;
+    right: 2px;
+    position: absolute;
+  }
+
+  .ps__rail-x:hover > .ps__thumb-x,
+  .ps__rail-x:focus > .ps__thumb-x,
+  .ps__rail-x.ps--clicking .ps__thumb-x {
+    background-color: rgba($black, .4) !important;
+    height: 11px;
+  }
+
+  .ps__rail-y:hover > .ps__thumb-y,
+  .ps__rail-y:focus > .ps__thumb-y,
+  .ps__rail-y.ps--clicking .ps__thumb-y {
+    // background-color: rgba($black, .4) !important;
+    background-color: #f4772e !important;
+    width: 11px;
+  }
+
+  & > .ps.ps--scrolling-y > .ps__rail-y,
+  .ps .ps__rail-y:hover {
+    background-color: rgba($black, .05) !important;
+  }
+
+  .ps__thumb-y {
+    background-color: rgba($black, .15) !important;
+  }
+}

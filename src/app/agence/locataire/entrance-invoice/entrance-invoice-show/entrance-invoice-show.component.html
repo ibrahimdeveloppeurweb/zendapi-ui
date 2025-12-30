@@ -1,0 +1,246 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Référence : </span>
+        <span class="title-result-show">{{invoice?.code }}</span>
+      </p>
+      <p>
+        <span class="title-show">Locataire : </span>
+        <span class="title-result-show" *ngIf="invoice?.contract"> {{ invoice?.contract?.tenant?.searchableTitle }} </span>
+        <span class="title-result-show" *ngIf="invoice?.groupedContract"> {{ invoice?.groupedContract?.tenant?.searchableTitle }} </span>
+      </p>
+      <p>
+        <span class="title-show">Proprietaire : </span>
+        <span class="title-result-show" *ngIf="invoice?.contract"> {{invoice?.contract?.rental?.house?.owner?.searchableTitle}} </span>
+        <span class="title-result-show" *ngIf="invoice?.groupedContract"> {{invoice?.groupedContract?.owner?.searchableTitle}} </span>
+      </p>
+      <p>
+        <span class="title-show">Bien : </span>
+        <span class="title-result-show" *ngIf="invoice?.contract"> {{invoice?.contract?.rental?.house?.nom}} </span>
+        <span class="title-result-show" *ngIf="invoice?.groupedContract"> {{invoice?.groupedContract?.house?.nom}} </span>
+      </p>
+      <p>
+        <span class="title-show" *ngIf="invoice?.contract">Locative : </span>
+        <span class="title-result-show" *ngIf="invoice?.contract"> {{invoice?.contract?.rental?.porte}} </span>
+        <span class="title-show" *ngIf="invoice?.groupedContract">Locatives : </span>
+        <span class="title-result-show" *ngIf="invoice?.groupedContract">
+          <span class="mr-2" *ngFor="let rental of invoice?.groupedContract?.rentals">{{rental.porte}}</span>
+        </span>
+      </p>
+    </div>
+    <!-- COL MILIEU -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Periode : </span>
+        <span class="title-result-show">établie le {{invoice?.date | date:'dd/MM/yyyy'}}</span>
+      </p>
+      <span>
+        <span class="title-show">Etat: </span>
+        <div *ngIf="invoice?.contract">
+          <span class="title-result-show">
+            <span class="badge" [ngClass]="{
+              'badge-danger' : invoice.etat === 'IMPAYE',
+              'badge-primary' : invoice.etat === 'ATTENTE',
+              'badge-warning' : invoice.etat === 'EN COURS',
+              'badge-success' : invoice.etat === 'SOLDE'
+              }">{{payment(invoice.etat)}}</span>
+            <span class="ml-1 badge" [ngClass]="{
+              'badge-danger' : invoice?.contract.etat === 'RESILIE',
+              'badge-warning' : invoice?.contract.etat === 'INACTIF',
+              'badge-primary' : invoice?.contract.etat === 'ACTIF'
+              }">{{invoice?.statut}}</span>
+          </span>
+        </div>
+        <div *ngIf="invoice?.groupedContract">
+          <span class="title-result-show">
+            <span class="badge" [ngClass]="{
+              'badge-danger' : invoice.etat === 'IMPAYE',
+              'badge-primary' : invoice.etat === 'ATTENTE',
+              'badge-warning' : invoice.etat === 'EN COURS',
+              'badge-success' : invoice.etat === 'SOLDE'
+              }">{{payment(invoice.etat)}}</span>
+            <span class="ml-1 badge" [ngClass]="{
+              'badge-danger' : invoice?.groupedContract.etat === 'RESILIE',
+              'badge-warning' : invoice?.groupedContract.etat === 'INACTIF',
+              'badge-primary' : invoice?.groupedContract.etat === 'ACTIF'
+              }">{{invoice?.statut}}</span>
+          </span>
+        </div>
+      </span>
+      <p>
+        <span class="title-show text-warning">Montant : </span>
+        <span class="title-result-show text-warning">{{ invoice?.montant|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show text-warning">Loyer : </span>
+        <span class="title-result-show text-warning" *ngIf="invoice?.contract">{{ invoice?.contract?.loyer|number }} {{global.device}}</span>
+        <span class="title-result-show text-warning" *ngIf="invoice?.groupedContract">{{ invoice?.groupedContract?.loyer|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show text-warning">Charge : </span>
+        <span class="title-result-show text-warning" *ngIf="invoice?.contract">{{ invoice?.contract?.charge|number }} {{global.device}}</span>
+        <span class="title-result-show text-warning" *ngIf="invoice?.groupedContract">{{ invoice?.groupedContract?.charge|number }} {{global.device}}</span>
+      </p>
+    </div>
+    <!-- COL DROITE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show text-warning">Payé : </span>
+        <span class="title-result-show text-warning">{{ invoice?.paye|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show text-warning">Impayé : </span>
+        <span class="title-result-show text-warning">{{ invoice?.impaye|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">Crée le : </span>
+        <span class="title-result-show">{{invoice?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ invoice?.create }}</span>
+      </p>
+      <p>
+        <span class="title-show">Modifié le : </span>
+        <span class="title-result-show">{{ invoice?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{invoice?.update }}</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered nowrap table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Désignation</th>
+          <th>Prix u.</th>
+          <th>Qte</th>
+          <th>Tva</th>
+          <th>Remise</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of invoice?.options">
+          <td>
+            <p class="m-0 d-inline-block align-middle font-16">{{item?.libelle}}</p>
+          </td>
+          <td>
+            <p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.prix|number}}
+                {{global.device}}</span></p>
+          </td>
+          <td>{{item?.qte}}</td>
+          <td>{{item?.tva}} %</td>
+          <td>
+            <p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.remise|number}}
+                {{global.device}}</span>
+          </td>
+          <td>
+            <p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{(item?.total)|number}}
+                {{global.device}}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="invoice?.transactions?.length > 0" class="table-responsive">
+    <table class="table table-sm table-striped table-bordered nowrap table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Réference</th>
+          <th>Operateur</th>
+          <th>Etat</th>
+          <th>Montant</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of invoice?.transactions">
+          <td>{{item?.reference}}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+                  'badge-info' : item?.operator === 'DEBITCARD',
+                  'badge-primary' : item?.operator === 'WAVE',
+                  'badge-light-warning' : item?.operator === 'MTN',
+                  'badge-success' : item?.operator=== 'MOOV',
+                  'badge-warning' : item?.operator === 'ORANGE'
+                  }">
+              {{item?.operator}}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="{
+                  'badge-primary' : item?.status === 'PROCESSING',
+                  'badge-danger' : item?.status === 'FAILED',
+                  'badge-success' : item?.status === 'SUCCEEDED'
+                  }">
+              {{payment(item?.status)}}
+            </span>
+          </td>
+          <td>{{item?.amount|number}} {{global.device}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-responsive invoice-table invoice-total">
+        <tbody>
+          <tr>
+            <th>TOTAL HT : </th>
+            <td>{{ invoice?.montantHt | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL REMISE : </th>
+            <td>{{ invoice?.remise | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL TVA : </th>
+            <td>{{ invoice?.montantTva | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL PAYE : </th>
+            <td> {{ invoice?.paye | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL IMPAYE : </th>
+            <td class="text-danger"> {{ invoice?.impaye | number }} {{global.device}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <table class="width">
+    <tbody>
+      <tr class="border-bottom-success">
+        <td></td>
+        <td colspan="5" class="text-right font-weight-bold"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="border border-success">
+        <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+        <td class="font-weight-bold font-size-default text-right">{{ invoice?.montant | number }} {{global.device}}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <button *ngxPermissionsOnly="'INVOICE:PRINTER:SHOW'" (click)="printerInvoice(invoice)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

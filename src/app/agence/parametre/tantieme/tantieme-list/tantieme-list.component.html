@@ -1,0 +1,45 @@
+<div class="card card-box rounded border-0 p-3">
+    <div class="py-0">
+        <h3 class="text-center">Types de millièmes</h3>
+    </div>
+    <hr class="border-2">
+    <div class="d-flex justify-content-end my-1">
+        <div class="d-flex align-items-center">
+            <button (click)="add()" class="btn btn-primary button-radius" tooltip="Ajouter un compte taxe" type="button">
+                <i class="fas fa-plus-circle"></i> Ajouter
+            </button>
+        </div>
+    </div>
+
+    <span class="badge badge-primary my-2 f-14 width">LISTE DES TYPES DE MILLIÈMES </span>
+    <app-no-data *ngIf="tantiemes && tantiemes.length === 0" [title]="'Aucun type de millième trouvé'"></app-no-data>
+    <div *ngIf="tantiemes && tantiemes.length > 0">
+        <div class="table-responsive m-0">
+            <table datatable [dtOptions]="dtOptions" class="table table-striped m-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Libelle</th>
+                        <th>Statut</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of tantiemes; let i = index">
+                        <td>{{item?.code}}</td>
+                        <td>{{item?.libelle}}</td>
+                        <td>
+                          <span *ngIf="item?.statut === 'RESERVE'" class="badge badge-warning">Réserve</span>
+                          <span *ngIf="item?.statut === ''" class="badge badge-success">Général</span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                                <i class="feather icon-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

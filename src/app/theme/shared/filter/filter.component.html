@@ -1,0 +1,131 @@
+<div class="col-md-12">
+  <app-card [hidHeader]="true" blockClass="">
+    <form [formGroup]="form" (ngSubmit)="filters()">
+      <div class="form-group">
+        <div class="row">
+          <div *ngIf="type" class="mb-2 col-md">
+            <label for="type">Type</label>
+            <select (change)="types()" formControlName="type" class="form-control" id="type">
+              <option *ngFor="let item of typeRow" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div *ngIf="code" class="mb-2 col-md">
+            <label for="code">{{refTitle}}</label>
+            <input type="text" formControlName="code" id="code" class="form-control" placeholder="EX: ZA-0000-0000-00">
+          </div>
+          <div *ngIf="name" class="mb-2 col-md">
+            <label for="name">{{nameTitle}}</label>
+            <input *ngIf="nameType === 'TEXT'" formControlName="name" type="text" id="name" class="form-control"
+              id="name" [placeholder]="nameTitle">
+            <app-entity-finder *ngIf="nameType === 'ENTITY'" [name]="'name'" [class]="nameClass"
+              [namespace]="nameNamespace" [groups]="[nameGroups]" [required]="true" (uuid)="setValue($event, 'name')"
+              [disabled]="false" [selected]="nameSelected" [idOrUuid]="'ID'">
+            </app-entity-finder>
+          </div>
+          <div *ngIf="autre" class="mb-2 col-md">
+            <label for="autre">{{autreTitle}}</label>
+            <input *ngIf="autreType === 'TEXT'" formControlName="autre" type="text" id="autre" class="form-control"
+              id="autre" [placeholder]="autreTitle">
+            <app-entity-finder *ngIf="autreType === 'ENTITY'" [name]="'autre'" [class]="autreClass"
+              [namespace]="autreNamespace" [groups]="[autreGroups]" [required]="true" (uuid)="setValue($event, 'autre')"
+              [disabled]="false" [selected]="autreSelected" [idOrUuid]="'ID'">
+            </app-entity-finder>
+          </div>
+          <div *ngIf="bien" class="mb-2 col-md">
+            <label for="bien">{{bienTitle}}</label>
+            <input *ngIf="bienType === 'TEXT'" formControlName="bien" type="text" id="bien" class="form-control" id="bien"
+              [placeholder]="bienTitle">
+            <app-entity-finder *ngIf="bienType === 'ENTITY'" [name]="'bien'" [class]="bienClass"
+              [namespace]="bienNamespace" [groups]="[bienGroups]" [required]="true" (uuid)="setValue($event, 'bien')"
+              [disabled]="false" [selected]="bienSelected" [idOrUuid]="'ID'">
+            </app-entity-finder>
+          </div>
+          <div *ngIf="libelle" class="mb-2 col-md">
+            <label for="libelle">{{libelleTitle}}</label>
+            <input *ngIf="libelleType === 'TEXT'" formControlName="libelle" type="text" id="libelle" class="form-control" id="libelle"
+              [placeholder]="libelleTitle">
+            <app-entity-finder *ngIf="libelleType === 'ENTITY'" [name]="'libelle'" [class]="libelleClass"
+              [namespace]="libelleNamespace" [groups]="[libelleGroups]" [required]="true" (uuid)="setValue($event, 'libelle')"
+              [disabled]="false" [selected]="libelleSelected" [idOrUuid]="'ID'">
+            </app-entity-finder>
+          </div>
+          <div *ngIf="dateD" class="mb-2 col-md">
+            <label for="dateD">Date de début</label>
+            <input type="date" formControlName="dateD" id="dateD" class="form-control" placeholder="yyyy-mm-dd">
+          </div>
+          <div *ngIf="dateF" class="mb-2 ml-2 col-md">
+            <label for="dateF">Date de fin</label>
+            <input type="date" formControlName="dateF" id="dateF" class="form-control" placeholder="yyyy-mm-dd">
+          </div>
+        </div>
+        <hr *ngIf="etat && categorie && create && min && max && ordre && count" class="border-primary" [ngbCollapse]="advance">
+        <div class="row" id="filterForm" [ngbCollapse]="advance">
+          <div *ngIf="categorie && categorieRow.length > 0" class="col-md mb-2">
+            <label for="categorie">{{categorieTitle}}</label>
+            <select formControlName="categorie" class="form-control" id="categorie">
+              <option [value]="null" selected>Veuillez sélectionnez</option>
+              <option *ngFor="let item of categorieRow" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div *ngIf="etat && etatRow.length > 0" class="col-md mb-2">
+            <label for="etat">{{etatTitle}}</label>
+            <select formControlName="etat" class="form-control" id="etat">
+              <option [value]="null" selected>Veuillez sélectionnez</option>
+              <option *ngFor="let item of etatRow" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div *ngIf="min" class="col-md mb-2">
+            <label for="min">{{minTitle}}</label>
+            <input type="number" min="0" formControlName="min" id="min" class="form-control" [placeholder]="minTitle">
+          </div>
+          <div *ngIf="max" class="col-md mb-2">
+            <label for="max">{{maxTitle}}</label>
+            <input type="number" min="0" formControlName="max" id="max" class="form-control" [placeholder]="maxTitle">
+          </div>
+          <div *ngIf="user" class="mb-2 col-md">
+            <label for="user">{{userTitle}}</label>
+            <!-- <input formControlName="user" type="text" id="user" class="form-control" id="user" [placeholder]="userTitle"> -->
+            <select formControlName="user" class="form-control" id="user">
+              <option [value]="null">Selectioner</option>
+              <option *ngFor="let item of users" [value]="item?.id">{{ item?.libelle }}</option>
+            </select>
+          </div>
+          <div *ngIf="create" class="col-md mb-2">
+            <label for="create">Date de création</label>
+            <input type="date" formControlName="create" id="create" class="form-control">
+          </div>
+          <div *ngIf="ordre" class="col-md mb-2">
+            <label for="ordre">Ordre</label>
+            <select formControlName="ordre" class="form-control" id="ordre">
+              <option [value]="'ASC'">Croissant</option>
+              <option [value]="'DESC'">Décroissant</option>
+            </select>
+          </div>
+          <div *ngIf="count" class="col-md mb-2">
+            <label for="count">Nombre</label>
+            <select formControlName="count" class="form-control" id="count">
+              <option *ngFor="let item of countRow" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <!-- <div *ngIf="exercice && exerciceRow.length > 0" class="col-md mb-2">
+            <label for="exercice">{{exerciceTitle}}</label>
+            <select formControlName="exercice" class="form-control" id="exercice">
+              <option [value]="null" selected>Veuillez sélectionnez</option>
+              <option *ngFor="let item of exerciceRow" [value]="item.value">{{ item.label }}</option>
+            </select>
+          </div> -->
+        </div>
+      </div>
+      <hr>
+      <div class="d-flex flex-row-reverse">
+        <a *ngIf="etat || categorie || create || min || max || ordre || count" class="btn btn-primary text-white ml-2" (click)="advance = !advance"
+        ngbTooltip="Filtre avancé" [attr.aria-expanded]="!advance" aria-controls="filterForm">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+        <button type="submit" class="btn btn-primary">
+          Filtrer <i class="feather icon-filter"></i>
+        </button>
+      </div>
+    </form>
+  </app-card>
+</div>

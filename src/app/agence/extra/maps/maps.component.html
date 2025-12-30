@@ -1,0 +1,69 @@
+
+<!-- FILTRE DE RECHERCHE -->
+<app-filter class="width"
+  [name]="true"
+  [nameTitle]="nameTitle"
+  [etat]="true"
+  [etatRow]="etatRow"
+  [type]="true"
+  [code]="true"
+  [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+</app-filter>
+
+<div class="col-lg-12">
+  <app-card [cardTitle]="title" [options]="false">
+    <agm-map [draggableCursor]="'default'" [mapTypeId]="'hybrid'" [latitude]="lat" [longitude]="lng" [zoom]="zoom"
+      (mapClick)="updateGeo($event)" (zoomChange)="updateZoom($event)">
+      <agm-marker *ngFor="let item of biens let i = index" [latitude]="item?.lat" [longitude]="item?.lng" [iconUrl]="icon">
+        <agm-info-window [disableAutoPan]="true" [maxWidth]="500">
+          <div class="cover-img-block mb-2">
+            <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/promotion-default.jpg'" alt="{{ item?.libelle }}"
+             title="{{ item?.libelle }}" class="img-fluid size-img-house">
+          </div>
+          <!-- <p></p> -->
+          <div class="d-flex">
+            <div class="flex-fill" *ngIf="type === 'BIEN'">
+              <b>Nom : </b>  {{ item?.nom}}<br/>
+              <b>Proprietaire : </b> {{ item?.owner?.searchableTitle }} <br/>
+              <b>Type : </b> <span class="badge badge-{{ item?.disponible ==='LOCATION' ? 'primary' : 'warning' }}"> {{ item?.disponible }} </span><br/>
+              <b>Etat : </b> <span class="badge badge-{{ item?.etat ==='DISPONIBLE' ? 'success' :item?.etat ==='RESERVE' ?  'warning' : 'danger' }}"> {{ item?.etat }} </span><br/>
+              <b>Cout : </b> {{ item?.valeur| number }} {{global.device}} <br/>
+            </div>
+            <div class="flex-fill" *ngIf="type === 'PROMOTION'">
+              <b>Libelle : </b> {{ item?.libelle}}<br/>
+              <b>Etat :</b> <span class="badge badge-{{ item?.etat ==='DISPONIBLE' ?  'success' : 'danger' }}"> {{ item?.etat }} </span><br/>
+              <b>Superficie</b> : {{ item?.superficie }} <br/>
+            </div>
+            <div class="flex-fill"  *ngIf="type === 'LOTISSEMENT'">
+              <b>Nom</b> : {{ item?.nom }}<br/>
+              <b>Type</b> :<span class="badge badge-{{ item?.type ==='URBAIN' ?  'primary' : 'warning' }}"> {{ item?.type }} </span><br/>
+              <b>Etat</b> :<span class="badge badge-{{ item?.etat ==='DISPONIBLE' ?  'success' : 'danger' }}"> {{ item?.etat }} </span><br/>
+            </div>
+            <div class="flex-fill">
+              <b>Ville : </b> {{ item?.ville }} <br/>
+              <b>Commune : </b> {{ item?.commune }} <br/>
+              <b>Quartier : </b> {{ item?.quartier }} <br/>
+            </div>
+          </div>
+          <hr>
+          <div *ngIf="item?.disponible === 'LOCATION'">
+            <b>Locatives: </b>{{ item?.nbrLocatives }} - <b>Valeur :</b> {{ item?.valeurLocatives|number }} {{global.device}}<br/>
+            <b>Locatives disponible: </b>{{ item?.nbrLocativeD }} - <b>Valeur :</b> {{ item?.valeurLocativeD|number }} {{global.device}}<br/>
+            <b>Locatives reserve: </b>{{ item?.nbrLocativeR }} - <b>Valeur :</b> {{ item?.valeurLocativeR|number }} {{global.device}}<br/>
+            <b>Locatives occupée: </b>{{ item?.nbrLocativeO }} - <b>Valeur :</b> {{ item?.valeurLocativeO|number }} {{global.device}}<br/>
+          </div>
+          <div *ngIf="type === 'PROMOTION'">
+            <b>Maisons: </b>{{ item?.nbrMaison }} - <b>Valeur :</b> {{ item?.valeurMaison|number }} {{global.device}}<br/>
+            <b>Maisons disponible: </b>{{ item?.nbrMaisonD }} - <b>Valeur :</b> {{ item?.valeurMaisonD|number }} {{global.device}}<br/>
+            <b>Maisons reserve: </b>{{ item?.nbrMaisonR }} - <b>Valeur :</b> {{ item?.valeurMaisonR|number }} {{global.device}}<br/>
+            <b>Maisons vendu: </b>{{ item?.nbrMaisonV }} - <b>Valeur :</b> {{ item?.valeurMaisonV|number }} {{global.device}}<br/>
+          </div>
+          <div *ngIf="type === 'LOTISSEMENT'">
+            <b>Ilots: </b>{{ item?.nbrIlot }}<br/>
+            <b>Lots: </b>{{ item?.nbrLot }}<br/>
+          </div>
+        </agm-info-window>
+      </agm-marker>
+    </agm-map>
+  </app-card>
+</div>

@@ -1,0 +1,93 @@
+
+<div class="row">
+  <!-- ENTREE -->
+  <div class="col-md-3 "  (click)="openModal('SOLDE_OWNER')">
+    <app-card [hidHeader]="true" cardClass="bg-c-green order-card">
+      <h6 class="text-white">Solde</h6>
+      <h2 class="text-white">{{ widget?.solde ? (widget?.solde | number) : 0 }} {{ global.device }}</h2>
+      <i class="card-icon fas fa-piggy-bank"></i>
+    </app-card>
+  </div>
+  <!-- SOLDE  -->
+  <div class="col-md-3"  (click)="openModal('LOYER')">
+    <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+      <h6 class="text-white">Loyer</h6>
+      <h2 class="text-white">{{ widget?.loyer ? (widget?.loyer | number) : 0 }} {{ global.device }}</h2>
+      <i class="card-icon feather icon-corner-up-right"></i>
+    </app-card>
+  </div>
+  <!-- ENTREE END -->
+  <!-- SORTIE -->
+  <div class="col-md-3 "  (click)="openModal('CAUTION_OWNER')">
+    <app-card [hidHeader]="true" cardClass="bg-c-yellow order-card">
+      <h6 class="text-white">Caution</h6>
+      <h2 class="text-white">{{ widget?.caution ? (widget?.caution | number) : 0 }} {{ global.device }}</h2>
+      <i class="card-icon feather icon-corner-up-left"></i>
+    </app-card>
+  </div>
+  <!-- SORTIE END  -->
+
+  <div class="col-md-3" (click)="openModal('COMMISSION_OWNER')">
+    <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+      <h6 class="text-white">Commission agence </h6>
+      <h2 class="text-white">{{ widget?.commission ? (widget?.commission | number) : 0 }} {{ global.device }}</h2>
+      <i class="card-icon feather icon-corner-up-right"></i>
+    </app-card>
+  </div>
+  <!-- SOLDE END  -->
+</div>
+
+<!--<div class="row">
+  <div class="col-md-12 mb-4">
+    <lib-highcharts-angular [Highcharts]="Highcharts" [options]="barOptions" style="width: 100%; height: 400px; display: block;"></lib-highcharts-angular>
+  </div>
+</div>-->
+
+<!--TABLEAU DES Historiques des transactions -->
+<div class="col-xl-12 col-md-12">
+  <app-card [hidHeader]="true">
+    <div class="col-md-12">
+      <span class="badge badge-primary my-2 f-14 formBadge width">Historique des transactions</span>
+    </div>
+    <div class="col-md-12">
+      <div class="table-responsive">
+        <div class="text-right m-b-10">
+          <button class="btn btn-warning" (click)="onPrinter()" type="button">
+            Imprimer <i class="feather icon-printer"></i>
+          </button>
+        </div>
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>LIBELLE</th>
+            <th>DÉBIT</th>
+            <th>CRÉDIT</th>
+            <th>SOLDE</th>
+            <!-- <th>DATE</th> -->
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of listing; let i=index">
+            <td> #{{ i + 1 }} </td>
+            <td> {{ item?.date| date: "d MMMM y" : '' : 'fr-FR'  }} </td>
+            <td>
+              <p class="m-0 d-inline-block align-middle font-16">{{ item?.libelle }}</p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">{{ item?.debit |number}} {{global.device}}</p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16"> {{ item?.credit |number}} {{global.device}}</p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16"> {{ item?.soldeNew |number}} {{global.device}}</p>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </app-card>
+</div>

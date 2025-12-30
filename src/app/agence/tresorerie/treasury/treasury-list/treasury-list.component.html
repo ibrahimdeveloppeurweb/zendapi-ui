@@ -1,0 +1,152 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="width btn-filter-treasury">
+    <ng-template [ngxPermissionsOnly]="['TREASURY:LIST', 'SUPPLY:LIST']">
+      <app-filter class="width"
+        [name]="true"
+        [nameTitle]="nameTitle"
+        [user]="true"
+        [userTitle]="userTitle"
+        [etat]="true"
+        [etatRow]="etatRow"
+        [etatTitle]="etatTitle"
+        [categorie]="true"
+        [categorieRow]="categorieRow"
+        [categorieTitle]="categorieTitle"
+        [dateD]="true"
+        [dateF]="true"
+        [create]="true"
+        [min]="true"
+        [minTitle]="minTitle"
+        [max]="true"
+        [maxTitle]="maxTitle"
+        [ordre]="true"
+        [code]="true"
+        [count]="true"
+        [type]="true"
+        [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+      </app-filter>
+    </ng-template>
+  </div>
+  <!-- BOUTONS DE GESTION -->
+  <div class="col-sm-12 mb-4 btn-all-treasury">
+    <div class="first">
+      <div class="second">
+        <div class="btn-treasury">
+          <button *ngxPermissionsOnly="['TREASURY:NEW']"  (click)="addTreasury()" type="button" class="btn btn-primary m-1" ngbTooltip="Cliquez ici pour ajouter une trésorerie">
+            Trésorerie <i class="fas fa-piggy-bank"></i>
+          </button>
+        </div>
+        <!-- <div class="btn-Supply" data-hint="" data-hintposition="top-right"> -->
+        <div class="btn-Supply">
+          <button *ngxPermissionsOnly="['SUPPLY:NEW']" (click)="addSupply()" type="button" class="btn btn-success m-1" ngbTooltip="Cliquez ici pour faire un approvisionnement">
+            Approvisionnement <i class="fas fa-donate"></i>
+          </button>
+        </div>
+        <div class="btn-rental">
+          <button [disabled]="false"  (click)="getAccountStatement()" type="button" class="btn btn-warning m-1"
+            ngbTooltip="Cliquez ici pour voir le relevé de compte d'une trésorerie">
+            Relevé de compte <i class="fas fa-file"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+      <div class="btn-group float-right m-1 btn-outil-treasury" ngbDropdown>
+        <button class="btn btn-warning" ngbDropdownToggle type="button">
+          Outils <i class="fas fa-tools"></i>
+        </button>
+        <div class="dropdown-menu-right" ngbDropdownMenu>
+          <a *ngxPermissionsOnly="['TREASURY:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer le listing">
+            Imprimer <i class="feather icon-printer"></i>
+          </a>
+          <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+            Exporter <i class="fa fa-file-excel"></i>
+          </a>
+          <a class="dropdown-item" (click)="onImport()" ngbTooltip="Cliquez ici pour importer un fichier">
+            Importer <i class="feather icon-download"></i>
+          </a>
+          <a class="dropdown-item" (click)="onModel()" ngbTooltip="Cliquez ici pour génerer un modèle">
+            Génerer <i class="feather icon-upload"></i>
+          </a>
+        </div>
+      </div>
+  </div>
+
+  <!-- LISTE DES TRESORERIES -->
+  <div class="width list-treasury">
+    <ng-template ngxPermissionsOnly="TREASURY:LIST">
+      <div class="col-md-12" *ngIf="type === 'TRESORERIE'">
+        <span class="badge badge-primary my-2 f-14 width">
+          LISTE DES TRESORERIES
+        </span>
+        <app-no-data [title]="'Aucune trésorerie trouvée'" *ngIf="treasuries && treasuries.length === 0"></app-no-data>
+      </div>
+      <div class="col-md-12" *ngIf="type === 'TRESORERIE' && treasuries && treasuries.length > 0">
+        <div class="row">
+          <div class="col-lg-4 col-md-4" *ngFor="let item of treasuries">
+            <app-card [customHeader]="true" headerClass="border-0 p-2 pb-0" href [options]="false" cardClass="user-card user-card-1" blockClass="pt-0 users-contact">
+              <a (click)="showTreasury(item)" rel="noopener noreferrer">
+                <div class="text-center">
+                  <div class="row align-items-end">
+                    <div class="col text-left pb-3">
+                      <span class="badge badge-{{ item.type === 'CAISSE' ? 'info' : 'secondary' }}">
+                        {{ item.type === 'CAISSE' ? 'CAISSE' : 'BANQUE' }}
+                      </span>
+                    </div>
+                  </div>
+                  <h5 class="mb-1 mt-3">{{ item?.nom }}</h5>
+                </div>
+                <div class="row align-items-end mb-2">
+                  <div class="col text-left">
+                    <h5 class="mb-1 mt-3">Gérant</h5>
+                    <span *ngIf="item?.gerant?.libelle" class="badge badge-warning">
+                      {{ item?.gerant?.libelle }}
+                    </span>
+                    <h4 class="mb-1 mt-3 text-success">Solde: {{ item?.solde |number}} XOF</h4>
+                  </div>
+                </div>
+              </a>
+              <div class="row align-items-center">
+                <div class="col text-right">
+                  <button *ngxPermissionsOnly="'TREASURY:SHOW'" (click)="showTreasury(item)" type="button" class="btn btn-icon btn-secondary"
+                    ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="'TREASURY:EDIT'" (click)="editTreasury(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="TREASURY:DELETE">
+                    <button *ngIf="item?.isDelete" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </div>
+            </app-card>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<!-- LISTE DES APPROVISIONNEMENTS -->
+<ng-template ngxPermissionsOnly="SUPPLY:LIST">
+  <div class="col-md-12" *ngIf="type === 'APPROVISIONNEMENT'">
+    <span class="badge badge-success mb-3 f-14 formBadge width">
+      LISTE DES APPROVISIONNEMENTS
+    </span>
+    <app-no-data [title]="'Aucun approvisionnement trouvé'" *ngIf="supplies && supplies.length === 0"></app-no-data>
+  </div>
+  <app-supply-list class="weight" [action]="true"  [treasury]="treasury" [supplies]="supplies" *ngIf="type === 'APPROVISIONNEMENT' && supplies && supplies.length > 0"></app-supply-list>
+</ng-template>
+
+<!-- LISTE DES APPROVISIONNEMENTS -->
+<div class="col-md-12" *ngIf="type === 'TRANSACTION'">
+  <span class="badge badge-warning mb-3 f-14 formBadge width">
+    LISTE DES TRANSACTIONS
+  </span>
+  <app-no-data [title]="'Aucune transaction trouvée'" *ngIf="transactions && transactions.length === 0"></app-no-data>
+</div>
+<app-transaction-list class="weight" [transactions]="transactions" *ngIf="transactions && transactions.length > 0"></app-transaction-list>
+

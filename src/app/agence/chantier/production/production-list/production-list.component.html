@@ -1,0 +1,85 @@
+<div class="col-md-12" *ngIf="type === 'REALISATION'">
+  <span class="badge badge-warning mb-4 f-14 width"> LISTE DES REALISATION </span>
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th *ngIf="construction">Intervention</th>
+            <th>Evolution</th>
+            <th>Etat</th>
+            <th>Budget</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of productions">
+            <td *ngIf="construction" class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.construction?.searchableTitle}}</span> <br />
+                Bien : {{item?.construction?.rental ? item?.construction?.rental?.libelle : item?.construction?.house?.searchableTitle}} <br />
+                Proriétaire : {{item?.construction?.house?.owner?.searchableTitle}}
+              </p>
+            </td>
+            <td>
+              <circle-progress
+                [percent]="getGlobalProgress(item)"
+                [radius]="25"
+                [toFixed]="1"
+                [titleFontSize]="10"
+                [outerStrokeWidth]="5"
+                [innerStrokeWidth]="3"
+                [outerStrokeColor]="getGlobalProgress(item) >= 65 ? '#3FBD0D' : getGlobalProgress(item) > 35 ? '#F0DD35' : '#EC0F0F'"
+                [innerStrokeColor]="'#95cde4'"
+                [animation]="true"
+                [showSubtitle]="false"
+                [animationDuration]="300"
+              ></circle-progress>
+            </td>
+            <td>
+              <span class="badge"
+                [ngClass]="{
+                'badge-danger' : item?.construction?.etat === 'STOPPER',
+                'badge-primary' : item?.construction?.etat === 'EN COURS',
+                'badge-warning' : item?.construction?.etat === 'PREVU',
+                'badge-success' : item?.construction?.etat === 'TERMINER'
+                }"> {{ item?.construction?.etat === 'EN COURS'  ? 'EN COURS DE REALISATION' : item?.construction?.etat}}
+              </span>
+            </td>
+            <td class="bold text-warning">{{ item?.construction?.budget |number }} {{ global.device }}</td>
+            <td class="table-action">
+              <button *ngxPermissionsOnly="'PRODUCTION:SHOW'" (click)="showProduction(item)" type="button" class="btn btn-icon btn-secondary ml-1"
+                ngbTooltip="Détails"> <i class="fas fa-eye"></i>
+              </button>
+              <ng-template ngxPermissionsOnly="PRODUCTION:EDIT">
+                <button *ngIf="item.etat === 'INVALIDE'" (click)="editProduction(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                  ngbTooltip="Modifier"><i class="feather icon-edit-2"></i>
+                </button>
+              </ng-template>
+              <ng-template ngxPermissionsOnly="PRODUCTION:VALIDATE">
+                <button *ngIf="item.etat === 'INVALIDE'" (click)="validateProduction(item)" type="button" class="btn btn-icon btn-success" ngbTooltip="Valider">
+                  <i class="fas fa-check"></i>
+                </button>
+              </ng-template>
+              <ng-template ngxPermissionsOnly="PRODUCTION:PRINTER:SHOW">
+                <button *ngIf="item?.etat === 'VALIDE'" (click)="printerProduction(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer"><i class="feather icon-printer"></i>
+                </button>
+              </ng-template>
+              <button *ngxPermissionsOnly="'PRODUCTION:DELETE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                <i class="feather icon-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td [attr.colspan]="construction ? 3 : 2" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-warning"> {{ total | number}} {{global.device}}</td>
+            <td *ngIf="action"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

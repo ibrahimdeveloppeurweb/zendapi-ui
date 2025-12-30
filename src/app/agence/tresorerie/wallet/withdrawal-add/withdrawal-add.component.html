@@ -1,0 +1,151 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modalActive.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LE RETRAIT </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <app-entity-finder [class]="'Owner'" [groups]="'owner'" [required]="true"
+              [label]="'Propriétaire'" (uuid)="setOwnerUuid($event)"
+              [selected]="ownerSelected"
+              [disabled]="edit" [placeholder]="'Selectionez un Propriétaire'">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-4">
+            <label for="house">Bien concerné <span class="asterix">*</span></label>
+            <select [attr.disabled]="edit || !f.owner.value ? true : null"
+               formControlName="house" class="form-control"
+              id="house" [ngClass]="{
+                'is-invalid': submit && f.house.errors,
+                'is-valid': submit && f.house.valid
+              }">
+              <option [value]="null" selected>Selectionnez un bien</option>
+              <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+              <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <app-entity-finder [class]="'Treasury'" [groups]="'treasury'" [required]="true"
+              [label]="'Trésorerie'" (uuid)="setTreasuryUuid($event)"
+              [selected]="treasurySelected"
+              [disabled]="edit" [placeholder]="'Selectionez une tresorerie'">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-4">
+            <label for="date">Date d'opération <span class="asterix">*</span></label>
+            <input type="date" formControlName="date" class="form-control" id="date" [ngClass]="{
+              'is-invalid': submit && f.date.errors,
+              'is-valid': submit && f.date.valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+              <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <label for="libelle">Libelle  <span class="asterix">*</span></label>
+            <input type="text" formControlName="libelle"  class="form-control" id="libelle" placeholder="libelle">
+          </div>
+        </div>  
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <label for="montant">Montant <span class="asterix">*</span></label>
+          <input type="number" formControlName="montant" step="1000" class="form-control" id="montant" placeholder="Montant">
+        </div>
+        <div class="col-md-4">
+          <label for="mode">Mode de paiement <span class="asterix">*</span></label>
+          <select (change)="onChangeLibelle()" class="form-control" formControlName="mode"  id="mode" #mySelectMode [ngClass]="{
+            'is-invalid': submit && f.mode.errors,
+            'is-valid': submit && f.mode.valid
+          }">
+            <option *ngFor="let item of modeRow" [value]="item.value">{{item.label}}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+            <div *ngIf="f.mode.errors.required">{{required.novide}}</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label for="effectue">Effectué par <span class="asterix">*</span></label>
+          <select (change)="onChangeEffectue()"class="form-control" formControlName="effectue" id="effectue" [ngClass]="{
+            'is-invalid': submit && f.effectue.errors,
+            'is-valid': submit && f.effectue.valid
+          }">
+            <option [value]="'LUI MEME'">LUI MÊME</option>
+            <option [value]="'AUTRE'">AUTRE</option>
+          </select>
+        </div>
+        <div class="col-md-4" *ngIf="f.effectue.value === 'AUTRE'">
+          <label for="tiers">Tiers <span class="asterix">*</span></label>
+          <input type="text" formControlName="tiers" class="form-control" id="tiers"
+            placeholder="Nom du tiers">
+        </div>
+        <div class="col-md-4"  *ngIf="f.mode.value !== 'ESPECE'">
+          <label for="source">{{ sourceTitle }}</label>
+          <input type="text" formControlName="source" class="form-control" id="source" [placeholder]="sourceTitle">
+        </div>
+        <div class="col-md-4" *ngIf="f.mode.value !== 'ESPECE'">
+          <label for="numero">{{ numeroTitle }}</label>
+          <input type="text" formControlName="numero" class="form-control" id="numero"
+            [placeholder]="numeroTitle">
+        </div>
+      </div>
+      <div class="row">
+        <span class="badge badge-success my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLEMENTAIRES </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md">
+            <label class="ml-2">Pièces et documents à joindre</label>
+            <div class="row">
+              <div [ngClass]="fileO ? 'col-md-4' : 'col-md-12'">
+                <app-folder-uploader
+                   [maxSize]="3"
+                   (filesUploaded)="setParam('folderUuid',$event)"
+                   [type]="['application/pdf']"
+                   [path]="'proprietaire'"
+                   [etat]="edit ? 'edit': 'add'"
+                   [folder]="edit && owner ? owner.folder : null">
+                </app-folder-uploader>
+              </div>
+              <div [ngClass]="fileO ? 'col-md-8' : ''" *ngIf="fileO">
+                <div class="row">
+                  <div class="col-sm-12 mb-2">
+                    <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                      <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                     </button>
+                   </div>
+                </div>
+                <ngx-doc-viewer [url]="fileO" viewer="url" style="width:100%;height: 64vh;">
+                </ngx-doc-viewer>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="modalActive.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+          Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="form.reset()" type="button" class="btn btn-warning">
+          Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+          Enregistrer <i class="feather icon-save"></i>
+        </button>
+      </div>
+      
+    </div> 
+  </div>
+</form>

@@ -1,0 +1,45 @@
+<ng-container *ngIf="!item.hidden &&
+  (item?.id != 'proprietaire' || (autorisation?.CONTRAT)) &&
+  (item?.id != 'locataire' || autorisation?.CONTRAT) &&
+  (item?.id != 'client' || autorisation?.DOSSIER) &&
+  (item?.id != 'promotion' || autorisation?.DOSSIER) &&
+  (item?.id != 'crm' || autorisation?.CRM) &&
+  (item?.id != 'syndic' || autorisation?.SYNDIC) &&
+  (item?.id != 'budget' || autorisation?.SYNDIC) &&
+  (item?.id != 'comptabilite' || autorisation?.SYNDIC) &&
+  (item?.id != 'cartographies' || autorisation?.CARTOGRAPHIES) &&
+  (item?.id != 'lotissement' || autorisation?.DOSSIER)">
+
+  <ng-container>
+    <li [ngClass]="item.classes" *ngIf="item.url && !item.external" [routerLinkActive]="['active']">
+      <a class="nav-link" [target]="item.target ? '_blank' : '_self'" [routerLink]="[item?.url]" (click)="closeOtherMenu($event)">
+        <ng-container *ngTemplateOutlet="itemIcon"></ng-container>
+        <span class="pcoded-mtext" *ngIf="item.icon; else directTitle">{{ item.title }}</span>
+        <ng-template #directTitle>
+          {{item.title}}
+        </ng-template>
+        <ng-container *ngTemplateOutlet="itemBadge"></ng-container>
+      </a>
+    </li>
+    <li [ngClass]="item.classes" *ngIf="item.url && item.external">
+      <a [target]="item.target ? '_blank' : '_self'" [href]="item.url">
+        <ng-container *ngTemplateOutlet="itemIcon"></ng-container>
+        <span class="pcoded-mtext" *ngIf="item.icon; else directTitle">{{ item.title }}</span>
+        <ng-template #directTitle>
+          {{item.title}}
+        </ng-template>
+        <ng-container *ngTemplateOutlet="itemBadge"></ng-container>
+      </a>
+    </li>
+  <ng-template #itemIcon>
+    <span *ngIf="item.icon" class="pcoded-micon"><i class="feather" [ngClass]="item.icon"></i></span>
+  </ng-template>
+  <ng-template #itemBadge>
+    <span *ngIf="item.badge && themeLayout === 'vertical'" class="pcoded-badge badge" [ngClass]="item.badge.type">
+      {{item.badge.title}}
+    </span>
+    <span *ngIf="item.badge && themeLayout === 'horizontal'" class="badge label" [ngClass]="item.badge.type">
+      {{item.badge.title}}
+    </span>
+  </ng-template>
+</ng-container>

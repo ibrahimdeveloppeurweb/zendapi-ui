@@ -1,0 +1,13 @@
+<div *ngIf="this.isConfig" id="styleSelector" class="menu-filtre" [ngClass]="{'open': styleSelectorToggle}">
+    <div class="style-filtre">
+        <a href="javascript:" (click)="styleSelectorToggle = !styleSelectorToggle;"></a>
+    </div>
+    <div class="style-block">
+        <h4 class="mb-2">Filtre avancé</h4>
+        <hr />
+        <perfect-scrollbar [style.max-height]="'calc(100vh - 135px)'">
+            <div class="m-style-scroller">
+            </div>
+        </perfect-scrollbar>
+    </div>
+</div>

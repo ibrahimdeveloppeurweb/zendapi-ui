@@ -1,0 +1,11 @@
+<div class="container-fluid">
+    <div class="d-flex justify-content-end my-3">
+        <div class="d-flex align-projets-center">
+          <button class="btn btn-dark" type="button" (click)="back()">
+            <i class="fa fa-arrow-alt-circle-left"></i> Retour
+          </button>
+        </div>
+    </div>
+</div>
+
+<app-dx-gantt *ngIf="showGantt" [hasToBeTrue]="hasToBeTrue"></app-dx-gantt>

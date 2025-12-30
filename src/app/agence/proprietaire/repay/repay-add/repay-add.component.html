@@ -1,0 +1,256 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <!-- DETAILS SUR LE BIEN CONCERNE -->
+            <div class="row">
+                <span class="badge badge-success my-2 f-14 width">
+                    SECTION DE RECHERCHE DES FACTURES EN FONCTION DU BIEN SUR LA PERIODE DÉFINIE
+                </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true"
+                            [label]="'Proprietaire'" (uuid)="_setOwnerUuid($event)" [selected]="ownerSelected"
+                            [disabled]="edit" [placeholder]="'Selectionez un proprietaire'">
+                        </app-entity-finder>
+                        <div class="invalid-feedback" *ngIf="submit && f.owner.errors">
+                            <div *ngIf="f.owner.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="house">Bien <span class="asterix">*</span></label>
+                        <select  [disabled]="!f.owner.value" formControlName="house" (change)="_setHouseUuid($event.target.value)"
+                            class="form-control" id="house" [ngClass]="{
+                            'is-invalid': submit && f.house.errors,
+                            'is-valid': submit && f.house.valid
+                            }">
+                            <option *ngFor="let item of houses" [value]="item.uuid">{{ item.nom }}</option>
+                        </select>
+                        <input *ngIf="edit" type="text"
+                            class="form-control p-2 text-uppercase font-weight-bold text-secondary" [value]="house?.nom"
+                            readonly>
+                        <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                            <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                        </div>
+                        <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                            <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="dateD">Date debut</label>
+                        <input class="form-control" type="date" formControlName="dateD" id="dateD"
+                            [readonly]="f.house.value === null" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="dateF">Date Fin</label>
+                        <input class="form-control" type="date" formControlName="dateF" id="dateF"
+                            [readonly]="f.house.value === null" />
+                    </div>
+                    <div class="col-md-1 mt-4">
+                        <button type="button" (click)="_onFilter()" class="btn btn-primary"
+                            [disabled]="f.dateF.value === null || f.dateD.value === null || f.house.value === null">
+                            <i class="feather icon-filter"></i>
+                        </button>
+                    </div>
+                </div>
+                <ng-container *ngIf="house && mandate">
+                    <div class="row mb-2" style="background: whitesmoke;padding:10px;margin:10px auto">
+                        <h3 class="text-primary">Les critères de reversement pour le bien {{house?.searchableTitle}}</h3>
+                        <div class="col-md-12">
+                            <div class="d-flex">
+                                <div class="flex-fill">
+                                    <p>
+                                        <span class="title-show">Type de facturation :</span>
+                                        <span class="title-result-show">{{mandate?.facturation === 'PRC' ? 'Par Pourcentage': 'Montant Fixe'}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="title-show">commission {{mandate?.facturation === 'PRC' ? '%': 'XOF'}}: </span>
+                                        <span class="title-result-show">{{mandate?.commission}} {{mandate?.facturation === 'PRC' ? '%': 'XOF'}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="title-show">Impôt foncier au charge: </span>
+                                        <span class="title-result-show">{{mandate?.taxe}}</span>
+                                    </p>
+                                </div>
+                                <div class="flex-fill">
+                                    <p>
+                                        <span class="title-show">Impôt sur commission: </span>
+                                        <span class="title-result-show">{{mandate?.taxeCommission}}</span>
+                                    </p>
+                                    <p *ngIf="mandate?.taxeCommission == 'OUI'">
+                                        <span class="title-show">Impôt sur commission au charges de : </span>
+                                        <span class="title-result-show">{{mandate?.tvaCommissionCharge}}</span>
+                                    </p>
+                                    <p *ngIf="mandate?.taxe == 'AGENCE'">
+                                        <span class="title-show">Pourcentage foncier au charge: </span>
+                                        <span class="title-result-show">{{mandate?.prcCommFoncier}} %</span>
+                                    </p>
+                                </div>
+                                <div class="flex-fill">
+                                    <p *ngIf="mandate?.taxeCommission == 'OUI'">
+                                        <span class="title-show">Pourcentage Impôt sur commission: </span>
+                                        <span class="title-result-show">18 %</span>
+                                    </p>
+                                    <p>
+                                        <span class="title-show">Les charges son reverser á : </span>
+                                        <span class="title-result-show">{{mandate?.charge}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <ng-container *ngIf="options?.length > 0">
+                <aw-wizard #wizard class="arc-wizard">
+                    <aw-wizard-step stepTitle="Factures et paiements concernés">
+                        <!-- DETAILS CONCERNANT LES FINANCEMENT DE BIEN -->
+                        <div class="form-group">
+                            <div class="col-md-12" formArrayName="invoices">
+                                <div class="row">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Locataire</th>
+                                                    <th>Libellé de la facture</th>
+                                                    <th>Loyer brut</th>
+                                                    <th>Loyer net</th>
+                                                    <th>Loyer net reversé</th>
+                                                    <th>Solde du loyer net à reverser</th>
+                                                    <th>Charges</th>
+                                                    <th>Charges reversées</th>
+                                                    <th>Solde des charges à reverser</th>
+                                                    <th>Commission</th>
+                                                    <th>TVA sur la commission</th>
+                                                    <th>Montant total à reverser </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="task-page">
+                                                <tr *ngFor="let item of staticData">
+                                                    <td>{{ item.locataire }}</td>
+                                                    <td>{{ item.libelleFacture }}</td>
+                                                    <td>{{ item.loyerBrut }}</td>
+                                                    <td>{{ item.loyerNet }}</td>
+                                                    <td>{{ item.loyerNetReverse }}</td>
+                                                    <td>{{ item.soldeLoyerNet }}</td>
+                                                    <td>{{ item.charges }}</td>
+                                                    <td>{{ item.chargesReversees }}</td>
+                                                    <td>{{ item.soldeCharges }}</td>
+                                                    <td>{{ item.commission }}</td>
+                                                    <td>{{ item.tvaCommission }}</td>
+                                                    <td>{{ item.montantTotalReverser }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Impot foncier totale</label>
+                                        <input class="form-control" type="number" readonly />
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label>Impôt foncier payer pour ce reversement</label>
+                                        <input class="form-control" type="number" />
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label>Description</label>
+                                        <textarea class="form-control" name="description" id="description"></textarea>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <table class="table table-responsive invoice-table invoice-total">
+                                    <tbody>
+                                        <tr>
+                                            <th class="fs-3 text-start">TOTAL LOYER NET : </th>
+                                            <td class="fs-3 text-success"> 2000000000</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="fs-3 text-start">TOTAL CHARGES : </th>
+                                            <td class="fs-3 text-success"> 38790000000</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="fs-3 text-start">TOTAL COMMISSION: </th>
+                                            <td class="fs-3 text-success"> 38790000000</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="fs-3 text-start">TOTAL A REVERSER: </th>
+                                            <td class="fs-3 text-success"> 38790000000</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 centered-content">
+                            <div class="btn-group mt-10">
+                                <button type="button" class="btn btn-primary" awNextStep>
+                                    Suivant <i class="feather icon-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </aw-wizard-step>
+                    <aw-wizard-step stepTitle="Dépenses">
+                        <div class="col-sm-12 centered-content">
+                            <div class="btn-group mt-10">
+                                <button type="button" class="btn btn-warning mr-2" awPreviousStep>
+                                    <i class="feather icon-arrow-left"></i> Précédent
+                                </button>
+                                <button type="button" class="btn btn-primary" awNextStep>
+                                    Suivant <i class="feather icon-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </aw-wizard-step>
+                    <aw-wizard-step stepTitle="Facture de financement">
+                        <div class="col-sm-12 centered-content">
+                            <div class="btn-group mt-10">
+                                <button type="button" class="btn btn-warning mr-2" awPreviousStep>
+                                    <i class="feather icon-arrow-left"></i> Précédent
+                                </button>
+                                <button type="button" class="btn btn-primary" awNextStep>
+                                    Suivant <i class="feather icon-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </aw-wizard-step>
+                    <aw-wizard-step stepTitle="Récapitulatif">
+                        <div class="col-sm-12 centered-content">
+                            <div class="btn-group mt-10">
+                                <button type="button" class="btn btn-warning" awPreviousStep>
+                                    <i class="feather icon-arrow-left"></i> Précédent
+                                </button>
+                            </div>
+                        </div>
+                    </aw-wizard-step>
+                </aw-wizard>
+            </ng-container>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="form.reset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+    </div>
+</form>

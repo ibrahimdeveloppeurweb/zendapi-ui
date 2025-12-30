@@ -1,0 +1,148 @@
+<div class="col-sm-12">
+
+  <div class="btn-tenant">
+    <button *ngIf="checked" (click)="printerAssocie()" type="button" class="btn btn-warning m-1"
+      ngbTooltip="Cliquez ici pour imprimer l'association de quittance">
+        Imprimer l'association <i class="feather icon-printer"></i>
+    </button>
+  </div>
+
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <br/>
+    <form autocomplete="off" [formGroup]="form">
+      <div class="table-responsive" *ngIf="rents.length > 0" formArrayName="lignes">
+        <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input id="selectAll" class="form-check-input" type="checkbox"
+                      (change)="onSelectAll($event)">
+                  </div>
+                </div>
+              </th>
+              <th>Locative</th>
+              <th *ngIf="locataire">Locataire</th>
+              <th>Etat</th>
+              <th>Période</th>
+              <th>Montant</th>
+              <th>Payé</th>
+              <th>Restant</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of rents; let i = index" [formGroupName]="i">
+              <td>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input formControlName="checked" class="form-check-input" type="checkbox"
+                      id="checked{{i}}" (change)="onSelect(i, item)">
+                  </div>
+                </div>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span *ngIf="item?.contract">
+                    <span class="text-warning">{{item?.contract?.rental?.libelle}}</span> <br />
+                    Superficie : {{item?.contract?.rental?.superficie}} m² - {{item?.contract?.rental?.piece}} pièce(s): <br />
+                    Propriétaire : {{item?.contract?.rental?.house?.owner?.searchableTitle}}
+                  </span>
+                    <span *ngIf="item?.groupedContract">
+                    <span class="text-warning">{{item?.groupedContract?.house?.nom}}</span> <br />
+                    <span *ngFor="let rental of item?.groupedContract?.rentals">{{rental?.libelle}} - Superficie : {{rental?.superficie}} m² - {{rental?.piece}} pièce(s): <br /></span>
+                    Propriétaire : {{item?.groupedContract?.house?.owner?.searchableTitle}}
+                  </span>
+                </p>
+              </td>
+              <td *ngIf="locataire">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span *ngIf="item?.contract">
+                    <span class="text-warning">{{item?.contract?.tenant?.searchableTitle}}</span> <br />
+                    Type : {{item?.contract?.tenant?.type}}<br />
+                    Telephone : {{item?.contract?.tenant?.telephone}}
+                  </span>
+                  <span *ngIf="item?.groupedContract">
+                    <span class="text-warning">{{item?.groupedContract?.tenant?.searchableTitle}}</span> <br />
+                    Type : {{item?.groupedContract?.tenant?.type}}<br />
+                    Telephone : {{item?.groupedContract?.tenant?.telephone}}
+                  </span>
+                </p>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="{
+                'badge-danger' : item?.invoice?.etat === 'IMPAYE',
+                'badge-primary' : item?.invoice?.etat === 'ATTENTE',
+                'badge-warning' : item?.invoice?.etat === 'EN COURS',
+                'badge-success' : item?.invoice?.etat === 'SOLDE'
+                }">{{payment(item?.invoice?.etat)}}</span>
+              </td>
+              <td>
+                <div *ngIf="item?.contract">
+                  {{item?.mois}} <br />
+                    <span *ngIf="item?.type === 'AVANCE'" class="badge badge-light-primary"><small>{{item?.type}}</small></span>
+                    <span *ngIf="item?.contract?.etat !== 'ACTIF'" class="ml-1 badge badge-pill" [ngClass]="{
+                  'badge-light-danger' : item?.contract?.etat === 'RESILIE',
+                  'badge-light-warning' : item?.contract?.etat === 'INACTIF'
+                  }"><small>{{item?.contract?.etat}}</small></span>
+                </div>
+                <div *ngIf="item?.groupedContract">
+                  {{item?.mois}} <br />
+                  <span *ngIf="item?.type === 'AVANCE'" class="badge badge-light-primary"><small>{{item?.type}}</small></span>
+                  <span *ngIf="item?.groupedContract?.etat !== 'ACTIF'" class="ml-1 badge badge-pill" [ngClass]="{
+                  'badge-light-danger' : item?.groupedContract?.etat === 'RESILIE',
+                  'badge-light-warning' : item?.groupedContract?.etat === 'INACTIF'
+                  }"><small>{{item?.groupedContract?.etat}}</small></span>
+                </div>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary font-weight-blod">{{item?.invoice?.montant|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-success font-weight-blod">{{item?.invoice?.paye|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-danger font-weight-blod">{{item?.invoice?.impaye|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="table-action">
+                <div class="overlay-edit">
+                  <button *ngxPermissionsOnly="'RENT:SHOW'" (click)="showRent(item)" type="button" class="btn btn-icon btn-secondary"
+                    ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="RENT:PRINTER:SHOW">
+                    <button *ngIf="item?.invoice?.etat === 'SOLDE'" (click)="printerRent(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                      ngbTooltip="Imprimer">
+                      <i class="feather icon-printer"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template ngxPermissionsOnly="RENT:DELETE">
+                    <button *ngIf="item?.type === 'LOYER' && item?.invoice?.etat !== 'SOLDE' && item?.invoice?.etat !== 'EN COURS'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td [attr.colspan]="locataire ? 5 : 4" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-primary"> {{total | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{paye | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{impaye | number}} {{global.device}}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </form>
+  </app-card>
+</div>

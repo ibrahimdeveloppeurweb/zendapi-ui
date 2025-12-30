@@ -1,0 +1,160 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button
+    type="button"
+    class="close basic-close"
+    data-dismiss="modal"
+    aria-label="Close"
+    (click)="modal.close('ferme')"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-6">
+            <label for="libelle">Syndic <span class="asterix">*</span></label>
+            <ng-select  [readonly]="edit" [required]="true" id="trustee" formControlName="trustee" (change)="setSyndicUuid($event)" [(ngModel)]="syndicSelected" >
+              <ng-option *ngFor="let item of trustes" [value]="item.uuid">{{item?.nom}}</ng-option>
+            </ng-select>
+          </div>
+          <div class="col-md-6">
+            <label for="libelle">Mandat du syndic  <span class="asterix">*</span></label>
+            <ng-select  [readonly]="edit" [required]="true" id="mandat" formControlName="mandat" (change)="setMandatUuid($event)" [(ngModel)]="currentMandat" >
+              <ng-option *ngFor="let item of mandats" [value]="item.uuid">Année {{item?.anneeEx}}</ng-option>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <span class="badge badge-info my-2 f-14 formBadge width"> INFORMATION SUR LES TYPES DE CHARGE </span>
+    </div>
+    <div formArrayName="types">
+      <form [formGroup]="typeLoadForm">
+        <div class="row">
+          <div class="col-md">
+            <label for="carte">Catégorie de charge </label>
+            <app-entity-finder [namespace]="'Budget'" [class]="'LoadCategory'" [groups]="['load-category']"
+                [required]="true" [selected]="selectedCategory" (uuid)="setCategoryUuid($event)"
+                [placeholder]="'Selectionez une catégorie'">
+            </app-entity-finder>
+          </div>
+          <!--  *ngIf="showTantieme.length == 0 && modeCotisation =='TANTIEME'"  -->
+          <div class="col-md" *ngIf="showTantieme.length == 0 && modeCotisation =='TANTIEME'" >
+            <div class="position-relative form-group">
+              <label for="tantieme">Type de millième: </label>
+              <ng-select id="tantieme" formControlName="tantieme">
+                <ng-option *ngFor="let item of tantiemes" [value]="item">{{item?.libelle}}</ng-option>
+              </ng-select>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="position-relative form-group">
+              <label for="typeLoad">Type de charge: </label>
+              <ng-select [multiple]="true" id="typeLoad" formControlName="typeLoad">
+                <ng-option *ngFor="let item of typeLoads" [value]="item">{{item?.libelle}}</ng-option>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group text-right">
+          <button  (click)="addType()" class="btn btn-primary">
+            Ajouter
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-12">
+      <span class="badge badge-info my-2 f-14 formBadge width"> LISTE DES CHARGES
+          <span class="ml-2" ngbTooltip="Ce tableau doit contenir des lignes de types de charges">
+            <i class="fas fa-info-circle"></i>
+          </span>
+      </span>
+    </div>
+    <div class="py-3">
+      <div class="table-responsive m-0">
+        <table class="table table-hover m-0">
+          <thead>
+            <tr>
+              <th>Catégorie</th>
+              <th>Type de charge</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of types.value; let i = index">
+              <td>
+                {{item?.libelle}}
+                <br>              
+                <ng-template *ngIf="modeCotisation =='TANTIEME'">  Millième: {{item?.libTantieme}}</ng-template>
+              </td>
+              <td>{{item?.details}}</td>
+              <td class="text-center">
+                <button type="button" (click)="onDelete(item, i)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                  <i class="feather icon-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="showTask === true">
+      <div class="col-md-12">
+        <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LES TYPES DE CHARGE </span>
+      </div>
+      <div class="col-md-12">
+        <div class="table-responsive" formArrayName="budgets">
+          <table class="table table-hover table-bordered">
+            <thead>
+              <tr>
+                <th>Ressource</th>
+                <th>Qte</th>
+                <th>Prix unitaire</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of budgets.controls; let i = index"  [formGroupName]="i">
+                <td style="vertical-align: middle;">{{item?.get('libelle').value}}</td>
+                <td style="vertical-align: middle;">
+                  <input style="width: 15rem;" type="number" class="form-control" formControlName="qte" id="qte{{i}}" placeholder="Quantité" (change)="onCalcul($event.target.value, item)">
+                </td>
+                <td style="vertical-align: middle;">
+                  <input style="width: 15rem;" type="number" class="form-control" formControlName="prixU" id="prixU{{i}}" placeholder="Prix unitaire" (change)="onCalcul($event.target.value, item)">
+                </td>
+                <td style="vertical-align: middle;">{{item?.get('total').value}}</td>
+                <td>
+                  <button type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Charger l'image">
+                    <i class="feather icon-upload"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+           </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      (click)="modal.close('ferme')"
+      type="button"
+      class="btn btn-secondary text-left"
+      data-dismiss="modal"
+    >
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid && mandat" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

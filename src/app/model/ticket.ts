@@ -1,0 +1,47 @@
+import { Category } from './category';
+import { Customer } from './customer';
+import { FolderFiles } from '@model/folder-files';
+import { Owner } from './owner';
+import { Tenant } from './tenant';
+import { User } from './user';
+import { Chat } from './chat';
+import { Service } from './service';
+import { House } from './house';
+import { Rental } from './rental';
+import { Ressource } from './ressource';
+
+export interface Ticket {
+  uuid?: any;
+  id?: any;
+  type?:string;
+  code?:string;
+  etat?:string;
+  libelle?:string;
+  concerne?: string;
+  tenant?: Tenant;
+  owner?: Owner;
+  customer?: Customer;
+  house?: House;
+  rental?: Rental;
+  ressource?: Ressource;
+  user?: User;
+  service?: Service;
+  objet?:string;
+  description?: Text;
+  category?: Category;
+  urgence?: string;
+  date?: string; 
+  create?: string; 
+  update?: string; 
+  qualifier?: string;
+  createdAt?: Date; 
+  updatedAt?: Date; 
+  qualifieBy?: any; 
+  qualifiedAt?: Date; 
+  folder?: FolderFiles;
+  chats?: Chat[];
+  optionTicket?: any[];
+  photo?: any;
+  photoSrc?: any;
+  fermes?: any;
+}

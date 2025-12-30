@@ -1,0 +1,282 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width" 
+  [name]="name"
+  [nameTitle]="nameTitle"
+  [nameType]="nameType"
+  [nameClass]="nameClass"
+  [nameNamespace]="nameNamespace"
+  [nameGroups]="nameGroups"
+  [dateD]="true" 
+  [dateF]="true"
+  [type]="true" 
+    [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+  </app-filter>
+  <!-- FILTRE DE RECHERCHE END-->
+
+  <!-- WIDGET DES NOMBRES -->
+  <div class="col-xl-3 col-md-6" (click)="ressourceModal(3)">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">Total ticket</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-hammer"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <h5 class="text-white">{{ tTicket ? tTicket:0}} </h5>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-xl-3 col-md-6" (click)="ressourceModal(4)">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">Ticket à faire</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-home f-30 text-c-blue"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <h5 class="text-white">{{ tFaire ? tFaire:0 }} </h5>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-xl-3 col-md-6" (click)="ressourceModal(5)">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">Ticket en cours</h6>
+          <!--          <h6 class="text-muted m-b-0">{{ widget?.proprietaire?.tout > 1 ? 'Propriétaires' : 'Propriétaire' }}</h6>-->
+        </div>
+        <div class="col-4 text-right">
+          <i class="fas fa-hammer"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <h5 class="text-white">{{tCours ? tCours: 0}} </h5>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+
+  <div class="col-xl-3 col-md-6" (click)="ressourceModal(6)">
+    <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h6 class="text-muted m-b-10">ticket ferme</h6>
+        </div>
+        <div class="col-4 text-right">
+          <i class="feather icon-x-circle f-30 text-c-red"></i>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="row align-items-center">
+          <div class="col-7">
+            <h5 class="text-white">{{ tFerme ? tFerme: 0}} </h5>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <!-- WIDGET DES NOMBRES end-->
+
+  <!-- DIAGRAMME CIRCULAIRE -->
+  <div class="col-md-6">
+    <app-card cardTitle="DIAGRAMME CIRCULAIRE DES DISPONIBILITÉS" [options]="false">
+      <div #doughnutChart>
+        <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData1" style="height: 345px;"></chart>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-md-6">
+    <app-card cardTitle="DIAGRAMME CIRCULAIRE DES TAUX DES INTERVENTIONS" [options]="false">
+      <div #doughnutChart>
+        <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData2" style="height: 345px;"></chart>
+      </div>
+    </app-card>
+  </div>
+  <!-- DIAGRAMME CIRCULAIRE -->
+  <!-- DIFERRENTS TABLEAU DE LISTING PART 1 -->
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-12">
+        <app-card [hidHeader]="true">
+          <div class="col-md-12">
+            <span class="badge badge-primary my-2 f-14 formBadge width"> HISTORIQUE DES INTERVENTIONS </span>
+          </div>
+          <div class="col-md-12">
+            <div class="table-responsive" *ngIf="tickets && tickets.length > 0">
+              <table datatable [dtOptions]="dtOptions"
+                class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Reference</th>
+                    <th>Objet</th>
+                    <th>Catégorie </th>
+                    <th>Etat</th>
+                    <th>Priorité</th>
+                    <th>qualification</th>
+                    <th>Date de Création</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of tickets">
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-primary">Ticket N° {{ item?.code }}</span> <br />
+                        Plaignant : {{ item?.libelle }}<br />
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        {{ item?.objet }}
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        {{ item?.category?.libelle }}
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <span
+                        class="badge badge-{{item?.etat == 'OUVER' ? 'danger' : item?.etat == 'EN COURS' ? 'warning' : 'success'}}">
+                        {{ item?.etat }}</span>
+                    </td>
+                    <td class="align-middle">
+                      <span
+                        class="badge badge-{{item?.urgence == 'URGENT' ? 'danger' : item?.urgence == 'IMPORTANT' ? 'danger' : 'warning'}}">
+                        {{ item?.urgence }}
+                      </span>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="badge badge-warning" *ngIf="item?.qualifier === 'NON'">EN ATTENTE DE
+                          QUALIFICATION</span> <br />
+                        <span class="badge badge-success" *ngIf="item?.qualifier === 'OUI'">QUALIFIER</span> <br />
+                        <span *ngIf="item?.qualifier === 'OUI'">Le : {{item?.qualifiedAt|date: "d MMMM y 'à' h:mm:ss" :
+                          '' : 'fr-FR'}}</span> <br />
+                        <span *ngIf="item?.qualifier === 'OUI'">Par : {{item?.qualifieBy?.nom}}
+                          {{item?.qualifieBy?.prenom}}</span> <br />
+                      </p>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span>Crée Le : {{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span> <br />
+                        <span>Par : {{item?.create}}</span> <br />
+                      </p>
+                    </td>
+
+                  </tr>
+                </tbody>
+
+              </table>
+            </div>
+            <app-no-data class="width" [title]="'Aucune ticket trouvé'"
+              *ngIf="tickets && tickets.length === 0"></app-no-data>
+          </div>
+        </app-card>
+      </div>
+      <div class="col-md-12">
+        <app-card [hidHeader]="true">
+          <div class="col-md-12">
+            <span class="badge badge-danger my-2 f-14 formBadge width">HISTORIQUE DES INTERVENTIONS </span>
+          </div>
+          <div class="col-md-12">
+            <div class="table-responsive"  *ngIf="constructions && constructions.length > 0">
+              <table datatable [dtOptions]="dtOptions"
+                class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                  <tr>
+                      <th>Bien</th>
+                      <th>Libellé</th>
+                      <th>Etat</th>
+                      <th>Crée le</th>
+                      <th>Montant</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let item of constructions">
+                      <td class="align-middle">
+                          <p class="m-0 d-inline-block align-middle font-16">
+                              <span class="text-primary">{{item?.rental ? item?.rental?.libelle :
+                                  item?.house?.searchableTitle}}</span>
+                              <span class="text-primary">{{item?.trustee ? item?.trustee?.nom :
+                                  ''}}</span>
+                              <span *ngIf="item?.rental!=null || item?.house!=null">
+                                  <br /> <span>
+                                      Superficie : {{item?.rental
+                                      ? item?.rental?.superficie : item?.house?.superficie}} m² -
+                                      {{item?.rental
+                                      ? item?.rental?.piece : item?.house?.nbrPiece}} pièce(s)
+                                  </span>
+                              </span>
+                              <span *ngIf="item?.houseCo!=null">
+                                  <br /> <span>Lot : {{item?.houseCo?.nom}}</span>
+                              </span>
+                              <span *ngIf="item?.homeCo!=null">
+                                  <br /> <span>Villa ou appartement : {{item?.homeCo?.nom}}</span>
+                              </span>
+                              <span *ngIf="item?.infrastructure!=null">
+                                  <br /> <span>Infrastructure : {{item?.infrastructure?.nom}}</span>
+                              </span>
+                              <span *ngIf="item?.nature!=null">
+                                  <br /> <span>Nature : {{item?.nature?.libelle}}</span>
+                              </span>
+                              <span *ngIf="house!=null">
+                                  <br /> <span>Propriétaire
+                                      : {{item?.house?.owner?.searchableTitle}}</span>
+                              </span>
+                          </p>
+                      </td>
+                      <td class="align-middle">
+                          <p class="m-0 d-inline-block align-middle font-16">
+                              <span class="text-primary">{{item?.nom}}</span><br /> Durée:
+                              {{timelapse(item?.dateD, item?.dateF)}} <br /> Début: {{item?.dateD|date: "d
+                              MMMM y" : '' : 'fr-FR'}} - Fin: {{item?.dateF|date: "d MMMM y" : '' :
+                              'fr-FR'}}
+                          </p>
+                      </td>
+                 
+                      <td>
+                          <span class="badge" [ngClass]="{
+      'badge-danger' : item?.etat === 'STOPPER',
+      'badge-primary' : item?.etat === 'EN COURS',
+      'badge-warning' : item?.etat === 'PREVU',
+      'badge-success' : item?.etat === 'TERMINER'
+      }"> {{ item?.etat === 'EN COURS' ? 'EN COURS DE REALISATION' : item?.etat }} </span>
+                      </td>
+                      <td>{{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                      <td>
+                          <p class="m-0 d-inline-block align-middle font-16">
+                              <span class="text-warning">{{item?.budget|number}} {{global.device}}</span>
+                          </p>
+                      </td>
+                  
+                  </tr>
+              </tbody>
+              </table>
+            </div>
+            <app-no-data class="width" [title]="'Aucune construction trouvé'"
+              *ngIf="constructions && constructions.length === 0"></app-no-data>
+          </div>
+        </app-card>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,39 @@
+<div class="entity-finder">
+  <label *ngIf="label">{{label}} <span class="asterix" *ngIf="required">*</span></label>
+  <div *ngIf="selected" class="result form-control selected">
+    <div class="photo" [style]="selected?.photoSrc ? {'background': 'url('+publicUrl+ '/'+ selected?.photoSrc + ') center/cover'} :
+      {'background': 'url(../assets/images/select-default.jpg) center/cover'}"></div>
+    <div class="info">
+      <div class="title">{{selected?.title}}</div>
+      <div class="detail">{{selected?.detail}}</div>
+    </div>
+    <div style="margin-left:10px" *ngIf="!disabled">
+      <i class="fas fa-times" (click)="clear()"></i>
+    </div>
+  </div>
+  <div style="position: relative">
+    <div style="display: flex; align-items: center;">
+      <input *ngIf="!selected && !disabled" type="text" class="form-control" (input)="search($event.target.value)"
+        [disabled]="!enabled" [placeholder]="placeholder" />
+      <span *ngIf="isAdd && isAutoCreate && !selected" class="add" (click)="onAdd()"> <i class="fas fa-plus text-white fs-12"></i></span>
+    </div>
+    <div *ngIf="isTyping" class="typing">
+      <div class="point"></div>
+      <div class="point two"></div>
+      <div class="point three"></div>
+    </div>
+    <div *ngIf="isSearching" class="searchin">
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <div class="results">
+    <div *ngFor="let result of results" class="result" (click)="select(result)">
+      <div class="photo" [style]="result.photoSrc ? {'background': 'url('+publicUrl+ '/'+ result.photoSrc + ') center/cover'} :
+      {'background': 'url(../assets/images/select-default.jpg) center/cover'}"></div>
+      <div class="info">
+        <div class="title">{{result.title}}</div>
+        <div class="detail">{{result.detail}}</div>
+      </div>
+    </div>
+  </div>
+</div>

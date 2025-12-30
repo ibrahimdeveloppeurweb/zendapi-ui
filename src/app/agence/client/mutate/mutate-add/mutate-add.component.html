@@ -1,0 +1,219 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR LE DOSSIER -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width">  DETAILS DU DOSSIER </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="customer">Client <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Customer'" [groups]="['customer']" [required]="true"
+              (uuid)="setCustomerUuid($event)" [selected]="customerSelected" [disabled]="edit">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-3">
+            <label for="folder">Dossier <span class="asterix">*</span></label>
+            <select *ngIf="!edit" class="form-control" id="folder" formControlName="folder" (change)="setFolder($event.target.value)"
+              [ngClass]="{ 'is-invalid': submit && f.folder.errors, 'is-valid': submit && f.folder.valid }"
+              [attr.disabled]="edit || !f.customer.value ? true : null">
+              <option [value]="null" selected>Selectionnez un dossier</option>
+              <option *ngFor="let item of folders" [value]="item?.uuid">{{item?.libelle}}</option>
+            </select>
+            <input *ngIf="edit" type="text" class="form-control p-2 text-uppercase font-weight-bold"
+             [value]="folder?.libelle" readonly>
+            <div class="invalid-feedback" *ngIf="submit && f.folder.errors">
+              <div *ngIf="f.folder.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label>Montant</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+             [value]="folder?.montant|number" readonly>
+          </div>
+          <div class="col-md-3">
+            <label>Modalité</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+             [value]="folder?.modalite" readonly>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAILS SUR LA MUTATION -->
+      <div class="row" *ngIf="f.folder.value">
+        <span class="badge badge-secondary my-2 f-14 width"> DETAILS SUR LA MUTATION </span>
+      </div>
+      <!-- OPTIONS DES BIENS -->
+      <div formArrayName="optionHouses" *ngIf="f.folder.value && optionHouses.length > 0">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-3">
+              <label>Ancien bien </label>
+            </div>
+            <div class="col-md-3">
+              <label>Nouveau bien</label>
+            </div>
+            <div class="col-md-2">
+              <label>Prix unitaire</label>
+            </div>
+            <div class="col-md-1">
+              <label>TVA</label>
+            </div>
+            <div class="col-md-1">
+              <label>Remise</label>
+            </div>
+            <div class="col-md-2">
+              <label>Total</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" *ngFor="let item of optionHouses.controls; let i=index" [formGroupName]="i">
+          <div class="row">
+            <div class="col-md-3">
+              <input type="text" class="form-control p-2" formControlName="house" id="houseH{{i}}" placeholder="Bien">
+            </div>
+            <div class="col-md-3">
+              <app-entity-finder *ngIf="folder?.motif === 'PROPRIETAIRE' && !edit" [class]="'House'" id="houseH{{i}}"
+                [params]="[{ type: [{disponible : 'VENTE'}], etat: [{etat : 'DISPONIBLE'}] }]" [groups]="['house']" [required]="true" 
+                (uuid)="setHouseUuid($event, item)" [selected]="{ photoSrc: '', title: item?.value?.label, detail: ''}">
+              </app-entity-finder>
+              <app-entity-finder *ngIf="folder?.motif === 'LOT'" [class]="'Lot'" id="lotH{{i}}"
+                []="[{ etat: [{etat : 'DISPONIBLE'}] }]" [groups]="['lot']" [required]="true" (uuid)="setLotUuid($event, item)"
+                [selected]="{ photoSrc: '', title: item?.value?.label, detail: ''}">
+              </app-entity-finder>
+              <app-entity-finder *ngIf="folder?.motif === 'MAISON' && !edit" [class]="'Home'" 
+              (uuid)="setHomeUuid($event, item)" [selected]="{ photoSrc: '', title: item?.value?.label, detail: ''}">
+              </app-entity-finder>
+            </div>
+            <div class="col-md-2">
+              <input type="number" class="form-control p-2" formControlName="prix" id="prixH{{i}}" placeholder="Prix unitaire" readonly>
+            </div>
+            <div class="col-md-1">
+              <input type="number" (change)="onChangeTotalOption(item)" class="form-control" formControlName="tva" id="tvaH{{i}}" placeholder="TVA">
+            </div>
+            <div class="col-md-1">
+              <input type="number" (change)="onChangeTotalOption(item)" class="form-control" formControlName="remise" id="remiseH{{i}}" placeholder="Remise">
+            </div>
+            <div class="col-md-2">
+              <input type="number" class="form-control p-2 text-danger font-weight-bold" formControlName="total" id="totalH{{i}}" placeholder="Montant du bien" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTION DU DOSSIER -->
+      <div class="row" *ngIf="f.folder.value">
+        <span class="badge badge-secondary my-2 f-14 width"> OPTION SUPLEMENTAIRE AU DOSSIER </span>
+      </div>
+      <div formArrayName="optionFolders" *ngIf="f.folder.value && options.length > 0">
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-3">
+              <label>Désignation </label>
+            </div>
+            <div class="col-md-2">
+              <label>Prix unitaire</label>
+            </div>
+            <div class="col-md-1">
+              <label>Quantité</label>
+            </div>
+            <div class="col-md-2">
+              <label>TVA</label>
+            </div>
+            <div class="col-md-2">
+              <label>Remise</label>
+            </div>
+            <div class="col-md-2">
+              <label>Total</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" *ngFor="let item of options.controls; let i=index" [formGroupName]="i">
+          <div class="row">
+            <div class="col-md-3">
+              <input type="text" class="form-control p-2" formControlName="libelle" id="libelle{{i}}"
+                [ngClass]="{
+                  'is-invalid': submit && item.get('libelle').errors,
+                  'is-valid': submit && item.get('libelle').valid
+                }" placeholder="Désignation">
+                <div class="invalid-feedback" *ngIf="submit && item.get('libelle').errors">
+                  <div *ngIf="item.get('libelle').errors.required">{{required.novide}}</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+              <input type="number" class="form-control" formControlName="prix"
+                [ngClass]="{
+                  'is-invalid': submit && item.get('prix').errors,
+                  'is-valid': submit && item.get('prix').valid
+                }" id="prix{{i}}" placeholder="Prix unitaire">
+                <div class="invalid-feedback" *ngIf="submit && item.get('prix').errors">
+                  <div *ngIf="item.get('prix').errors.required">{{required.novide}}</div>
+                </div>
+            </div>
+            <div class="col-md-1">
+              <input type="number" class="form-control" formControlName="qte" id="qte{{i}}" placeholder="Quantité">
+            </div>
+            <div class="col-md-2">
+              <input type="number" class="form-control" formControlName="tva" id="tva{{i}}" placeholder="TVA">
+            </div>
+            <div class="col-md-2">
+              <input type="number" class="form-control" formControlName="remise" id="remise{{i}}" placeholder="TVA">
+            </div>
+            <div class="col-md-2">
+              <input type="text" class="form-control p-2 text-danger font-weight-bold" formControlName="total" id="total{{i}}" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- FIN OPTION DU DOSSIER -->
+
+      <!-- RESUME DES MONTANTS -->
+      <div class="row" *ngIf="f.folder.value">
+        <div class="col-sm-12">
+          <table class="table table-responsive invoice-table invoice-total">
+            <tbody>
+              <tr>
+                <th>FRAIS DOSSIER :</th>
+                <td>{{ folder?.montantFrais| number}}</td>
+              </tr>
+              <tr>
+                <th>TOTAL HT :</th>
+                <td>{{ totalHt| number}}</td>
+              </tr>
+              <tr>
+                <th>TOTAL REMISE :</th>
+                <td>{{ totalRemise| number}}</td>
+              </tr>
+              <tr>
+                <th>TOTAL TVA :</th>
+                <td>{{ totalTva| number}}</td>
+              </tr>
+              <tr class="text-info">
+                <td><hr/><h2 class="text-primary m-r-10">TOTAL TTC A VERSER :</h2></td>
+                <td><hr/><h2 class="text-success">{{ totalTtc|number}}</h2></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button [disabled]="edit" (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

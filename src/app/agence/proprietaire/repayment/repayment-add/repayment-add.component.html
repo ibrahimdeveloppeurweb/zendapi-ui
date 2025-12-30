@@ -1,0 +1,1000 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <aw-wizard #wizard class="arc-wizard">
+        <!-- ========================================= -->
+        <!-- ÉTAPE 1: REVERSEMENT VENTE -->
+        <!-- ========================================= -->
+        <aw-wizard-step *ngIf="type === 'VENTE'" stepTitle="Réversement">
+          <!-- DETAILS SUR LE BIEN CONCERNE -->
+          <div class="row">
+            <span class="badge badge-warning my-2 f-14 width">
+              DETAILS SUR LE BIEN CONCERNE
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <label for="type">Type <span class="asterix">*</span></label>
+                <select formControlName="type" class="form-control" id="type" [disabled]="edit" [ngClass]="{
+                    'is-invalid': submit && f.type.errors,
+                    'is-valid': submit && f.type.valid
+                  }">
+                  <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                  <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true" [label]="'Proprietaire'"
+                  (uuid)="setOwnerUuid($event)" [selected]="ownerSelected" [disabled]="edit"
+                  [placeholder]="'Selectionez un proprietaire'">
+                </app-entity-finder>
+                <div class="invalid-feedback" *ngIf="submit && f.owner.errors">
+                  <div *ngIf="f.owner.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <app-entity-finder [class]="'Customer'" [groups]="['customer']" [required]="true" [label]="'Client'"
+                  (uuid)="setCustomerUuid($event)" [selected]="customerSelected" [disabled]="edit"
+                  [placeholder]="'Selectionez un client'">
+                </app-entity-finder>
+                <div class="invalid-feedback" *ngIf="submit && f.customer.errors">
+                  <div *ngIf="f.customer.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div *ngIf="!edit && isLoadingFolder" class="spinner-container">
+                  <div class="spinner"></div>
+                </div>
+
+                <label for="folder">Dossier <span class="asterix">*</span></label>
+                <select *ngIf="!edit" (change)="setFolderUuid($event.target.value)" formControlName="folder"
+                  class="form-control" id="folder" [attr.disabled]="f.customer.value ? null : 'true'"
+                  [ngClass]="{'is-invalid': submit && f.folder.errors,'is-valid': submit && f.folder.valid}">
+                  <option *ngFor="let item of folders" [value]="item?.uuid">{{item?.libelle}}</option>
+                </select>
+                <input *ngIf="edit" type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+                  [value]="folder?.libelle" readonly>
+                <div class="invalid-feedback" *ngIf="submit && f.folder.errors">
+                  <div *ngIf="f.folder.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="folder?.houses.length > 1" class="row mb-2">
+              <div class="col-md-4">
+                <label for="prcCom">Commission (%) <span class="asterix">*</span></label>
+                <input (change)="onCalculVente()" formControlName="prcCom" id="prcCom" type="number"
+                  class="form-control" [ngClass]="{
+                  'is-invalid': submit && f.prcCom.errors,
+                  'is-valid': submit && f.prcCom.valid
+                  }" placeholder="Commission (%)">
+                <div class="invalid-feedback" *ngIf="submit && f.prcCom.errors">
+                  <div *ngIf="f.prcCom.errors.required">{{required.novide}}</div>
+                  <div *ngIf="f.prcCom.errors.pattern">{{required.positive}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ALERTES SUR LE MODE DE PAIEMENT -->
+          <div *ngIf="folder?.houses.length <= 1">
+            <app-alert *ngIf="f.owner.value && f.customer.value && f.folder.value" type="warning">
+              Selon le mandat de gestion du bien <span class="alert-link">{{folder?.houses[0].house?.nom}}</span>,
+              le montant de la commission doit être
+              <span class="alert-link">
+                {{ folder?.houses[0].house?.mandate?.verseCom === 'TOTALITE' ? " versé en TOTALITÉ " : " versé au
+                PRORATA " }}
+              </span>
+              {{ folder?.houses[0].house?.mandate?.verseCom === 'TOTALITE'
+              ? " lors du premier paiement."
+              : " lors des paiements successifs." }}
+            </app-alert>
+
+            <div *ngIf="f.owner.value && f.customer.value && f.folder.value && 
+                        folder?.houses[0].house?.mandate?.verseCom === 'TOTALITE'">
+              <app-alert type="danger" dismiss="true" *ngIf="folder?.houses[0].house?.mandate?.montantCom > montant">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                Le montant de la commission
+                ({{ folder?.houses[0].house?.mandate?.montantCom | number }} {{global.device}})
+                ne peut être supérieur au montant à reverser
+                ({{ montant | number }} {{global.device}})
+                pour un versement en totalité.
+              </app-alert>
+            </div>
+          </div>
+
+          <div *ngIf="folder?.houses.length > 1">
+            <app-alert type="danger" dismiss="true">
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              Le montant de la commission sera calculé en fonction de la nouvelle valeur de commission renseignée et
+              sera reversé au prorata.
+            </app-alert>
+          </div>
+
+          <!-- RECAPITULATIF DES MONTANTS VENTE -->
+          <div *ngIf="f.owner.value && f.customer.value && f.folder.value" class="row mb-2">
+            <div class="col-sm-4">
+              <span class="badge badge-danger text-center width">
+                <h5 class="text-white py-2">TOTAL : {{ montantV | number }} {{global.device}}</h5>
+              </span>
+            </div>
+            <div class="col-sm-4">
+              <span class="badge badge-primary text-center width">
+                <h5 class="text-white py-2">COMMISSION : {{ f.commission.value | number }} {{global.device}}</h5>
+              </span>
+            </div>
+            <div class="col-sm-4">
+              <span class="badge badge-success text-center width">
+                <h5 class="text-white py-2">A REVERSER : {{ f.montant.value | number }} {{global.device}}</h5>
+              </span>
+            </div>
+          </div>
+
+          <!-- DETAILS CONCERNANT LA VENTE -->
+          <div *ngIf="f.owner.value && f.customer.value && f.folder.value" class="form-group">
+            <div class="row">
+              <div class="col-md-3">
+                <label for="house">Montant de la vente ({{global.device}}) </label>
+                <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-success"
+                  [value]="montantV | number" readonly>
+              </div>
+              <div class="col-md-3">
+                <label for="house">Montant déjà reversé ({{global.device}}) </label>
+                <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-success"
+                  [value]="folder?.invoice?.montantReverse | number" readonly>
+              </div>
+              <div class="col-md-3">
+                <label for="house">Montant à reverser ({{global.device}}) </label>
+                <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-success"
+                  [value]="montant | number" readonly>
+              </div>
+              <div class="col-md-3">
+                <label for="house">Montant commission ({{global.device}}) </label>
+                <input class="form-control p-2 text-uppercase font-weight-bold text-success" type="text"
+                  [value]="commission | number" readonly>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 centered-content" *ngIf="f.owner.value && f.customer.value && f.folder.value">
+            <div class="btn-group mt-10">
+              <button type="button" class="btn btn-primary" awNextStep>
+                Suivant <i class="feather icon-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <!-- ========================================= -->
+        <!-- ÉTAPE 1: REVERSEMENT LOCATION -->
+        <!-- ========================================= -->
+        <aw-wizard-step *ngIf="type === 'LOCATION'" stepTitle="Réversement">
+          <!-- DETAILS SUR LE BIEN CONCERNE -->
+          <div class="row">
+            <span class="badge badge-warning my-2 f-14 width">
+              DETAILS SUR LE BIEN CONCERNE
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true" [label]="'Proprietaire'"
+                  (uuid)="setOwnerUuid($event)" [selected]="ownerSelected" [disabled]="edit"
+                  [placeholder]="'Selectionez un proprietaire'">
+                </app-entity-finder>
+                <div class="invalid-feedback" *ngIf="submit && f.owner.errors">
+                  <div *ngIf="f.owner.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <label for="house">Bien <span class="asterix">*</span></label>
+                <select *ngIf="!edit" formControlName="house" (change)="setHouseUuid($event.target.value)"
+                  class="form-control" id="house" [ngClass]="{
+                    'is-invalid': submit && f.house.errors,
+                    'is-valid': submit && f.house.valid
+                  }">
+                  <option *ngFor="let item of houses" [value]="item.uuid">{{ item.nom }}</option>
+                </select>
+                <input *ngIf="edit" type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+                  [value]="house?.nom" readonly>
+                <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                  <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <label for="typeFiltre">Filtrer par <span class="asterix">*</span></label>
+                <select formControlName="typeFiltre" class="form-control" id="typeFiltre" [ngClass]="{
+                    'is-invalid': submit && f.typeFiltre.errors,
+                    'is-valid': submit && f.typeFiltre.valid
+                  }">
+                  <option *ngFor="let item of filtreRow" [value]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.typeFiltre.errors">
+                  <div *ngIf="f.typeFiltre.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <label for="dateD">Date debut <span class="asterix">*</span></label>
+                <input class="form-control" type="date" formControlName="dateD" id="dateD"
+                  [readonly]="edit || f.typeFiltre.value === null || f.owner.value === null" />
+                <div class="invalid-feedback" *ngIf="submit && f.dateD.errors">
+                  <div *ngIf="f.dateD.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <label for="dateF">Date Fin <span class="asterix">*</span></label>
+                <input class="form-control" type="date" formControlName="dateF" id="dateF"
+                  [readonly]="edit || f.typeFiltre.value === null || f.owner.value === null" />
+                <div class="invalid-feedback" *ngIf="submit && f.dateF.errors">
+                  <div *ngIf="f.dateF.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-1 mt-4">
+                <button type="button" (click)="onLoadData()" class="btn btn-primary"
+                  [disabled]="edit || f.dateF.value === null || f.dateD.value === null || f.typeFiltre.value === null || f.owner.value === null">
+                  <i class="feather icon-filter"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge d'information pour Garantie Loyer -->
+          <div *ngIf="mandateInfo && mandateInfo.facturation === 'GRT_LOYER'" class="row mb-3 mt-3">
+            <div class="col-sm-12">
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">
+                  <i class="feather icon-shield mr-2"></i>Mode Garantie Loyer - Mandat Global
+                </h5>
+                <hr>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong><i class="feather icon-dollar-sign mr-1"></i>Montant Garanti Global :</strong>
+                      <span class="badge badge-success ml-2">{{ mandateInfo.montantGarantieGlobal | number }} {{
+                        global.device }}</span>
+                    </p>
+                    <p class="mb-2">
+                      <strong><i class="feather icon-percent mr-1"></i>Commission Agence :</strong>
+                      <span class="badge badge-primary ml-2">{{ mandateInfo.commission | number }} {{ global.device
+                        }}</span>
+                    </p>
+                    <p class="mb-2">
+                      <strong><i class="feather icon-trending-up mr-1"></i>Part Charge Agence :</strong>
+                      <span class="badge badge-warning ml-2">{{ mandateInfo.partCharge | number }} {{ global.device
+                        }}</span>
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="border-left border-danger pl-3">
+                      <p class="mb-2">
+                        <strong><i class="feather icon-alert-triangle text-danger mr-1"></i>GARANTIE TOTALE :</strong>
+                      </p>
+                      <p class="mb-2 text-danger font-weight-bold">
+                        Le propriétaire reçoit TOUJOURS {{ mandateInfo.montantGarantieGlobal | number }} {{
+                        global.device }}/mois
+                      </p>
+                      <p class="mb-0">
+                        <small class="text-muted">
+                          <i class="feather icon-info mr-1"></i>
+                          <strong>Peu importe le nombre de locatives occupées.</strong><br>
+                          L'agence assume 100% du risque d'impayés et de vacance locative.
+                        </small>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge d'information sur la périodicité de l'impôt -->
+          <div *ngIf="hasImpotPeriodique && mandateInfo?.taxe === 'AGENCE'" class="row mb-3">
+            <div class="col-sm-12">
+              <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">
+                  <i class="feather icon-calendar mr-2"></i>Impôt Foncier - Périodicité {{ periodiciteImpot }}
+                </h5>
+                <hr>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong>Périodicité :</strong>
+                      <span class="badge badge-primary ml-2">{{ periodiciteImpot }}</span>
+                    </p>
+                    <p class="mb-2">
+                      <strong>Description :</strong>
+                      <span class="ml-2">{{ getPeriodiciteDescription(periodiciteImpot) }}</span>
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong>Impôts disponibles :</strong>
+                      <span class="badge badge-warning ml-2">{{ optionsImpots.controls.length }}</span>
+                    </p>
+                    <p class="mb-0">
+                      <small class="text-muted">
+                        <i class="feather icon-info mr-1"></i>
+                        Les prélèvements d'impôt sont effectués selon la périodicité définie dans le mandat.
+                      </small>
+                    </p>
+                  </div>
+                </div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✅ TABLEAU DES FACTURES (sans impôt) -->
+          <div class="form-group">
+            <div class="col-md-12" formArrayName="optionsPayment">
+              <div class="row" *ngIf="optionsP.controls.length > 0">
+                <div class="col-md-12 mb-3">
+                  <h6 class="text-primary">
+                    <i class="feather icon-file-text mr-2"></i>
+                    Factures à reverser
+                  </h6>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th *ngIf="!edit">
+                          <div class="form-group">
+                            <div class="form-check">
+                              <input id="selectAll" class="form-check-input" type="checkbox"
+                                (change)="onSelectAll($event)">
+                            </div>
+                          </div>
+                        </th>
+                        <th *ngIf="edit">#</th>
+                        <th>Locataire</th>
+                        <th>Locative</th>
+                        <th>Libelle</th>
+                        <th>Loyer brut (NET + Charges)</th> <!-- ✅ Clarification -->
+                        <th>Loyer net (hors charges)</th> <!-- ✅ Clarification -->
+                        <th>Caution déjà reversée</th>
+                        <th>Caution à reverser</th>
+                        <th>Commission</th>
+                        <th>TVA honoraire</th>
+                        <th>Loyer déjà reversé</th>
+                        <th>Montant à reverser</th>
+                      </tr>
+                    </thead>
+                    <tbody class="task-page">
+                      <tr *ngFor="let item of optionsP.controls; let i = index" [formGroupName]="i">
+                        <td>
+                          <div class="form-group">
+                            <div class="form-check">
+                              <input formControlName="checked" class="form-check-input" type="checkbox"
+                                id="checked{{i}}" (change)="onSelect(i, item)">
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="locataire" type="text" class="form-control p-2 bold"
+                            id="locataire{{i}}" style="width: 14em;">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="locative" type="text" class="form-control p-2 bold" id="locative{{i}}"
+                            style="width: 17em;">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="libelle" type="text" class="form-control p-2 bold" id="libelle{{i}}"
+                            style="width: 17em;">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="loyerBrut" type="text" class="form-control p-2 bold text-primary" id="loyerBrut{{i}}"> <!-- ✅ BRUT -->
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="montantNet" type="text" class="form-control p-2 bold" id="montantNet{{i}}"> <!-- ✅ NET -->
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="cautionDejaRverser" type="text" class="form-control p-2 bold"
+                            id="cautionDejaRverser{{i}}">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="caution" type="text" class="form-control p-2 bold" id="caution{{i}}">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="commission" type="text" class="form-control p-2 bold"
+                            id="commission{{i}}">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="tvaCom" type="text" class="form-control p-2 bold" id="tvaCom{{i}}">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="verse" type="text" class="form-control p-2 bold" id="verse{{i}}">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="montantAReverser" type="text" class="form-control p-2 bold"
+                            id="montantAReverser{{i}}">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✅ NOUVEAU: TABLEAU DES IMPÔTS FONCIERS -->
+          <div class="form-group" *ngIf="optionsImpots.controls.length > 0">
+            <div class="col-md-12" formArrayName="optionsImpots">
+              <div class="row">
+                <div class="col-md-12 mb-3 mt-4">
+                  <h6 class="text-warning">
+                    <i class="feather icon-home mr-2"></i>
+                    Impôts Fonciers à déduire
+                    <span class="badge badge-warning ml-2">{{ periodiciteImpot }}</span>
+                  </h6>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                    <thead class="thead-warning">
+                      <tr>
+                        <th>
+                          <div class="form-group">
+                            <div class="form-check">
+                              <input id="selectAllImpots" class="form-check-input" type="checkbox"
+                                (change)="onSelectAllImpots($event)" formControlName="selectAllImpots">
+                            </div>
+                          </div>
+                        </th>
+                        <th>Locative</th>
+                        <th>Libellé</th>
+                        <th>Périodicité</th>
+                        <th>Taux (%)</th>
+                        <th>Montant à déduire</th>
+                      </tr>
+                    </thead>
+                    <tbody class="task-page">
+                      <tr *ngFor="let item of optionsImpots.controls; let i = index" [formGroupName]="i"
+                          class="table-warning">
+                        <td>
+                          <div class="form-group">
+                            <div class="form-check">
+                              <input formControlName="checked" class="form-check-input" type="checkbox"
+                                id="checkedImpot{{i}}" (change)="onSelectImpot(i, item)">
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="locative" type="text" class="form-control p-2 bold" 
+                            id="locativeImpot{{i}}" style="width: 17em;">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="libelle" type="text" class="form-control p-2 bold font-weight-bold text-warning" 
+                            id="libelleImpot{{i}}" style="width: 20em;">
+                        </td>
+                        <td class="px-2 text-center">
+                          <span class="badge badge-warning">
+                            <input formControlName="periodicite" type="text" 
+                              class="form-control p-2 bold bg-transparent border-0 text-white text-center" 
+                              id="periodiciteImpot{{i}}" style="width: 8em;">
+                          </span>
+                        </td>
+                        <td class="px-2 text-center">
+                          <input formControlName="prcImpot" type="text" class="form-control p-2 bold text-center" 
+                            id="prcImpot{{i}}" style="width: 5em;">
+                        </td>
+                        <td class="px-2">
+                          <input formControlName="montant" type="text" class="form-control p-2 bold text-danger font-weight-bold" 
+                            id="montantImpot{{i}}">
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot class="thead-warning">
+                      <tr>
+                        <td colspan="5" class="text-right font-weight-bold">TOTAL IMPÔTS SÉLECTIONNÉS :</td>
+                        <td class="font-weight-bold text-danger">
+                          {{ totalImpotsSelectionnes | number }} {{ global.device }}
+                          <small class="d-block text-muted">
+                            ({{ nombreImpotsSelectionnes }} prélèvement(s))
+                          </small>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECAPITULATIF DES MONTANTS LOCATION -->
+          <div *ngIf="optionsP.controls.length > 0">
+            <div class="row mb-2">
+              <div class="col-sm-4">
+                <span class="badge badge-danger text-center width">
+                  <h5 class="text-white py-2">TOTAL LOYER NET: {{ f.loyer.value | number }} {{global.device}}</h5>
+                </span>
+              </div>
+              <div class="col-sm-4">
+                <span class="badge badge-warning text-center width">
+                  <h5 class="text-white py-2">
+                    TOTAL IMPÔT : {{ totalImpotsSelectionnes | number }} {{global.device}}
+                    <small *ngIf="nombreImpotsSelectionnes > 0" class="d-block mt-1">
+                      ({{ nombreImpotsSelectionnes }} prélèvement(s))
+                    </small>
+                  </h5>
+                </span>
+              </div>
+              <div class="col-sm-4">
+                <span class="badge badge-success text-center width">
+                  <h5 class="text-white py-2">TOTAL VERSÉ : {{ f.verse.value | number }} {{global.device}}</h5>
+                </span>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-4">
+                <span class="badge badge-danger text-center width">
+                  <h5 class="text-white py-2">TOTAL COMMISSION : {{ f.commission.value | number }} {{global.device}}
+                  </h5>
+                </span>
+              </div>
+              <div class="col-sm-4">
+                <span class="badge badge-primary text-center width">
+                  <h5 class="text-white py-2">TOTAL TVA HONORAIRE : {{ f.tva.value | number }} {{global.device}}</h5>
+                </span>
+              </div>
+              <div class="col-sm-4">
+                <span class="badge badge-success text-center width">
+                  <h5 class="text-white py-2">MONTANT A REVERSER : {{ totalAverser | number }} {{global.device}}</h5>
+                </span>
+              </div>
+            </div>
+            
+            <!-- ✅ NOUVEAU: Ligne de détail pour la déduction des impôts -->
+            <div class="row mb-2" *ngIf="totalImpotsSelectionnes > 0">
+              <div class="col-sm-12">
+                <div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+                  <div>
+                    <i class="feather icon-alert-triangle mr-2"></i>
+                    <strong>Déduction des impôts fonciers :</strong>
+                    {{ totalImpotsSelectionnes | number }} {{ global.device }}
+                  </div>
+                  <div class="text-right">
+                    <strong>Montant final au propriétaire :</strong>
+                    <span class="badge badge-success badge-lg ml-2">
+                      {{ f.montant.value | number }} {{ global.device }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button *ngIf="optionsP.controls.length > 0 || optionsImpots.controls.length > 0" type="button" class="btn btn-primary" awNextStep>
+                Suivant <i class="feather icon-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <!-- ========================================= -->
+        <!-- ÉTAPE 2: FINANCEMENT -->
+        <!-- ========================================= -->
+        <aw-wizard-step stepTitle="Financement" *ngIf="optionsF.controls.length > 0">
+          <div class="row">
+            <div class="col-sm-12">
+              <!-- DETAILS CONCERNANT LES FINANCEMENT DE BIEN -->
+              <div class="form-group">
+                <div class="col-md-12" formArrayName="optionsFunding">
+
+                  <div class="row" *ngIf="optionsF.controls.length > 0">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                        <thead class="thead-light">
+                          <tr>
+                            <th *ngIf="!edit">
+                              <div class="form-group">
+                                <div class="form-check">
+                                  <input class="form-check-input" id="selectAllFunding" type="checkbox"
+                                    (change)='onSelectAllFunding($event)'>
+                                </div>
+                              </div>
+                            </th>
+                            <th *ngIf="edit">#</th>
+                            <th>Période</th>
+                            <th>Montant</th>
+                            <th>Libellé</th>
+                          </tr>
+                        </thead>
+                        <tbody class="task-page">
+                          <tr *ngFor="let item of optionsF.controls; let i = index" [formGroupName]="i">
+                            <td>
+                              <div class="form-group">
+                                <div class="form-check">
+                                  <input formControlName="checked" class="form-check-input" type="checkbox"
+                                    id="checkedF{{i}}" (change)='onSelectFunding(i, item)'>
+                                </div>
+                              </div>
+                            </td>
+                            <td><input formControlName="periode" type="text" class="form-control p-2 bold"
+                                id="periodeF{{i}}"></td>
+                            <td><input formControlName="montant" type="text" class="form-control p-2 bold"
+                                id="montantF{{i}}"></td>
+                            <td><input formControlName="libelle" type="text" class="form-control p-2 bold"
+                                id="libelleF{{i}}"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <table class="width mt-3">
+                      <tbody>
+                        <tr class="border-bottom-success">
+                          <td></td>
+                          <td colspan="5" class="text-right font-weight-bold"></td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr class="border border-success">
+                          <td colspan="5" class="font-weight-bold font-size-default">TOTAL FINANCEMENT</td>
+                          <td class="font-weight-bold font-size-default text-right">
+                            {{ montantFunding | number }} {{global.device}}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- INFORMATIONS SUR LE MANDAT -->
+                <div *ngIf="mandateInfo && optionsP.controls.length > 0" class="row mb-3 mt-3">
+                  <div class="col-sm-12">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                      <h5 class="alert-heading">
+                        <i class="feather icon-info mr-2"></i>Règles du mandat de gestion
+                      </h5>
+                      <hr>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <p class="mb-2">
+                            <strong><i class="feather icon-percent mr-1"></i>Commission :</strong>
+                            <span class="badge badge-primary">{{ mandateInfo.commission }}%</span>
+                            <span class="text-muted ml-1">
+                              (calculée {{ mandateInfo.taxeCommission === 'TAXES' ? 'APRÈS' : 'AVANT' }} impôts)
+                            </span>
+                          </p>
+                          <p class="mb-2">
+                            <strong><i class="feather icon-dollar-sign mr-1"></i>TVA commission :</strong>
+                            <span class="badge"
+                              [ngClass]="mandateInfo.tvaCommissionCharge === 'PROPRIETAIRE' ? 'badge-warning' : 'badge-success'">
+                              {{ mandateInfo.tvaCommissionCharge === 'PROPRIETAIRE' ? 'À charge du propriétaire' : 'À
+                              charge du locataire' }}
+                            </span>
+                          </p>
+                          <p class="mb-2">
+                            <strong><i class="feather icon-file-text mr-1"></i>Mode de facturation :</strong>
+                            <span class="badge badge-secondary">
+                              {{ mandateInfo.facturation === 'PRC' ? 'Pourcentage' : 
+                                 mandateInfo.facturation === 'MTN' ? 'Montant fixe' : 'Garantie Loyer' }}
+                            </span>
+                          </p>
+                          <p class="mb-0" *ngIf="mandateInfo.periodicite">
+                            <strong><i class="feather icon-calendar mr-1"></i>Périodicité impôt :</strong>
+                            <span class="badge badge-warning">{{ mandateInfo.periodicite }}</span>
+                          </p>
+                        </div>
+                        <div class="col-md-6">
+                          <p class="mb-2">
+                            <strong><i class="feather icon-home mr-1"></i>Impôt foncier :</strong>
+                            <span class="badge"
+                              [ngClass]="mandateInfo.taxe === 'AGENCE' ? 'badge-warning' : 'badge-success'">
+                              {{ mandateInfo.taxe === 'AGENCE' ? 'À charge de l\'agence' : 'À charge du propriétaire' }}
+                            </span>
+                          </p>
+                          <p class="mb-2">
+                            <strong><i class="feather icon-zap mr-1"></i>Charges locatives :</strong>
+                            <span class="badge"
+                              [ngClass]="mandateInfo.charge === 'PROPRIETAIRE' ? 'badge-success' : 'badge-warning'">
+                              {{ mandateInfo.charge === 'PROPRIETAIRE' ? 'Reversées au propriétaire' : 'À charge du
+                              locataire' }}
+                            </span>
+                          </p>
+                          <p class="mb-0">
+                            <strong><i class="feather icon-trending-up mr-1"></i>Versement commission :</strong>
+                            <span class="badge badge-info">
+                              {{ mandateInfo.verseCom === 'TOTALITE' ? 'En totalité' : 'Au prorata' }}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button type="button" class="btn btn-warning" awPreviousStep>
+                <i class="feather icon-arrow-left"></i> Précédent
+              </button>
+              <button (click)="onChangeTotalCalcul()" type="button" class="ml-1 btn btn-primary" awNextStep>
+                Suivant <i class="feather icon-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <!-- ========================================= -->
+        <!-- ÉTAPE 3: DÉPENSE -->
+        <!-- ========================================= -->
+        <aw-wizard-step stepTitle="Dépense" *ngIf="optionsS.controls.length > 0">
+          <div class="row">
+            <div class="col-sm-12">
+              <!-- DETAILS CONCERNANT LES DÉPENSES DE BIEN -->
+              <div class="form-group">
+                <div class="col-md-12" formArrayName="optionsSpent">
+                  <div class="row" *ngIf="optionsS.controls.length > 0">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                        <thead class="thead-light">
+                          <tr>
+                            <th *ngIf="!edit">
+                              <div class="form-group">
+                                <div class="form-check">
+                                  <input class="form-check-input" id="selectAllSpent" type="checkbox"
+                                    (change)='onSelectAllSpent($event)'>
+                                </div>
+                              </div>
+                            </th>
+                            <th *ngIf="edit">#</th>
+                            <th>Période</th>
+                            <th>Montant</th>
+                            <th>Libellé</th>
+                          </tr>
+                        </thead>
+                        <tbody class="task-page">
+                          <tr *ngFor="let item of optionsS.controls; let j = index" [formGroupName]="j">
+                            <td>
+                              <div class="form-group">
+                                <div class="form-check">
+                                  <input formControlName="checked" class="form-check-input" type="checkbox"
+                                    id="checkedS{{j}}" (change)='onSelectSpent(j, item)'>
+                                </div>
+                              </div>
+                            </td>
+                            <td><input formControlName="periode" type="text" class="form-control p-2 bold"
+                                id="periodeS{{j}}"></td>
+                            <td><input formControlName="montant" type="text" class="form-control p-2 bold"
+                                id="montantS{{j}}"></td>
+                            <td><input formControlName="libelle" type="text" class="form-control p-2 bold"
+                                id="libelleS{{j}}"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <table class="width mt-3">
+                      <tbody>
+                        <tr class="border-bottom-success">
+                          <td></td>
+                          <td colspan="5" class="text-right font-weight-bold"></td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr class="border border-success">
+                          <td colspan="5" class="font-weight-bold font-size-default">TOTAL DÉPENSES</td>
+                          <td class="font-weight-bold font-size-default text-right">
+                            {{ montantSpent | number }} {{global.device}}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button type="button" class="btn btn-warning" awPreviousStep>
+                <i class="feather icon-arrow-left"></i> Précédent
+              </button>
+              <button (click)="onChangeTotalCalcul()" type="button" class="ml-1 btn btn-primary" awNextStep>
+                Suivant <i class="feather icon-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+
+        <!-- ========================================= -->
+        <!-- ÉTAPE 4: SUPPLÉMENT -->
+        <!-- ========================================= -->
+        <aw-wizard-step stepTitle="Supplément">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div formArrayName="options">
+                  <!-- EN-TÊTE DU TABLEAU DES OPTIONS -->
+                  <div class="form-group" *ngIf="options.length > 0">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <label>Désignation <span class="asterix">*</span></label>
+                      </div>
+                      <div class="col-md-2">
+                        <label>Prix unitaire <span class="asterix">*</span></label>
+                      </div>
+                      <div class="col-md-1">
+                        <label>Qté <span class="asterix">*</span></label>
+                      </div>
+                      <div class="col-md-1">
+                        <label>TVA (%)</label>
+                      </div>
+                      <div class="col-md-2">
+                        <label>Remise</label>
+                      </div>
+                      <div class="col-md-2">
+                        <label>Total</label>
+                      </div>
+                      <div class="col-md-1">
+                        <label>Action</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- LIGNES D'OPTIONS -->
+                  <div class="form-group" *ngFor="let opt of options.controls; let j=index" [formGroupName]="j">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <input type="text" formControlName="libelle" class="form-control p-2" id="libelle{{j}}"
+                          [ngClass]="{
+                            'is-invalid': submit && opt.get('libelle').errors,
+                            'is-valid': submit && opt.get('libelle').valid
+                          }" placeholder="Désignation">
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('libelle').errors">
+                          <div *ngIf="opt.get('libelle').errors.required">{{required.novide}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <input (change)="onChangeTotalOption(opt)" type="number" formControlName="prix"
+                          class="form-control" id="prix{{j}}" [ngClass]="{
+                            'is-invalid': submit && opt.get('prix').errors,
+                            'is-valid': submit && opt.get('prix').valid
+                          }" placeholder="Prix unitaire" min="0" step="0.01">
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                          <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                          <div *ngIf="opt.get('prix').errors.pattern">{{required.nolettre}}</div>
+                          <div *ngIf="opt.get('prix').errors.min">{{required.positive}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-1">
+                        <input (change)="onChangeTotalOption(opt)" type="number" formControlName="qte"
+                          class="form-control" id="qte{{j}}" [ngClass]="{
+                            'is-invalid': submit && opt.get('qte').errors,
+                            'is-valid': submit && opt.get('qte').valid
+                          }" placeholder="Qté" min="1" step="1">
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('qte').errors">
+                          <div *ngIf="opt.get('qte').errors.required">{{required.novide}}</div>
+                          <div *ngIf="opt.get('qte').errors.pattern">{{required.nolettre}}</div>
+                          <div *ngIf="opt.get('qte').errors.min">{{required.positive}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-1">
+                        <input (change)="onChangeTotalOption(opt)" type="number" formControlName="tva"
+                          class="form-control p-2" id="tva{{j}}" [ngClass]="{
+                            'is-invalid': submit && opt.get('tva').errors,
+                            'is-valid': submit && opt.get('tva').valid
+                          }" placeholder="TVA" min="0" step="0.01">
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('tva').errors">
+                          <div *ngIf="opt.get('tva').errors.pattern">{{required.nolettre}}</div>
+                          <div *ngIf="opt.get('tva').errors.min">{{required.positive}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <input (change)="onChangeTotalOption(opt)" type="number" formControlName="remise"
+                          class="form-control" id="remise{{j}}" placeholder="Remise" min="0" step="0.01">
+                      </div>
+                      <div class="col-md-2">
+                        <input type="number" formControlName="total"
+                          class="form-control p-2 font-weight-bold text-success" id="total{{j}}" step="0.01"
+                          placeholder="TOTAL" readonly>
+                        <div class="invalid-feedback" *ngIf="submit && opt.get('total').errors">
+                          <div *ngIf="opt.get('total').errors.pattern">{{required.nolettre}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-1">
+                        <button (click)="onDeleteOption(j)" type="button" class="btn btn-icon btn-danger">
+                          <i class="feather icon-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BOUTON AJOUTER OPTION -->
+                <div class="mb-3 d-flex flex-row-reverse">
+                  <button (click)="onAddOption()" type="button" class="btn btn-primary">
+                    Ajouter <i class="feather icon-plus"></i>
+                  </button>
+                </div>
+
+                <!-- RÉCAPITULATIF DES TOTAUX -->
+                <div class="row">
+                  <div class="col-sm-12">
+                    <table class="table table-responsive invoice-table invoice-total">
+                      <tbody>
+                        <tr>
+                          <th>TOTAL HT :</th>
+                          <td class="text-right">{{totalOptionHT | number}} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL REMISE :</th>
+                          <td class="text-right">{{totalOptionRemise | number}} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL TVA :</th>
+                          <td class="text-right">{{totalOptionTVA | number}} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL TTC :</th>
+                          <td class="text-right">{{totalOptionTTC | number}} {{global.device}}</td>
+                        </tr>
+                        <tr class="text-info">
+                          <td>
+                            <hr />
+                            <h2 class="text-primary m-r-10">TOTAL A REVERSER :</h2>
+                          </td>
+                          <td>
+                            <hr />
+                            <h2 class="text-success text-right">{{f.montant.value | number}} {{global.device}}</h2>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 centered-content">
+            <div class="btn-group mt-10">
+              <button type="button" class="btn btn-warning" awPreviousStep>
+                <i class="feather icon-arrow-left"></i> Précédent
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+      </aw-wizard>
+    </div>
+  </div>
+
+  <!-- ========================================= -->
+  <!-- FOOTER DU MODAL -->
+  <!-- ========================================= -->
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary"
+      [title]="form.invalid ? 'Veuillez remplir tous les champs obligatoires' : 'Enregistrer le reversement'">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

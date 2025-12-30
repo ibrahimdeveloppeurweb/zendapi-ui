@@ -1,0 +1,77 @@
+    
+            .tabs-wrapper {
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .tabs-scrollable {
+              overflow-x: auto;
+              overflow-y: hidden;
+              white-space: nowrap;
+              -webkit-overflow-scrolling: touch;
+              scrollbar-width: thin;
+              scrollbar-color: #888 #f1f1f1;
+            }
+            
+            .tabs-scrollable .nav-tabs {
+              flex-wrap: nowrap;
+              border-bottom: 2px solid #dee2e6;
+              margin-bottom: 0;
+            }
+            
+            .tabs-scrollable .nav-item {
+              flex-shrink: 0;
+            }
+            
+            .tabs-scrollable .nav-link {
+              white-space: nowrap;
+              padding: 0.75rem 1rem;
+              font-size: 0.9rem;
+            }
+            
+            .tabs-scrollable::-webkit-scrollbar {
+              height: 6px;
+            }
+            
+            .tabs-scrollable::-webkit-scrollbar-track {
+              background: #f1f1f1;
+              border-radius: 3px;
+            }
+            
+            .tabs-scrollable::-webkit-scrollbar-thumb {
+              background: #888;
+              border-radius: 3px;
+            }
+            
+            .tabs-scrollable::-webkit-scrollbar-thumb:hover {
+              background: #555;
+            }
+
+            /* Indicateur de scroll */
+            // .tabs-wrapper::after {
+            //   content: '→';
+            //   position: absolute;
+            //   right: 0;
+            //   top: 0;
+            //   bottom: 6px;
+            //   width: 30px;
+            //   background: linear-gradient(to right, transparent, white 50%);
+            //   display: flex;
+            //   align-items: center;
+            //   justify-content: center;
+            //   pointer-events: none;
+            //   color: #007bff;
+            //   font-weight: bold;
+            // }
+
+            /* Responsive: réduire la taille sur mobile */
+            @media (max-width: 768px) {
+              .tabs-scrollable .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+              }
+              
+              .tabs-scrollable .nav-link i {
+                font-size: 0.85rem;
+              }
+            }

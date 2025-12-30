@@ -1,0 +1,89 @@
+<div class="col-md-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Motif</th>
+            <th>Etat</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of spents">
+          <td>
+            <p class="m-0 d-inline-block align-middle font-16">
+              <span class="text-primary">{{ item?.motif }}</span> <br />
+              Trésorerie : {{ item?.treasury?.nom }}
+            </p>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="{
+            'badge-danger' : item?.etat === 'INVALIDE',
+            'badge-success' : item?.etat === 'VALIDE'
+            }">{{VALIDATION(item?.etat)}}</span>
+            <span class="badge ml-1" [ngClass]="{
+            'badge-light-danger' : item?.priorite === 'URGENT',
+            'badge-light-warning' : item?.priorite === 'MOYEN',
+            'badge-light-success' : item?.priorite === 'NON'
+            }"><small>{{ item?.priorite === 'MOYEN' ? 'PRIORITE MOYEN' : item?.priorite === 'NON' ? 'NON PRIORITAIRE' : item?.priorite }}</small></span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="{
+            'badge-light-danger' : item?.status === 'ATTENTE',
+            'badge-light-success' : item?.status === 'CONFIRMER'
+            }">{{VALIDATION(item?.status)}}</span>
+          </td>
+          <td> <p class="m-0 d-inline-block align-middle font-16">{{ item?.date| date: "d MMMM y" : '' : 'fr-FR' }}</p> </td>
+          <td class="align-middle">
+            <p class="m-0 d-inline-block align-middle font-16">
+              <span class="text-success font-weight-blod">{{ item?.montant|number }} {{ global.device }}</span>
+            </p>
+          </td>
+          <td class="table-action">
+            <div class="overlay-edit">
+              <button (click)="showSpent(item)" type="button" class="btn btn-icon btn-secondary"
+                ngbTooltip="Détails">
+                <i class="fas fa-eye"></i>
+              </button>
+              <ng-template ngxPermissionsOnly="SPENT:EDIT">
+                <button *ngIf="item?.etat === 'INVALIDE'" (click)="editSpent(item)" type="button"
+                  class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                  <i class="feather icon-edit-2"></i>
+                </button>
+              </ng-template>
+              <ng-template ngxPermissionsOnly="SPENT:VALIDATE">
+                <button *ngIf="item?.etat === 'INVALIDE'" (click)="validateSpent(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Valider">
+                  <i class="fas fa-check"></i>
+                </button>
+              </ng-template>
+              <ng-template ngxPermissionsOnly="SPENT:PRINTER:SHOW">
+                <button *ngIf="item?.etat === 'VALIDE'" (click)="printerSpent(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+              </ng-template>
+              <ng-template ngxPermissionsOnly="SPENT:DELETE">
+                <!-- <button *ngIf="item?.etat === 'INVALIDE'" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer"> -->
+                <button (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                  <i class="feather icon-trash"></i>
+                </button>
+              </ng-template>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-warning"> {{ total|number }} {{global.device}}</td>
+            <td *ngIf="action"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

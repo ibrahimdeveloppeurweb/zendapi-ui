@@ -1,0 +1,92 @@
+<ng-template [ngxPermissionsOnly]="['FUNDS:PAYMENT:LIST']">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+      <div class="table-responsive m-0">
+        <table datatable [dtOptions]="dtOptions" class="table table-striped m-0">
+          <thead class="thead-light">
+            <tr>
+                <th>Numéro porte / lot</th>
+                <th>Appel de charge</th>
+                <th>Tresorerie</th>
+                <th>Montant</th>
+                <th>Etat</th>
+                <th>Date</th>
+                <th>Moyen</th>
+                <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of fundsPayments">
+              <td>
+                <span class="text-black">
+                  <div class="d-flex align-items-center">
+                    <div>
+                      <span class="text-black d-block">
+                          Lot : {{item?.numLot}}
+                      </span>
+                      <span class="text-black d-block">
+                          Porte : {{item?.numPorte}}
+                      </span>
+                    </div>
+                  </div>
+                </span>
+              </td>
+
+              <td><span class="text-primary">{{item?.fundsApeal?.libelle}}</span></td>
+
+              <td>
+                <span class="text-black">
+                <div class="d-flex align-items-center">
+                  <div>
+                    <span class="text-black d-block">
+                        {{item?.treasury?.nom}}
+                    </span>
+                    <span class="text-black d-block">
+                      <span class="badge badge-primary">
+                        {{item?.treasury?.type}}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                </span>
+              </td>
+              <td><span class="text-primary">{{item?.montant | number}} XOF</span></td>
+              <td>
+                    <span *ngIf="item?.etat === 'BROUILLON'" class="badge badge-info">Brouillon</span>
+                    <span *ngIf="item?.etat === 'VALIDE'" class="badge badge-success">Validé</span>
+              </td>
+              <td>{{item?.date| date: "d MMMM y" : '' : 'fr-FR'}}</td>
+              <td><span class="badge badge-dark">{{item?.moyen}}</span></td>
+              <td class="text-center">
+                <ng-template [ngxPermissionsOnly]="['FUNDS:PAYMENT:VALIDATE']">
+                  <button *ngIf="item && item.etat == 'BROUILLON'" (click)="onValidate(item)" type="button" class="btn btn-icon btn-success" ngbTooltip="Valider le paiement">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </ng-template>
+                <ng-template [ngxPermissionsOnly]="['FUNDS:PAYMENT:SHOW']">
+                  <button (click)="show(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </ng-template>
+                <ng-template [ngxPermissionsOnly]="['FUNDS:PAYMENT:DELETE']">
+                  <button *ngIf="showActionBtn" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+                <ng-template [ngxPermissionsOnly]="['FUNDS:PAYMENT:SHOW']">
+                  <button (click)="onPrinter(item)" type="button"class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+      </table>
+      </div>
+  </app-card>
+</ng-template>
+
+<ng-template [ngxPermissionsExcept]="['FUNDS:PAYMENT:LIST']">
+  <div class="col-md-12">
+    <app-no-droit [title]="'liste des règlements'"></app-no-droit>
+  </div>
+</ng-template>

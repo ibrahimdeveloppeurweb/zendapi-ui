@@ -1,0 +1,70 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <div class="col-md-12">
+        <div class="row">
+          <span class="badge badge-success my-2 f-14 width"> DETAILS SUR LE SERVICE  </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <label for="responsable">Responsable <span class="asterix">*</span></label>
+              <select formControlName="responsable" class="form-control" id="responsable"
+              [ngClass]="{
+              'is-invalid': submit && f.responsable.errors,
+              'is-valid': submit && f.responsable.valid }">
+              <option *ngFor="let item of responsables" [ngValue]="item.uuid">{{item.libelle}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.responsable.errors">
+              <div *ngIf="f.responsable.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="nom">Nom <span class="asterix">*</span></label>
+              <input type="text" formControlName="nom" class="form-control" id="nom"
+                [ngClass]="{
+                  'is-invalid': submit && f.nom.errors,
+                  'is-valid': submit && f.nom.valid
+                }" placeholder="Nom">
+              <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+                <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="direction">Direction <span class="asterix">*</span></label>
+              <input type="text" formControlName="direction" class="form-control" id="direction"
+                [ngClass]="{
+                  'is-invalid': submit && f.direction.errors,
+                  'is-valid': submit && f.direction.valid
+                }" placeholder="Direction">
+              <div class="invalid-feedback" *ngIf="submit && f.direction.errors">
+                <div *ngIf="f.direction.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md">
+              <label for="description">Description <span class="asterix">*</span></label>
+              <textarea class="form-control" name="description" id="description" formControlName="description"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-info">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+  </form>

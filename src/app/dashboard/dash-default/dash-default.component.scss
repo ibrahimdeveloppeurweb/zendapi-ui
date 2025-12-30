@@ -1,0 +1,13 @@
+::ng-deep .full-screen .modal-dialog {
+    max-width: 100%  !important;
+    width: 100% !important;
+    overflow: hidden !important;
+}
+::ng-deep.swal2-container {
+    z-index: 10000 !important;
+}
+
+
+
+
+

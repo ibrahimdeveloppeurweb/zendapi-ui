@@ -1,0 +1,233 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+ 
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+              <span class="badge badge-success my-2 f-14 width"> INFORMATIONS SUR LE PROSPECT</span>
+            </div>
+
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                      <label>Prospect <span class="asterix">*</span></label>
+                      <app-entity-finder [class]="'Prospect'" [groups]="['prospect']"
+                        [required]="true" [selected]="prospectSelected" [disabled]="edit" (uuid)="setProspectUuid($event)"
+                        [placeholder]="'Selectionez un prospect'">
+                      </app-entity-finder>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="email">Email </label>
+                            <input class="form-control" name="email" readonly [value]="prospect?.email">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="telephone">Telephone  </label>
+                            <input class="form-control" name="telephone" readonly [value]="prospect?.telephone">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="f.prospect.value">
+              <span class="badge badge-success my-2 f-14 width"> MODE DE FINANCEMENT</span>
+            </div>
+            <div class="form-group" *ngIf="f.prospect.value">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="date">Date de pré-réservation <span class="asterix">*</span></label>
+                            <input type="date" class="form-control" formControlName="date" id="date"
+                            [ngClass]="{'is-invalid': submit && f.date.errors,'is-valid': submit && f.date.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                                <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="mode">Mode de Financement <span class="asterix">*</span></label>
+                            <select class="form-control" id="mode" formControlName="mode"
+                                [ngClass]="{'is-invalid': submit && f.mode.errors,'is-valid': submit && f.mode.valid}">
+                                <option *ngFor="let item of modes" [value]="item.value">{{item.label}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+                                <div *ngIf="f.mode.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="dateL">Date de prévisionnelle de livraison <span class="asterix">*</span></label>
+                            <input type="date" class="form-control" formControlName="dateL" id="dateL"
+                            [ngClass]="{'is-invalid': submit && f.dateL.errors,'is-valid': submit && f.dateL.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.dateL.errors">
+                                <div *ngIf="f.dateL.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="min">Budget Minimum <span class="asterix">*</span></label>
+                            <input type="number" min="0" class="form-control" formControlName="min" id="min"
+                            [ngClass]="{'is-invalid': submit && f.min.errors,'is-valid': submit && f.min.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.min.errors">
+                                <div *ngIf="f.min.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="max">Budget Maximum <span class="asterix">*</span></label>
+                            <input type="number" min="0" class="form-control" formControlName="max" id="max"
+                            [ngClass]="{'is-invalid': submit && f.max.errors,'is-valid': submit && f.max.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.max.errors">
+                                <div *ngIf="f.max.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="apport">Pourcentage d'apport (%) <span class="asterix">*</span></label>
+                            <input type="number" min="0" class="form-control" formControlName="apport" id="apport"
+                            [ngClass]="{'is-invalid': submit && f.apport.errors,'is-valid': submit && f.apport.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.apport.errors">
+                                <div *ngIf="f.apport.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="f.prospect.value">
+              <span class="badge badge-success my-2 f-14 width"> CHOIX DES OFFRES </span>
+            </div>
+            <div class="form-group" *ngIf="f.prospect.value">
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <div class="position-relative form-group">
+                            <label for="type">Quel type de bien vous intéresse ? <span class="asterix">*</span></label>
+                            <select class="form-control" id="type" formControlName="type"
+                                [ngClass]="{'is-invalid': submit && f.type.errors,'is-valid': submit && f.type.valid}">
+                                <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                                <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="f.type.value === 'PROMOTION'">
+                      <label>Promotion <span class="asterix">*</span></label>
+                      <app-entity-finder [class]="'Promotion'" [groups]="['promotion']"
+                        [required]="true" [selected]="promotionSelected" [disabled]="edit" (uuid)="setPromotionUuid($event)"
+                        [placeholder]="'Selectionez une Promotion'">
+                      </app-entity-finder>
+                    </div>
+                    <div class="col-md-4" *ngIf="f.type.value === 'LOTISSEMENT'">
+                      <label>Projet de lotissement <span class="asterix">*</span></label>
+                      <app-entity-finder [class]="'Subdivision'" [groups]="['subdivision']"
+                        [required]="true" [selected]="subdivisionSelected" [disabled]="edit" (uuid)="setSubdivisionUuid($event)"
+                        [placeholder]="'Selectionez un Projet de lotissement'">
+                      </app-entity-finder>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" *ngIf="f.prospect.value && f.type.value !== 'HOUSE' && f.parent.value !== null">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <div formArrayName="options">
+                        <!-- LABEL DU TABLEAU DES OPTIONS -->
+                        <div class="form-group" *ngIf="options.length > 0">
+                          <div class="row">
+                            <div class="col-md-3">
+                              <label>choix <span class="asterix">*</span></label>
+                            </div>
+                            <div class="col-md-8">
+                              <label>Offre <span class="asterix">*</span></label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group" *ngFor="let opt of options.controls; let i=index" [formGroupName]="i">
+                          <div class="row">
+                            <div class="col-md-3">
+                              <input type="text" readonly class="form-control p-2" id="choix{{i}}"  formControlName="choix"
+                                [ngClass]="{
+                                  'is-invalid': submit && opt.get('choix').errors,
+                                  'is-valid': submit && opt.get('choix').valid
+                                }" placeholder="Choix">
+                              <div class="invalid-feedback" *ngIf="submit && opt.get('choix').errors">
+                                <div *ngIf="opt.get('choix').errors.required">{{required.novide}}</div>
+                              </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="position-relative form-group">
+                                    <select class="form-control" id="offre{{i}}" formControlName="offre"
+                                        [ngClass]="{'is-invalid': submit && opt.get('offre').errors,'is-valid': submit && opt.get('offre').valid}">
+                                        <option *ngFor="let item of offres" [value]="item?.uuid">{{item?.searchableTitle}}</option>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="submit && opt.get('offre').errors">
+                                        <div *ngIf="opt.get('offre').errors.required">{{required.novide}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                              <button (click)="onDelete(i)" type="button" class="btn btn-icon btn-danger">
+                                <i class="feather icon-trash"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-2 d-flex flex-row-reverse">
+                        <button (click)="onAdd()" type="button" class="btn btn-primary">
+                          Ajouter <i class="feather icon-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="form-group" *ngIf="f.prospect.value">
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label for="commentaire">Commentaire </label>
+                            <textarea class="form-control" name="commentaire" id="commentaire" formControlName="commentaire"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="f.prospect.value">
+                <span class="badge badge-success my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLÉMENTAIRES</span>
+            </div>
+            <div class="form-group" *ngIf="f.prospect.value">
+                <div class="row mb-2">
+                <div class="col-md">
+                    <label>Pièces et documents à joindre</label>
+                    <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                    [path]="'reservation'" [etat]="edit ? 'edit': 'add'" [folder]="edit && reservation ? reservation?.folder : null">
+                    </app-folder-uploader>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="onReset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+</form>

@@ -1,0 +1,338 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 formBadge width"> DETAILS DE SUR LA TRESORERIE</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-4">
+                <label>Nom </label>
+                <input class="form-control p-2" type="text" [value]="treasury?.nom" readonly/>
+              </div>
+              <div class="col-md-4">
+                <label>Seuil minimum </label>
+                <input class="form-control p-2" type="text" [value]="treasury?.seuilMin|number" readonly/>
+              </div>
+              <div class="col-md-4">
+                <label>Seuil maximum </label>
+                <input class="form-control p-2" type="text" [value]="treasury?.seuilMax|number" readonly/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 formBadge width"> DETAILS DE LA JOURNEE</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-3">
+                <label for="type">Type de dépense<span class="asterix">*</span></label>
+                <select class="form-control" id="type" formControlName="type" [ngClass]="{
+                    'is-invalid': submit && f.type.errors,
+                    'is-valid': submit && f.type.valid
+                  }">
+                  <option *ngFor="let item of typeRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                  <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div *ngIf="f.type.value === 'PROPRIETAIRE'" class="col-md-3">
+                <label>Propriétaire <span class="asterix">*</span></label>
+                <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true"
+                  [selected]="ownerSelected" [disabled]="edit" (uuid)="setOwnerUuid($event)"
+                  [placeholder]="'Selectionez un Propriétaire'">
+                </app-entity-finder>
+              </div>
+              <div *ngIf="f.type.value === 'PROPRIETAIRE'" class="col-md-3">
+                <label for="house">Bien concerné <span class="asterix">*</span></label>
+                <select *ngIf="!edit" [attr.disabled]="edit || !f.owner.value ? true : null" formControlName="house" class="form-control"
+                  id="house" [ngClass]="{
+                    'is-invalid': submit && f.house.errors,
+                    'is-valid': submit && f.house.valid
+                  }">
+                  <option [value]="null" selected>Selectionnez un bien</option>
+                  <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                  <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                </div>
+                <input *ngIf="edit" class="form-control" type="text" [value]="spent?.house?.nom" id="house" [attr.disabled]="true"/>
+              </div>
+              <div class="col-md-3">
+                <label for="date">Date <span class="asterix">*</span></label>
+                <input class="form-control" type="date" formControlName="date" id="date"/>
+                <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                  <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="motif">Motif <span class="asterix">*</span></label>
+                <input class="form-control" type="text" formControlName="motif"  id="motif" placeholder="Motif"/>
+                <div class="invalid-feedback" *ngIf="submit && f.motif.errors">
+                  <div *ngIf="f.motif.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="priorite">Priorité<span class="asterix">*</span></label>
+                <select class="form-control" id="priorite" formControlName="priorite" [ngClass]="{
+                    'is-invalid': submit && f.priorite.errors,
+                    'is-valid': submit && f.priorite.valid
+                  }">
+                  <option *ngFor="let item of prioriteRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.priorite.errors">
+                  <div *ngIf="f.priorite.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-3 mt-2">
+                <label for="receiver">Bénéficiaire </label>
+                <input class="form-control" type="text" formControlName="receiver"  id="motif" placeholder="Bénéficiaire"/>
+                <div class="invalid-feedback" *ngIf="submit && f.receiver.errors">
+                  <div *ngIf="f.receiver.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-8 mt-2">
+                <label for="description">Description </label>
+                <textarea class="form-control b-2" id="description" formControlName="description" placeholder="Description"
+                  rows="2"></textarea>
+              </div>
+              <div class="col-md-4">
+                <label for="mode">Mode de paiement <span class="asterix">*</span></label>
+                <select (change)="onChangeLibelle()" class="form-control" formControlName="mode"  id="mode" #mySelectMode [ngClass]="{
+                  'is-invalid': submit && f.mode.errors,
+                  'is-valid': submit && f.mode.valid
+                }">
+                  <option *ngFor="let item of modeRow" [value]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+                  <div *ngIf="f.mode.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="effectue">Effectué par <span class="asterix">*</span></label>
+                <select (change)="onChangeEffectue()"class="form-control" formControlName="effectue" id="effectue" [ngClass]="{
+                  'is-invalid': submit && f.effectue.errors,
+                  'is-valid': submit && f.effectue.valid
+                }">
+                  <option [value]="'LUI MEME'">LUI MÊME</option>
+                  <option [value]="'AUTRE'">AUTRE</option>
+                </select>
+              </div>
+              <div class="col-md-4" *ngIf="f.effectue.value === 'AUTRE'">
+                <label for="tiers">Tiers <span class="asterix">*</span></label>
+                <input type="text" formControlName="tiers" class="form-control" id="tiers"
+                  placeholder="Nom du tiers">
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 formBadge width">AJOUTER DES OPTIONS </span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div formArrayName="options">
+              <!-- LABEL DU TABLEAU DES OPTIONS -->
+              <div class="form-group" *ngIf="option.length > 0">
+                <div class="row">
+                  <div class="col-md-3">
+                    <label>Désignation <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col-md-2">
+                    <label>Prix unitaire <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col-md-1">
+                    <label>Qté <span class="asterix">*</span></label>
+                  </div>
+                  <div class="col-md-1">
+                    <label>TVA</label>
+                  </div>
+                  <div class="col-md-2">
+                    <label>Remise</label>
+                  </div>
+                  <div class="col-md-2">
+                    <label>Total</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group" *ngFor="let opt of option.controls; let i=index" [formGroupName]="i">
+                <div class="row">
+                  <div class="col-md-3">
+                    <input type="text" formControlName="libelle" class="form-control p-2" id="libelle{{i}}"
+                      [ngClass]="{
+                        'is-invalid': submit && opt.get('libelle').errors,
+                        'is-valid': submit && opt.get('libelle').valid
+                      }" placeholder="Désignation">
+                    <div class="invalid-feedback" *ngIf="submit && opt.get('libelle').errors">
+                      <div *ngIf="opt.get('libelle').errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <input (change)="onChangeTotal()" type="number" formControlName="prix" min="0"
+                      class="form-control" id="prix{{i}}"
+                      [ngClass]="{
+                        'is-invalid': submit && opt.get('prix').errors,
+                        'is-valid': submit && opt.get('prix').valid
+                      }" placeholder="Prix unitaire">
+                    <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                      <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                    </div>
+                    <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                      <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                      <div *ngIf="opt.get('prix').errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-1">
+                    <input (change)="onChangeTotal()" type="number" formControlName="qte" min="1"
+                      class="form-control" id="qte{{i}}"
+                      [ngClass]="{
+                        'is-invalid': submit && opt.get('qte').errors,
+                        'is-valid': submit && opt.get('qte').valid
+                      }" placeholder="Quantité">
+                    <div class="invalid-feedback" *ngIf="submit && opt.get('qte').errors">
+                      <div *ngIf="opt.get('qte').errors.required">{{required.novide}}</div>
+                      <div *ngIf="opt.get('qte').errors.pattern">{{required.nolettre}}</div>
+                      <div *ngIf="opt.get('qte').errors.pattern">{{required.positive}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-1">
+                    <input (change)="onChangeTotal()" type="number" formControlName="tva" min="0"
+                          class="form-control p-2" id="tva{{i}}"
+                          [ngClass]="{
+                        'is-invalid': submit && opt.get('tva').errors,
+                        'is-valid': submit && opt.get('tva').valid
+                      }" placeholder="TVA">
+                    <div class="invalid-feedback" *ngIf="submit && opt.get('tva').errors">
+                      <div *ngIf="opt.get('tva').errors.pattern">{{required.nolettre}}</div>
+                      <div *ngIf="opt.get('tva').errors.pattern">{{required.positive}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <input (change)="onChangeTotal()" type="number" formControlName="remise" min="0"
+                      class="form-control" id="remise{{i}}">
+                  </div>
+                  <div class="col-md-2">
+                    <input type="number" formControlName="total" class="form-control p-2" id="total{{i}}" min="0"
+                        step="1000" placeholder="TOTAL" readonly>
+                    <div class="invalid-feedback" *ngIf="submit && opt.get('total').errors">
+                      <div *ngIf="opt.get('total').errors.pattern">{{required.nolettre}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-1">
+                    <button (click)="onDelete(i)" type="button" class="btn btn-icon btn-danger">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-2 d-flex flex-row-reverse">
+              <button (click)="addOption()" type="button" class="btn btn-primary">
+                Ajouter <i class="feather icon-plus"></i>
+              </button>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12">
+                <table class="table table-responsive invoice-table invoice-total">
+                  <tbody>
+                  <tr>
+                    <th>TOTAL HT :</th>
+                    <td>{{ totalHT | number }}</td>
+                  </tr>
+                  <tr>
+                    <th>TOTAL REMISE :</th>
+                    <td>{{ totalRemise | number }}</td>
+                  </tr>
+                  <tr>
+                    <th>TOTAL TVA :</th>
+                    <td>{{ totalTva | number }}</td>
+                  </tr>
+                  <tr class="text-info">
+                    <td>
+                      <hr/>
+                      <h2 class="text-primary m-r-10">TOTAL :</h2>
+                    </td>
+                    <td>
+                      <hr/>
+                      <h2 class="text-success">{{ totalTTC | number }}</h2>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIECES JOINTES -->
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 formBadge width"> PIECES JOINTES </span>
+      </div>
+      <div class="form-group">
+        <div class="col-md">
+          <div class="row">
+            <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+              <app-folder-uploader
+                [maxSize]="3"
+                (click)="showFile(spent?.folder)"
+                (filesd)="files($event)"
+                (filesUploaded)="setParam('folderUuid', $event)"
+                [type]="['application/pdf']"
+                [path]="'depense'"
+                [etat]="edit ? 'edit': 'add'"
+                [folder]="edit && spent ? spent.folder : null">
+              </app-folder-uploader>
+            </div>
+
+            <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+              <div class="row">
+                <div class="col-sm-12 mb-2">
+                  <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                    <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                  </button>
+                </div>
+              </div>
+              <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+              </ngx-doc-viewer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="onReset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,762 @@
+<div class="user-profile user-card mb-4" *ngIf="tenant">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img *ngIf="tenant?.type === 'PARTICULIER' && tenant?.sexe === 'Masculin'"
+                      class="img-radius img-fluid wid-80 hei-80"
+                      [src]="tenant.photoSrc ? publicUrl+'/'+tenant.photoSrc : 'assets/images/avatar-default.png'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                    <img *ngIf="tenant?.type === 'PARTICULIER' && tenant?.sexe === 'Féminin'"
+                      class="img-radius img-fluid wid-80 hei-80"
+                      [src]="tenant.photoSrc ? publicUrl+'/'+tenant.photoSrc : 'assets/images/avatar-mlle.jpeg'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'" />
+                    <img *ngIf="tenant?.type === 'ENTREPRISE' && tenant?.photoSrc"
+                      class="img-radius img-fluid wid-80 hei-80"
+                      [src]="tenant.photoSrc ? publicUrl+'/'+tenant.photoSrc : 'assets/images/avatar-default.png'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                    <i *ngIf="tenant?.type === 'ENTREPRISE' && !tenant?.photoSrc" class="fas fa-building fa-5x"></i>
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 class="mb-1">{{ tenant?.nom }}</h5>
+          <p class="mb-2 text-muted text-uppercase">{{ tenant?.type }}</p>
+        </div>
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-3">
+              <p class="mb-1 text-muted d-flex align-items-end text-h-primary">
+                <i class="fas fa-business-time mr-2"></i>{{tenant?.profession}}
+              </p>
+              <div class="clearfix"></div>
+              <p class="mb-1 text-muted d-flex align-items-end text-h-primary">
+                <i class="feather icon-phone mr-2 f-18"></i>{{tenant?.telephone}}
+              </p>
+            </div>
+            <div class="col-md-3">
+              <div class="media">
+                <i class="feather icon-map-pin mr-2 mt-1 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{tenant?.domicile}}</p>
+                </div>
+              </div>
+              <div class="media">
+                <i class="feather icon-mail mr-2 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{tenant?.email}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="media">
+                <div class="media-body">
+                  <p class="mb-0 text-muted text-danger font-size-secondary font-weight-bold">{{ tenant?.impaye < 0
+                      ? 'A REMBOURSER' : 'DOIT' }} : {{ tenant?.impaye | number }} {{global.device}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- MENU TABS LOCATAIRE -->
+          <ul class="nav nav-tabs profile-tabs nav-fill inline" id="tabShowtenant" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'LOCATAIRE'}"
+                (click)="onChangeLoad('LOCATAIRE')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="far fa-user"></i> Profil
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset"
+                [ngClass]="{'active': activeTab === 'CONTRAT' || activeTab === 'RESILIATION'}"
+                (click)="onChangeLoad('CONTRAT')" id="contract-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="contract" aria-selected="true">
+                <i class="feather icon-file-text"></i> Contrat
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset"
+                 [ngClass]="{'active': activeTab === 'CONTRAT_GROUPED'}"
+                 (click)="onChangeLoad('CONTRAT_GROUPED')" id="contract-grouyped-tab" data-toggle="tab" href="javascript:" role="tab"
+                 aria-controls="contract-grouped" aria-selected="true">
+                <i class="feather icon-file-text"></i> Contrat Groupé
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'ETAT'}" (click)="onChangeLoad('ETAT')"
+                id="etat-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="etat"
+                aria-selected="false">
+                <i class="feather icon-list"></i> Etat des lieux
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset"
+                [ngClass]="{'active': activeTab === 'LOYER' || activeTab === 'ENTREE' || activeTab === 'PENALITE' || activeTab === 'AUTRE' || activeTab === 'FACTRESILIATION' || activeTab === 'COURT-TERME'}"
+                (click)="onChangeLoad('LOYER')" id="entree-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="entree" aria-selected="false">
+                <i class="feather icon-file-minus"></i> Facture
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'AVIS'}" (click)="onChangeLoad('AVIS')"
+                id="avis-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="avis"
+                aria-selected="false">
+                <i class="feather icon-package"></i> Avis échéance
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'PAIEMENT'}"
+                (click)="onChangeLoad('PAIEMENT')" id="paiement-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="paiement" aria-selected="false">
+                <i class="feather icon-credit-card"></i> Paiement
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'TICKET'}"
+                (click)="onChangeLoad('TICKET')" id="note-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="note" aria-selected="true">
+                <i class="feather icon-file-text"></i> Ticket
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-md-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="col-md-12" *ngIf="activeTab !== 'LOCATAIRE' && activeTab !== 'TICKET'">
+    <ng-template
+      [ngxPermissionsOnly]="['CONTRACT:LIST', 'TERMINATE:LIST', 'RENT:LIST', 'PENALITY:LIST', 'INVENTORY:LIST', 'PAYMENT:LIST', 'NOTICE:LIST', 'RENEW:LIST']">
+      <app-filter class="width"
+        [user]="true"
+        [userTitle]="userTitle"
+
+        [name]="name"
+        [nameTitle]="nameTitle"
+        [nameType]="nameType"
+        [nameClass]="nameClass"
+        [nameNamespace]="nameNamespace"
+        [nameGroups]="nameGroups"
+
+        [autre]="autre"
+        [autreTitle]="autreTitle"
+        [autreType]="autreType"
+        [autreClass]="autreClass"
+        [autreNamespace]="autreNamespace"
+        [autreGroups]="autreGroups"
+
+        [bien]="bien"
+        [bienTitle]="bienTitle"
+        [bienType]="bienType"
+        [bienClass]="bienClass"
+        [bienNamespace]="bienNamespace"
+        [bienGroups]="bienGroups"
+
+        [libelle]="libelle"
+        [libelleTitle]="libelleTitle"
+        [libelleType]="libelleType"
+        [libelleClass]="libelleClass"
+        [libelleNamespace]="libelleNamespace"
+        [libelleGroups]="libelleGroups"
+
+        [etat]="true"
+        [etatRow]="etatRow"
+        [etatTitle]="etatTitle"
+        [categorie]="true"
+        [categorieRow]="categorieRow"
+        [categorieTitle]="categorieTitle"
+        [dateD]="true"
+        [dateF]="true"
+        [create]="true"
+        [min]="true"
+        [minTitle]="minTitle"
+        [max]="true"
+        [maxTitle]="maxTitle"
+        [ordre]="true"
+        [code]="true"
+        [count]="true"
+        [type]="true"
+        [typeRow]="typeRow"
+        [uuid]="tenant.uuid"
+        (typeEvent)="onChangeLoad($event)"
+        (filterEvent)="onFilter($event)">
+      </app-filter>
+    </ng-template>
+    <ng-template
+      [ngxPermissionsExcept]="['CONTRACT:LIST', 'TERMINATE:LIST', 'RENT:LIST', 'PENALITY:LIST', 'INVENTORY:LIST', 'PAYMENT:LIST', 'NOTICE:LIST', 'RENEW:LIST']">
+      <div class="col-md-12">
+        <app-no-droit [title]="'locataire detail'"></app-no-droit>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+
+      <ng-template ngxPermissionsOnly="TENANT:SHOW">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'LOCATAIRE'}" id="profil" role="tabpanel"
+          aria-labelledby="profil-tab">
+          <div class="card">
+            <div class="col-md-12 mt-2 text center">
+              <div class="d-flex">
+                <!-- COL GAUCHE -->
+                <div class="flex-fill">
+                  <p>
+                    <span class="title-show">Référence : </span>
+                    <span class="title-result-show">{{ tenant?.code }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">
+                      {{ tenant?.type === 'ENTREPRISE' ? 'Raison sociale' : 'Nom et prénoms' }} :
+                    </span>
+                    <span class="title-result-show">
+                      {{ tenant?.type === 'ENTREPRISE' ? tenant?.nom : tenant?.civilite + ' ' + tenant?.nom }}
+                    </span>
+                  </p>
+                  <p>
+                    <span class="title-show">Type : </span>
+                    <span class="title-result-show">{{ tenant?.type }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Email : </span>
+                    <span class="title-result-show">{{ tenant?.email }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Téléphone : </span>
+                    <span class="title-result-show">{{ tenant?.telephone }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">
+                      {{ tenant?.type === 'ENTREPRISE' ? 'Siège social' : 'Domicile' }} :
+                    </span>
+                    <span class="title-result-show">
+                      {{ tenant?.type === 'ENTREPRISE' ? tenant?.siegeSocial : tenant?.domicile }}
+                    </span>
+                  </p>
+                  <p>
+                    <span class="title-show">Code postal : </span>
+                    <span class="title-result-show">{{ tenant?.codePostal }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">
+                      {{ tenant?.type === 'ENTREPRISE' ? "Domaine d'activité" : 'Profession' }} :
+                    </span>
+                    <span class="title-result-show">{{ tenant?.profession }}</span>
+                  </p>
+                </div>
+                <!-- COL MILLIEU -->
+                <div class="flex-fill">
+                  <p *ngIf="tenant?.type === 'ENTREPRISE'">
+                    <span class="title-show">Capital : </span>
+                    <span class="title-result-show">{{ tenant?.capital }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'ENTREPRISE'">
+                    <span class="title-show">Nom du responsable: </span>
+                    <span class="title-result-show">{{ tenant?.civilite + ' ' + tenant?.nomResponsable }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">
+                      {{ tenant?.type === 'ENTREPRISE' ? 'Date naissance du responsable' : 'Date naissance' }} :
+                    </span>
+                    <span class="title-result-show">{{ tenant?.dateN | date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">
+                      {{ tenant?.type === 'ENTREPRISE' ? 'Lieu de naissance du responsable' : 'Lieu de naissance' }} :
+                    </span>
+                    <span class="title-result-show">{{ tenant?.lieuN }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'PARTICULIER'">
+                    <span class="title-show">Nationnalité</span>
+                    <span class="title-result-show">{{ tenant?.nationalite }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'ENTREPRISE'">
+                    <span class="title-show">N° Compte contribualbe: </span>
+                    <span class="title-result-show">{{ tenant?.ncc }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'ENTREPRISE'">
+                    <span class="title-show">N° Registre de commerce: </span>
+                    <span class="title-result-show">{{ tenant?.nrc }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'ENTREPRISE'">
+                    <span class="title-show">Téléphone du responsable: </span>
+                    <span class="title-result-show">{{ tenant?.telResponsable }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">
+                      {{ tenant?.type === 'ENTREPRISE' ? 'Sexe du responsable' : 'Sexe' }} :
+                    </span>
+                    <span class="title-result-show">{{ tenant?.sexe }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'PARTICULIER'">
+                    <span class="title-show">Situation matrimonial: </span>
+                    <span class="title-result-show">{{ tenant?.situationMatrimoniale }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'PARTICULIER'">
+                    <span class="title-show">Nombre d'enfant: </span>
+                    <span class="title-result-show">{{ tenant?.enfant }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'PARTICULIER'">
+                    <span class="title-show">Personne en cas d'urgence : </span>
+                    <span class="title-result-show">{{ tenant?.nomUrgence }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'PARTICULIER'">
+                    <span class="title-show">Numéro d'urgence : </span>
+                    <span class="title-result-show">{{ tenant?.contactUrgence }}</span>
+                  </p>
+                </div>
+                <!-- COL DROITE -->
+                <div class="flex-fill">
+                  <p *ngIf="tenant?.type === 'ENTREPRISE'">
+                    <span class="title-show">Poste du responsable: </span>
+                    <span class="title-result-show">{{ tenant?.posteOccupe }}</span>
+                  </p>
+                  <p *ngIf="tenant?.type === 'PARTICULIER'">
+                    <span class="title-show">Affinité partagée : </span>
+                    <span class="title-result-show">{{ tenant?.affiniteUrgence}}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Nature de la pièce: </span>
+                    <span class="title-result-show">{{ tenant?.naturePiece }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Numéro de la pièce: </span>
+                    <span class="title-result-show">{{ tenant?.numPiece }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Validité de la pièce : </span>
+                    <span class="title-result-show">{{ tenant?.dateExpirePiece | date: "d MMMM y" : '' : 'fr-FR'
+                      }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Date d'émission: </span>
+                    <span class="title-result-show">{{ tenant?.dateEmission | date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Signature de l'autorité: </span>
+                    <span class="title-result-show">{{ tenant?.signatureAutorite }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Crée le : </span>
+                    <span class="title-result-show">{{ tenant?.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                      }}</span>
+                    <span class="title-show ml-5"> Par : </span>
+                    <span class="title-result-show">{{ tenant?.create }}</span>
+                  </p>
+                  <p>
+                    <span class="title-show">Modifié le : </span>
+                    <span class="title-result-show">{{ tenant?.updatedAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                      }}</span>
+                    <span class="title-show ml-5"> Par : </span>
+                    <span class="title-result-show">{{ tenant?.update }}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="col-md" *ngIf="tenant">
+                <span class="badge badge-primary mb-4 f-14 width">FICHE DE DOSSIER</span>
+                <div class="row">
+                  <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                    <app-folder-uploader (click)="showFile(tenant.folder)" [maxSize]="3" [folder]="tenant.folder"
+                      [allowFileUpload]="false" [allowDownload]="true">
+                    </app-folder-uploader>
+                  </div>
+                  <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                    <div class="row">
+                      <div class="col-sm-12 mb-2">
+                        <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                          <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                        </button>
+                      </div>
+                    </div>
+                    <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                    </ngx-doc-viewer>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button *ngxPermissionsOnly="'TENANT:EDIT'" (click)="editTenant(tenant)" type="button"
+                  class="btn btn-primary" ngbTooltip="Modifier">
+                  Modifier <i class="feather icon-edit-2"></i>
+                </button>
+                <button *ngxPermissionsOnly="'TENANT:PRINTER:SHOW'" (click)="printerTenant(tenant)" type="submit"
+                  class="btn btn-warning" ngbTooltip="Imprimer">
+                  Imprimer <i class="feather icon-printer"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="TENANT:DELETE">
+                  <button *ngIf="tenant?.isDelete" (click)="delete(tenant)" type="button"
+                    class="btn btn-danger text-left" data-dismiss="modal" ngbTooltip="Supprimer">
+                    Supprimer <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="TENANT:SHOW"
+        [ngxPermissionsOnly]="['CONTRACT:LIST', 'TERMINATE:LIST', 'RENT:LIST', 'PENALITY:LIST', 'INVENTORY:LIST', 'PAYMENT:LIST', 'NOTICE:LIST', 'RENEW:LIST']">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'LOCATAIRE'" [title]="'locataire detail'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="CONTRACT:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'CONTRAT'}" id="contract" role="tabpanel"
+          aria-labelledby="contract-tab">
+          <div class="row">
+            <!-- LISTE DES CONTRACTS -->
+            <div class="col-md-12" *ngIf="contracts && contracts.length === 0">
+              <span class="badge badge-success my-2 f-14 formBadge width">
+                LISTE DES CONTRACTS
+              </span>
+              <app-no-data [title]="'Aucun contrat trouvé'" *ngIf="contracts && contracts.length === 0"></app-no-data>
+            </div>
+            <app-contract-list style="width: 100%;" *ngIf="contracts && contracts.length > 0" [contracts]="contracts"
+              [locataire]="locataire"></app-contract-list>
+          </div>
+        </div>
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'CONTRAT_GROUPED'}" id="contract_grouped" role="tabpanel"
+             aria-labelledby="contract-grouped-tab">
+          <div class="row">
+            <!-- LISTE DES CONTRACTS -->
+            <div class="col-md-12" *ngIf="contracts && contracts.length === 0">
+              <span class="badge badge-success my-2 f-14 formBadge width">
+                LISTE DES CONTRACTS GROUPÉS
+              </span>
+              <app-no-data [title]="'Aucun contrat groupé trouvé'" *ngIf="contracts && contracts.length === 0"></app-no-data>
+            </div>
+            <app-grouped-contract-list style="width: 100%;" *ngIf="contracts && contracts.length > 0" [contracts]="contracts" [locataire]="locataire"></app-grouped-contract-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="CONTRACT:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'CONTRAT'" [title]="'liste contrat'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="CONTRACT:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'SHORT_CONTRACT'}" id="contract" role="tabpanel"
+          aria-labelledby="short-contract-tab">
+          <div class="row">
+            <!-- LISTE DES CONTRATS A COURT TERME-->
+            <div class="col-md-12">
+              <span class="badge badge-secondary my-2 f-14 formBadge width">
+                LISTE DES CONTRATS À COURT TERME
+              </span>
+              <app-no-data [title]="'Aucun contrat à court terme trouvé'" *ngIf="shortContracts && shortContracts.length === 0"></app-no-data>
+            </div>
+            <app-short-contract-list
+              style="width: 100%;"
+              *ngIf="shortContracts && shortContracts.length > 0"
+              [contracts]="shortContracts"
+              [locataire]="locataire">
+            </app-short-contract-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="CONTRACT:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'SHORT_CONTRACT'" [title]="'liste contrat'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="INVENTORY:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'ETAT'}" id="etat" role="tabpanel"
+          aria-labelledby="etat-tab">
+          <div class="row">
+            <!-- LISTE DES ETAT DES LIEUX -->
+            <div class="col-md-12" *ngIf="inventories && inventories.length === 0">
+              <span class="badge badge-info my-2 f-14 formBadge width">
+                LISTE DES ETATS DE LIEUX
+              </span>
+              <app-no-data [title]="'Aucun état des lieux trouvés'" *ngIf="inventories && inventories.length === 0">
+              </app-no-data>
+            </div>
+            <app-inventory-list style="width: 100%;" *ngIf="inventories && inventories.length > 0"
+              [inventories]="inventories" [locataire]="locataire"></app-inventory-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="INVENTORY:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'ETAT'" [title]="'liste etat des lieux'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="INVOICE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'ENTREE'}" id="entree" role="tabpanel"
+          aria-labelledby="entree-tab">
+          <div class="row">
+            <!-- LISTE DES FACTURES DENTREE-->
+            <div class="col-md-12" *ngIf="invoices && invoices.length === 0">
+              <span class="badge badge-warning my-2 f-14 formBadge width">
+                LISTE DES FACTURES D'ENTREES
+              </span>
+              <app-no-data [title]="'Aucune facture d\'entrée trouvée'" *ngIf="invoices && invoices.length === 0">
+              </app-no-data>
+            </div>
+            <app-entrance-invoice-list style="width: 100%;" *ngIf="invoices && invoices.length > 0"
+              [invoices]="invoices" [locataire]="locataire"></app-entrance-invoice-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="INVOICE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'ENTREE'" [title]="'liste facture d entrée'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="INVOICE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'AUTRE'}" id="autre" role="tabpanel"
+          aria-labelledby="autre-tab">
+          <div class="row">
+            <!-- LISTE DES AUTRES FACTURES-->
+            <div class="col-md-12" *ngIf="autres && autres.length === 0">
+              <span class="badge badge-warning my-2 f-14 formBadge width">
+                LISTE DES AUTRES FACTURES
+              </span>
+              <app-no-data [title]="'Aucune autre facture trouvée'" *ngIf="autres && autres.length === 0"></app-no-data>
+            </div>
+            <app-invoice-list class="width" *ngIf="autres && autres.length > 0" [autres]="autres"
+              [locataire]="locataire" [type]="typeI"> </app-invoice-list>
+
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="INVOICE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'AUTRE'" [title]="'liste autre facture'"></app-no-droit>
+        </div>
+      </ng-template>
+
+
+      <!-- <ng-template ngxPermissionsOnly="RENT:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'LOYER'}" id="loyer" role="tabpanel"
+          aria-labelledby="loyer-tab">
+
+        </div>
+      </ng-template> -->
+
+      <!-- LISTE DES LOYERS -->
+      <ng-template ngxPermissionsOnly="RENT:LIST">
+
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'LOYER'}" id="loyer" role="tabpanel"
+          aria-labelledby="loyer-tab">
+          <div class="row" >
+              <!-- MENU TABS LOCATAIRE -->
+            <div class="col-md-12 mb-2">
+              <ul class="nav nav-tabs profile-tabs nav-fill inline" id="tabShowtenant" role="tablist">
+                <li class="nav-item" *ngFor="let item of contracts; let i = index">
+                  <a class="nav-link text-reset" [ngClass]="{'active': activeLoyerTab === item?.code}"
+                    (click)="onChangeLoadLoyer(item,item?.code)" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                    aria-controls="profil" aria-selected="true">
+                    <i class="feather icon-file-minus"></i>  {{item?.libelle}}
+                  </a>
+                </li>
+                <li class="nav-item" *ngFor="let item of groupedContracts; let i = index">
+                  <a class="nav-link text-reset" [ngClass]="{'active': activeLoyerTab === item?.code}"
+                     (click)="onChangeLoadLoyer(item,item?.code)" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                     aria-controls="profil" aria-selected="true">
+                    <i class="feather icon-file-minus"></i>  {{item?.libelle | slice:0:100}}
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div *ngIf="rents && rents.length === 0">
+              <span class="badge badge-warning my-2 f-14 formBadge width">
+                LISTE DES LOYERS
+              </span>
+              <!--<app-no-data [title]="'Aucun loyer trouvé'" *ngIf="rents && rents.length === 0"></app-no-data>-->
+            </div>
+            <!---->
+            <app-no-data [title]="'Aucun loyer trouvé'" *ngIf="rents && rents.length === 0"></app-no-data>
+            <app-rent-list style="width: 100%;" *ngIf="rents && rents.length > 0 " [rents]="rents"[locataire]="locataire">
+            </app-rent-list>
+
+          </div>
+        </div>
+
+      </ng-template>
+
+      <ng-template ngxPermissionsExcept="RENT:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'LOYER'" [title]="'liste loyer'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="PENALITY:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'PENALITE'}" id="penalite" role="tabpanel"
+          aria-labelledby="penalite-tab">
+          <div class="row">
+            <!-- LISTE DES PENALITES -->
+            <div class="col-md-12" *ngIf="penalities && penalities.length === 0">
+              <span class="badge badge-warning my-2 f-14 formBadge width">
+                LISTE DES PENALITES
+              </span>
+              <app-no-data [title]="'Aucune pénalité trouvée'" *ngIf="penalities && penalities.length === 0">
+              </app-no-data>
+            </div>
+            <app-penality-list style="width: 100%;" *ngIf="penalities && penalities.length > 0"
+              [penalities]="penalities" [locataire]="locataire"></app-penality-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="PENALITY:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'PENALITE'" [title]="'liste pénalité'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="NOTICE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'AVIS'}" id="avis" role="tabpanel"
+          aria-labelledby="avis-tab">
+          <div class="row">
+            <!-- LISTE DES AVIS DECHEANCES -->
+            <div class="col-md-12" *ngIf="notices && notices.length === 0">
+              <span class="badge badge-danger my-2 f-14 formBadge width">
+                LISTE DES AVIS D'ECHEANCES
+              </span>
+              <app-no-data [title]="'Aucun avis d\'échance trouvé'" *ngIf="notices && notices.length === 0">
+              </app-no-data>
+            </div>
+            <app-notice-list style="width: 100%;" *ngIf="notices && notices.length > 0" [notices]="notices"
+              [locataire]="locataire"></app-notice-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="NOTICE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'AVIS'" [title]="'liste avis d écheance'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="PAYMENT:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'PAIEMENT'}" id="paiement" role="tabpanel"
+          aria-labelledby="paiement-tab">
+          <div class="row">
+            <!-- LISTE DES PAYEMENTS -->
+            <div class="col-md-12" *ngIf="payments && payments.length === 0">
+              <span class="badge badge-success my-2 f-14 formBadge width">
+                LISTE DES PAIEMENTS
+              </span>
+              <app-no-data [title]="'Aucun paiement trouvé'" *ngIf="payments && payments.length === 0"></app-no-data>
+            </div>
+            <app-payment-list style="width: 100%;" *ngIf="payments && payments.length > 0" [payments]="payments"
+              [locataire]="locataire"></app-payment-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="PAYMENT:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'PAIEMENT'" [title]="'liste paiement'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <ng-template ngxPermissionsOnly="TERMINATE:LIST">
+        <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'RESILIATION'}" id="terminate-"
+          role="tabpanel" aria-labelledby="terminate-tab">
+          <div class="row">
+            <!-- LISTE DES RESILIATIONS -->
+            <div class="col-md-12" *ngIf="terminates && terminates.length === 0">
+              <span class="badge badge-secondary my-2 f-14 formBadge width">
+                LISTE DES RESILIATIONS DE CONTRAT
+              </span>
+              <app-no-data [title]="'Aucune résiliation de contrat trouvée'"
+                *ngIf="terminates && terminates.length === 0"></app-no-data>
+            </div>
+            <app-terminate-list style="width: 100%;" *ngIf="terminates && terminates.length > 0"
+              [terminates]="terminates" [locataire]="locataire"></app-terminate-list>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template ngxPermissionsExcept="TERMINATE:LIST">
+        <div class="col-md-12">
+          <app-no-droit *ngIf="activeTab === 'RESILIATION'" [title]="'liste résiliation'"></app-no-droit>
+        </div>
+      </ng-template>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'FACTRESILIATION'}" id="autreResiliation"
+        role="tabpanel" aria-labelledby="autreResiliation-tab">
+        <div class="row">
+          <!-- LISTE DES FACTURES DE RESILIATION -->
+          <div class="col-md-12" *ngIf="invoicesTerminate && invoicesTerminate.length === 0">
+            <span class="badge badge-warning my-2 f-14 formBadge width">
+              LISTE DES FACTURES DE RESILIATION
+            </span>
+            <app-no-data [title]="'Aucune facture de résiliation trouvée'"
+              *ngIf="invoicesTerminate && invoicesTerminate.length === 0"></app-no-data>
+          </div>
+          <app-invoice-list class="width" *ngIf="invoicesTerminate && invoicesTerminate.length > 0"
+            [autres]="invoicesTerminate" [locataire]="locataire" [type]="typeI"> </app-invoice-list>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'COURT-TERME'}" id="factureCourtTerme"
+        role="tabpanel" aria-labelledby="factureCourtTerme-tab">
+        <div class="row">
+          <!-- LISTE DES FACTURES DE RESILIATION -->
+          <div class="col-md-12" *ngIf="shortInvoices && shortInvoices.length === 0">
+            <span class="badge badge-warning my-2 f-14 formBadge width">
+              LISTE DES FACTURES DE CONTRAT A COURT TERME
+            </span>
+            <app-no-data [title]="'Aucune facture a court terme trouvée'"
+              *ngIf="shortInvoices && shortInvoices.length === 0"></app-no-data>
+          </div>
+          <app-invoice-list class="width" *ngIf="shortInvoices && shortInvoices.length > 0"
+            [autres]="shortInvoices" [locataire]="locataire" [type]="typeI"> </app-invoice-list>
+        </div>
+      </div>
+
+      <!-- LISTE DES NOTES_INTERNES -->
+      <div class="width list-notes-internes" *ngIf="activeTab === 'NOTE_INTERNE'">
+        <app-activity-list [notes]="notes" [rdvs]="rdvs"></app-activity-list>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'TICKET'}" id="ticket" role="tabpanel" aria-labelledby="reversement-tab">
+        <div class="row">
+          <!-- LISTE DES TICKETS -->
+          <div class="col-md-12" *ngIf="tickets">
+            <span class="badge badge-success mb-4 f-14 width">
+              LISTE DES TICKETS
+            </span>
+            <app-no-data [title]="'Aucun ticket trouvé'" *ngIf="tickets && tickets.length === 0">
+            </app-no-data>
+          </div>
+          <app-ticket-table *ngIf="tickets && tickets.length > 0" [tickets]="tickets" class="width">
+          </app-ticket-table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+.spinner-container {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  display: flex;
+  transform: translateY(-50%);
+}
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px gray solid;
+  border-top: 2Px transparent solid;
+  animation: rotate .5s linear infinite;
+  border-radius: 100%;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg)
+  }
+  100% {
+    transform: rotate(360deg)
+  }
+}
+.pac-container {
+  z-index: 9999999999 !important;
+}
+::ng-deep.swal2-container {
+  z-index: 10000 !important;
+}
+

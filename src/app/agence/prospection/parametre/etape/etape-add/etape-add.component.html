@@ -1,0 +1,37 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+      <div class="col-md-12">
+        <!-- DETAILS SUR LE PRODUIT -->
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <label for="libelle">Libellé <span class="asterix">*</span></label>
+              <input formControlName="libelle" class="form-control" id="libelle"
+                [ngClass]="{
+                  'is-invalid': submit && f.libelle.errors,
+                  'is-valid': submit && f.libelle.valid
+                }" [placeholder]="'Libellé'">
+              <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+  </form>
+  

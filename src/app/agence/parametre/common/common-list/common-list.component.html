@@ -1,0 +1,50 @@
+<div class="card mb-3"> 
+    <div class="card-header d-flex">
+      <div class="p-2">
+        <h4><i class="fa fa-glass"></i> Commune</h4>
+      </div>
+      <div class="ml-auto p-2">
+        <button (click)="addCommon()" type="button" class="btn btn-primary"
+          ngbTooltip="Cliquez ici pour ajouter">
+          Ajouter <i class="fa fa-plus"></i>
+        </button>
+      </div>
+    </div> 
+    <div class="card-body p-3">  
+      <div class="col-md-12">  
+        <div class="row">  
+          <span class="badge badge-primary my-2 f-14 width">LISTE DES COMMUNES</span>  
+        </div>  
+      </div>  
+  
+      <div class="col-sm-12">  
+        <div class="table-responsive">  
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">  
+            <thead class="thead-light">  
+              <tr>  
+                <th>Libellé</th>  
+                <th>Créé le</th>  
+                <th *ngIf="action">Action</th>  
+              </tr>  
+            </thead>  
+            <tbody>  
+              <tr *ngFor="let item of commons">  
+                <td>{{ item.libelle }}</td> 
+                <td>{{ item.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>   
+                <td *ngIf="action" class="table-action"> 
+                  <div class="overlay-edit">  
+                    <button (click)="showCommon(item)" type="button" class="btn btn-icon btn-secondary ml-1" ngbTooltip="Détails">  
+                      <i class="fas fa-eye"></i>  
+                    </button>  
+                    <button (click)="editCommon(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">  
+                      <i class="feather icon-edit-2"></i>  
+                    </button> 
+                  </div>  
+                </td>  
+              </tr>  
+            </tbody>  
+          </table>  
+        </div>  
+      </div>  
+    </div>  
+</div>

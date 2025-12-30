@@ -1,0 +1,106 @@
+<div class="col-sm-12">
+    <app-card [hidHeader]="true" cardClass="card-datatable">
+      <div class="table-responsive">
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions"
+          class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Locative</th>
+              <th *ngIf="locataire">Locataire</th>
+              <th>Periode</th>
+              <th>Etat</th>
+              <th>Montant</th>
+              <th>Payé</th>
+              <th>Restant</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of contracts">
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.rental?.libelle}}</span>
+                  <br />
+                  Superficie :
+                  {{item?.rental?.superficie}} m² - {{item?.rental?.piece}} pièce(s):
+                  <br />
+                  Propriétaire :
+                  {{item?.rental?.house?.owner?.searchableTitle}}
+                  <br />
+                  Référence contrat : {{item?.code}}
+                </p>
+              </td>
+              <td *ngIf="locataire">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.tenant?.searchableTitle}}</span> <br /> Type :
+                  {{item?.tenant?.type}}<br /> Telephone : {{item?.tenant?.telephone}}
+                </p>
+              </td>
+              <td>{{item?.periode}}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-danger' : item?.etat === 'RESILIE',
+                  'badge-success' : item?.etat === 'ACTIF',
+                  'badge-warning' : item?.etat === 'INACTIF'
+                  }">
+                  {{item?.etat}}
+                </span>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.invoice?.montant|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-success">{{item?.invoice?.paye|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-danger">{{item?.invoice?.impaye|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="table-action">
+                <div class="overlay-edit">
+                  <button (click)="showContract(item)" type="button"
+                    class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button *ngIf="item?.etat === 'INACTIF'" (click)="editContract(item)" type="button"
+                    class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button *ngIf="item?.etat === 'INACTIF'" (click)="activateContract(item)" type="button"
+                    class="btn btn-icon ml-1 btn-success" ngbTooltip="Activer">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button *ngIf="item?.etat === 'ACTIF'" (click)="printerContract(item)" type="button"
+                    class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                  <button *ngIf="item?.etat === 'ACTIF'" (click)="extendContract(item)" type="button"
+                    class="btn btn-icon btn-info ml-1" ngbTooltip="Prolonger">
+                    <i class="feather icon-calendar"></i>
+                  </button>
+                  <button *ngIf="item?.etat !== 'RESILIE'" type="button"
+                    (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-warning"> {{total | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{paye | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{impaye | number}} {{global.device}}</td>
+              <td colspan="2" *ngIf="action"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </app-card>
+  </div>

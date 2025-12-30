@@ -1,0 +1,103 @@
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+      <div *ngIf="validate && dataSelected.length>0" class="btn-rental float-right mb-2">
+        <button (click)="onConfirme()"  type="submit" class="btn btn-success m-1">
+          Valider <i class="feather icon-check-square"></i>
+        </button>
+      </div>
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" id="report-table" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>
+              <div class="form-group">
+                <div class="form-check">
+                  <input id="selectAll" class="form-check-input" formControlName="valueOne" type="checkbox" id="checkAll"
+                  (change)="onCheckAll($event)">
+                </div>
+              </div>
+            </th> 
+            <th>Locative</th>
+            <th *ngIf="locataire">Locataire</th>
+            <th>Etat</th>
+            <th>Montant</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of terminates ; let i = index">
+            <td>
+              <div class="form-group">
+                <div class="form-check">
+                  <input formControlName="checked" class="form-check-input"  type="checkbox" id="check{{i}}"
+                  (change)="onCheckItem(item)">
+                </div>
+              </div>
+            </td> 
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.contract?.rental?.libelle}}</span> <br />
+                Superficie : {{item?.contract?.rental?.superficie}} m² - {{item?.contract?.rental?.piece}} pièce(s): <br />
+                Propriétaire : {{item?.contract?.rental?.house?.owner?.searchableTitle}}
+              </p>
+            </td>
+            <td *ngIf="locataire">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.contract?.tenant?.searchableTitle}}</span> <br />
+                Type : {{item?.contract?.tenant?.type}}<br />
+                Telephone : {{item?.contract?.tenant?.telephone}}
+              </p>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-success' : item.etat === 'VALIDE',
+              'badge-danger' : item.etat === 'INVALIDE'
+              }">{{validation(item.etat)}}</span>
+            </td>
+            <td>
+              <span class="text-warning">{{item?.invoice?.montant|number}} {{global.device}}</span>
+            </td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showTerminate(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="TERMINATE:EDIT">
+                  <button *ngIf="item.etat === 'INVALIDE'" (click)="editTerminate(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                    ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="TERMINATE:ACTIVATE">
+                  <button *ngIf="item.etat === 'INVALIDE'" (click)="activateTerminate(item)" type="button"
+                    class="btn btn-icon ml-1 btn-success" ngbTooltip="Valider">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </ng-template>
+                <button *ngxPermissionsOnly="'TERMINATE:PRINTER:SHOW'" (click)="printerTerminate(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="TERMINATE:DELETE">
+                  <button *ngIf="item.etat === 'INVALIDE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td [attr.colspan]="locataire ? '4' : '3'" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-warning"> {{total | number}} {{global.device}}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+   </form>
+  </app-card>
+</div>

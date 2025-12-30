@@ -1,0 +1,56 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR LE BIEN CONCERNE -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width"> INFORMATION </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-12">
+            <label for="status">Type de Selection </label>
+            <select formControlName="status" class="form-control" id="status">
+              <option [value]="'TOUT'">Tous les Biens</option>
+              <option [value]="'GROUPE'">Selection groupées </option>
+            </select>
+          </div>
+          <div class="col-md-12" *ngIf="f.status.value === 'GROUPE'">
+            <ng-select  [multiple]="true"  formControlName="options" class="form-control" id="options">
+              <ng-option *ngFor="let item of dataRow" [value]="item?.uuid">{{item?.searchableTitle}}</ng-option>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width"> ATTRIBUTION DES VALIDATEURS </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md mt-4">
+            <dual-list (destinationChange)="setData()" [sort]="keepSorted" [source]="source" [key]="key" [display]="display" [filter]="true"
+              [(destination)]="confirmed" height="265px" [format]="format" [disabled]="disabled">
+            </dual-list>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

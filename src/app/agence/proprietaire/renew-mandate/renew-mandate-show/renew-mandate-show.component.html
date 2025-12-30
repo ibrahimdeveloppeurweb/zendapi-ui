@@ -1,0 +1,141 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Référence : </span>
+        <span class="title-result-show">{{renew?.code }}</span>
+      </p>
+      <p>
+        <span class="title-show">Bien : </span>
+        <span class="title-result-show"> {{ renew?.mandate?.house?.nom }}</span>
+      </p>
+      <p>
+        <span class="title-show">Proprietaire : </span>
+        <span class="title-result-show"> {{ renew?.mandate?.house?.owner?.searchableTitle }}</span>
+      </p>
+      <p>
+        <span class="title-show">Type de mandat : </span>
+        <span class="title-result-show"> {{ renew?.mandate?.type }}</span>
+      </p>
+      <p>
+        <span class="title-show">Etat : </span>
+        <span class="badge title-show" [ngClass]="{
+          'badge-success' : renew?.etat === 'ACTIF',
+          'badge-warning' : renew?.etat ===  'INACTIF',
+          'badge-danger' : renew?.etat ===  'RESILIE'
+          }">{{ renew?.etat}}
+        </span>
+      </p>
+      <p>
+        <span class="title-show">Date :</span>
+        <span class="title-result-show">{{ renew?.date|date: "d MMMM y" : '' : 'fr-FR'}}</span>
+      </p>
+    </div>
+    <!-- COL MILLIEU -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show ">Commission : </span>
+        <span class="title-result-show text-warning">{{ renew?.commission}}</span>
+      </p>
+      <p>
+        <span class="title-show ">Commission precedente: </span>
+        <span class="title-result-show text-warning">{{ renew?.pCommission}}</span>
+      </p>
+      <div *ngIf="renew?.mandate?.type === 'VENTE'">
+        <p>
+          <span class="title-show">Montant commission : </span>
+          <span class="title-result-show text-warning">{{ renew?.montantCom|number }} {{global.device}}</span>
+        </p>
+        <p>
+          <span class="title-show">Montant commission precedente : </span>
+          <span class="title-result-show text-warning">{{ renew?.pMontantCom|number }} {{global.device}}</span>
+        </p>
+        <p>
+          <span class="title-show">Montant de vente : </span>
+          <span class="title-result-show text-warning">{{ renew?.valeur|number }} {{global.device}}</span>
+        </p>
+        <p>
+          <span class="title-show">Montant de vente precedente : </span>
+          <span class="title-result-show text-warning">{{ renew?.pValeur|number }} {{global.device}}</span>
+        </p>
+      </div>
+      <div *ngIf="renew?.mandate?.type === 'LOCATION'">
+        <p>
+          <span class="title-show">Taxe impots: </span>
+          <span class="title-result-show text-warning">{{ renew?.taxe }}</span>
+        </p>
+        <p>
+          <span class="title-show">Taxe impots precedente : </span>
+          <span class="title-result-show text-warning">{{ renew?.pTaxe }}</span>
+        </p>
+        <p>
+          <span class="title-show">Deduires de ? : </span>
+          <span class="title-result-show text-warning">{{ renew?.taxeCommission }}</span>
+        </p>
+        <p>
+        <span class="title-show">Deduires de ?  precedente : </span>
+        <span class="title-result-show text-warning">{{ renew?.pTaxeCommission}}</span>
+      </p>
+      </div>
+    </div>
+    <!-- COL DROITE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Date fin :</span>
+        <span class="title-result-show">{{ renew?.dateF|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+      </p>
+      <p>
+        <span class="title-show">Date debut :</span>
+        <span class="title-result-show">{{ renew?.dateD|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+      </p>
+      <p>
+        <span class="title-show">Date fin precedente: </span>
+        <span class="title-result-show">{{ renew?.pDateF|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+      </p>
+      <p>
+        <span class="title-show">Date debut precedente: </span>
+        <span class="title-result-show">{{ renew?.pDateD|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+      </p>
+      <p>
+        <span class="title-show">Crée le : </span>
+        <span class="title-result-show">{{renew?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ renew?.create }}</span>
+      </p>
+      <p>
+        <span class="title-show">Modifié le : </span>
+        <span class="title-result-show">{{ renew?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{renew?.update }}</span>
+      </p>
+      <p>
+        <span class="title-show">Validé le : </span>
+        <span class="title-result-show">{{ renew?.validateAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{renew?.validate }}</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template ngxPermissionsOnly="RENEW:MANDATE:EDIT">
+    <button *ngIf="renew?.etat ==='INACTIF'" (click)="editRenewMandate(renew)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <button *ngxPermissionsOnly="'RENEW:MANDATE:PRINTER:SHOW'" (click)="printerRenewMandate(renew)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

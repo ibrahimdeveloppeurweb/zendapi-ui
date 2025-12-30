@@ -1,0 +1,136 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modale" aria-label="Close" (click)="onClose()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <!-- DETAILS SUR LE BIEN CONCERNE -->
+            <div class="row">
+                <span class="badge badge-success my-2 f-14 width">
+                    DETAILS CONCERNANT LA LOCATIVE
+                </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label for="house">Bien concerné <span class="asterix">*</span></label>
+                        <app-entity-finder [class]="'House'" [groups]="['house']" [required]="true"
+                            (uuid)="setHouseUuid($event)" [selected]="houseSelected" [placeholder]="'Selectionez un un bien'">
+                        </app-entity-finder>
+                    </div>
+                    <div class="col-md-6">
+                        <div *ngIf="isLoadingRental" class="spinner-container">
+                            <div class="spinner"></div>
+                        </div>
+                        <label for="rental">Locative <span class="asterix">*</span></label>
+                        <select (change)="selectRental($event)" formControlName="rental" class="form-control"
+                            id="rental" [ngClass]="{
+                  'is-invalid': submit && f.rental.errors,
+                  'is-valid': submit && f.rental.valid
+                }">
+                            <option value="null" selected>Selectionnez une locative</option>
+                            <option *ngFor="let item of rentals" [value]="item.uuid">{{item.libelle}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.rental.errors">
+                            <div *ngIf="f.rental.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="f.rental.value !== null">
+                <div class="row">
+                    <span class="badge badge-success my-2 f-14 width">
+                        INVENTAIRE DES EQUIPEMENTS PAR PIECES
+                    </span>
+                </div>
+                <div formArrayName="pieces">
+                    <!-- LIBELLE DES CHAMPS PIECE -->
+                    <div class="form-group" *ngFor="let item of pieces.controls; let i=index" [formGroupName]="i"
+                        style="background: whitesmoke;padding:10px;margin:10px auto">
+                        <div class="row mb-2">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between">
+                                    <label for="libelle{{i}}">Pièce </label>
+                                    <button type="button" (click)="onDeletePiece(i)" class="btn btn-danger mb-2"
+                                        ngbTooltip="Supprimer">
+                                        <i class="feather icon-trash"></i> Supprimer la pièce
+                                    </button>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-12">
+                                        <input type="text" formControlName="libelle" class="form-control" id="libelle{{i}}" placeholder="libelle">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div formArrayName="equipements">
+                            <!-- LIBELLE DES CHAMPS EQUIPEMENT -->
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Designation <span class="asterix">*</span></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Equipement <span class="asterix">*</span></label>
+                                </div>
+                                <div class="col-md-5">
+                                    <label>Photo </label>
+                                </div>
+                            </div>
+                            <div class="form-group" *ngFor="let props of item.get('equipements').controls; let j=index"
+                                [formGroupName]="j">
+                                <div class="row mb-2">
+                                    <div class="col-md-3">
+                                        <input type="text" formControlName="libelle" class="form-control"
+                                            id="libelle{{i}}{{j}}" placeholder="Libelle">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <app-entity-finder [class]="'Equipment'" [groups]="['equipment']" [required]="true"
+                                            (uuid)="setEquipmentUuid($event, props)" [placeholder]="'Selectionez un un bien'">
+                                        </app-entity-finder>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="file" formControlName="file" class="form-control" (change)="handleUpload($event, item)"
+                                            id="file{{i}}{{j}}" placeholder="Photo">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button (click)="onDelete(i,j)" type="button" class="btn btn-danger">
+                                            <i class="feather icon-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-12 text-right">
+                                <button class="btn btn-msg-send btn-primary ml-auto" (click)="onAddEquipement(i, 3)"
+                                    type="button"> Ajouter <i class="fa fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-12 text-right">
+                            <button class="btn btn-msg-send btn-primary ml-auto" (click)="onAddPiece()" type="button">
+                                Ajouter une pièce <i class="fa fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modale">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="onReset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+    </div>
+</form>

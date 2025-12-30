@@ -1,0 +1,98 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "outDir": "./out-tsc/app",
+    "paths": {
+      "@dashboard/*": [
+        "./app/dashboard/*"
+      ],
+      "@validation/*": [
+        "./app/validation/*"
+      ],
+      "@agence/*": [
+        "./app/agence/*"
+      ],
+      "@auth/*": [
+        "./app/auth/*"
+      ],
+      "@locataire/*": [
+        "./app/agence/locataire/*"
+      ],
+      "@proprietaire/*": [
+        "./app/agence/proprietaire/*"
+      ],
+      "@parametre/*": [
+        "./app/agence/parametre/*"
+      ],
+      "@modal/*": [
+        "./app/agence/modal/*"
+      ],
+      "@localisation/*": ["./app/agence/localisation/*"],
+      "@promotion/*": [
+        "./app/agence/promotion/*"
+      ],
+      "@lotissement/*": [
+        "./app/agence/lotissement/*"
+      ],
+      "@tresorerie/*": [
+        "./app/agence/tresorerie/*"
+      ],
+      "@demande/*": [
+        "./app/agence/demande/*"
+      ],
+      "@utilisateur/*": [
+        "./app/security/utilisateur/*"
+      ],
+      "@extra/*": [
+        "./app/agence/extra/*"
+      ],
+      "@reclamation/*": [
+        "./app/agence/reclamation/*"
+      ],
+      "@client/*": [
+        "./app/agence/client/*"
+      ],
+      "@chantier/*": [
+        "./app/agence/chantier/*"
+      ],
+      "@prestataire/*": [
+        "./app/agence/prestataire/*"
+      ],
+      "@rapport/*": [
+        "./app/agence/rapport/*"
+      ],
+      "@model/*": [
+        "./app/model/*"
+      ],
+      "@service/*": [
+        "./app/service/*"
+      ],
+      "@theme/*": [
+        "./app/theme/*"
+      ],
+      "@shared/*": [
+        "./app/theme/shared/*"
+      ],
+      "@layout/*": [
+        "./app/theme/layout/*"
+      ],
+      "@env/*": [
+        "./environments/*"
+      ],
+      "@appRoot/*": [
+        "./app/*"
+      ]
+    },
+    "types": []
+  },
+  "angularCompilerOptions": { "enableIvy": true },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
+}

@@ -1,0 +1,281 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-warning my-2 f-14  width">
+          SELECTIONNER LE CONTRAT
+        </span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-6">
+                <label>Locataire <span class="asterix">*</span></label>
+                <app-entity-finder [class]="'tenant'" [groups]="['tenant']" [required]="true"
+                  (uuid)="setTenantUuid($event)" [placeholder]="'Selectionez un locataire'">
+                </app-entity-finder>
+              </div>
+              <div class="col-md-6">
+                <div *ngIf="isLoadingContract" class="spinner-container">
+                  <div class="spinner"></div>
+                </div>
+
+                <label for="contract">Contrat <span class="asterix">*</span></label>
+                <select (change)="setContratUuid($event)" formControlName="contract" class="form-control" id="contract"
+                  [attr.disabled]="tenantUuid ? null : 'true'"
+                  [ngClass]="{'is-invalid': submit && f.contract.errors,'is-valid': submit && f.contract.valid}">
+                  <option value="null" selected> Selectionnez un contrat</option>
+                  <option *ngFor="let item of contracts" [value]="item.uuid">{{item.libelle}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.contract.errors">
+                  <div *ngIf="f.contract.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFFICHAGE DES RESULATS DE LA RECHERCHE -->
+      <div *ngIf="f.contract.value">
+        <div class="row">
+          <span class="badge badge-warning my-2 f-14  width">
+            DETAILS DU CONTRAT
+          </span>
+        </div>
+        <div class="row  mb-2">
+          <div class="col">
+            <label>Locative</label>
+            <input type="text" readonly [value]="contract?.rental?.porte"
+              class="form-control text-uppercase font-weight-bold text-warning">
+          </div>
+          <div class="col">
+            <label>Coût du loyer</label>
+            <input type="text" readonly [value]="contract?.loyer| number"
+              class="form-control text-dangetext-uppercase font-weight-bold text-warning">
+          </div>
+          <div class="col">
+            <label>Jour limite de paiement</label>
+            <input type="number" readonly [value]="contract?.limite"
+              class="form-control text-uppercase font-weight-bold text-warning">
+          </div>
+          <div class="col">
+            <label>Pénalité cas de retard %</label>
+            <input type="number" readonly [value]="contract?.prcRetard"
+              class="form-control text-uppercase font-weight-bold text-warning">
+          </div>
+          <div class="col">
+            <label>Périodicité </label>
+            <input type="text" readonly [value]="contract?.periodicite" class="form-control text-uppercase font-weight-bold text-warning">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Période</th>
+                <th>Etat</th>
+                <th>Montant</th>
+                <th>Payé</th>
+                <th>Restant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr >
+                <td>
+                  {{contract?.lastRent?.mois}} <br />
+                  <span *ngIf="contract?.lastRent?.type === 'AVANCE'" class="badge badge-light-primary"><small>{{contract?.lastRent?.type}}</small></span>
+                  <span *ngIf="contract?.etat !== 'ACTIF'" class="ml-1 badge badge-pill" [ngClass]="{
+                  'badge-light-danger' : contract?.etat === 'RESILIE',
+                  'badge-light-warning' : contract?.etat === 'INACTIF'
+                  }"><small>{{contract?.etat}}</small></span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                  'badge-danger' : contract?.lastRent?.invoice?.etat === 'IMPAYE',
+                  'badge-primary' : contract?.lastRent?.invoice?.etat === 'ATTENTE',
+                  'badge-warning' : contract?.lastRent?.invoice?.etat === 'EN COURS',
+                  'badge-success' : contract?.lastRent?.invoice?.etat === 'SOLDE'
+                  }">{{payment(contract?.lastRent?.invoice?.etat)}}</span>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-primary font-weight-blod">{{contract?.lastRent?.invoice?.montant|number}} {{global.device}}</span>
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-success font-weight-blod">{{contract?.lastRent?.invoice?.paye|number}} {{global.device}}</span>
+                  </p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-danger font-weight-blod">{{contract?.lastRent?.invoice?.impaye|number}} {{global.device}}</span>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngIf="rent.controls.length > 0 && contract?.periodicite === 'MENSUEL'">
+          <div formArrayName="rents">
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-4">
+                  <label>Mois </label>
+                </div>
+                <div class="col-md-2">
+                  <label>Loyer</label>
+                </div>
+                <div class="col-md-2">
+                  <label>Charge</label>
+                </div>
+                <div class="col-md-3">
+                  <label>Total</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" *ngFor="let item of rent.controls; let i=index" [formGroupName]="i">
+              <div class="row">
+                <div class="col-md-4">
+                  <input type="date" class="form-control p-2" formControlName="mois" id="mois{{i}}"
+                    (change)="setMois(item)" [ngClass]="{
+                    'is-invalid': submit && item.get('mois').errors,
+                    'is-valid': submit && item.get('mois').errors
+                    }">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('mois').errors">
+                    <div *ngIf="item.get('mois').errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <input type="text" readonly class="form-control p-2" placeholder="Loyer"  [value]="item.get('loyer').value|number">
+                </div>
+                <div class="col-md-2">
+                  <input type="text" class="form-control p-2"  placeholder="Charge" readonly [value]="item.get('charge').value|number">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control p-2 text-danger font-weight-bold" readonly [value]="item.get('total').value|number"
+                    [ngClass]="{
+                    'is-invalid': submit && item.get('total').errors,
+                    'is-valid': submit && item.get('total').errors
+                    }" placeholder="Total">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('total').errors">
+                    <div *ngIf="item.get('total').errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <button [disabled]="edit" (click)="onDelete(i)" type="button" class="btn btn-danger">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="rent.controls.length > 0 && (contract?.periodicite === 'TRIMESTRIEL' || contract?.periodicite === 'SEMESTRIEL' || contract?.periodicite === 'ANNUEL')">
+          <div formArrayName="rents">
+            <div class="form-group">
+              <div class="row">
+                <div class="col">
+                  <label>Année </label>
+                </div>
+                <div class="col"  *ngIf="contract?.periodicite !== 'ANNUEL'">
+                  <label>Periode  </label>
+                </div>
+                <div class="col">
+                  <label>Loyer</label>
+                </div>
+                <div class="col">
+                  <label>Charge</label>
+                </div>
+                <div class="col">
+                  <label>Total</label>
+                </div>
+                <div class="col-md-1"></div>
+              </div>
+            </div>
+            <div class="form-group" *ngFor="let item of rent.controls; let i=index" [formGroupName]="i">
+              <div class="row">
+                <div class="col">
+                  <input (click)="setAnnee(item)" autocomplete="off" formControlName="annee" placeholder="Sélectionner le année"
+                    id="annee{{i}}" class="form-control" [placement]="'top'" bsDatepicker
+                    [bsConfig]="{dateInputFormat: 'YYYY'}">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('annee').errors">
+                    <div *ngIf="item.get('annee').errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col" *ngIf="contract?.periodicite === 'TRIMESTRIEL'">
+                  <select formControlName="mois" class="form-control" id="mois{{i}}" (change)="onChangePeriode(item, $event.target.value)"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('mois').errors,
+                      'is-valid': submit && item.get('mois').errors}">
+                    <option *ngFor="let item of trimestreRow" [value]="item.value">{{ item.label }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="submit && item.get('mois').errors">
+                    <div *ngIf="item.get('mois').errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col" *ngIf="contract?.periodicite === 'SEMESTRIEL'">
+                  <select formControlName="periode" class="form-control" id="periode{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('periode').errors,
+                      'is-valid': submit && item.get('periode').errors}">
+                    <option *ngFor="let item of semestreRow" [value]="item.value">{{ item.label }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="submit && item.get('mois').errors">
+                    <div *ngIf="item.get('mois').errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col">
+                  <input type="text" class="form-control p-2" placeholder="Loyer"  readonly [value]="item.get('loyer').value|number">
+                </div>
+                <div class="col">
+                  <input type="text" class="form-control p-2"  placeholder="Charge" readonly [value]="item.get('charge').value|number">
+                </div>
+                <div class="col">
+                  <input type="text" class="form-control p-2 text-danger font-weight-bold" readonly [value]="item.get('total').value|number"
+                    [ngClass]="{
+                    'is-invalid': submit && item.get('total').errors,
+                    'is-valid': submit && item.get('total').errors
+                    }" placeholder="Total">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('total').errors">
+                    <div *ngIf="item.get('total').errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <button [disabled]="edit" (click)="onDelete(i)" type="button" class="btn btn-danger">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <button class="btn btn-msg-send btn-primary ml-auto" (click)="addRent()" type="button"> Ajouter <i
+              class="fa fa-plus"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid && rent.controls.length > 0" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

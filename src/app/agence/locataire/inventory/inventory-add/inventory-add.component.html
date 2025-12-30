@@ -1,0 +1,265 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <span class="badge badge-info my-2 f-14 formBadge width">{{customer ? 'INFORMATIONS SUR LE CLIENT' : 'SELECTION DE LA LOCATIVE'}}</span>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <div class="row" *ngIf="!customer">
+            <div class="col-md-6">
+              <app-entity-finder [class]="'Tenant'" [groups]="['tenant']" [required]="true"
+                [label]="'Locataire'" (uuid)="setTenantUuid($event)"
+                [selected]="tenantSelected"
+                [disabled]="edit" [placeholder]="'Selectionez un locataire'">
+              </app-entity-finder>
+              <div class="invalid-feedback" *ngIf="submit && f.tenant.errors">
+                <div *ngIf="f.tenant.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="contract">Contrat <span class="asterix">*</span></label>
+              <select *ngIf="!edit" (change)="setHomeTypeModellUuid()" class="form-control" [attr.disabled]="tenant && !edit ? null : 'true'"
+                id="contract" formControlName="contract" [ngClass]="{
+                'is-invalid': submit && f.contract.errors,
+                'is-valid': submit && f.contract.valid }">
+                <option *ngIf="contracts.length > 0 && tenant" [ngValue]="null">Selectionnez un contrat</option>
+                <option *ngFor="let item of contracts"
+                  [ngValue]="item.uuid">{{item.libelle}}
+                </option>
+              </select>
+              <input *ngIf="edit" type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+               [value]="inventory?.contract?.libelle" readonly>
+              <div class="invalid-feedback" *ngIf="submit && f.contract.errors">
+                <div *ngIf="f.contract.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row" *ngIf="customer">
+            <div class="col-md-6">
+              <app-entity-finder [class]="'Customer'" [groups]="['customer']" [required]="true"
+                [label]="'Client'" (uuid)="setTenantUuid($event)"
+                [selected]="tenantSelected"
+                [disabled]="edit" [placeholder]="'Selectionez un client'">
+              </app-entity-finder>
+              <div class="invalid-feedback" *ngIf="submit && f.tenant.errors">
+                <div *ngIf="f.tenant.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="contract">Contrat <span class="asterix">*</span></label>
+              <select *ngIf="!edit" class="form-control"  [attr.disabled]="tenant && !edit ? null : 'true'"
+                id="contract" formControlName="contract" [ngClass]="{
+                'is-invalid': submit && f.contract.errors,
+                'is-valid': submit && f.contract.valid }" >
+                <option *ngIf="contracts.length > 0 && tenant" [ngValue]="null">Selectionnez un contrat</option>
+                <option *ngFor="let item of contracts"
+                  [ngValue]="item.uuid">{{item.libelle}}
+                </option>
+              </select>
+              <input *ngIf="edit" type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+               [value]="inventory?.contract?.libelle" readonly>
+              <div class="invalid-feedback" *ngIf="submit && f.contract.errors">
+                <div *ngIf="f.contract.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <div >
+      <span class="badge badge-info my-2 f-14 formBadge width">DETAILS SUR ETAT DES LIEUX</span>
+      <div class="row">
+           <div class="col-md-6">
+              <label for="model">Model etat des lieux </label>
+              <select *ngIf="!edit" (change)="setModel()" class="form-control" [attr.disabled]="tenant && !edit ? null : 'true'"
+                id="model" formControlName="model" [ngClass]="{
+                'is-invalid': submit && f.model.errors,
+                'is-valid': submit && f.model.valid }">
+                <option *ngIf="models.length > 0 " [ngValue]="null">Selectionnez un model</option>
+                <option *ngFor="let item of models"
+                  [ngValue]="item.uuid">{{item.type.libelle}}
+                </option>
+              </select>
+             
+            </div>
+
+      </div>
+      </div>
+      <span class="badge badge-info my-2 f-14 formBadge width">DETAILS SUR L'ENREGISTREMENT</span>
+      <div class="row">
+        <div class="col-md-3">
+          <label for="date">Date d'établissement <span class="asterix">*</span></label>
+          <input type="date" formControlName="date" class="form-control" id="date" [ngClass]="{
+            'is-invalid': submit && f.date.errors,
+            'is-valid': submit && f.date.valid}">
+          <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+            <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="type">Type d'etat <span class="asterix">*</span></label>
+          <select [attr.disabled]="edit ? 'true' : null" (change)="setModelUuid()" class="form-control" formControlName="type" id="type"
+            [ngClass]="{
+            'is-invalid': submit && f.type.errors,
+            'is-valid': submit && f.type.valid }">
+            <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+            <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+          </div>
+        </div>
+        <div class="col-md-6 form-group green-border-focus">
+          <label for="observation">Observations ou réserves</label>
+          <textarea class="form-control b-2" id="observation" formControlName="observation" rows="2"></textarea>
+        </div>
+      </div>
+ 
+
+      <!-- INVENTAIRE DES ELEMENTS PRESENTS -->
+      <div *ngIf="f.date.value && f.type.value && f.model.value">
+        <span class="badge badge-info my-2 f-14 formBadge width">INVENTAIRE DES ELEMENTS PRESENTS</span>
+        <div formArrayName="pieces">
+          <!-- LIBELLE DES CHAMPS PIECE -->
+          <div class="form-group" *ngFor="let item of pieces.controls; let i=index" [formGroupName]="i"
+            style="background: whitesmoke;padding:10px;margin:10px auto">
+            <div class="row mb-2">
+              <div class="col-md-12">
+                <div class="d-flex justify-content-between">
+                  <label for="libelle{{i}}">Pièce concerné <span class="asterix">*</span></label>
+                  <div>
+                    <button type="button" (click)="onDeletePiece(i)" class="btn btn-danger mb-2 mr-2" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i> Supprimer la pièce
+                    </button>
+                    <button type="button" (click)="onDupliquerPiece(item)" class="btn btn-primary mb-2 mr-2" ngbTooltip="Dupliquer">
+                      <i class="fas fa-copy"></i> Dupliquer la pièce
+                    </button>
+                    <button type="button" [disabled]="!item.valid" (click)="onSavePiece(i, item)" class="btn btn-success mb-2" ngbTooltip="Enregistrer">
+                      <i class="feather icon-save"></i> Enregistrer la pièce
+                    </button>
+                  </div>
+                </div>
+                <input class="form-control" type="text" formControlName="libelle" id="libelle{{i}}" placeholder="Pièce concerné">
+              </div>
+            </div>
+
+            <div formArrayName="options">
+              <!-- LIBELLE DES CHAMPS EQUIPEMENT -->
+              <div class="row">
+                <div class="col-md-3">
+                  <label>Equipement <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-2">
+                  <label>Etat <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-3">
+                  <label>Commentaire </label>
+                </div>
+                <div class="col-md-3">
+                  <label>Upload </label>
+                </div>
+              </div>
+              <div class="form-group" *ngFor="let props of item.get('options').controls; let j=index" [formGroupName]="j">
+                <div class="row">
+                  <div class="col-md-3">
+                    <app-entity-finder [class]="'Equipment'" [groups]="['equipment']" [required]="true" [isAutoCreate]="true"
+                      (uuid)="setEquipmentUuid($event, props)" [selected]="props.get('equipmentSelected')?.value">
+                    </app-entity-finder>
+                    <div class="invalid-feedback" *ngIf="submit && props.get('equipment').errors">
+                      <div *ngIf="props.get('equipment').errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <select class="form-control" id="etat{{i}}{{j}}" formControlName="etat" [ngClass]="{
+                      'is-invalid': submit && props.get('etat').errors,
+                      'is-valid': submit && props.get('etat').valid }">
+                      <option *ngFor="let row of etatRow" [ngValue]="row.value">{{row.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && props.get('etat').errors">
+                      <div *ngIf="props.get('etat').errors.required">{{required.novide}}</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <input type="text" formControlName="description" class="form-control" id="description{{i}}{{j}}" placeholder="Commentaire">
+                  </div>
+                  <div class="col-md-3">
+                    <input type="file" formControlName="file" multiple="true" (change)="uploadFiles(props, $event.target.files)" class="form-control" id="file{{i}}{{j}}" placeholder="File">
+                  </div>
+                  <div class="col-md-1">
+                    <button (click)="onDelete(i,j, props)" type="button" class="btn btn-danger">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-12 text-right">
+                <button class="btn btn-msg-send btn-primary ml-auto"
+                (click)="onAddEquipement(i, 3)" type="button"> Ajouter <i class="fa fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-12 text-right">
+              <button class="btn btn-msg-send btn-primary ml-auto"
+              (click)="onAddPiece()" type="button"> Ajouter une pièce <i class="fa fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PIECES JOINTES -->
+        <span class="badge badge-info my-2 f-14 formBadge width"> PIECES JOINTES </span>
+        <div class="form-group">
+          <div class="col-md">
+            <div class="row">
+              <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                <app-folder-uploader
+                  [maxSize]="8"
+                  (click)="showFile(inventory?.folder)"
+                  (filesd)="files($event)"
+                  (filesUploaded)="setParam('folderUuid',$event)"
+                  [type]="['image/png', 'image/x-png', 'image/pjpeg', 'image/jpg', 'image/jpeg','application/pdf']"
+                  [path]="'etat_lieux'"
+                  [etat]="edit ? 'edit': 'add'"
+                  [folder]="edit && inventory ? inventory?.folder : null">
+                </app-folder-uploader>
+              </div>
+
+              <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                <div class="row">
+                  <div class="col-sm-12 mb-2">
+                    <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                      <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                    </button>
+                  </div>
+                </div>
+                <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                </ngx-doc-viewer>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="onReset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid"  type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

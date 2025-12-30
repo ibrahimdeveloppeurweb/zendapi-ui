@@ -1,0 +1,147 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <span class="badge badge-warning mb-4 f-14 width">
+        DETAIL SUR LE MANDAT
+    </span>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>Reférence :</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.code}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>Syndic :</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.trustee?.nom}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>Honoraires :</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.honoraires | number}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>Périodicité :</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            <span *ngIf="mandat?.periodicite === 'MENSUEL'" class="badge badge-primary">Mensuel</span>
+                            <span *ngIf="mandat?.periodicite === 'TRIMESTRIEL'" class="badge badge-primary">Trimestriel</span>
+                            <span *ngIf="mandat?.periodicite === 'ANNUEL'" class="badge badge-primary">Annuel</span>
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>Date de signature :</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.date | date: "d MMMM y" : '' : 'fr-FR'}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>Année d'exercice :</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.anneeEx}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>Date de début :</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.dateD | date: "d MMMM y" : '' : 'fr-FR'}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>Date de fin :</span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.dateF | date: "d MMMM y" : '' : 'fr-FR'}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>
+                            Date de création : <br />
+                            Créer par
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}<br />
+                            {{mandat?.create}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span>
+                            Date de modification : <br />
+                            Modifier par
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        <span class="bold">
+                            {{mandat?.updatedAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}<br />
+                            {{mandat?.update}}
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button *ngIf="mandat?.etat == 'VALIDE'" (click)="printMandate(mandat)" class="btn btn-warning">
+        Imprimer <i class="feather icon-printer"></i>
+    </button>
+</div>

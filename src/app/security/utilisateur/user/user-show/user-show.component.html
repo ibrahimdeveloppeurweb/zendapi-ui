@@ -1,0 +1,148 @@
+<div class="user-profile  user-card mb-4  ">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img class="img-radius img-fluid wid-100 hei-100"
+                      [src]="user?.photoSrc ? publicUrl+'/'+user?.photoSrc : 'assets/images/avatar-default.png'" alt="">
+                    <img *ngIf="user?.sexe === 'Masculin'" class="img-radius img-fluid wid-100 hei-100"
+                      [src]="user?.photoSrc ? publicUrl +'/' + user.photoSrc : 'assets/images/avatar-default.png'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                    <img *ngIf="user?.sexe === 'Féminin'" class="img-radius img-fluid wid-100 hei-100"
+                      [src]="user?.photoSrc ? publicUrl +'/' + user.photoSrc : 'assets/images/avatar-mlle.jpeg'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'" />
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 class="mb-1">{{ user?.libelle }}</h5>
+          <p class="mb-2 text-muted text-uppercase">{{ user?.service?.nom }}</p>
+        </div>
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="clearfix"></div>
+              <a href="{{ user?.email }}" class="mb-1 text-muted d-flex align-items-end text-h-primary"><i
+                  class="feather icon-mail mr-2 f-18"></i>{{user?.email}}</a>
+              <div class="clearfix"></div>
+              <a href="javascript:" class="mb-1 text-muted d-flex align-items-end text-h-primary"><i
+                  class="feather icon-phone mr-2 f-18"></i>{{user?.telephone}}</a>
+            </div>
+          </div>
+          <!-- MENU TABS USER -->
+          <ul class="nav nav-tabs profile-tabs nav-fill inline" id="tabShowuser" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'USER'}" id="user-tab"
+              (click)="onChangeLoad('USER')" data-toggle="tab" href="javascript:" role="tab" aria-controls="user" aria-selected="true">
+                <i class="far fa-user"></i> Profil
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+    <button (click)="editPassword()" type="button" class="btn btn-warning m-1">
+      <i class="fa fa-lock"></i> Modifier Mon Mote de passe
+    </button>
+    <button (click)="img()" type="button" class="btn btn-success m-1">
+      <i class="fa fa-image"></i> Modifier Ma photo de profil
+    </button>
+  </div>
+</div>
+
+<!-- AFFICHAGE DU -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade" [ngClass]="{'show active': this.activeTab === 'USER'}" id="profil " role="tabpanel"
+        aria-labelledby="profil-tab">
+        <div class="card">
+          <div class="col-md-12 mt-2 text center">
+            <div class="d-flex">
+              <!-- COL GAUCHE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Nom : </span>
+                  <span class="title-result-show">{{ user?.nom }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Nom d'utilisateur : </span>
+                  <span class="title-result-show">{{ user?.username }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Telephone : </span>
+                  <span class="title-result-show">{{ user?.telephone }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Service : </span>
+                  <span class="title-result-show">{{ user?.service?.nom }}</span>
+                </p>
+              </div>
+              <!-- COL DROITE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Role : </span>
+                  <span class="title-result-show">{{ user?.role }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Crée le : </span>
+                  <span class="title-result-show">{{user?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                    }}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ user?.create }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Modifié le : </span>
+                  <span class="title-result-show">{{ user?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                    }}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{user?.update }}</span>
+                </p>
+              </div>
+            </div>
+            <div class="col-md" *ngIf="user">
+              <span class="badge badge-primary mb-4 f-14 width">FICHE DE DOSSIER</span>
+              <app-folder-uploader [folder]="user?.folder" [maxSize]="3" [etat]="'show'" [allowFileUpload]="false"
+                [allowDownload]="true">
+              </app-folder-uploader>
+            </div>
+            <div class="modal-footer">
+              <button *ngxPermissionsOnly="'USER:SHOW'" (click)="editUser(user)" type="button" class="btn btn-primary">
+                Modifier <i class="feather icon-edit-2"></i>
+              </button>
+              <ng-template *ngxPermissionsOnly="'USER:DELETE'">
+                <button *ngIf="profile === true" (click)="delete(user)" type="button" class="btn btn-danger text-left"
+                  data-dismiss="modal">
+                  Supprimer <i class="feather icon-trash"></i>
+                </button>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,137 @@
+.entity-finder {
+  position: relative;
+}
+
+.add {
+  background-color: rgb(0, 145, 255);
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}
+
+.results {
+  position: absolute;
+  top: 100%;
+  z-index: 2;
+  background: white;
+  box-shadow: 0 0 3px black;
+  min-width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-height: 150px;
+  border-radius: 5Px;
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.result {
+  padding: 5Px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.result:hover {
+  background: gainsboro;
+}
+
+.photo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border-radius: 100%;
+}
+
+.info {
+  font-size: .8em;
+  flex:1;
+}
+
+.title {
+  font-weight: bolder;
+  text-transform: uppercase;
+}
+
+.detail {
+  color: gray;
+  font-size: .8em;
+}
+
+.typing {
+  position: absolute;
+  right: 0;
+  display: flex;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.typing .point {
+  width: 5Px;
+  height: 5px;
+  background: rgba(53, 53, 53, 0.47);
+  margin: 0 2px;
+  border-radius: 100%;
+  animation: bounce 1s ease infinite;
+}
+
+.typing .two {
+  animation: bounce 1s ease .1s infinite;
+}
+
+.typing .three {
+  animation: bounce 1s ease .2s infinite;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(0) translateY(0)
+  }
+  20% {
+    transform: scale(1) translateY(-10px)
+  }
+  40% {
+    transform: scale(1) translateY(0)
+  }
+  80% {
+    transform: scale(1) translateY(10px)
+  }
+  100% {
+    transform: scale(0) translateY(0)
+  }
+}
+
+.searchin {
+  position: absolute;
+  right: 0;
+  display: flex;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px gray solid;
+  border-top: 2Px transparent solid;
+  animation: rotate .5s ease infinite;
+
+  border-radius: 100%;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg)
+  }
+  100% {
+    transform: rotate(360deg)
+  }
+}
+.selected{
+  white-space: nowrap;
+}
+.selected:hover{
+  background: transparent;
+}

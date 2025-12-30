@@ -1,0 +1,369 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="col-md-12">
+          <aw-wizard #wizard class="arc-wizard">
+            <aw-wizard-step stepTitle="Général">
+              <div class="row">
+                <span class="badge badge-primary my-2 f-14 width"> TYPE DE L'OFFRE </span>
+              </div>
+              <div class="form-group">
+                <div class="row mb-2">
+                  <div class="col-md-4">
+                    <div class="position-relative form-group">
+                      <label for="type">Type d'offre <span class="asterix">*</span></label>
+                      <select (change)="onChangeType()" class="form-control" id="type" formControlName="type"
+                          [ngClass]="{'is-invalid': submit && f.type.errors,'is-valid': submit && f.type.valid}">
+                          <option  [value]="null">Selectionner</option>
+                          <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                          <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+                  </div>
+ 
+                  <div *ngIf="f.type.value === 'MAISON'"class="col">
+                    <div class="position-relative form-group">
+                        <label for="promotion">Programme <span class="asterix">*</span></label>
+                        <app-entity-finder [class]="'Promotion'" [groups]="['promotion']" [required]="true"
+                          (uuid)="setPromotionUuid($event)" [selected]="promotionSelected" [disabled]="edit"
+                          [placeholder]="'Selectionez une Promotion'">
+                        </app-entity-finder>
+                    </div>
+                  </div>
+                  <div *ngIf="f.type.value === 'MAISON' && promotion && promotion.type === 'TYPE_B'"class="col">
+                    <div class="position-relative form-group">
+                      <label for="building">Bâtiment<span class="asterix">*</span></label>
+                      <select (change)="onChangeBuilding($event.target.value)" class="form-control" id="building" formControlName="building"
+                          [ngClass]="{'is-invalid': submit && f.building.errors,'is-valid': submit && f.building.valid}">
+                          <option  [value]="null">Selectionner</option>
+                          <option *ngFor="let item of buildings" [value]="item?.uuid">{{item?.libelle}}</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && f.building.errors">
+                          <div *ngIf="f.building.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="f.type.value === 'MAISON'" class="col">
+                    <div class="position-relative form-group">
+                      <label for="home">Maison<span class="asterix">*</span></label>
+                      <select class="form-control" id="home" formControlName="home"
+                          [ngClass]="{'is-invalid': submit && f.home.errors,'is-valid': submit && f.home.valid}">
+                          <option  [value]="null">Selectionner</option>
+                          <option *ngFor="let item of homes" [value]="item.uuid">{{item.searchableTitle}}</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && f.home.errors">
+                          <div *ngIf="f.home.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="f.type.value === 'LOT'"class="col">
+                    <div class="position-relative form-group">
+                        <label for="subdivision">Lotissement <span class="asterix">*</span></label>
+                        <app-entity-finder [class]="'Subdivision'" [groups]="['subdivision']" [required]="true"
+                          (uuid)="setSubdivisionUuid($event)" [selected]="subdivisionSelected" [disabled]="edit"
+                          [placeholder]="'Selectionez un Lotisement'">
+                        </app-entity-finder>
+                    </div>
+                  </div>
+                  <div *ngIf="f.type.value === 'LOT'" class="col">
+                    <div class="position-relative form-group">
+                      <label for="islet">Ilot<span class="asterix">*</span></label>
+                      <select (change)="onChangeIslet($event.target.value)" class="form-control" id="islet" formControlName="islet"
+                          [ngClass]="{'is-invalid': submit && f.building.errors,'is-valid': submit && f.islet.valid}">
+                          <option  [value]="null">Selectionner</option>
+                          <option *ngFor="let item of ilots" [value]="item.uuid">{{item.searchableTitle}}</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && f.islet.errors">
+                          <div *ngIf="f.islet.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="f.type.value === 'LOT'" class="col">
+                    <div class="position-relative form-group">
+                      <label for="lot">Lot<span class="asterix">*</span></label>
+                      <select (change)="onChangeLot($event.target.value)" class="form-control" id="lot" formControlName="lot"
+                          [ngClass]="{'is-invalid': submit && f.lot.errors,'is-valid': submit && f.lot.valid}">
+                          <option  [value]="null">Selectionner</option>
+                          <option *ngFor="let item of lots" [value]="item.uuid">{{item.searchableTitle}}</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && f.lot.errors">
+                          <div *ngIf="f.lot.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="f.type.value === 'HOUSE'" class="col">
+                    <div class="position-relative form-group">
+                      <label for="lot">Maison en Vente<span class="asterix">*</span></label>
+                      <select  class="form-control" id="house" formControlName="house"
+                          [ngClass]="{'is-invalid': submit && f.house.errors,'is-valid': submit && f.house.valid}">
+                          <option  [value]="null">Selectionner</option>
+                          <option *ngFor="let item of houses" [value]="item.uuid">{{item.searchableTitle}}</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                          <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="f.type.value === 'LIBRE'">
+                <div class="row">
+                  <span class="badge badge-primary my-2 f-14 width">
+                    DETAILS SUR L'OFFRE
+                  </span>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-3">
+                    <div class="position-relative form-group">
+                        <label for="surfaceB">Surface batie (m²) <span class="asterix">*</span></label>
+                        <input type="number" formControlName="surfaceB" class="form-control" id="surfaceB"
+                        [ngClass]="{'is-invalid': submit && f.surfaceB.errors,'is-valid': submit && f.surfaceB.valid}" placeholder="Surface batie (m²)">
+                        <div class="invalid-feedback" *ngIf="submit && f.surfaceB.errors">
+                            <div *ngIf="f.surfaceB.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="position-relative form-group">
+                        <label for="eau">Salle d'eau principal (m²) <span class="asterix">*</span></label>
+                        <input type="number" formControlName="eau" class="form-control" id="eau"
+                        [ngClass]="{'is-invalid': submit && f.eau.errors,'is-valid': submit && f.eau.valid}" placeholder="Salle d'eau principal (m²)">
+                        <div class="invalid-feedback" *ngIf="submit && f.eau.errors">
+                            <div *ngIf="f.eau.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="position-relative form-group">
+                        <label for="qte">Quantité <span class="asterix">*</span></label>
+                        <input type="number" formControlName="qte" class="form-control" id="qte"
+                        [ngClass]="{'is-invalid': submit && f.qte.errors,'is-valid': submit && f.qte.valid}" placeholder="Quantité">
+                        <div class="invalid-feedback" *ngIf="submit && f.qte.errors">
+                            <div *ngIf="f.qte.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="position-relative form-group">
+                        <label for="city">Définir comme une offre vedette ?</label>
+                        <select class="form-control" id="city" formControlName="offreVedette"
+                            [ngClass]="{'is-invalid': submit && f.city.errors,'is-valid': submit && f.city.valid}">
+                            <option *ngFor="let item of typeOffres" [ngValue]="item.value">{{item.label}}</option>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-12">
+                    <div class="position-relative form-group">
+                        <label for="description">Description </label>
+                        <textarea class="form-control" name="description" id="description" formControlName="description"></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <span class="badge badge-primary my-2 f-14 width">
+                    DETAILS SUR LA LOCALISATION
+                  </span>
+                </div>
+                <div class="form-group">
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <div class="position-relative form-group">
+                        <label for="lng">Longitude</label>
+                        <input type="text" class="form-control" formControlName="lng" id="lng" placeholder="Longitude">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="position-relative form-group">
+                        <label for="lat">Latitude</label>
+                        <input type="text" class="form-control" formControlName="lat" id="lat" placeholder="Latitude">
+                      </div>
+                    </div>
+                  </div>
+                  <agm-map [draggableCursor]="'default'" [mapTypeId]="'hybrid'" [latitude]="lat" [longitude]="lng" [zoom]="zoom"
+                  (mapClick)="updateGeo($event)" (zoomChange)="updateZoom($event)">
+                  <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+                  </agm-map>
+
+                </div>
+                <div class="row">
+                    <span class="badge badge-primary my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLÉMENTAIRES</span>
+                </div>
+                <div class="form-group">
+                    <div class="row mb-2">
+                      <div class="flex-grow-0" style="min-width: 30%">
+                        <app-image-uploader (filesd)="loadfile($event)" (imageUploaded)="setParam('photoUuid',$event)"
+                        [photo]="edit && offre ? offre.photo : null"></app-image-uploader>
+                    </div>
+                    <div class="col-md">
+                        <label>Pièces et documents à joindre</label>
+                        <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                        [path]="'offre'" [etat]="edit ? 'edit': 'add'" [folder]="edit && offre ? offre?.folder : null">
+                        </app-folder-uploader>
+                    </div>
+                    </div>
+                </div>
+              </div>
+
+              <div *ngIf="f.type.value" class="col-sm-12 centered-content">
+                <div class="btn-group mt-10">
+                  <button type="button" class="btn btn-primary" awNextStep>
+                    Suivant <i class="feather icon-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </aw-wizard-step>
+            <!-- STEP 2 DU FORMULAIRE -->
+            <aw-wizard-step stepTitle="Offre">
+              <div class="row">
+                <span class="badge badge-primary my-2 f-14 width"> Informations supplementaires</span>
+              </div>
+
+              <div class="row m-2 mb-2">
+                <span class="badge badge-secondary my-2 f-14 width"> Les informations relatives aux pièces du bien</span>
+                <form autocomplete="off" [formGroup]="pieceForm">
+                  <div class="form-group">
+                    <div class="row mb-2">
+                      <div class="col-md-3">
+                        <label for="chambre">Chambres </label>
+                        <input type="number" min="0" class="form-control" formControlName="chambre" id="chambre">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="douche">Douches </label>
+                        <input type="number" min="0" class="form-control" formControlName="douche" id="douche">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="salon">Salons </label>
+                        <input type="number" min="0" class="form-control" formControlName="salon" id="salon">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="garage">Garages </label>
+                        <input type="number" min="0" class="form-control" formControlName="garage" id="garage">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="cuisine">Cuisine </label>
+                        <input type="number" min="0" class="form-control" formControlName="cuisine" id="cuisine">
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="row m-2 mb-2" >
+                <span class="badge badge-secondary my-2 f-14 width"> Les informations relatives aux équipements du bien</span>
+                <div class="col-md-12">
+                  <form autocomplete="off" [formGroup]="equipementForm">
+                    <div class="form-group">
+                      <div class="row m-4">
+                        <div class="col-md-4">
+                          <p>
+                            <input class="form-check-input" id="wifi" type="checkbox" formControlName="wifi">
+                            <label for="wifi">WiFi </label>
+                          </p>
+                          <p>
+                            <input class="form-check-input" id="wifi" type="checkbox" formControlName="piscine">
+                            <label for="piscine">Piscine </label>
+                          </p>
+                          <p>
+                            <input class="form-check-input" id="securite" type="checkbox" formControlName="securite">
+                            <label for="securite">Gardien de Sécurité</label>
+                          </p>
+                        </div>
+                        <div class="col-md-4">
+                          <p>
+                            <input class="form-check-input" id="clim" type="checkbox" formControlName="clim">
+                            <label for="clim">Air Conditioner </label>
+                          </p>
+                          <p>
+                            <input class="form-check-input" id="urgence" type="checkbox" formControlName="urgence">
+                            <label for="urgence">Issue d'Urgence</label>
+                          </p>
+                          <p>
+                            <input class="form-check-input" id="incendie" type="checkbox" formControlName="incendie">
+                            <label for="incendie">Borne d'incendie </label>
+                          </p>
+                        </div>
+                        <div class="col-md-4">
+                          <p>
+                            <input class="form-check-input" id="parking" type="checkbox" formControlName="parking">
+                            <label for="parking">Parking </label>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="row m-4 mb-2">
+                <span class="badge badge-secondary my-2 f-14 width"> La gallerie du bien</span>
+                <div class="col-md-12">
+                  <app-folder-upload
+                    (filesUploaded)="uploadFile($event, 'GALLERY')"
+                    [maxSize]="3"
+                    [type]="['jpg', 'png', 'jpeg']"
+                    [etat]="'add'"
+                    [folder]="null" >
+                  </app-folder-upload>
+                </div>
+              </div>
+              <div class="row m-2 mb-2">
+                <span class="badge badge-secondary my-2 f-14 width"> Video de presentation</span>
+                <div class="col-md-12">
+                  <form autocomplete="off" [formGroup]="videoForm">
+                    <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                          <label for="link">Lien de la vidéo <span class="asterix">*</span></label>
+                          <input type="text" class="form-control" formControlName="link" id="link">
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="row m-4 mb-2">
+                <span class="badge badge-secondary my-2 f-14 width"> Plan</span>
+                <div class="col-md-12">
+                  <app-folder-upload-2
+                    (filesUploaded)="uploadFile($event, 'PLAN')"
+                    [maxSize]="3"
+                    [type]="['jpg', 'png', 'jpeg']"
+                    [etat]="'add'"
+                    [folder]="null" >
+                  </app-folder-upload-2>
+                </div>
+              </div>
+              <div class="col-sm-12 centered-content mt-3">
+                <div class="btn-group mt-10">
+                  <button type="button" awPreviousStep class="btn btn-warning">
+                    <i class="feather icon-arrow-left"></i> Précedent
+                  </button>
+                </div>
+              </div>
+            </aw-wizard-step>
+          </aw-wizard>
+        </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="onReset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+</form>

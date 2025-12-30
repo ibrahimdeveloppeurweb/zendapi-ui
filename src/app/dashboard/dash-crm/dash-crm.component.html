@@ -1,0 +1,335 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width"
+    [autre]="autre"
+    [autreTitle]="autreTitle"
+    [autreType]="autreType"
+    [autreClass]="autreClass"
+    [autreNamespace]="autreNamespace"
+    [autreGroups]="autreGroups"
+
+    [bien]="bien"
+    [bienTitle]="bienTitle"
+    [bienType]="bienType"
+    [bienClass]="bienClass"
+    [bienNamespace]="bienNamespace"
+    [bienGroups]="bienGroups"
+
+    [libelle]="libelle"
+    [libelleTitle]="libelleTitle"
+    [libelleType]="libelleType"
+    [libelleClass]="libelleClass"
+    [libelleNamespace]="libelleNamespace"
+    [libelleGroups]="libelleGroups"
+
+    [dateD]="true"
+    [dateF]="true"
+    [type]="true"
+    [typeRow]="typeRow"
+    [isPrint]="isPrint"
+    (typeEvent)="onChangeLoad($event)"
+    (filterEvent)="onFilter($event)"
+    (printerEvent)="onPrinter($event)">
+  </app-filter>
+
+  <!-- WIDGETS -->
+  <div class="col-md-12">
+    <div class="row">
+      <!-- PROSPECT -->
+      <div class="col-md-3" (click)="openModal('prospect')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="text-c-red"> {{ widget?.nbPr ? widget?.nbPr : 0 }} </h4>
+              <h6 class="text-muted m-b-0">Prospects</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-user f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="text-white m-b-0"><b>{{ widget?.nbPrAc ? widget?.nbPrAc : 0 }}</b> Achats</p>
+              <p class="text-white m-b-0"><b>{{ widget?.nbPrLo ? widget?.nbPrLo : 0 }}</b> Locations</p>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- PROPECT END -->
+      <!-- RESERVATION -->
+      <div class="col-md-3"(click)="openModal('RESERVATION')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="text-c-blue"> {{ widget?.nbRe ? widget?.nbRe : 0 }} </h4>
+              <h6 class="text-muted m-b-0">Pré-reservation</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-user f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="text-white m-b-0"><b>{{ widget?.nbReAc ? widget?.nbReAc : 0 }}</b> Achats</p>
+              <p class="text-white m-b-0"><b>{{ widget?.nbReLo ? widget?.nbReLo : 0 }}</b> Locations</p>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- RESERVATION END -->
+
+      <!-- FRAIS VENTE -->
+      <div class="col-md-3"(click)="openModal('frais')">
+        <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+          <h6 class="text-white">frais de pré-péservations vente</h6>
+          <h2 class="text-white">{{ widget?.nbInPrVen ? widget?.nbInPrVen : 0 }} </h2>
+          <i class="card-icon feather icon-credit-card"></i>
+          <h4 class="m-0 text-white">
+            <span class="mr-2"><b>{{ widget?.mtnInPrVen ? (widget?.mtnInPrVen |number) : 0}}</b></span>
+            <span class="text-ligth">{{global.device}}</span>
+          </h4>
+        </app-card>
+      </div>
+      <!-- FRAIS VENTE END -->
+
+      <!-- FRAIS LOCATION -->
+      <div class="col-md-3"(click)="openModal('preservation')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">frais de pré-péservations location</h6>
+          <h2 class="text-white">{{ widget?.mtnInPrLoc ? widget?.mtnInPrLoc  : 0 }} </h2>
+          <i class="card-icon feather icon-credit-card"></i>
+          <h4 class="m-0 text-white">
+            <span class="mr-2"><b>{{ widget?.mtnInPrLoc ? (widget?.mtnInPrLoc |number)  : 0}}</b></span>
+            <span class="text-ligth">{{global.device}}</span>
+          </h4>
+        </app-card>
+      </div>
+      <!-- FRAIS LOCATION END -->
+    </div>
+  </div>
+
+  <!-- DIAGRAMME DES ACTIONS COMMERCIALES-->
+  <div class="col-md-12 mb-4">
+    <lib-highcharts-angular [Highcharts]="Highcharts" [options]="barOptions" style="width: 100%; height: 400px; display: block;"></lib-highcharts-angular>
+  </div>
+
+  <!--SYNTHESES DES ACTIONS COMMERCIALES PAR PROGRAMME-->
+  <!--<div class="col-xl-12 col-md-12">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <h5>SYNTHESES DES ACTIONS COMMERCIALES PAR PROGRAMME</h5>
+        <div class="table-responsive mb-0">
+          <table class="table table-sm table-bordered nowrap table-hover mb-0" *ngFor="let item of table1">
+            <thead>
+              <tr class="bg-light">
+                <th colspan="8" class="text-center">{{ item?.programe }}</th>
+              </tr>
+              <tr>
+                <th >Commerciale</th>
+                <th >PROSPECT ENREGISTÉS</th>
+                <th >PROSPECT ARCHIVÉS</th>
+                <th >PROSPECT CONCLUS</th>
+                <th >APPEL TELEPHONIQUE </th>
+                <th >MAIL</th>
+                <th >VISITE BUREAU</th>
+                <th >VISITE CHANTIER</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <ng-container *ngIf="item?.array && item?.array.length > 0">
+                <tr *ngFor="let key of item?.array">
+                  <td >{{ key?.comm }}</td>
+                  <td >{{ key?.prospect }} </td>
+                  <td >{{ key?.archives }}</td>
+                  <td >{{ key?.conclus }}</td>
+                  <td >{{ key?.appel }}</td>
+                  <td >{{ key?.mail }}</td>
+                  <td >{{ key?.bureau }}</td>
+                  <td >{{ key?.chantier }}</td>
+                </tr>
+              </ng-container>
+              <ng-container *ngIf="item?.array && item?.array.length == 0">
+                <tr>
+                  <td colspan="8" class="text-center" > Aucune action trouvée </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </app-card>
+  </div>-->
+  <!-- SYNTHESES DES ACTIONS COMMERCIALES PAR PROGRAMME END -->
+
+  <!--TABLEAU RECAPITULATIF -DES ACTIONS COMMERCIALES -->
+  <div class="col-xl-6 col-md-6" *ngIf="table2">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <h5>TABLEAU RECAPITULATIF -DES ACTIONS COMMERCIALES </h5>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered nowrap table-hover">
+            <tbody>
+              <tr>
+                <td >Contacts</td>
+                <td >{{table2 ? table2.contacts : 0}} </td>
+              </tr>
+              <tr>
+                <td >Visites Bureau</td>
+                <td >{{table2 ? table2.bureau : 0}} </td>
+              </tr>
+              <tr>
+                <td >Visites Chantier</td>
+                <td >{{table2 ? table2.chantier : 0}} </td>
+              </tr>
+              <tr>
+                <td >Contrats Envoyés</td>
+                <td >{{table2 ? table2.contrats : 0}} </td>
+              </tr>
+              <tr>
+                <td >Annulations</td>
+                <td >{{table2 ? table2.annulations : 0}} </td>
+              </tr>
+              <tr>
+                <td >Encaissements ZS</td>
+                <td >{{table2 ? table2.contacts : 0}} XOF</td>
+              </tr>
+              <tr>
+                <td >Encaissements SPDI</td>
+                <td >{{table2 ? table2.contacts : 0}} XOF</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <!-- TABLEAU RECAPITULATIF -DES ACTIONS COMMERCIALES -->
+
+  <!-- DIAGRAMME CIRCULAIRE -->
+  <div class="col-md-6">
+    <app-card cardTitle="DIAGRAMME DES ACTIONS COMMERCIALES" [options]="false">
+      <div #doughnutChart>
+        <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData" style="height: 290px;"></chart>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- DIAGRAMME DES ENCAISSEMENTS-->
+  <div class="col-md-12 mb-4">
+    <lib-highcharts-angular [Highcharts]="Highcharts" [options]="barOptions2" style="width: 100%; height: 400px; display: block;"></lib-highcharts-angular>
+  </div>
+
+  <!--SYNTHESES DES VENTE PAR PROGRAMME -->
+  <!--<div class="col-xl-12 col-md-12">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <h5>SYNTHESES DES VENTE PAR PROGRAMME et TYPE DE MAISON</h5>
+        <div class="table-responsive">
+          <table class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th colspan="9" class="text-center">PROGRAMME TOGBIN DAHO</th>
+              </tr>
+              <tr class="bg-success">
+                <th >Comerciales</th>
+                <th >F3</th>
+                <th >F4</th>
+                <th >F8</th>
+                <th >F0</th>
+                <th >V</th>
+                <th >Duplex</th>
+                <th >TOTAL</th>
+                <th >PRC (%)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td >Maman dibole</td>
+                <td >100 </td>
+                <td >12</td>
+                <td >345</td>
+                <td >90</td>
+                <td >7</td>
+                <td >6</td>
+                <td >7</td>
+                <td >6</td>
+              </tr>
+              <tr>
+                <td >Maman dibole</td>
+                <td >100 </td>
+                <td >12</td>
+                <td >345</td>
+                <td >90</td>
+                <td >7</td>
+                <td >6</td>
+                <td >7</td>
+                <td >6</td>
+              </tr>
+              <tr>
+                <td >Maman dibole</td>
+                <td >100 </td>
+                <td >12</td>
+                <td >345</td>
+                <td >90</td>
+                <td >7</td>
+                <td >6</td>
+                <td >7</td>
+                <td >6</td>
+              </tr>
+              <tr>
+                <td >Maman dibole</td>
+                <td >100 </td>
+                <td >12</td>
+                <td >345</td>
+                <td >90</td>
+                <td >7</td>
+                <td >6</td>
+                <td >7</td>
+                <td >6</td>
+              </tr>
+              <tr>
+                <td >Maman dibole</td>
+                <td >100 </td>
+                <td >12</td>
+                <td >345</td>
+                <td >90</td>
+                <td >7</td>
+                <td >6</td>
+                <td >7</td>
+                <td >6</td>
+              </tr>
+              <tr>
+                <td >Maman dibole</td>
+                <td >100 </td>
+                <td >12</td>
+                <td >345</td>
+                <td >90</td>
+                <td >7</td>
+                <td >6</td>
+                <td >7</td>
+                <td >6</td>
+              </tr>
+              <tr>
+                <td >Maman dibole</td>
+                <td >100 </td>
+                <td >12</td>
+                <td >345</td>
+                <td >90</td>
+                <td >7</td>
+                <td >6</td>
+                <td >7</td>
+                <td >6</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </app-card>
+  </div>-->
+  <!-- SYNTHESES DES VENTE PAR PROGRAMME -->
+
+
+
+</div>

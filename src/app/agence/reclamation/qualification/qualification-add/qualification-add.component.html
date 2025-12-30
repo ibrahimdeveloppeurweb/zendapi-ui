@@ -1,0 +1,169 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <div class="col-md-12">
+        <!-- DETAILS SUR LE TICKET -->
+        <div class="row">
+          <span class="badge badge-primary my-2 f-14 width">
+            DETAILS SUR LA QUALIFICATION 
+          </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <label for="type">Le plaignant est-il ? <span class="asterix">*</span></label>
+              <select formControlName="type" class="form-control" id="type" (change)="onTypeChange($event.target.value)"
+                [ngClass]="{
+                'is-invalid': submit && f.type.errors,
+                'is-valid': submit && f.type .valid
+              }">
+                <option *ngFor="let item of typesRow" [value]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <ng-container *ngIf="f.type.value !== 'AUTRES'">
+                <label>{{selectedType.label}} <span class="asterix">*</span></label>
+                <app-entity-finder [class]="selectedType.className" [groups]="[selectedType.groupName]" [required]="true"
+                  [selected]="emitterSelected" [disabled]="this.edit" (uuid)="setEmitterUuid($event)">
+                </app-entity-finder>
+              </ng-container>
+              <ng-container *ngIf="f.type.value === 'AUTRES'">
+                <label>Nom du plaignant <span class="asterix">*</span></label>
+                <input formControlName="emitter" class="form-control" id="emitter" type="text" [ngClass]="{
+                  'is-invalid': submit && f.emitter.errors,
+                  'is-valid': submit && f.emitter.valid
+                }">
+                <div class="invalid-feedback" *ngIf="submit && f.emitter.errors">
+                  <div *ngIf="f.emitter.errors.required">{{required.novide}}</div>
+                </div>
+              </ng-container>
+            </div>
+            <div class="col-md-4" *ngIf="f.type.value == 'PROPRIETAIRE' || f.type.value == 'LOCATAIRE'">
+              <label for="concerne">Le ticket concerne-t-il ? </label>
+              <select formControlName="concerne" class="form-control" id="concerne"
+                [ngClass]="{
+                'is-invalid': submit && f.concerne.errors,
+                'is-valid': submit && f.concerne .valid
+              }">
+                <option *ngFor="let item of concerneRow" [value]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.concerne.errors">
+                <div *ngIf="f.concerne.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4" *ngIf="f.concerne.value == 'BIEN' || f.concerne.value == 'RENTAL' || f.concerne.value == 'RESSOURCE'">
+              <label for="house">Bien concerné <span class="asterix">*</span></label>
+              <app-entity-finder [class]="'House'" [groups]="['house']" [required]="true"
+                [selected]="houseSelected" [disabled]="this.edit" (uuid)="setHouseUuid($event)">
+              </app-entity-finder>
+            </div>
+            <div class="col-md-4" *ngIf="f.concerne.value == 'RENTAL' || f.concerne.value == 'RESSOURCE'">
+              <label for="rental">Locative <span class="asterix">*</span></label>
+              <select (ngModelChange)="onChangeRental($event)" class="form-control" id="rental"
+                formControlName="rental" [ngClass]="{
+                  'is-invalid': submit && f.rental.errors,
+                  'is-valid': submit && f.rental.valid
+                }">
+                <option [value]="null" selected>Selectionnez la locative</option>
+                <option *ngFor="let item of rentals" [value]="item.uuid">{{item.porte}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.rental.errors">
+                <div *ngIf="f.rental.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-4" *ngIf="f.concerne.value == 'RESSOURCE'">
+              <label for="ressource">Ressource <span class="asterix">*</span></label>
+              <select class="form-control" id="ressource"
+                formControlName="ressource" [ngClass]="{
+                  'is-invalid': submit && f.ressource.errors,
+                  'is-valid': submit && f.ressource.valid
+                }">
+                <option [value]="null" selected>Selectionnez la ressource</option>
+                <option *ngFor="let item of ressources" [value]="item.uuid">{{item.libelle}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.ressource.errors">
+                <div *ngIf="f.ressource.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge badge-primary my-2 f-14 width">
+            DETAILS SUR LA QUALIFICATION 
+          </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <label>Catégorie <span class="asterix">*</span></label>
+              <app-entity-finder [class]="'Category'" [groups]="['category']" [required]="true"  [isAutoCreate]="true"
+                [selected]="categorySelected" [disabled]="this.edit" (uuid)="setCategoryUuid($event)">
+              </app-entity-finder>
+            </div>
+      
+            <div class="col-md-3">
+              <label for="urgence">Niveau d'urgence <span class="asterix">*</span></label>
+              <select formControlName="urgence" class="form-control" id="urgence" [ngClass]="{
+                'is-invalid': submit && f.urgence.errors,
+                'is-valid': submit && f.urgence.valid
+              }">
+                <option *ngFor="let item of urgenceRow" [value]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.urgence.errors">
+                <div *ngIf="f.urgence.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label>Service concerné <span class="asterix">*</span></label>
+              <app-entity-finder [class]="'Service'" [namespace]="'ADMIN'" [groups]="['service']" [required]="true"
+                [selected]="serviceSelected" [disabled]="this.edit" (uuid)="setServiceUuid($event)">
+              </app-entity-finder>
+            </div>
+            <div class="col-md-3">
+              <label for="user">Assigner a un utilisateur <span class="asterix">*</span></label>
+              <select formControlName="user" class="form-control" id="user" type=text [ngClass]="{
+                'is-invalid': submit && f.user.errors,
+                'is-valid': submit && f.user .valid
+              }">
+                <option *ngFor="let item of users" [value]="item.id">{{item.nom}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.user.errors">
+                <div *ngIf="f.user.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="date">Date<span class="asterix">*</span></label>
+              <input formControlName="date" class="form-control" id="date" type="date" [ngClass]="{
+                'is-invalid': submit && f.date.errors,
+                'is-valid': submit && f.date.valid
+              }">
+              <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+  </form>
+  

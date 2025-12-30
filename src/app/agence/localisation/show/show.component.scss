@@ -1,0 +1,18 @@
+
+#map{
+    height: 100vh;
+    position: relative;
+}
+#map > div {
+    position: absolute;
+    top: 50%; /* ajustez la position verticale */
+    left: 15%; /* ajustez la position horizontale */
+    transform: translate(-50%, -50%); /* centre la div */
+    width: 25%; /* ou une largeur spécifique */
+    height: 95vh; /* ou une hauteur spécifique */
+    // background-color: #f1f1f1; /* couleur de fond */
+    /* autres styles personnalisés */
+}
+.mapboxgl-ctrl-attrib {
+    display: none;
+}

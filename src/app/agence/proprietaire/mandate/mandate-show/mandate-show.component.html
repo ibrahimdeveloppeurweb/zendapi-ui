@@ -1,0 +1,298 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <div class="d-flex" *ngIf="mandate?.type === 'LOCATION'">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Reférence : </span>
+          <span class="title-result-show">{{ mandate?.code }}</span>
+        </p>
+        <p>
+          <span class="title-show">Type de mandat : </span>
+          <span class="title-result-show">{{ mandate?.type }}</span>
+        </p>
+        <p>
+          <span class="title-show">Propriétaire : </span>
+          <span class="title-result-show">{{ mandate?.house?.owner?.nom }}</span>
+        </p>
+        <p>
+          <span class="title-show">Bien concerné : </span>
+          <span class="title-result-show">{{ mandate?.house.nom }}</span>
+        </p>
+        <p>
+          <span class="title-show">Type de bien : </span>
+          <span class="title-result-show">{{ mandate?.house?.type }}</span>
+        </p>
+        <p>
+          <span class="title-show">Etat du mandat: </span>
+          <span class="title-result-show">
+            <span class="badge" [ngClass]="{
+            'badge-success' : mandate?.etat === 'VALIDE',
+              'badge-danger' : mandate?.etat === 'RESILE',
+              'badge-warning' : mandate?.etat === 'INVALIDE'
+              }">
+              {{ validation(mandate.etat) }}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Mandat physique : </span>
+          <span class="title-result-show">
+            <span class="ml-1 badge badge-light-{{mandate?.signed !== null ? 'success' : 'danger'}}">
+             {{mandate?.signed !== null ? 'Mandat signé' : 'Mandat non signé'}}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Commission :</span>
+          <span class="title-result-show" *ngIf="mandate?.facturation === 'PRC'">{{ mandate?.commission }} %</span>
+          <span class="title-result-show" *ngIf="mandate?.facturation === 'MTN'">{{ mandate?.commission|number }} {{global.device}}</span>
+          <span class="title-result-show" *ngIf="mandate?.facturation === 'GRT_LOYER'">{{ mandate?.commission|number }} {{global.device}}</span>
+        </p>
+        <p *ngIf="mandate?.facturation === 'GRT_LOYER'">
+          <span class="title-show">Montant Garantie :</span>
+          <span class="title-result-show">{{ mandate?.montantGarantie|number }} {{global.device}}</span>
+        </p>
+        <p *ngIf="mandate?.facturation === 'GRT_LOYER'">
+          <span class="title-show">Part Charge :</span>
+          <span class="title-result-show">{{ (mandate?.partCharge || 0)|number }} {{global.device}}</span>
+        </p>
+        <p >
+          <span class="title-show">La commission est-elle soumise à la TVA ? : </span>
+          <span class="title-result-show">{{ mandate?.taxeCommission }}</span>
+        </p>
+        <p >
+          <span class="title-show">TVA sur commission à la charge de ? : </span>
+          <span class="title-result-show">{{ mandate?.tvaCommissionCharge }}</span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p >
+          <span class="title-show">Impôt foncier à la charge : </span>
+          <span class="title-result-show">{{ mandate?.taxe }}</span>
+        </p>
+        <p >
+          <span class="title-show">Les charges sont reversées à : </span>
+          <span class="title-result-show">{{ mandate?.charge }}</span>
+        </p>
+        <p *ngIf="mandate?.taxe == 'AGENCE'">
+          <span class="title-show">Périodicité de facturation de l impôt foncier : </span>
+          <span class="title-result-show">{{ mandate?.periodicite }}</span>
+        </p>
+        <p >
+          <span class="title-show">Type Facturation : </span>
+          <span class="title-result-show">{{ mandate?.facturation }}</span>
+        </p>
+        <p *ngIf="mandate?.facturation == 'MTN'">
+          <span class="title-show">Date prélèvement commission : </span>
+          <span class="title-result-show">{{ mandate?.dateP|date: "d MMMM y" : '' : 'fr-FR'  }}</span>
+        </p>
+        <p>
+          <span class="title-show">Date de signature : </span>
+          <span class="title-result-show">{{ mandate?.date|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+        </p>
+        <p>
+          <span class="title-show">Date debut : </span>
+          <span class="title-result-show">{{ mandate?.dateD|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+        </p>
+        <p>
+          <span class="title-show">Date fin : </span>
+          <span class="title-result-show">{{ mandate?.dateF|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+        </p>
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{ mandate?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mandate?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ mandate?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mandate?.update }}</span>
+        </p>
+        <p>
+          <span class="title-show">Validé le : </span>
+          <span class="title-result-show">{{ mandate?.validateAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mandate?.validate }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="d-flex" *ngIf="mandate?.type === 'VENTE'">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Reférence : </span>
+          <span class="title-result-show">{{ mandate?.code }}</span>
+        </p>
+        <p>
+          <span class="title-show">Type de mandat : </span>
+          <span class="title-result-show">{{ mandate?.type }}</span>
+        </p>
+        <p>
+          <span class="title-show">Propriétaire : </span>
+          <span class="title-result-show">{{ mandate?.house?.owner?.nom }}</span>
+        </p>
+        <p>
+          <span class="title-show">Bien concerné : </span>
+          <span class="title-result-show">{{ mandate?.house.nom }}</span>
+        </p>
+        <p>
+          <span class="title-show">Type de bien : </span>
+          <span class="title-result-show">{{ mandate?.house?.type }}</span>
+        </p>
+        <p>
+          <span class="title-show">Etat du mandat: </span>
+          <span class="title-result-show">
+            <span class="badge" [ngClass]="{
+            'badge-success' : mandate?.etat === 'VALIDE',
+              'badge-danger' : mandate?.etat === 'RESILE',
+              'badge-warning' : mandate?.etat === 'INVALIDE'
+              }">
+              {{ validation(mandate.etat) }}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Mandat physique : </span>
+          <span class="title-result-show">
+            <span class="ml-1 badge badge-light-{{mandate?.signed !== null ? 'success' : 'danger'}}">
+             {{mandate?.signed !== null ? 'Mandat signé' : 'Mandat non signé'}}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Commission :</span>
+          <span class="title-result-show" *ngIf="mandate?.facturation === 'PRC'">{{ mandate?.commission }} %</span>
+          <span class="title-result-show" *ngIf="mandate?.facturation === 'MTN'">{{ mandate?.commission|number }} {{global.device}}</span>
+        </p>
+        <p *ngIf="mandate?.type === 'LOCATION'">
+          <span class="title-show">Déduire commission : </span>
+          <span class="title-result-show">{{ mandate?.taxeCommission }}</span>
+        </p>
+        <p>
+          <span class="title-show">Type d'opportunité : </span>
+          <span class="title-result-show">{{ mandate?.opportunite }}</span>
+        </p>
+        <p *ngIf="mandate?.type === 'VENTE'">
+          <span class="title-show">Montant du bien : </span>
+          <span class="title-result-show">{{ mandate?.valeur|number }} {{global.device}}</span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p *ngIf="mandate?.type === 'LOCATION'">
+          <span class="title-show">Impôt au charge : </span>
+          <span class="title-result-show">{{ mandate?.taxe }}</span>
+        </p>
+        <p *ngIf="mandate?.type === 'VENTE'">
+          <span class="title-show">Comment déduire la commission ? </span>
+          <span class="title-result-show">{{ mandate?.verseCom }}</span>
+        </p>
+        <p>
+          <span class="title-show">Intermediaire : </span>
+          <span class="title-result-show">{{ mandate?.intermediaire }}</span>
+        </p>
+        <p>
+          <span class="title-show">Contact de l'intermediaire : </span>
+          <span class="title-result-show">{{ mandate?.contactInter }}</span>
+        </p>
+        <p>
+          <span class="title-show">Date de signature : </span>
+          <span class="title-result-show">{{ mandate?.date|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+        </p>
+        <p>
+          <span class="title-show">Date debut : </span>
+          <span class="title-result-show">{{ mandate?.dateD|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+        </p>
+        <p>
+          <span class="title-show">Date fin : </span>
+          <span class="title-result-show">{{ mandate?.dateF|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+        </p>
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{ mandate?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mandate?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ mandate?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mandate?.update }}</span>
+        </p>
+        <p>
+          <span class="title-show">Validé le : </span>
+          <span class="title-result-show">{{ mandate?.validateAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mandate?.validate }}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="row mb-2 mt-2" *ngIf="mandate?.type === 'VENTE'">
+      <div class="col-md">
+        <span class="badge badge-info mb-2 f-14 width">FICHE DE DOSSIER</span>
+        <div class="row">
+          <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+            <app-folder-uploader (click)="showFile(mandate?.signed)"
+              [maxSize]="3"
+              [folder]="mandate?.signed"
+              [etat]="'show'"
+              [allowFileUpload]="false" [allowDownload]="true">
+            </app-folder-uploader>
+          </div>
+          <div [ngClass]="file ? 'col-md-8' : ''"  *ngIf="file">
+            <div class="row">
+              <div class="col-sm-12 mb-2">
+                <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                  <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                </button>
+              </div>
+            </div>
+            <ngx-doc-viewer
+              [url]="file"
+              viewer="url" style="width:100%;height: 64vh;">
+            </ngx-doc-viewer>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <span class="badge badge-warning my-2 f-14 width"> FICHE D'AMORTISSEMENT DE L'IMPÔT FONCIER DURANT LA PERIODE DU MANDAT </span>
+  </div>
+  <table class="table border" *ngIf="mandate?.type === 'VENTE'">
+    <tbody>
+      <tr>
+        <td colspan="4" class="text-right font-weight-bold font-size-default">
+          {{ mandate?.montantCom | number }} {{global.device}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template *ngxPermissionsOnly="'MANDATE:EDIT'">
+    <button *ngIf="mandate?.etat === 'INVALIDE'" (click)="editMandale(mandate)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <button *ngxPermissionsOnly="'MANDATE:PRINTER:SHOW'" (click)="printerMandate(mandate)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>
+

@@ -1,0 +1,35 @@
+import { House } from '@model/house';
+export interface Mandate {
+  uuid?: any;
+  id?: any;
+  code?: string;
+  house?: House;
+  type?: string;
+  etat?: string;
+  date?: string;
+  dateD?: string;
+  dateF?: string;
+  isSigned?: boolean;
+  verseCom?: string;
+  opportunite?: string;
+  facturation?: string;
+  periodicite?: string;
+  valeur?: number;
+  commission?: number;
+  montantCom?: number;
+  intermediaire?: string;
+  contactInter?: string;
+  libelle?: string;
+  taxe?: string;
+  signed?: any;
+  folder?: any;
+  taxeCommission?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  validateAt?: string;
+  create?: string;
+  update?: string;
+  validate?: string;
+  montantGarantie?: number;
+  partCharge?: number;
+}

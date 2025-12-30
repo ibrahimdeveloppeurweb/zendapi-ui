@@ -1,0 +1,181 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width"
+    [dateD]="true"
+    [dateF]="true"
+    [name]="true"
+    [nameTitle]="'Lotissement'"
+    [type]="true"
+    [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+  </app-filter>
+
+  <!-- ANALYTICS -->
+  <div class="col-xl-6 col-sm-12">
+    <div class="row">
+      <!-- PROMOTION  -->
+      <div class="col-md-6" (click)="openModal('lotissement')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-blue">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ widget?.lotissement?.nbr > 1 ? 'Lotissements' : 'Lotissement' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.lotissement?.nbr }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ widget?.lotissement?.mtn |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- PROMOTION END -->
+      <!-- MAISON OCCUPE -->
+      <div class="col-md-6"(click)="openModal('utiliser')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ widget?.lotV?.nbr > 1 ? 'Lots occupés' : 'Lot occupé' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-4">
+                <p class="text-white m-b-0">{{ widget?.lotV?.nbr }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ widget?.lotV?.mtn |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON OCCUPE END -->
+      <!-- MAISON RESERVER -->
+      <div class="col-md-6"(click)="openModal('reservation')">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ widget?.lotR?.nbr > 1 ? 'Lots reservés' : 'Lot reservé' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-sm-4">
+                <p class="text-white m-b-0">{{ widget?.lotR?.nbr }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ widget?.lotR?.mtn |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON OCCUPE END -->
+      <!-- MAISON DISPONIBLE -->
+      <div class="col-md-6"(click)="openModal('lot')" >
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h6 class="text-muted m-b-0">{{ widget?.lotD?.nbr > 1 ? 'Lots disponibles' : 'Lot disponible' }}</h6>
+            </div>
+            <div class="col-4 text-right">
+              <i class="feather icon-home f-28"></i>
+            </div>
+          </div>
+          <div class="app-card-footer">
+            <div class="row align-items-center">
+              <div class="col-sm-4">
+                <p class="text-white m-b-0">{{ widget?.lotD?.nbr }}</p>
+              </div>
+              <div class="col-8 text-right">
+                <p class="text-white m-b-0">{{ widget?.lotD?.mtn |number}} {{global.device}}</p>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <!-- MAISON DISPONIBLE END -->
+    </div>
+  </div>
+
+  <!-- DIAGRAMME CIRCULAIRE -->
+  <div class="col-xl-6 col-sm-12">
+    <app-card cardTitle="DIAGRAMME CIRCULAIRE D'OCCUPATION DES LOTS" [options]="false">
+      <div #doughnutChart>
+        <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData" style="height: 290px;"></chart>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- GRAPHE -->
+  <div class="col-xl-12 col-sm-12 mb-4">
+    <lib-highcharts-angular [Highcharts]="Highcharts" [options]="barBasicChartOptions"
+      style="width: 100%; height: 450px; display: block;"></lib-highcharts-angular>
+  </div>
+  <!-- GRAPHE END -->
+
+  <!--DIAGRAMME DES ECHEANCIERS -->
+  <div class="col-xl-12">
+    <app-card cardTitle="DIAGRAMME D'EVOLUTION DES ECHEANCIERS" [options]="false">
+      <lib-highcharts-angular [Highcharts]="Highcharts" [options]="lineBasicChartOptions" style="width: 100%; height: 350px; display: block;"></lib-highcharts-angular>
+    </app-card>
+  </div>
+  <!-- DIAGRAMME DES ECHEANCIERS END -->
+
+  <!--TABLEAU DES ECHEANCIERS -->
+  <div class="col-xl-12 col-md-12">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-primary my-2 f-14 formBadge width"> TABLEAU DES ECHEANCIERS</span>
+      </div>
+      <div class="col-md-12">
+        <div *ngIf="etat && echeanciers?.length > 0" class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Periode</th>
+                <th>Echéancier (prévisionnel)</th>
+                <th>Echéancier reglé</th>
+                <th>Pourcentage (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let echeancier of echeanciers">
+                <td>
+                  <p class="m-0 d-inline-block align-middle font-16">Echéancier de {{ echeancier?.periode}}</p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16">{{ echeancier?.prev |number}} {{global.device}}</p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16"> {{ echeancier?.reg |number}} {{global.device}}</p>
+                </td>
+                <td class="align-middle">
+                  <p class="m-0 d-inline-block align-middle font-16"> {{ echeancier?.prc}} %</p>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr></tr>
+            </tfoot>
+          </table>
+        </div>
+        <app-no-data class="width" [title]="'Aucun echéancier trouvée'" *ngIf="echeanciers && echeanciers.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div>
+  <!-- TABLEAU DES ECHEANCIERS END -->
+</div>

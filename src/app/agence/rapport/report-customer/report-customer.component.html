@@ -1,0 +1,21 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-report class="width"
+    [name]="true"
+    [nameTitle]="nameTitle"
+    [autre]="autreEtat"
+    [autreTitle]="autreTitle"
+    [categorie]="categorieEtat"
+    [categorieRow]="categorieRow"
+    [categorieTitle]="categorieTitle"
+    [dateD]="true"
+    [dateF]="true"
+    [create]="true"
+    [ordre]="true"
+    [count]="true"
+    [type]="true"
+    [typeRow]="typeRow"
+    (typeEvent)="onChangeLoad($event)"
+    (filterEvent)="onFilter($event)">
+  </app-report>
+</div>

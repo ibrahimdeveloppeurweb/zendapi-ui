@@ -1,0 +1,212 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* SCSS */
+@import "scss/style";
+// regular style toast
+@import '~ngx-toastr/toastr';
+
+// if you'd like to use it without importing all of bootstrap it requires
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import '~ngx-toastr/toastr-bs4-alert';
+@import '~intro.js/introjs.css';
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
+.image-taille-fixe {
+  width: 534px; /* Largeur souhaitée */
+  height: 350px; /* Hauteur souhaitée */
+  object-fit: cover; /* Assure que l'image couvre la zone définie sans perdre ses proportions */
+}
+
+.form-control {
+  padding: 5px !important;
+}
+
+.first {
+  display: inline-flex;
+}
+.second {
+  display: flex; align-items:center
+}
+// CSS lié au onboarding
+.customTooltip * {
+  color: #4a4a4a;
+  font-size: 15px
+}
+
+.customTooltip .introjs-tooltip-title {
+  color: #4680ff;
+}
+
+.sz-10 {
+  font-size: 10px;
+}
+
+.size-img-house{
+  height: 270px;
+  width: 377px;
+}
+
+.text-right {
+  text-align: right;
+
+}
+
+.inline li{
+  display: inline;
+  margin-left: -10px;
+}
+.font-size-show-default {
+  font-size: 2.5em;
+}
+
+.font-size-show-2sz {
+  font-size: 2em;
+}
+
+td p {
+  line-height: 1;
+}
+
+.font-size-default {
+  font-size: 3em;
+}
+
+.font-size-secondary {
+  font-size: 2em;
+}
+.font-size-table{
+
+  font-size: 1.3em;
+}
+
+.flex-fill p {
+  line-height: 1;
+}
+
+.title-show {
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #030608;
+  font-size: 11px;
+}
+
+.title-result-show {
+  font-size: 11px !important;
+  font-weight: lighter;
+  text-transform: uppercase;
+  font-style: italic;
+  color: #6c757d;
+}
+
+.title-result-show .badge::first-letter {
+  font-size: 11px !important;
+  text-transform: uppercase;
+}
+
+.width {
+  width: 100%;
+}
+
+.formBadgeLarge {
+  width: 100%;
+  font-size: xx-large;
+  font-weight: bold;
+}
+.asterix {
+  color: red;
+}
+
+.formatLarge {
+  font-size: xx-large;
+  font-weight: bold;
+  padding-left: 20px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.formTable {
+  margin: auto;
+  td{
+    text-align :center;
+    // padding-left: 50px;
+
+  }
+}
+.confirm-payment{
+  z-index: 2000!important;
+}
+.spinner-container {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  display: flex;
+  transform: translateY(-50%);
+}
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px gray solid;
+  border-top: 2Px transparent solid;
+  animation: rotate .5s linear infinite;
+  border-radius: 100%;
+}
+
+#image-oupps{
+  font-size:126px;
+  color:orange
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg)
+  }
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+.toast {
+  z-index: 7000;
+}
+.ng-toast {
+  z-index: 100000; // I don't have any ideia why, but worked!
+}
+.swal2-container{
+  z-index: 999999999999999 !important;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.ng-select.ng-select-single .ng-select-container{
+  border: none;
+    border-bottom: 1px solid #ced4da;
+    background: no-repeat center bottom, center calc(100% - 1px);
+    background-size: 0 100%, 100% 100%;
+    transition: background 0s ease-out;
+
+    &:focus {
+        border-bottom-color: transparent;
+        background-size: 100% 100%, 100% 100%;
+        transition-duration: 0.3s;
+        box-shadow: none;
+        background-image: linear-gradient(to top, theme-color('primary') 2px, rgba(70, 128, 255, 0) 2px), linear-gradient(to top, #ced4da 1px, rgba(206, 212, 218, 0) 1px);
+    }
+}
+.custom-ng-select {
+  width: auto; /* Set the ng-select width to adapt to content */
+}
+
+.add {
+  background-color: rgb(0, 145, 255);
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}

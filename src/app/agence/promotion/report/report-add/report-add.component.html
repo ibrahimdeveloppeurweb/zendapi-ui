@@ -1,0 +1,123 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-12">
+          <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LE RAPPORT </span>
+        </div>
+        <div class="col-md-4">
+          <label for="type">Type <span class="asterix">*</span></label>
+          <select class="form-control" id="type" formControlName="type" (change)="onSelectType($event)"
+            [ngClass]="{'is-invalid': submit && f.type.errors, 'is-valid': submit && f.type.valid }">
+            <option *ngFor="let item of typeRow" [value]="item?.value">{{item?.label}}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+            <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+          </div>
+        </div>
+        <div class="col-md-4" *ngIf="f?.type?.value === 'QUOTIDIEN'">
+          <label for="date">Date <span class="asterix">*</span></label>
+          <input type="date" class="form-control" formControlName="date" id="date">
+        </div>
+        <div class="col-md-4" *ngIf="f?.type?.value === 'PERIODIQUE'">
+          <label for="dateD">Date début <span class="asterix">*</span></label>
+          <input type="date" class="form-control" formControlName="dateD" id="dateD">
+        </div>
+        <div class="col-md-4" *ngIf="f?.type?.value === 'PERIODIQUE'">
+          <label for="dateF">Date fin <span class="asterix">*</span></label>
+          <input type="date" class="form-control" formControlName="dateF" id="dateF">
+        </div>
+        <div class="col-md-4">
+          <label for="libelle">Intitulé <span class="asterix">*</span></label>
+          <input type="text" class="form-control" id="libelle" formControlName="libelle" placeholder="Intitulé"
+          [ngClass]="{'is-invalid': submit && f.libelle.errors, 'is-valid': submit && f.libelle.valid }">
+          <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+            <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label for="promotion">Promotion  <span class="asterix">*</span></label>
+          <app-entity-finder 
+            [class]="'Promotion'" 
+            [groups]="['promotion']" 
+            [required]="true"
+            [disabled]="edit" 
+            (uuid)="setPromotionUuid($event)">
+          </app-entity-finder>
+        </div>
+        <div class="col-md-4" *ngIf="showField === true">
+          <label for="home">Maison  <span class="asterix">*</span></label>
+          <ng-select id="home" formControlName="home" (change)="setHomeUuid($event)">
+            <ng-option *ngFor="let item of homes" [value]="item?.uuid">{{item?.searchableTitle}}</ng-option>
+          </ng-select>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="showTask === true">
+        <div class="col-md-12">
+          <span class="badge badge-success my-2 f-14 formBadge width"> INFORMATION SUR LES TACHES </span>
+        </div>
+        <div class="col-md-12">
+          <div class="table-responsive" formArrayName="realisations">
+            <table class="table table-hover table-bordered">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Désignation</th>
+                  <th>Unitée</th>
+                  <th>Qte</th>
+                  <th>Qte réalisée</th>
+                  <th>Images</th>
+                  <!-- <th></th> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of realisations.controls; let i = index"  [formGroupName]="i">
+                  <td style="vertical-align: middle;">{{item?.get('numero').value}}</td>
+                  <td style="vertical-align: middle;">{{item?.get('libelle').value}}</td>
+                  <td style="vertical-align: middle;">{{item?.get('unite').value}}</td>
+                  <td style="vertical-align: middle;">{{item?.get('qte').value}}</td>
+                  <td style="vertical-align: middle;">
+                    <input style="width: 15rem;" type="number" class="form-control" formControlName="qteRealise" id="qteRealise{{i}}" placeholder="Qte réalisée" (change)="onCalcul($event.target.value, item)">
+                  </td>
+                  <td style="vertical-align: middle;">
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="imageName{{i}}" formControlName="imageName" multiple (change)="onFileChange($event, item)">
+                      <label class="custom-file-label" for="imageName">{{item?.get('imageName')?.value ? item?.get('imageName')?.value : 'Sélectionner un fichier'}}</label>
+                    </div>
+                  </td>
+                  <!-- <td>
+                    <button type="button" (click)="onUpload(item)" class="btn btn-icon btn-primary ml-1" ngbTooltip="Charger l'image">
+                      <i class="feather icon-upload"></i>
+                    </button>
+                  </td> -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-select (change)="onSelectTask($event)">
+            <ng-option *ngFor="let item of taskChildren" [value]="item">{{item?.libelle}}</ng-option>
+          </ng-select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+  </form>
+  

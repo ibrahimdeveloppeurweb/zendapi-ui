@@ -1,0 +1,109 @@
+<div class="table-responsive">
+    <table datatable [dtOptions]="dtOptions"
+        class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>Bien</th>
+                <th>Libellé</th>
+                <th>Evolution</th>
+                <th>Etat</th>
+                <th>Montant</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of constructions">
+                <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-primary">{{item?.rental ? item?.rental?.libelle :
+                            item?.house?.searchableTitle}}</span>
+                        <span class="text-primary">{{item?.trustee ? item?.trustee?.nom :
+                            ''}}</span>
+                        <span *ngIf="item?.rental!=null || item?.house!=null">
+                            <br /> <span>
+                                Superficie : {{item?.rental
+                                ? item?.rental?.superficie : item?.house?.superficie}} m² -
+                                {{item?.rental
+                                ? item?.rental?.piece : item?.house?.nbrPiece}} pièce(s)
+                            </span>
+                        </span>
+                        <span *ngIf="item?.houseCo!=null">
+                            <br /> <span>Lot : {{item?.houseCo?.nom}}</span>
+                        </span>
+                        <span *ngIf="item?.homeCo!=null">
+                            <br /> <span>Villa ou appartement : {{item?.homeCo?.nom}}</span>
+                        </span>
+                        <span *ngIf="item?.infrastructure!=null">
+                            <br /> <span>Infrastructure : {{item?.infrastructure?.nom}}</span>
+                        </span>
+                        <span *ngIf="item?.nature!=null">
+                            <br /> <span>Nature : {{item?.nature?.libelle}}</span>
+                        </span>
+                        <span *ngIf="house!=null">
+                            <br /> <span>Propriétaire
+                                : {{item?.house?.owner?.searchableTitle}}</span>
+                        </span>
+                    </p>
+                </td>
+                <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-primary">{{item?.nom}}</span><br /> Durée:
+                        {{timelapse(item?.dateD, item?.dateF)}} <br /> Début: {{item?.dateD|date: "d MMMM y" : '' : 'fr-FR'}} - Fin: {{item?.dateF|date: "d MMMM y" : '' :
+                        'fr-FR'}}
+                    </p>
+                </td>
+                <td>
+                    <circle-progress [percent]="getEvolution(item)" [radius]="25" [toFixed]="1"
+                        [titleFontSize]="10" [outerStrokeWidth]="5" [innerStrokeWidth]="3"
+                        [outerStrokeColor]="getEvolution(item) >= 65 ? '#3FBD0D' : getEvolution(item) > 35 ? '#F0DD35' : '#EC0F0F'"
+                        [innerStrokeColor]="'#95cde4'" [animation]="true" [showSubtitle]="false"
+                        [animationDuration]="300"></circle-progress>
+                </td>
+                <td>
+                    <span class="badge" [ngClass]="{
+                    'badge-danger' : item?.etat === 'STOPPER',
+                    'badge-primary' : item?.etat === 'EN COURS',
+                    'badge-warning' : item?.etat === 'PREVU',
+                    'badge-success' : item?.etat === 'TERMINER'
+                    }"> {{ item?.etat === 'EN COURS' ? 'EN COURS DE REALISATION' : item?.etat }}
+                    </span>
+                </td>
+                <td>
+                    <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-warning">{{item?.budget|number}} {{global.device}}</span>
+                    </p>
+                </td>
+                <td class="table-action">
+                    <button *ngxPermissionsOnly="'CONSTRUCTION:SHOW'"
+                        (click)="showConstruction(item)" type="button"
+                        class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button *ngxPermissionsOnly="'CONSTRUCTION:EDIT'"
+                        (click)="editConstruction(item)" type="button"
+                        class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                        <i class="feather icon-edit-2"></i>
+                    </button>
+                    <button *ngxPermissionsOnly="'CONSTRUCTION:PRINTER:SHOW'"
+                        (click)="printerConstruction(item)" type="button"
+                        class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                        <i class="feather icon-printer"></i>
+                    </button>
+                    <button *ngxPermissionsOnly="'CONSTRUCTION:DELETE'" type="button"
+                        (click)="delete(item)" class="btn btn-icon btn-danger ml-1"
+                        ngbTooltip="Supprimer">
+                        <i class="feather icon-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                <td class="font-weight-bold font-size-40 text-warning"> {{ total | number}}
+                    {{global.device}}</td>
+                <td *ngIf=""></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

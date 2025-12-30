@@ -1,0 +1,248 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <aw-wizard #wizard class="arc-wizard">
+        <!-- STEP 1 DU FORMULAIRE -->
+        <aw-wizard-step stepTitle="{{ !edit ? 'Promotion' : 'Maison'}}">
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              PARTIE RESERVER A LA PROMOTION
+            </span>
+          </div>
+          <div class="form-group row">
+            <!-- <div class="col-md-3">
+              <label>Promotion <span class="asterix">*</span></label>
+              <app-entity-finder [class]="'Promotion'" [groups]="['promotion']" [required]="true"
+               [selected]="promotionSelected" [disabled]="edit" (uuid)="setPromotionUuid($event)">
+              </app-entity-finder>
+            </div> -->
+            <div class="col-md-3">
+              <label for="promotion">
+                {{ (promotion?.parent != null && edit)? 'Sous promotion': 'Promotion'}} <span class="asterix"></span>
+              </label>
+              <ng-select [readonly]="edit" formControlName="promotion" class="form-control custom-ng-select"
+                [items]="promotions" bindLabel="libelle" bindValue="uuid" class="form-control" id="promotion"
+                (change)="onChangePromotion($event)">
+              </ng-select>
+            </div>
+            <div *ngIf="edit == false &&  f.promotion.value && sousPromotions.length>0" class="col-md-3">
+              <label for="type">
+                Sous Promotion <span class="asterix"></span>
+              </label>
+              <ng-select [readonly]="edit" formControlName="sousPromotion" class="form-control custom-ng-select"
+                [items]="sousPromotions" bindLabel="libelle" bindValue="uuid" class="form-control" id="promotion"
+                (change)="onChangeSousPromotion($event)">
+              </ng-select>
+            </div>
+            <div class="col-md-3">
+              <label for="numero">Situé </label>
+              <input type="text" [value]="promotion?.localisation" class="form-control font-weight-bold p-2" placeholder="Situé" readonly>
+            </div>
+            <div class="col-md-3">
+              <label for="numero">Superficie (m²)</label>
+              <input type="text" [value]="promotion?.superficie" class="form-control font-weight-bold p-2" placeholder="Superficie (m²)" readonly>
+            </div>
+            <div class="col-md-3">
+              <label for="numero">Nombre de maison </label>
+              <input type="text" [value]="promotion?.nbrMaison" class="form-control font-weight-bold p-2" placeholder="Nombre de maison" readonly>
+            </div>
+          </div>
+
+          <!-- INFORMATION SUR LA MAISON -->
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              INFORMATION SUR LA MAISON
+            </span>
+          </div>
+          <div class="fom-group row">
+            <div class="col-md-3">
+              <label for="type">Type de maison <span class="asterix">*</span></label>
+              <app-entity-finder [class]="'HomeType'" [groups]="['homeType']" [required]="true"
+              [selected]="typeSelected" (uuid)="setHomeTypeUuid($event)">
+              </app-entity-finder>
+            </div>
+            <div class="col-md-3" *ngIf="edit">
+              <label for="lot">Lot N° </label>
+              <input id="lot" formControlName="lot" class="form-control" [ngClass]="{
+                'is-invalid': submit && f.lot.errors,
+                'is-valid': submit && f.lot.valid}"
+                type="number" placeholder="Lot N°">
+            </div>
+            <div class="col-md-3">
+              <label for="ilot">Ilot N° <span class="asterix">*</span></label>
+              <input (ngModelChange)="onChangeMaison()" id="ilot" formControlName="ilot" class="form-control" [ngClass]="{
+                'is-invalid': submit && f.ilot.errors,
+                'is-valid': submit && f.ilot.valid}"
+                type="number" placeholder="Ilot N°">
+              <div class="invalid-feedback" *ngIf="submit && f.ilot.errors">
+                <div *ngIf="f.ilot.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="label">Libellé</label>
+              <input id="label" formControlName="label" class="form-control" [ngClass]="{
+                'is-invalid': submit && f.label.errors,
+                'is-valid': submit && f.label.valid}"
+                type="number" placeholder="Libellé">
+              <div class="invalid-feedback" *ngIf="submit && f.label.errors">
+                <div *ngIf="f.label.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="montant">Montant <span class="asterix">*</span></label>
+              <input (ngModelChange)="onChangeMaison()" step="10000" class="form-control" id="montant" formControlName="montant" [ngClass]="{
+                'is-invalid': submit && f.montant.errors,
+                'is-valid': submit && f.montant.valid}"
+                type="number" placeholder="Montant">
+              <div class="invalid-feedback" *ngIf="submit && f.montant.errors">
+                <div *ngIf="f.montant.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="superficie">Superficie</label>
+              <input (ngModelChange)="onChangeMaison()" step="100" class="form-control" id="superficie" formControlName="superficie" [ngClass]="{
+                'is-invalid': submit && f.superficie.errors,
+                'is-valid': submit && f.superficie.valid}"
+                type="number" placeholder="Superficie">
+              <div class="invalid-feedback" *ngIf="submit && f.superficie.errors">
+                <div *ngIf="f.superficie.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+            <div class="col-md-3" *ngIf="!edit">
+              <label for="nbrMaison">Nombre de maison <span class="asterix">*</span></label>
+              <input (ngModelChange)="onChangeMaison()" formControlName="nbrMaison" type="number" class="form-control"
+                [ngClass]="{
+                  'is-invalid': submit && f.nbrMaison.errors,
+                  'is-valid': submit && f.nbrMaison.valid
+                }" placeholder="Nombre de maison">
+              <div class="invalid-feedback" *ngIf="submit && f.nbrMaison.errors">
+                <div *ngIf="f.nbrMaison.errors.required">{{required.novide}}</div>
+                <div *ngIf="f.nbrMaison.errors.pattern">{{required.nolettre}}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-2 mt-2" *ngIf="edit">
+            <div class="flex-grow-0" style="min-width: 30%">
+              <app-image-uploader
+                (filesd)="loadfile($event)"
+                [maxSize]="2"
+                [type]="['image/png', 'image/jpg', 'image/jpeg']"
+                (imageUploaded)="setParam('photoUuid',$event)"
+                [photo]="home ? home?.photo : null "></app-image-uploader>
+            </div>
+            <div class="col-md">
+              <label>Pièces et documents à joindre</label>
+              <app-folder-uploader
+                [maxSize]="3"
+                (filesd)="files($event)"
+                (filesUploaded)="setParam('folderUuid',$event)"
+                [type]="['image/png', 'image/jpg', 'image/jpeg']"
+                [path]="'home'"
+                [etat]="edit ? 'edit': 'add'"
+                [folder]="edit && home ? home?.folder : null">
+              </app-folder-uploader>
+            </div>
+          </div>
+
+          <div class="col-md-12 text-center mt-2">
+            <button type="button" awNextStep class="btn btn-primary" *ngIf="f.promotion.value && f.nbrMaison.value > 0">
+              Suivant <i class="feather icon-arrow-right"></i>
+            </button>
+          </div>
+        </aw-wizard-step>
+        <!-- STEP 2 DU FORMULAIRE -->
+        <aw-wizard-step *ngIf="!edit" stepTitle="Maison">
+          <div class="row">
+            <span class="badge badge-secondary my-2 f-14 width">
+              PARTIE RESERVER AUX MAISONS
+            </span>
+          </div>
+          <div formArrayName="maisons">
+            <div class="fom-group">
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="lot">N° Lot <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-2">
+                  <label for="ilot">N° Ilot <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-3">
+                  <label for="montant">Montant <span class="asterix">*</span></label>
+                </div>
+                <div class="col-md-3">
+                  <label for="superficie">Superficie <span class="asterix">*</span></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" *ngFor="let item of maison.controls; let i=index" [formGroupName]="i">
+              <div class="row">
+                <div class="col-md-2">
+                  <input type="number" formControlName="lot" class="form-control pl-2 font-weight-bold" id="lot{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('lot').errors,
+                      'is-valid': submit && item.get('lot').valid
+                    }" placeholder="N° Ilot">
+                </div>
+                <div class="col-md-2">
+                  <input type="number" formControlName="ilot" class="form-control pl-2 font-weight-bold" id="ilot{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('ilot').errors,
+                      'is-valid': submit && item.get('ilot').valid
+                    }" placeholder="N° Ilot">
+                </div>
+                <div class="col-md-3">
+                  <input type="number" step="5000" formControlName="montant" class="form-control" id="montant{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('montant').errors,
+                      'is-valid': submit && item.get('montant').valid
+                    }" placeholder="Montant">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('montant').errors">
+                    <div *ngIf="item.get('montant').errors.required">{{required.novide}}</div>
+                    <div *ngIf="item.get('montant').errors.pattern">{{required.nolettre}}</div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <input type="number" step="5000" formControlName="superficie" class="form-control" id="superficie{{i}}"
+                    [ngClass]="{
+                      'is-invalid': submit && item.get('superficie').errors,
+                      'is-valid': submit && item.get('superficie').valid
+                    }" placeholder="Superficie">
+                  <div class="invalid-feedback" *ngIf="submit && item.get('superficie').errors">
+                    <div *ngIf="item.get('superficie').errors.required">{{required.novide}}</div>
+                    <div *ngIf="item.get('superficie').errors.pattern">{{required.nolettre}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 centered-content mt-3">
+            <div class="btn-group mt-10">
+              <button type="button" awPreviousStep class="btn btn-warning">
+                <i class="feather icon-arrow-left"></i> Précedent
+              </button>
+            </div>
+          </div>
+        </aw-wizard-step>
+      </aw-wizard>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,86 @@
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+        <tr>
+          <th *ngIf="locataire">Locataire</th>
+          <th>Libelle</th>
+          <th>Loyer</th>
+          <th>Montant</th>
+          <th>Paye</th>
+          <th>Impaye</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of notices">
+            <td class="align-middle" *ngIf="locataire">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.contract?.tenant?.searchableTitle}}</span> <br />
+                telephone : {{item?.contract?.tenant?.telephone}}  <br />
+                type : {{item?.contract?.tenant?.type}}
+              </p>
+            </td>
+            <td>
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">Contrat N° {{item?.contract?.code}}</span> <br />
+                {{item?.libelle}}
+                <br *ngIf="item?.contract?.etat !== 'ACTIF'"/>
+                <span *ngIf="item?.contract?.etat !== 'ACTIF'" class="badge" [ngClass]="{
+                'badge-light-danger' : item?.contract?.etat === 'RESILIE',
+                'badge-light-warning' : item?.contract?.etat === 'INACTIF',
+                'badge-light-primary' : item?.contract?.etat === 'ACTIF'
+                }"><small>{{item?.contract.etat}}</small></span>
+              </p>
+            </td>
+            <td >
+              <p class="m-0 d-inline-block align-middle font-16">{{item?.rent?.mois}}</p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning font-weight-blod">{{ item?.montant|number }} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-success font-weight-blod">{{ item?.paye|number }} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-danger font-weight-blod">{{ item?.impaye|number }} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showNotice(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button *ngxPermissionsOnly="'NOTICE:PRINTER:SHOW'" (click)="printerNotice(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="NOTICE:DELETE">
+                  <button type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-warning"> {{ total | number}} {{ global.device }}</td>
+            <td class="font-weight-bold font-size-40 text-success"> {{ totalP | number}} {{ global.device }}</td>
+            <td class="font-weight-bold font-size-40 text-danger"> {{ totalI | number}} {{ global.device }}</td>
+            <td *ngIf="action"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

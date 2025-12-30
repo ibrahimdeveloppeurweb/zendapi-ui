@@ -1,0 +1,84 @@
+<div class="col-md-12">
+  <span *ngIf="islets && islets.length > 0" class="badge badge-secondary mb-4 f-14 width">
+    LISTE DES ILOTS
+  </span>
+  <app-card *ngIf="islets && islets.length > 0" [hidHeader]="true" cardClass="card-datatable">
+    <div class="row">
+      <div class="table-responsive">
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Bien</th>
+              <th>Etat</th>
+              <th>Lot</th>
+              <th>Valorisation</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of islets">
+              <td class="align-middle">
+                <img [src]="item?.subdivision?.photoSrc ? item?.subdivision?.photoSrc : 'assets/images/promotion-default.jpg'" alt="{{item?.libelle}}"
+                  title="{{item?.numero}}" class="rounded mr-2 ml-0" height="48" />
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">Ilot N°{{item?.numero}}</span> <br />
+                  Superficie : {{item?.superficie}} m² <br />
+                  Lotisement : {{item?.subdivision?.nom}}
+                </p>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="{
+                'badge-danger' : item.espace,
+                'badge-success' : !item.espace
+                }">{{item.espace ? 'ESPACE VERT' : 'DISPONIBLE'}}</span>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">Total : {{item?.nbrLot}} Lot(s)</span> <br />
+                  <span class="text-success">Disponible : {{item?.nbrLotD}} Lot(s)</span><br />
+                  <span class="text-warning">Reservé : {{item?.nbrLotR}} Lot(s)</span><br />
+                  <span class="text-danger">Vendu : {{item?.nbrLotV}} Lot(s)</span>
+                </p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">Total : {{item?.valeurLot|number}} {{global.device}}</span> <br />
+                  <span class="text-success">Disponible : {{item?.valeurLotD|number}} {{global.device}}</span><br />
+                  <span class="text-warning">Reservé : {{item?.valeurLotR|number}} {{global.device}}</span><br />
+                  <span class="text-danger">Vendu : {{item?.valeurLotV|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="table-action">
+                <button *ngxPermissionsOnly="'ISLET:SHOW'" (click)="map(item)" type="button" class="btn btn-icon btn-success" ngbTooltip="Ajouter les données de Geo-Localisation des lots de l'ilot">
+                    <i class="fas fa-map"></i>
+                </button>
+                <!-- <button  (click)="visite3D(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Visite 3D">
+                  <i class="fas fa-cube"></i>
+                </button> -->
+                <button *ngxPermissionsOnly="'ISLET:SHOW'" (click)="showIslet(item)" type="button" class="btn btn-icon btn-secondary ml-1"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="ISLET:EDIT">
+                  <button *ngIf="item.espace || (!item.espace && item?.nbrLot === item?.nbrLotD)" type="button" (click)="editIslet(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                    ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                </ng-template>
+                <button *ngxPermissionsOnly="'ISLET:PRINTER:SHOW'" (click)="printerIslet(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="ISLET:DELETE">
+                  <button *ngIf="item.espace || (!item.espace && item?.nbrLot === item?.nbrLotD)" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </app-card>
+</div>

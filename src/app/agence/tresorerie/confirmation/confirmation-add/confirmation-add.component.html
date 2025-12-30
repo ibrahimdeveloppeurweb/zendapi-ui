@@ -1,0 +1,123 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-info my-2 f-14 formBadge width"> FILTRE DE RECHERCHE</span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div class="row">
+              <div class="col">
+                <label for="type">Type de paiement </label>
+                <select class="form-control" formControlName="type"  id="type" [ngClass]="{
+                  'is-invalid': submit && f.type.errors,
+                  'is-valid': submit && f.type.valid
+                }">
+                  <option *ngFor="let item of typeRow" [value]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                  <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col">
+                <label for="mode">Mode de paiement <span class="asterix">*</span></label>
+                <select  class="form-control" formControlName="mode"  id="mode" #mySelectMode [ngClass]="{
+                  'is-invalid': submit && f.mode.errors,
+                  'is-valid': submit && f.mode.valid
+                }">
+                  <option *ngFor="let item of modeRow" [value]="item.value">{{item.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+                  <div *ngIf="f.mode.errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col">
+                <label for="user">Crée par</label>
+                <input class="form-control" type="text" formControlName="user" id="user"/>
+              </div>
+              <div class="col-md-2">
+                <label for="dateD">Date debut</label>
+                <input class="form-control" type="date"formControlName="dateD" id="dateD"/>
+              </div>
+              <div class="col-md-2">
+                <label for="dateF">Date Fin</label>
+                <input class="form-control" type="date" formControlName="dateF" id="dateF"/>
+              </div>
+              <div class="col-md-2 mt-4">
+                <button type="button" (click)="onLoadPayment()" class="btn btn-primary">
+                  Filtrer <i class="feather icon-filter"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFFICHAGE DES RESULATS DE LA RECHERCHE -->
+      <div>
+        <div class="row" *ngIf="payments?.length > 0">
+          <span class="badge badge-info my-2 f-14 formBadge width"> DETAILS DE LA SELECTION </span>
+        </div>
+
+        <div class="col-sm-12" formArrayName="options">
+          <div class="form-group" *ngIf="payments?.length > 0">
+            <table id="invoices" class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead>
+                <tr>
+                  <th>
+                    <div class="form-group">
+                      <div class="form-check">
+                        <input class="form-check-input" id="selectAll" type="checkbox" (change)='onSelectAllPayment($event)'>
+                      </div>
+                    </div>
+                  </th>
+                  <th class="col-sm-3">{{ f.type.value === 'LOCATAIRE' ? 'Locataire' : 'Client'}}</th>
+                  <th class="col-sm-4">Designation</th>
+                  <th class="col-sm-2">Mode de paiement</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody class="task-page">
+                <tr *ngFor="let item of option.controls; let i = index" [formGroupName]="i">
+                  <td *ngIf="!edit">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <input formControlName="checked" class="form-check-input" type="checkbox" id="checked{{i}}" (change)='onSelectPayment()'>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="col-sm-3"><input formControlName="entity" type="text" class="form-control p-2 bold" id="entity{{i}}"></td>
+                  <td class="col-sm-4"><input formControlName="libelle" type="text" class="form-control p-2 bold" id="libelle{{i}}"></td>
+                  <td class="col-sm-2"><input formControlName="mode" type="text" class="form-control p-2 bold" id="mode{{i}}"></td>
+                  <td><input [value]="item.get('montant').value |number" type="text" class="form-control p-2 bold" readonly id="montant{{i}}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <app-no-data [title]="'Aucun paiement retrouvé.'" *ngIf="payments?.length === 0"></app-no-data>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid || !isHidden" type="submit" class="btn btn-primary">
+      Confirmer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

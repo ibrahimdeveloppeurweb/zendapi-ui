@@ -1,0 +1,203 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modale.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="d-flex">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Réference du dossier : </span>
+          <span class="title-result-show">{{ mutate?.code }}</span>
+        </p>
+        <p>
+          <span class="title-show">Client : </span>
+          <span class="title-result-show">{{ mutate?.folder?.customer?.nom }}</span>
+        </p>
+        <p>
+          <span class="title-show">Chargé d'affaire : </span>
+          <span class="title-result-show">
+            <span class="badge badge">{{ mutate?.folder?.charge?.nom }}</span>
+          </span>
+        </p>
+      </div>
+      <!-- COL MILIEU -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Etat : </span>
+          <span class="title-result-show">
+            <span class="badge badge-{{ validation(mutate.etat) }}"> {{ mutate.etat }} </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Montant : </span>
+          <span class="title-result-show text-warning">{{ mutate?.montant |number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Frais de dossier : </span>
+          <span class="title-result-show text-warning">{{ mutate?.folder?.montantFrais |number }} {{ global.device }}</span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Motif : </span>
+          <span class="title-result-show">
+            <span class="badge badge">{{ mutate?.folder?.motif == 'PROPRIETAIRE' ? 'BIEN EN VENTE': mutate?.folder?.motif}}</span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{ mutate?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mutate?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ mutate?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mutate?.update }}</span>
+        </p>
+        <p>
+          <span class="title-show">Validé le : </span>
+          <span class="title-result-show">{{ mutate?.validateAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ mutate?.validate }}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- TABLEAU DES LOTS ET ILOTS -->
+      <div class="col-md-12">
+        <div class="row mb-2">
+          <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+            DETAILS DES BIENS
+          </span>
+        </div>
+        <div class="row mr-1">
+          <div class="table-responsive">
+            <table class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Ancien bien</th>
+                  <th>Nouveau bien</th>
+                  <th>Prix U.</th>
+                  <th>Tva</th>
+                  <th>Remise</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of mutate?.options">
+                  <td>{{ item?.old?.searchableTitle }}</td>
+                  <td>{{ item?.new?.searchableTitle }}</td>
+                  <td>{{ item?.prix | number }} {{global.device}}</td>
+                  <td>{{ item?.tva }} %</td>
+                  <td>{{ item?.remise }}</td>
+                  <td>{{ item.total | number}} {{global.device}} </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                  <td class="font-weight-bold font-size-40 text-danger"> {{ mutate?.folder?.montantBien | number}} {{global.device}}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="mutate?.folder?.options.length > 0">
+      <!-- TABLEAU DES SUPPLEMENTS -->
+      <div class="col-md-12">
+        <div class="row mb-2">
+          <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+            DETAILS SUR LE SUPLEMENT
+          </span>
+        </div>
+        <div class="row mr-1">
+          <div class="table-responsive">
+            <table class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Désignation</th>
+                  <th>Prix u.</th>
+                  <th>Qte</th>
+                  <th>Tva</th>
+                  <th>Remise</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of mutate?.folder?.options" >
+                  <td><p class="m-0 d-inline-block align-middle font-16">{{item?.libelle}}</p></td>
+                  <td>
+                    <p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.prix|number}} {{global.device}}</span></p>
+                  </td>
+                  <td>{{item?.qte}}</td>
+                  <td>{{item?.tva}} %</td>
+                  <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.remise|number}} {{global.device}}</span></td>
+                  <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{(item?.total)|number}} {{global.device}}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-responsive  invoice-table invoice-total">
+          <tbody>
+            <tr>
+              <th>TOTAL HT : </th>
+              <td> {{ mutate?.montantHt | number }} {{global.device}}</td>
+            </tr>
+            <tr>
+              <th>TOTAL REMISE : </th>
+              <td> {{ mutate?.montantRemise | number }} {{global.device}}</td>
+            </tr>
+            <tr>
+              <th>TOTAL TVA : </th>
+              <td> {{ mutate?.montantTva | number }} {{global.device}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <table class="width">
+      <tbody>
+        <tr class="border-bottom-success">
+          <td></td>
+          <td colspan="5" class="text-right font-weight-bold"></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="border border-success">
+          <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+          <td class="font-weight-bold font-size-default text-right">{{ mutate?.montant | number }} {{global.device}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <ng-template *ngxPermissionsOnly="'MUTATE:EDIT'">
+      <button *ngIf="mutate?.etat === 'INVALIDE'" (click)="editMutate(mutate)" class="btn btn-primary">
+        Modifier <i class="feather icon-edit-2"></i>
+      </button>
+    </ng-template>
+    <button *ngxPermissionsOnly="'MUTATE:PRINTER:SHOW'" (click)="printerMutate(mutate)" class="btn btn-warning">
+      Imprimer <i class="feather icon-printer"></i>
+    </button>
+  </div>

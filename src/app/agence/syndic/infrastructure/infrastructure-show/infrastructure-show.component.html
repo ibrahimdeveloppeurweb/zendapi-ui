@@ -1,0 +1,173 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="col-md-12">
+        <div class="row py-2 item-condominium">
+            <div class="col-md-3">
+                <span>
+                    Reférence  :
+                </span>
+            </div>
+            <div class="col-md-9">
+                <span class="bold">
+                    {{infrastructure?.code}}
+                </span>
+            </div>
+        </div>
+        <div class="row py-2">
+            <div class="col-md-3">
+                <span>
+                    Libellé  :
+                </span>
+            </div>
+            <div class="col-md-9">
+                <span class="bold">
+                    {{infrastructure?.nom}}
+                </span>
+            </div>
+        </div>
+        <div class="row py-2 item-condominium">
+            <div class="col-md-3">
+                <span>
+                    Syndic  :
+                </span>
+            </div>
+            <div class="col-md-9">
+                <span class="bold">
+                    {{infrastructure?.trustee?.nom}}
+                </span>
+            </div>
+        </div>
+        <div class="row py-2">
+            <div class="col-md-3">
+                <span>
+                    Hauteur  :
+                </span>
+            </div>
+            <div class="col-md-9">
+                <span class="bold">
+                    {{infrastructure?.hauteur | number}}
+                </span>
+            </div>
+        </div>
+        <div class="row py-2 item-condominium">
+            <div class="col-md-3">
+                <span>
+                    Etat  :
+                </span>
+            </div>
+            <div class="col-md-9">
+                <span class="bold">
+                    <span *ngIf="infrastructure?.etat === 'EN SERVICE'" class="badge badge-primary bold">En service</span>
+                    <span *ngIf="infrastructure?.etat === 'HORS SERVICE'" class="badge badge-warning bold">Hors service</span>
+                </span>
+            </div>
+        </div>
+        <div class="row py-2">
+            <div class="col-md-3">
+                <span>
+                    Surface  :
+                </span>
+            </div>
+            <div class="col-md-9">
+                <span class="bold">
+                    {{infrastructure?.superficie | number}}
+                </span>
+            </div>
+        </div>
+        <div class="row py-2 item-condominium">
+          <div class="col-md-3">
+              <span>
+                Date de création : <br />
+              </span>
+          </div>
+          <div class="col-md-9">
+              <span class="bold">
+                {{infrastructure?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}<br />
+              </span>
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col-md-3">
+              <span>
+                Créer par
+              </span>
+          </div>
+          <div class="col-md-9">
+              <span class="bold">
+                {{infrastructure?.create}}
+              </span>
+          </div>
+        </div>
+        <div class="row py-2 item-condominium">
+          <div class="col-md-3">
+              <span>
+                Date de modification : <br />
+              </span>
+          </div>
+          <div class="col-md-9">
+              <span class="bold">
+                {{infrastructure?.updateAd| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}<br />
+              </span>
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col-md-3">
+              <span>
+                Modifier par
+              </span>
+          </div>
+          <div class="col-md-9">
+              <span class="bold">
+                {{infrastructure?.update}}
+              </span>
+          </div>
+        </div>
+        <div class="row py-2 item-condominium">
+            <div class="col-md-3">
+                <span>
+                    Description  :
+                </span>
+            </div>
+            <div class="col-md-9">
+                <span class="bold">
+                    {{infrastructure?.description}}
+                </span>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="col-md" *ngIf="infrastructure">
+        <div class="row">
+          <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+            <app-folder-uploader (click)="showFile(infrastructure?.folder)" [folder]="infrastructure?.folder" [etat]="'show'"
+              [allowFileUpload]="false" [allowDownload]="true">
+            </app-folder-uploader>
+          </div>
+          <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+            <div class="row">
+              <div class="col-sm-12 mb-2">
+                <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                  <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                </button>
+              </div>
+            </div>
+            <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+            </ngx-doc-viewer>
+          </div>
+        </div>
+    </div>
+    <hr>
+</div>
+<div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button class="btn btn-warning">
+        Imprimer <i class="feather icon-printer"></i>
+</button>
+</div>

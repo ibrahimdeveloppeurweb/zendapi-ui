@@ -1,0 +1,152 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modale.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <div class="row py-2 item-condominium">
+      <div class="col-md-3">
+          <span>
+            Code :
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold">
+            {{fundsPayment?.code}}
+          </span>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-md-3">
+          <span>
+            Moyen de paiement :
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold badge badge-dark">
+            {{fundsPayment?.moyen}}
+          </span>
+      </div>
+    </div>
+    <div class="row py-2 item-condominium">
+      <div class="col-md-3">
+          <span>
+            Date de paiement :
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold">
+            {{fundsPayment?.date}}
+          </span>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-md-3">
+          <span>
+            Trésorerie :
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold badge badge-dark">
+            {{fundsPayment?.treasury?.nom}}
+          </span>
+      </div>
+    </div> 
+    <div class="row py-2 item-condominium">
+      <div class="col-md-3">
+          <span>
+            Type de trésorerie :
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold badge badge-primary">
+            {{fundsPayment?.treasury?.type}}
+          </span>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-md-3">
+          <span>
+            Date de création : <br />
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold">
+            {{fundsPayment?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}<br />
+          </span>
+      </div>
+    </div>
+    <div class="row py-2 item-condominium">
+      <div class="col-md-3">
+          <span>
+            Créer par
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold">
+            {{fundsPayment?.create}}
+          </span>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-md-3">
+          <span>
+            Date de modification : <br />
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold">
+            {{fundsPayment?.updateAd| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}<br />
+          </span>
+      </div>
+    </div>
+    <div class="row py-2 item-condominium">
+      <div class="col-md-3">
+          <span>
+            Modifier par
+          </span>
+      </div>
+      <div class="col-md-9">
+          <span class="bold">
+            {{fundsPayment?.update}}
+          </span>
+      </div>
+    </div>
+    <hr>
+    <div class="alert-primary col-md-12">
+      <div class="col-md-12 mt-2 text-center p-2">
+          <h4 class="text-primary">Montant TTC : {{fundsPayment?.montant | number}} XOF</h4>
+      </div>
+    </div>
+    <hr>
+    <div class="col-md" *ngIf="fundsPayment">
+        <div class="row">
+          <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+            <app-folder-uploader (click)="showFile(fundsPayment?.folder)" [folder]="fundsPayment?.folder" [etat]="'show'"
+              [allowFileUpload]="false" [allowDownload]="true">
+            </app-folder-uploader>
+          </div>
+          <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+            <div class="row">
+              <div class="col-sm-12 mb-2">
+                <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                  <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                </button>
+              </div>
+            </div>
+            <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+            </ngx-doc-viewer>
+          </div>
+        </div>
+    </div>
+    <hr>
+  </div>
+</div>
+<div class="modal-footer">
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+</div>

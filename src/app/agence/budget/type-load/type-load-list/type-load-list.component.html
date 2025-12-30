@@ -1,0 +1,44 @@
+<div class="col-md-12">
+  <span class="badge badge-info my-2 f-14 formBadge width"> LISTE DES TYPES DE CHARGE </span>
+</div>
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Code budgétaire</th>
+            <!-- <th>Libellé</th> -->
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of typeLoads">
+            <!-- <td>{{item?.code}}</td> -->
+            <td>{{item?.libelle}}
+              <br/>
+              <span class="text-primary">{{item?.searchableDetail}}</span> 
+            </td>            
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="show(item)" type="button" class="btn btn-icon btn-secondary ml-1" ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button (click)="edit(item)" type="button" class="btn btn-icon btn-info ml-1" ngbTooltip="Modifier">
+                  <i class="feather icon-edit-2"></i>
+                </button>
+                <button type="button" *ngIf="item?.isDelete" (click)="delete(item)" class="btn btn-icon btn-danger ml-1"
+                  ngbTooltip="Supprimer">
+                  <i class="feather icon-trash"></i>
+                </button>
+                <button (click)="print(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>

@@ -1,0 +1,70 @@
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th *ngIf="tresorerie">Trésorerie</th>
+            <th>Code</th>
+            <th>Libellé</th>
+            <th>Date</th>
+            <th>Etat</th>
+            <th>Montant début</th>
+            <th>Montant fin</th>
+            <th>Solde</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of days">
+            <td class="align-middle" *ngIf="tresorerie">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{ item?.treasury?.nom }}</span> <br />
+                Type : {{ item?.treasury?.type }}  - Gérant : {{ item?.treasury?.gerant?.libelle }}
+              </p>
+            </td>
+            <td>{{ item?.code }}</td>
+            <td>{{ item?.libelle }}</td>
+            <td>{{ item?.date| date: "d MMM y" : '' : 'fr-FR' }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-danger' : item?.etat === 'CLOT',
+              'badge-success' : item?.etat === 'ACTIF'
+              }">{{item?.etat}}</span>
+            </td>
+            <td><span class="text-primary font-weight-blod">{{ item?.soldeI|number }} {{ global.device }}</span></td>
+            <td><span class="text-secondary font-weight-blod">{{ item?.soldeF|number }} {{ global.device }}</span></td>
+            <td><span class="text-success font-weight-blod">{{ item?.solde|number }} {{ global.device }}</span></td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showDay(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="DAY:END">
+                  <button *ngIf="item.etat ==='ACTIF'" (click)="endDay(item)" type="button"
+                    class="btn btn-icon ml-1 btn-success" ngbTooltip="Cloturer">
+                    <i class="fas fa-sign-in-alt"></i>
+                  </button>
+                </ng-template>
+                <button *ngxPermissionsOnly="'DAY:PRINTER:SHOW'" (click)="printerDay(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td [attr.colspan]="tresorerie ? '4' : '3'" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-primary"> {{ totalI | number }} {{global.device}}</td>
+            <td class="font-weight-bold font-size-40 text-secondary"> {{ totalF | number }} {{global.device}}</td>
+            <td class="font-weight-bold font-size-40 text-success"> {{ solde | number }} {{global.device}}</td>
+            <td *ngIf="action"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

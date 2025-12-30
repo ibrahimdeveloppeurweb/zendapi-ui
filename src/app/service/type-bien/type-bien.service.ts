@@ -1,0 +1,104 @@
+import { TypeBien } from '@model/type-bien';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError } from "rxjs/operators";
+import { ApiService, ApiUrlService } from '@theme/utils/api.service';
+import { NoInternetHelper } from '@theme/utils/no-internet-helper';
+import { environment } from '@env/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TypeBienService {
+  tyepBien: TypeBien;
+  public edit: boolean = false;
+  public type: string = '';
+  private namespace = "type/bien";
+  private urlBase = environment.publicUrl;
+  private url = "private/agency/type/bien";
+
+  constructor(private api: ApiService) {}
+
+  setTyepBien( tyepBien: TypeBien) {
+    this.tyepBien = tyepBien
+  }
+
+  getTyepBien(): TypeBien {
+    return this.tyepBien
+  }
+
+  add(data: TypeBien): Observable<any> {
+    if (!navigator.onLine) {
+      NoInternetHelper.internet()
+      return Observable.create(obs => {
+        obs.next();
+        obs.complete();
+      });
+    }
+
+    if (data.uuid) {
+      return this.update(data);
+    } else {
+      return this.create(data);
+    }
+  }
+
+  create(data: TypeBien): Observable<any> {
+    return this.api._post(`${this.url}/new`, data).pipe(
+      map((response: any) => response),
+      catchError((error: any) => throwError(error))
+    );
+  }
+
+  update(data: TypeBien): Observable<any> {
+    return this.api._post(`${this.url}/${data.uuid}/edit`, data).pipe(
+      map((response: any) => response),
+      catchError((error: any) => throwError(error))
+    );
+  }
+
+  getList(): Observable<any> {
+    if (!navigator.onLine) {
+      NoInternetHelper.internet()
+      return Observable.create(obs => {
+        obs.next();
+        obs.complete();
+      });
+    }
+
+    return this.api._get(`${this.url}/`).pipe(
+      map((response: any) => {return response}),
+      catchError((error: any) => throwError(error))
+    );
+  }
+
+  getSingle(uuid: string): Observable<TypeBien> {
+    if (!navigator.onLine) {
+      NoInternetHelper.internet()
+      return Observable.create(obs => {
+        obs.next();
+        obs.complete();
+      });
+    }
+
+    return this.api._get(`${this.url}/show`, {uuid: uuid}).pipe(
+      map((response: any) => response),
+      catchError((error: any) => throwError(error))
+    );
+  }
+
+  getDelete(uuid: string): Observable<TypeBien> {
+    if (!navigator.onLine) {
+      NoInternetHelper.internet()
+      return Observable.create(obs => {
+        obs.next();
+        obs.complete();
+      });
+    }
+
+    return this.api._delete(`${this.url}/${uuid}/delete`).pipe(
+      map((response: any) => response.data),
+      catchError((error: any) => throwError(error))
+    );
+  }
+}

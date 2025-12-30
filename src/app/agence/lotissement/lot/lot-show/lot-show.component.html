@@ -1,0 +1,396 @@
+<div class="row btn-page">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="row px-3 pt-3">
+        <div class="col-lg-5">
+          <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-ride="carousel">
+            <div class="carousel-inner">
+              <div class="carousel-item" [ngClass]="{'active': viewImage === 1}">
+                <img *ngIf="!lot?.photoSrc" src="assets/images/promotion-default.jpg" alt="" class="d-block w-100">
+                <img *ngIf="lot?.photoSrc"  src="{{publicUrl+'/'+promotion?.photoSrc}}" alt="" class="d-block w-100">
+              </div>
+              <div *ngFor="let item of files" class="carousel-item" [ngClass]="{'active': viewImage === item.id}">
+                <img *ngIf="item?.fullPath"  src="{{publicUrl+'/'+item?.fullPath}}" alt="" class="d-block w-100">
+              </div>
+            </div>
+            <ol class="carousel-indicators position-relative">
+              <li data-target="#carouselExampleCaptions" data-slide-to="0" class="w-25 h-auto active" (click)="this.viewImage = 1" [ngClass]="{'active': viewImage === 1}">
+                <img *ngIf="!lot?.photoSrc" src="assets/images/promotion-default.jpg" alt="" class="d-block wid-50">
+                <img *ngIf="lot?.photoSrc"  src="{{publicUrl+'/'+promotion?.photoSrc}}" alt="" class="d-block wid-50">
+              </li>
+              <li *ngFor="let item of files" data-target="#carouselExampleCaptions" data-slide-to="1" class="w-25 h-auto" (click)="this.viewImage = item.id" [ngClass]="{'active': viewImage === item.id}">
+                <img *ngIf="item?.fullPath"  src="{{publicUrl+'/'+item?.fullPath}}" alt="" class="d-block wid-50">
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <form class="pl-lg-4">
+            <h2>
+              <span *ngIf="lot?.espace" class="badge mr-1" [ngClass]="{ 'badge-danger' : lot?.espace }">{{ 'ESPACE VERT' }}</span>
+              <span *ngIf="!lot?.espace" class="badge" [ngClass]="{
+                'badge-secondary' : lot?.etat === 'INDISPONIBLE',
+                'badge-warning' : lot?.etat === 'RESERVE',
+                'badge-danger' : lot?.etat === 'VENDU',
+                'badge-success' : lot?.etat === 'DISPONIBLE'
+                }">{{lot?.etat}}</span>
+            </h2><br />
+            <h3 class="mt-0">Détails sur du lot  N° {{lot?.numero}} <a href="javascript: void(0);" class="text-muted"><i class="mdi mdi-square-edit-outline ml-2"></i></a> </h3>
+            <p class="mb-1">Crée le {{ lot?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}} par {{ lot?.create}}</p>
+            <div class="mt-4">
+              <h6>Valeur:</h6>
+              <h3>{{ lot?.montant|number }} {{global.device}}</h3>
+            </div>
+          </form>
+          <div class="mt-3 mb-0">
+            <ng-template *ngxPermissionsOnly="'LOT:EDIT'">
+              <button *ngIf="!lot?.espace || lot?.etat === 'DISPONIBLE'" (click)="editIslet(islet)" class="btn btn-primary">
+                Modifier <i class="feather icon-edit-2"></i>
+              </button>
+            </ng-template>
+            <ng-template *ngxPermissionsOnly="'LOT:PRINTER:SHOW'">
+              <button (click)="printerLot(lot)" class="btn btn-warning">
+                Imprimer <i class="feather icon-printer"></i>
+              </button>
+            </ng-template>
+          </div>
+        </div>
+        <div class="col-lg-12">
+          <div class="d-flex">
+            <!-- COL GAUCHE -->
+            <div class="flex-fill">
+              <p>
+                <span class="title-show">Code : </span>
+                <span class="title-result-show">{{lot?.code}}</span>
+              </p>
+              <p>
+                <span class="title-show">Numero : </span>
+                <span class="title-result-show">Lot N°{{lot?.numero}}</span>
+              </p>
+              <p>
+                <span class="title-show">Lotissement : </span>
+                <span class="title-result-show">{{lot?.islet?.subdivision?.nom}}</span>
+              </p>
+              <p>
+                <span class="title-show">Ilot : </span>
+                <span class="title-result-show">N°{{lot?.islet?.numero}}</span>
+              </p>
+            </div>
+            <!-- COL GAUCHE -->
+            <div class="flex-fill">
+              <p>
+                <span class="title-show">Montant : </span>
+                <span class="title-result-show text-warning">{{lot?.montant|number}} {{global.device}}</span>
+              </p>
+              <p>
+                <span class="title-show">Superficie (m²) : </span>
+                <span class="title-result-show">{{lot?.superficie}} m²</span>
+              </p>
+              <p>
+                <span class="title-show">Acquereur : </span>
+                <span class="title-result-show">{{lot?.acquereur}}</span>
+              </p>
+              <p>
+                <span class="title-show">Espace : </span>
+                <span class="title-result-show">
+                  <span class="badge" [ngClass]="{
+                    'badge-danger' : lot?.espace,
+                    'badge-success' : !lot?.espace
+                    }">
+                    {{lot?.espace ? 'ESPACE VERT' : 'LOT DISPONIBLE'}}
+                  </span>
+                </span>
+              </p>
+            </div>
+            <!-- COL GAUCHE -->
+            <div class="flex-fill">
+              <p>
+                <span class="title-show">Etat : </span>
+                <span class="title-result-show">
+                  <span class="badge" [ngClass]="{
+                    'badge-secondary' : lot?.etat === 'INDISPONIBLE',
+                    'badge-warning' : lot?.etat === 'RESERVE',
+                    'badge-danger' : lot?.etat === 'VENDU',
+                    'badge-success' : lot?.etat === 'DISPONIBLE'
+                    }">{{lot?.etat}}</span>
+                </span>
+              </p>
+              <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{ lot?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ lot?.create }}</span>
+              </p>
+              <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ lot?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ lot?.update }}</span>
+              </p>
+            </div>
+          </div>
+
+          <div *ngIf="lot?.etat === 'VENDU'">
+            <ngb-tabset [destroyOnHide]="false">
+              <!-- TAB ECHEANCIERS / AVANCES -->
+              <ngb-tab>
+                <ng-template ngbTabTitle>
+                  <b>Dossiers</b>
+                </ng-template>
+                <ng-template ngbTabContent>
+                  <div class="d-flex mt-3">
+                    <!-- COL GAUCHE -->
+                    <div class="flex-fill">
+                      <p>
+                        <span class="title-show">Dossier N° : </span>
+                        <span class="title-result-show">{{lot?.folderCustomer?.code}}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Acquereur : </span>
+                        <span class="title-result-show"(click)="showCustomer(lot?.acquereur)">{{holotuse?.acquereur}}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Chargé d'affaire : </span>
+                        <span class="title-result-show">{{lot?.folderCustomer?.charge?.nom}}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Etat : </span>
+                        <span class="badge title-show" [ngClass]="{
+                          'badge-success' : lot?.folderCustomer?.etat === 'VALIDE',
+                          'badge-danger' : lot?.folderCustomer?.etat === 'INVALIDE',
+                          'badge-primary' : lot?.folderCustomer?.etat ===  'RESILIE'
+                          }">{{ lot?.folderCustomer?.etat}}
+                        </span>
+                      </p>
+                    </div>
+                    <!-- COL MILIEU -->
+                    <div class="flex-fill">
+                      <p>
+                        <span class="title-show">Montant : </span>
+                        <span class="title-result-show">{{lot?.folderCustomer?.montant | number }} {{global.device}} </span>
+                      </p>
+                      <p>
+                        <span class="title-show">avance : </span>
+                        <span class="title-result-show text-warning">{{ lot?.folderCustomer?.montantAvance | number }} {{ global.device }}</span>
+                      </p>
+                      <p>
+                        <span class="title-show">Frais de dossier : </span>
+                        <span class="title-result-show text-warning">{{ lot?.folderCustomer?.montantFrais | number }} {{ global.device }}</span>
+                      </p>
+                    </div>
+                    <!-- COL GAUCHE -->
+                    <div class="flex-fill">
+                      <p>
+                        <span class="title-show">Motif : </span>
+                        <span class="title-result-show">
+                          <span class="badge badge">{{ lot?.folderCustomer?.motif == 'PROPRIETAIRE' ? 'BIEN EN VENTE': lot?.folderCustomer?.motif}}</span>
+                        </span>
+                      </p>
+                      <p>
+                        <span class="title-show">modalite : </span>
+                        <span class="title-result-show">{{ lot?.folderCustomer?.modalite }}</span>
+                      </p>
+                      <p *ngIf="lot?.folderCustomer?.modalite === 'ECHEANCE'" >
+                        <span class="title-show">Nombre de mois : </span>
+                        <span class="title-result-show">{{ lot?.folderCustomer?.nbrMois }}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="lot?.folderCustomer?.echeances.length > 0">
+                    <!-- TABLEAU DES ECHEANCIERS -->
+                    <div class="col-md-12">
+                      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                        DETAILS DES ECHEANCIERS
+                      </span>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                          <thead class="thead-light">
+                            <tr>
+                              <th>Description</th>
+                              <th>Etat</th>
+                              <th>Montant</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of lot?.folderCustomer?.echeances" >
+                              <td>{{item?.description }}</td>
+                              <td>{{item.etat}}</td>
+                              <td>{{item.montant | number}} {{global.device}} </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="lot?.folderCustomer?.advances.length > 0">
+                    <!-- TABLEAU DES AVANCES -->
+                    <div class="col-md-12">
+                      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                        DETAILS DES AVANCEMENTS
+                      </span>
+                      <div class="table-responsive">
+                        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                          <thead class="thead-light">
+                            <tr>
+                              <th>Libelle</th>
+                              <th>Pourcentage (%)</th>
+                              <th>Etat</th>
+                              <th>Montant</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of lot?.folderCustomer?.advances" >
+                              <td>{{item?.libelle }}</td>
+                              <td>{{item.prc}} %</td>
+                              <td>{{item.etat}}</td>
+                              <td>{{item.montant | number}} {{global.device}} </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-tab>
+
+              <!-- TAB FACTURE -->
+              <ngb-tab>
+                <ng-template ngbTabTitle>
+                  <b>Factures</b>
+                </ng-template>
+                <ng-template ngbTabContent>
+                  <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">
+                    DETAILS DE LA FACTURE
+                  </span>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                      <thead class="thead-light">
+                        <tr>
+                          <th>Désignation</th>
+                          <th>Prix u.</th>
+                          <th>Qte</th>
+                          <th>Tva</th>
+                          <th>Remise</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of lot?.folderCustomer?.invoice?.options" >
+                          <td><p class="m-0 d-inline-block align-middle font-16">{{item?.libelle}}</p></td>
+                          <td>
+                            <p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.prix |number}} {{global.device}}</span></p>
+                          </td>
+                          <td>{{item?.qte}}</td>
+                          <td>{{item?.tva}} %</td>
+                          <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.remise |number }} {{global.device}}</span></td>
+                          <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.total |number}} {{global.device}}</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <table class="table table-responsive invoice-table invoice-total">
+                        <tbody>
+                        <tr>
+                          <th>TOTAL HT : </th>
+                          <td>{{ lot?.folderCustomer?.invoice?.montantHt | number }} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL REMISE : </th>
+                          <td>{{ lot?.folderCustomer?.invoice?.montantRemise | number }} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL TVA : </th>
+                          <td>{{ lot?.folderCustomer?.invoice?.montantTva | number }} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL PAYE : </th>
+                          <td> {{ lot?.folderCustomer?.invoice?.paye | number }} {{global.device}}</td>
+                        </tr>
+                        <tr>
+                          <th>TOTAL IMPAYE : </th>
+                          <td  class="text-danger"> {{ lot?.folderCustomer?.invoice?.impaye | number }} {{global.device}}</td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <table class="width mb-3">
+                    <tbody>
+                      <tr class="border-bottom-success">
+                        <td></td>
+                        <td colspan="5" class="text-right font-weight-bold"></td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr class="border border-success">
+                        <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+                        <td class="font-weight-bold font-size-default text-right">{{ lot?.folderCustomer?.invoice?.montant | number }} {{global.device}}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </ng-template>
+              </ngb-tab>
+
+              <!-- TAB PAIEMENT -->
+              <ngb-tab *ngIf="payments">
+                <ng-template ngbTabTitle>
+                  <b>Paiements</b>
+                </ng-template>
+                <ng-template ngbTabContent>
+                  <table class="table table-sm table-striped table-bordered nowrap table-hover my-3">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Tiers</th>
+                        <th>Mode</th>
+                        <th>Etat</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Montant</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of payments">
+                        <td>{{ item?.tiers }}</td>
+                        <td>{{ item?.mode }}</td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                          'badge-success' : item.etat === 'VALIDE',
+                          'badge-danger' : item.etat === 'INVALIDE'
+                          }">{{ item?.etat }}</span>
+                        </td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                            'badge-light-success' : item?.status === 'CONFIRMER',
+                            'badge-light-danger' : item?.status === 'ATTENTE'
+                          }">{{ item?.status }}</span>
+                        </td>
+                        <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+                        <td><span class="text-warning">{{item?.montant | number}} {{global.device}}</span></td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                        <td class="font-weight-bold font-size-40 text-success"> {{total | number}} {{global.device}}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </ng-template>
+              </ngb-tab>
+            </ngb-tabset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary m-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+  </div>
+</div>

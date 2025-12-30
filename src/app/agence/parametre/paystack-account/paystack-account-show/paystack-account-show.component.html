@@ -1,0 +1,108 @@
+<div class="card mb-3">
+    <div class="card-header d-flex">
+      <div class="p-2">
+        <h4><i class="fa fa-cog"></i> Paramètres du compte Paystack</h4>
+      </div>
+      <div class="ml-auto p-2" *ngIf="!account">
+        <!-- <ng-template ngxPermissionsOnly="SETTING:PAYSTACK:AGENCY"> -->
+          <button (click)="createAccount()" type="button"
+            class="btn btn-icon btn-primary ml-1" ngbTooltip="Créer un compte Paystack">
+            <i class="feather icon-edit-2"></i>
+          </button>
+        <!-- </ng-template> -->
+      </div>
+    </div>
+    <div class="card-body p-3">
+      <div class="row">
+        <div class="col-md-12">
+          <span class="badge badge-primary my-2 f-14 width">{{title}}</span>
+        </div>
+        <div class="col-md-12" *ngIf="account">
+          <div class="border-bottom p-3">
+            <div class="row">
+              <div class="col-md-6">
+                Numéro identifiant du compte:
+              </div>
+              <div class="col-md-6">
+                <span class="bold text-muted">{{ account ? account?.paystackCode : "N/A" }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-bottom p-3">
+            <div class="row">
+              <div class="col-md-6">
+                Libellé du compte:
+              </div>
+              <div class="col-md-6">
+                <span class="bold">{{ account ? account?.businessName : "N/A" }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-bottom p-3">
+            <div class="row">
+              <div class="col-md-6">
+                Banques / Mobile Money sélectionné(e) à la création du compte: 
+              </div>
+              <div class="col-md-6">
+                <span class="bold">{{ account ? account?.settlementBank : "N/A" }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-bottom p-3">
+            <div class="row">
+              <div class="col-md-6">
+                Dévise du compte: 
+              </div>
+              <div class="col-md-6">
+                <span class="bold">{{ account ? account?.currency : "N/A" }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-bottom p-3">
+            <div class="row">
+              <div class="col-md-6">
+                Numéro de compte (Bancaire / Mobile): 
+              </div>
+              <div class="col-md-6">
+                <span class="bold text-muted">{{ account ? account?.accountNumber : "N/A" }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-bottom p-3">
+            <div class="row">
+              <div class="col-md-6">
+                État du compte: 
+              </div>
+              <div class="col-md-6">
+                <span *ngIf="account && account?.active" class="badge badge-success">Actif</span>
+                <span *ngIf="account && !account?.active" class="badge badge-warning">Inactif</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-bottom p-3">
+            <div class="row">
+              <div class="col-md-6">
+                Status du compte: 
+              </div>
+              <div class="col-md-6">
+                <span *ngIf="account && account?.isVerified" class="badge badge-success">Vérifié</span>
+                <span *ngIf="account && !account?.isVerified" class="badge badge-danger">Non vérifié</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-bottom p-3">
+            <div class="row">
+              <div class="col-md-12">
+                Description:
+              </div>
+              <div class="col-md-12">
+                <span>
+                  {{ account ? account?.description : "N/A" }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

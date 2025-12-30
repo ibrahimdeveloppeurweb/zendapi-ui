@@ -1,0 +1,357 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="width btn-filter-treasury-show">
+    <ng-template [ngxPermissionsOnly]="['TREASURY:SHOW', 'REPAYMENT:LIST', 'FUND:REQUEST:LIST', 'SPENT:LIST', 'PAYMENT:LIST', 'PAYMENT:FUNDING:LIST', 'PAYMENT:CUSTOMER:LIST', 'SUPPLY:LIST', 'DAY:LIST']">
+      <app-filter class="width"
+        [name]="name"
+        [nameTitle]="nameTitle"
+        [user]="true"
+        [userTitle]="userTitle"
+        [etat]="true"
+        [etatRow]="etatRow"
+        [etatTitle]="etatTitle"
+        [categorie]="true"
+        [categorieRow]="categorieRow"
+        [categorieTitle]="categorieTitle"
+        [dateD]="true"
+        [dateF]="true"
+        [create]="true"
+        [min]="true"
+        [minTitle]="minTitle"
+        [max]="true"
+        [maxTitle]="maxTitle"
+        [ordre]="true"
+        [code]="true"
+        [count]="true"
+        [type]="true"
+        [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+      </app-filter>
+    </ng-template>
+  </div>
+  <ng-template [ngxPermissionsExcept]="['TREASURY:SHOW', 'REPAYMENT:LIST', 'FUND:REQUEST:LIST', 'SPENT:LIST', 'PAYMENT:LIST', 'PAYMENT:FUNDING:LIST', 'PAYMENT:CUSTOMER:LIST', 'SUPPLY:LIST', 'DAY:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'trésorerie'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <div class="col-md-12 mb-2">
+    <app-card [hidHeader]="true" cardClass="card-datatable" class="text-center">
+      <span> {{ treasury?.type }} - {{ treasury?.nom }} </span>
+    </app-card>
+  </div>
+
+  <!-- BOUTONS DE GESTION -->
+  <div class="col-sm-12 mb-4 btn-all-treasury-show">
+    <div class="first">
+      <div class="second">
+        <button (click)="back()" type="button" class="btn btn-secondary m-1 btn-treasury-show-back">
+          <i class="fa fa-arrow-alt-circle-left"></i> Retour
+        </button>
+        <button *ngIf="!isHidden" (click)="addSpent(route.snapshot.params.id)" type="button" class="btn btn-primary m-1 btn-treasury-show-Spent" ngbTooltip="Ajouter">
+          Depense <i class="fas fa-money-bill-alt"></i>
+        </button>
+        <!-- <button *ngIf="!isHidden" (click)="addDeposit()" type="button" class="btn btn-success m-1 btn-treasury-show-Spent" ngbTooltip="Effectuer un dépot">
+          Dépot Portefeuille  <i class="fas fa-money-bill-alt"></i>
+        </button>
+        <button *ngIf="!isHidden" (click)="addWithdrawll()" type="button" class="btn btn-danger m-1 btn-treasury-show-Spent" ngbTooltip="Effectuer un retrait">
+          Retrait Portefeuille  <i class="fas fa-money-bill-alt"></i>
+        </button> -->
+        <div *ngIf="!isHidden" class="btn-group m-1 btn-treasury-show-payment" ngbDropdown ngbTooltip="Ajouter">
+          <button class="btn btn-success m-1" ngbDropdownToggle type="button">
+            <i class="feather icon-credit-card"></i> Paiement
+          </button>
+          <div ngbDropdownMenu>
+            <a class="dropdown-item" (click)="addPayementTenant(route.snapshot.params.id)">Locataire</a>
+            <a class="dropdown-item" (click)="addPayementCustomer(route.snapshot.params.id)">Client</a>
+            <a class="dropdown-item" (click)="addPayementRepayment(route.snapshot.params.id)">Reversement</a>
+            <a class="dropdown-item" (click)="addInvoicePayment(route.snapshot.params.id)">Facture</a>
+            <a class="dropdown-item" (click)="addPaymentFunding(route.snapshot.params.id)">Financement</a>
+            <a class="dropdown-item" (click)="addSupply(route.snapshot.params.id)">Approvisionnement</a>
+          </div>
+        </div>
+        <!-- <button *ngIf="!isHidden" (click)="addConfirmation(route.snapshot.params.id)" type="button" class="btn btn-info m-1 btn-treasury-show-confirmation" ngbTooltip="Confirmer"  data-hint="" data-hintposition="top-right"> -->
+        <button *ngIf="!isHidden" (click)="addConfirmation(route.snapshot.params.id)" type="button" class="btn btn-info m-1 btn-treasury-show-confirmation" ngbTooltip="Confirmer">
+          Confirmation <i class="feather icon-check-square"></i>
+        </button>
+        <button *ngIf="isHidden " type="button" (click)="addDay(route.snapshot.params.id, treasury?.type)" class="btn btn-warning m-1 align-right " ngbTooltip="Ajouter">
+        {{ treasury?.type === 'CAISSE' ? 'Journée' : 'Rapprochement' }} <i class="feather icon-calendar"></i>
+        </button>
+
+
+        <button *ngIf="!isHidden" (click)="addSupply(route.snapshot.params.id)" type="button" class="btn btn-primary m-1 btn-treasury-show-confirmation" ngbTooltip="Confirmer">
+          Approvisionnement <i class="feather icon-check-square"></i>
+        </button>
+        <button *ngIf="isHidden " type="button" (click)="addDay(route.snapshot.params.id, treasury?.type)" class="btn btn-warning m-1 align-right " ngbTooltip="Ajouter">
+        {{ treasury?.type === 'CAISSE' ? 'Journée' : 'Rapprochement' }} <i class="feather icon-calendar"></i>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="!isHidden" class="btn-group float-right m-1 " ngbDropdown [hidden]="visibilite">
+      <button class="btn btn-warning" ngbDropdownToggle type="button">
+        Outils <i class="fas fa-tools"></i>
+      </button>
+      <div class="dropdown-menu-right" ngbDropdownMenu>
+        <a *ngxPermissionsOnly="['TREASURY:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer le listing">
+          Imprimer <i class="feather icon-printer"></i>
+        </a>
+        <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+          Exporter <i class="fa fa-file-excel"></i>
+        </a>
+        <a class="dropdown-item" [hidden]="visible" (click)="onImport()" ngbTooltip="Cliquez ici pour importer un fichier">
+          Importer <i class="feather icon-download"></i>
+        </a>
+        <a class="dropdown-item" [hidden]="visible" (click)="onModel()" ngbTooltip="Cliquez ici pour génerer un modèle">
+          Génerer <i class="feather icon-upload"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="width list-treasury-show">
+    <ng-template ngxPermissionsOnly="TREASURY:SHOW">
+      <!-- ALL INFORMATION TRESORERIE  -->
+      <div class="col-md-12 " *ngIf="type ==='TRESORERIE'">
+        <!-- WIDGET DES TRANSACTION JOURNALIERE -->
+        <div class="row">
+          <!-- ENTREE -->
+          <div class="col-md-4 ">
+            <app-card [hidHeader]="true" cardClass="bg-c-green order-card">
+              <h6 class="text-white">Entrée</h6>
+              <h2 class="text-white">{{ widget?.entree |number }} {{ global.device }}</h2>
+              <i class="card-icon feather icon-corner-up-right"></i>
+            </app-card>
+          </div>
+          <!-- ENTREE END -->
+          <!-- SORTIE -->
+          <div class="col-md-4 ">
+            <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+              <h6 class="text-white">Sortie</h6>
+              <h2 class="text-white">{{ widget?.sortie |number }} {{ global.device }}</h2>
+              <i class="card-icon feather icon-corner-up-left"></i>
+            </app-card>
+          </div>
+          <!-- SORTIE END  -->
+          <!-- SOLDE  -->
+          <div class="col-md-4">
+            <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+              <h6 class="text-white">Solde</h6>
+              <h2 class="text-white">{{ widget?.solde |number }} {{ global.device }}</h2>
+              <i class="card-icon fas fa-piggy-bank"></i>
+            </app-card>
+          </div>
+          <!-- SOLDE END  -->
+        </div>
+        <div class="row">
+          <!-- GRAPHE -->
+          <div class="col-md-7 ">
+            <lib-highcharts-angular [Highcharts]="Highcharts" [options]="barBasicChartOptions" style="width: 100%; height: 450px; display: block;"></lib-highcharts-angular>
+          </div>
+          <!-- GRAPHE END-->
+          <div class="col-md-5">
+            <app-card cardTitle="DIAGRAMME CIRCULAIRE DES TRANSACTIONS" [options]="false">
+              <div #doughnutChart>
+                <chart id="doughnut_chart" [type]="'doughnut'" [data]="pieChartData" style="height: 345px;"></chart>
+              </div>
+            </app-card>
+          </div>
+          <!-- DIAGRAMME CIRCULAIRE -->
+        </div>
+
+        <!-- DETAILS DE LA CAISSE -->
+        <div class="row">
+          <div class="col-md-12">
+            <span class="badge badge-info my-2 f-14 formBadge width"> DETAILS DE LA TRESORERIE {{ treasury?.nom }} </span>
+            <app-card [hidHeader]="true">
+              <div class="modal-body">
+                <div class="d-flex">
+                  <!-- COL GAUCHE -->
+                  <div class="flex-fill">
+                    <p>
+                      <span class="title-show">Reférence :</span>
+                      <span class="title-result-show">{{ treasury?.code }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Libelle :</span>
+                      <span class="title-result-show">{{ treasury?.nom }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Type :</span>
+                      <span class="title-result-show">{{ treasury?.type }}</span>
+                    </p>
+                    <p *ngIf="treasury?.type === 'BANQUE'">
+                      <span class="title-show">N° Compte :</span>
+                      <span class="title-result-show">{{ treasury?.compte }}</span>
+                    </p>
+                    <p *ngIf="treasury?.type === 'CAISSE'">
+                      <span class="title-show">Gérant : </span>
+                      <span class="title-result-show">{{ treasury?.gerant?.libelle }}</span>
+                    </p>
+                  </div>
+                  <!-- COL GAUCHE -->
+                  <div class="flex-fill">
+                    <p *ngIf="treasury?.type === 'BANQUE'">
+                      <span class="title-show">Gérant : </span>
+                      <span class="title-result-show">{{ treasury?.gerant?.libelle }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Validateur :</span>
+                      <span class="title-result-show">
+                        <i *ngFor="let item of treasury?.validateurs;  let last = last;"> {{ item?.searchableTitle }} <i>{{ last ? '': ', ' }}</i></i>
+                      </span>
+                    </p>
+                    <p>
+                      <span class="title-show">Seuil minimum : </span>
+                      <span class="title-result-show">{{ treasury?.seuilMin }}</span>
+                    </p>
+                    <p>
+                      <span class="title-show">Seuil maximum : </span>
+                      <span class="title-result-show">{{ treasury?.seuilMax }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="row align-items-center">
+                <div class="col-8"></div>
+                <div class="col-4 text-right mr-auto ">
+                  <ng-template ngxPermissionsOnly="TREASURY:EDIT">
+                    <button (click)="editTreasury(treasury)" type="button" class="btn btn-icon btn-primary" ngbTooltip="Modifier">
+                      <i class="feather icon-edit-2"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template ngxPermissionsOnly="TREASURY:DELETE">
+                    <button *ngIf="treasury?.isDelete" (click)="delete(treasury)" type="button" class="btn btn-icon btn-danger ml-1"
+                      ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </div>
+            </app-card>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- LISTE DES REVERSSEMENTS -->
+  <ng-template ngxPermissionsOnly="REPAYMENT:LIST">
+    <div class="col-md-12" *ngIf="type === 'REVERSEMENT'">
+      <span class="badge badge-success mb-4 f-14 width">
+        LISTE DES PAIEMENTS REVERSEMENT
+      </span>
+      <app-no-data [title]="'Aucun paiement reversement trouvé'" *ngIf="paymentsRepayment && paymentsRepayment.length === 0" ></app-no-data>
+    </div>
+    <app-payment-repayment-list class="width" [payments]="paymentsRepayment" *ngIf="type === 'REVERSEMENT' && paymentsRepayment && paymentsRepayment.length > 0"></app-payment-repayment-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="REPAYMENT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'REVERSEMENT'" [title]="'liste reversement'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES DEMANDES -->
+  <ng-template ngxPermissionsOnly="FUND:REQUEST:LIST">
+    <app-fund-request-list class="width" [tresorerie]="false" [funds]="funds" *ngIf="type === 'DEMANDE' && funds && funds.length > 0"></app-fund-request-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="FUND:REQUEST:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'DEMANDE'" [title]="'liste demande'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES DEPENSES -->
+  <ng-template ngxPermissionsOnly="SPENT:LIST">
+    <div class="col-md-12" *ngIf="type === 'DEPENSE'">
+      <span class="badge badge-primary my-2 f-14 formBadge width">
+        LISTE DES DEPENSES
+      </span>
+      <app-no-data [title]="'Aucune dépense trouvée'" *ngIf="spents && spents.length === 0" ></app-no-data>
+    </div>
+    <app-spent-list class="width" [tresorerie]="false" [spents]="spents" *ngIf="type === 'DEPENSE' && spents && spents.length > 0"></app-spent-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="SPENT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'DEPENSE'" [title]="'liste depense'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES PAIEMENTS LOCATAIRE -->
+  <ng-template ngxPermissionsOnly="PAYMENT:LIST">
+    <div class="col-md-12" *ngIf="type === 'LOCATAIRE'">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES PAIEMENTS
+      </span>
+      <app-no-data [title]="'Aucune paiement trouvé'" *ngIf="payments && payments.length === 0" ></app-no-data>
+    </div>
+    <app-payment-list class="width" [payments]="payments" *ngIf="type === 'LOCATAIRE' && payments && payments.length > 0"></app-payment-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="PAYMENT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'LOCATAIRE'" [title]="'liste paiement'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES PAIEMENTS FINANCEMENT -->
+  <ng-template ngxPermissionsOnly="PAYMENT:FUNDING:LIST">
+    <div class="col-md-12" *ngIf="type === 'FINANCEMENT'">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES PAIEMENTS
+      </span>
+      <app-no-data [title]="'Aucun financement trouvée'" *ngIf="paymentsFunding && paymentsFunding.length === 0" ></app-no-data>
+    </div>
+    <app-payment-funding-list class="width" [construction]="'TREASURY'" [payments]="paymentsFunding" *ngIf="type === 'FINANCEMENT' && paymentsFunding && paymentsFunding.length > 0"></app-payment-funding-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="PAYMENT:FUNDING:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'FINANCEMENT'" [title]="'liste paiement financement'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES PAIEMENTS CLIENT -->
+  <ng-template ngxPermissionsOnly="PAYMENT:CUSTOMER:LIST">
+    <div class="col-md-12" *ngIf="type === 'CLIENT'">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES PAIEMENTS
+      </span>
+      <app-no-data [title]="'Aucun paiement client trouvé'" *ngIf="paymentsCustomer && paymentsCustomer.length === 0" ></app-no-data>
+    </div>
+    <app-payment-customer-list class="width" [payments]="paymentsCustomer" *ngIf="type === 'CLIENT' && paymentsCustomer && paymentsCustomer.length > 0"></app-payment-customer-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="PAYMENT:CUSTOMER:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'CLIENT'" [title]="'liste paiement client'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES PAIEMENTS APPROVIONNEMENTS -->
+  <ng-template ngxPermissionsOnly="SUPPLY:LIST">
+    <div class="col-md-12" *ngIf="type === 'APPROVISIONNEMENT'">
+      <span class="badge badge-primary my-2 f-14 formBadge width">
+        LISTE DES APPROVISIONNEMENTS
+      </span>
+      <app-no-data [title]="'Aucun approvisionnement trouvé'" *ngIf="supplies && supplies.length === 0" ></app-no-data>
+    </div>
+    <app-supply-list class="width" [tresorerie]="false" [supplies]="supplies" *ngIf="type === 'APPROVISIONNEMENT' && supplies && supplies.length > 0"></app-supply-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="SUPPLY:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'APPROVISIONNEMENT'" [title]="'liste approvisionnement'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES JOURNEES -->
+  <ng-template ngxPermissionsOnly="DAY:LIST">
+    <div class="col-md-12" *ngIf="type === 'JOURNEE'">
+      <span class="badge badge-warning my-2 f-14 formBadge width">
+        LISTE DES JOURNEES
+      </span>
+      <app-no-data [title]="'Aucune journée trouvée'" *ngIf="days && days.length === 0"></app-no-data>
+    </div>
+    <app-day-list class="width" [tresorerie]="false" [days]="days" *ngIf="type === 'JOURNEE' && days && days.length > 0"></app-day-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="DAY:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'JOURNEE'" [title]="'liste journée'"></app-no-droit>
+    </div>
+  </ng-template>
+</div>

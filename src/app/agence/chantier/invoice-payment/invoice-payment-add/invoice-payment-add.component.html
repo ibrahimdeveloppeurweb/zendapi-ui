@@ -1,0 +1,122 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+        (click)="modal.close('ferme')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-secondary my-2 f-14 width"> DETAILS DU REGLEMENT </span>
+            </div>
+            <!-- DETAILS DU PAIEMENT -->
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="treasury">Trésorerie<span class="asterix">*</span></label>
+
+                    <ng-select [readonly]="edit" [required]="true" id="treasury"
+                        formControlName="treasury" (change)="setTreasury()" [(ngModel)]="selectedTreasury">
+                        <ng-option *ngFor="let treasurie of treasuries"
+                            [value]="treasurie.uuid">{{treasurie?.nom}}</ng-option>
+                    </ng-select>
+                </div>
+                <div class="col-md-3">
+                    <label for="treasury">Facture<span class="asterix">*</span></label>
+                    <ng-select [readonly]="edit" [required]="true" id="invoice" formControlName="invoice"
+                        (change)="setInvoice()" [(ngModel)]="selectedInvoice">
+                        <ng-option *ngFor="let invoice of invoices"
+                            [value]="invoice.uuid">{{invoice?.libelle}}</ng-option>
+                    </ng-select>
+                </div>
+                <div class="col-md-3">
+                    <label for="date">Date de paiement <span class="asterix">*</span></label>
+                    <input type="date" formControlName="date" class="form-control" id="date" [ngClass]="{
+                  'is-invalid': submit && f.date.errors,
+                  'is-valid': submit && f.date.valid
+                }">
+                    <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                        <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="mode">Mode de paiement <span class="asterix">*</span></label>
+                    <select (change)="onChangeLibelle()" class="form-control" formControlName="mode"
+                        id="mode" #mySelectMode [ngClass]="{
+                  'is-invalid': submit && f.mode.errors,
+                  'is-valid': submit && f.mode.valid
+                }">
+                        <option *ngFor="let item of modeRow" [value]="item.value">{{item.label}}</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="submit && f.mode.errors">
+                        <div *ngIf="f.mode.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="effectue">Effectué par <span class="asterix">*</span></label>
+                    <select (change)="onChangeEffectue()" class="form-control" formControlName="effectue"
+                        id="effectue" [ngClass]="{
+                  'is-invalid': submit && f.effectue.errors,
+                  'is-valid': submit && f.effectue.valid
+                }">
+                        <option [value]="'LUI MEME'">LUI MÊME</option>
+                        <option [value]="'AUTRE'">AUTRE</option>
+                    </select>
+                </div>
+                <div class="col-md-3" *ngIf="f.effectue.value === 'AUTRE'">
+                    <label for="tiers">Fournisseur ou Prestataire <span class="asterix">*</span></label>
+                    <input type="text" formControlName="tiers" class="form-control" id="tiers"
+                        placeholder="Nom du tiers">
+                </div>
+                <div class="col-md-3" *ngIf="f.mode.value !== 'ESPECE'">
+                    <label for="source">{{ sourceTitle }}</label>
+                    <input type="text" formControlName="source" class="form-control" id="source"
+                        [placeholder]="sourceTitle">
+                </div>
+                <div class="col-md-3" *ngIf="f.mode.value !== 'ESPECE'">
+                    <label for="numero">{{ numeroTitle }}</label>
+                    <input type="text" formControlName="numero" class="form-control" id="numero"
+                        [placeholder]="numeroTitle">
+                </div>
+            </div>
+            <div clas="row">
+                <div class="col-md-6 ml-md-auto">
+                    <label for="montant">Montant <span class="asterix">*</span></label>
+                    <input [attr.disabled]="isHidden ? true : null" type="number" min="0" step="0.01"
+                        (change)="onChangeMontant()" formControlName="montant" id="montant"
+                        class="form-control text-lg-right p-4 text-success text-h-danger font-weight-bold formBadgeLarge"
+                        placeholder="Montant" [ngClass]="{
+                  'is-invalid': submit && f.montant.errors,
+                  'is-valid': submit && f.montant.valid
+                }">
+                    <div class="invalid-feedback" *ngIf="submit && f.montant.errors">
+                        <div *ngIf="f.montant.errors.required">{{required.novide}}</div>
+                        <div *ngIf="f.montant.errors.pattern">{{required.novide}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md">
+                <label>Pièces et documents à joindre</label>
+                <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                    [path]="'invoice'" [etat]="edit ? 'edit': 'add'"
+                    [folder]="edit && invoice ? invoice?.folder : null">
+                </app-folder-uploader>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left"
+                data-dismiss="modal">
+                Fermer <i class="feather icon-x-circle"></i>
+            </button>
+            <button (click)="form.reset()" type="button" class="btn btn-warning">
+                Vider <i class="fas fa-broom"></i>
+            </button>
+            <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+                Enregistrer <i class="feather icon-save"></i>
+            </button>
+        </div>
+    </div>
+</form>

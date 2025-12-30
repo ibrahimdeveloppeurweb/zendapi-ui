@@ -1,0 +1,108 @@
+<ng-template [ngxPermissionsOnly]="['FUNDS:APEAL:LIST']">
+<app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive m-0">
+        <table datatable [dtOptions]="dtOptions" class="table table-hover text-nowrap table-bordered m-0">
+            <thead class="thead-light">
+              <tr>
+                  <th rowspan="2" class="text-center justify-content-center align-items-center">Lot/Numéro porte</th>
+                  <th rowspan="2" class="text-center justify-content-center align-items-center">Copropriétaire</th>
+                  <th rowspan="2" class="text-center justify-content-center align-items-center">Libellé</th>
+                  <th rowspan="2" class="text-center justify-content-center align-items-center">Quote part</th>
+                  <th rowspan="2" class="text-center justify-content-center align-items-center">Statut</th>
+                  <th colspan="3" class="text-center justify-content-center align-items-center">Valeur financiére</th>
+                  <th rowspan="2" class="text-center justify-content-center align-items-center">Actions</th>
+              </tr>
+              <tr>
+                <th>Montant Total</th>
+                <th>Payé</th>
+                <th>Reste</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of fundsapeals">
+                <td>
+                  <span class="text-black">
+                    <div class="d-flex align-items-center">
+                      <div>
+                        <span class="text-black d-block">
+                            Lot : {{item?.numLot}}
+                        </span>
+                        <span class="text-black d-block">
+                            Porte : {{item?.numPorte}}
+                        </span>
+                      </div>
+                    </div>
+                  </span>
+                </td>
+                <td>
+                  <span class="text-black">
+                    <div class="d-flex align-items-center">
+                      <div>
+                        <span class="text-black d-block">
+                            Nom : {{item?.ownerCo?.nom}}
+                        </span>
+                        <span class="text-black d-block">
+                            Type : <sapn class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item?.ownerCo?.type}}</sapn>
+                        </span>
+                      </div>
+                    </div>
+                  </span>
+                </td>
+                <td><span>{{item?.libelle}}</span></td>
+                <td>
+                  <span>{{item?.quotePart | number}} XOF</span>
+                </td>
+                <td>
+                  <span *ngIf="item?.etat === 'PAYER'" class="badge badge-success">Payer</span>
+                  <span *ngIf="item?.etat === 'IMPAYER'" class="badge badge-danger">Impayer</span>
+                  <span *ngIf="item?.etat === 'ATTENTE'" class="badge badge-warning">En attente</span>
+                  <span *ngIf="item?.etat === 'EN COURS'" class="badge badge-info">En cours</span>
+                </td>
+                <td class="text-right"><span class="text-primary bold">{{item?.montant | number}} XOF</span></td>
+                <td class="text-right"><span class="text-success bold">{{item?.payer | number}} XOF</span></td>
+                <td class="text-right"><span class="text-danger bold">{{item?.reste | number}} XOF</span></td>
+                <td class="text-center">
+                  <ng-template [ngxPermissionsOnly]="['FUNDS:APEAL:SHOW']">
+                    <button (click)="show(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template [ngxPermissionsOnly]="['FUNDS:APEAL:DELETE']">
+                    <button (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template [ngxPermissionsOnly]="['FUNDS:APEAL:SHOW']">
+                    <button (click)="printerFundsApeal(item)" type="button"class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                        <i class="feather icon-printer"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template [ngxPermissionsOnly]="['FUNDS:APEAL:SHOW']">
+                    <button (click)="addProvision(item)" type="button"class="btn btn-icon btn-success ml-1" ngbTooltip="Ajouter un règlement">
+                        <i class="feather icon-credit-card"></i>
+                    </button>
+                  </ng-template>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="4"></th>
+                <th class="text-right"><span class="text-primary bold">{{montant | number}} XOF</span></th>
+                <th class="text-right"><span class="text-success bold">{{paye | number}} XOF</span></th>
+                <th class="text-right"><span class="text-danger bold">{{reste | number}} XOF</span></th>
+                <th></th>
+               
+              </tr>
+            </tfoot>
+        </table>
+    </div>
+</app-card>
+</ng-template>
+
+<ng-template [ngxPermissionsExcept]="['FUNDS:APEAL:LIST']">
+  <div class="col-md-12">
+    <app-no-droit [title]="'liste des appels de charges'"></app-no-droit>
+  </div>
+</ng-template>
+

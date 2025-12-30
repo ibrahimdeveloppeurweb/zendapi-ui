@@ -1,0 +1,279 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="width btn-filter-prospect">
+      <app-filter class="width" [name]="false" [nameTitle]="nameTitle" [user]="true" [userTitle]="userTitle"
+          [bien]="false" [bienTitle]="bienTitle" [etat]="true" [etatRow]="etatRow" [etatTitle]="etatTitle"
+          [categorie]="true" [categorieRow]="categorieRow" [categorieTitle]="categorieTitle" [dateD]="true"
+          [dateF]="true" [create]="true" [min]="true" [minTitle]="minTitle" [max]="true" [maxTitle]="maxTitle"
+          [ordre]="true" [code]="true" [count]="true" [type]="true" [typeRow]="typeRow"
+          (typeEvent)="onChangeLoad('true',$event)" (filterEvent)="onFilter($event)">
+      </app-filter>
+  </div>
+
+  <!-- BOUTONS DE GESTION -->
+  <div class="col-sm-12 mb-4 btn-all-owner">
+      <div class="first">
+          <div class="second">
+              <div class="btn-prospect">
+                  <button type="button" class="btn btn-primary m-1" (click)="add('PROSPECT_LOCATION')"
+                      ngbTooltip="Cliquez ici pour ajouter un prospect">
+                      Prospect
+                  </button>
+              </div>
+              <div class="btn-agent">
+                  <button type="button" class="btn btn-warning m-1" (click)="add('OFFRE')"
+                      ngbTooltip="Cliquez ici pour ajouter un offre">
+                      Offre
+                  </button>
+              </div>
+              <div class="btn-agent">
+                  <button type="button" class="btn btn-success m-1" (click)="add('BESOIN')"
+                      ngbTooltip="Cliquez ici pour ajouter un besoin">
+                      Besoin
+                  </button>
+              </div>
+              <div class="btn-agent">
+                  <button type="button" class="btn btn-dark m-1" (click)="add('AVIS')"
+                      ngbTooltip="Cliquez ici pour ajouter un type d'offre">
+                      AVIS DE RECHERCHE
+                  </button>
+              </div>
+
+              <div class="btn-agent">
+                <button type="button" class="btn btn-success m-1" (click)="add('RESPONSE')"
+                    ngbTooltip="Cliquez ici pour voir la réponse">
+                    Réponse officielle
+                </button>
+            </div>
+      </div>
+      <div class="btn-group float-right m-1 btn-outil-owner" ngbDropdown>
+          <button class="btn btn-warning" ngbDropdownToggle type="button">
+              Outils <i class="fas fa-tools"></i>
+          </button>
+          <div class="dropdown-menu-right" ngbDropdownMenu>
+              <a class="dropdown-item" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer le listing">
+                  Imprimer <i class="feather icon-printer"></i>
+              </a>
+              <a class="dropdown-item" ngbTooltip="Cliquez ici pour exporter le listing">
+                  Exporter <i class="fa fa-file-excel"></i>
+              </a>
+              <a class="dropdown-item" ngbTooltip="Cliquez ici pour importer un fichier">
+                  Importer <i class="feather icon-download"></i>
+              </a>
+              <a class="dropdown-item" ngbTooltip="Cliquez ici pour génerer un modèle">
+                  Génerer <i class="feather icon-upload"></i>
+              </a>
+          </div>
+      </div>
+  </div>
+
+  <div *ngIf="scene && type === 'PROSPECT_LOCATION'" class="tasks-board mb-3" id="kanbanboard">
+      <smooth-dnd-container [orientation]="'horizontal'" [dragHandleSelector]="'.column-drag-handle'">
+          <smooth-dnd-draggable *ngFor="let column of scene?.children; let i=index" [columnId]="column?.id">
+              <div class="tasks-list" [ngClass]="column.props.className">
+                  <div class="d-flex mb-3">
+                      <div class="flex-grow-1">
+                          <h5 class="ml-2 fs-14 text-uppercase fw-semibold mb-0">
+                              {{column?.name}} <small class="badge badge-primary">{{ column?.children?.length
+                                  }}</small>
+                          </h5>
+                      </div>
+                      <div class="flex-shrink-0">
+                          <div class="dropdown card-header-dropdown" ngbDropdown>
+                              <a class="text-reset dropdown-btn arrow-none" href="javascript:void(0);"
+                                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                  ngbDropdownToggle>
+                                  <span class="fw-medium text-muted fs-12">Action<i
+                                          class="mdi mdi-chevron-down ms-1"></i></span>
+                              </a>
+                              <div class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
+                                  <a class="dropdown-item" href="javascript:void(0);">Assigner</a>
+                                  <a class="dropdown-item" href="javascript:void(0);">Non Assigner</a>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <smooth-dnd-container [groupName]="'col'" (drop)="onCardDrop(column?.id, $event)"
+                      [getChildPayload]="getCardPayload(column?.id)" [dragClass]="'card-ghost'"
+                      [dropClass]="'card-ghost-drop'">
+
+                      <smooth-dnd-draggable *ngFor="let prospect of column.children">
+                          <ng-template [ngTemplateOutlet]="TaskContent"
+                              [ngTemplateOutletContext]="{task:prospect.data}">
+                          </ng-template>
+                      </smooth-dnd-draggable>
+                  </smooth-dnd-container>
+              </div>
+          </smooth-dnd-draggable>
+      </smooth-dnd-container>
+  </div>
+  <div *ngIf="!scene && type === 'PROSPECT_LOCATION'">
+    <app-no-data class="width" [title]="'Vous n\'avez pas definis de proccessus pour les prospects location'"></app-no-data>
+  </div>
+
+  <!-- LISTE DES OFFRES  -->
+  <div class="width list-type-offre">
+    <app-offre-list *ngIf="type === 'OFFRE'" [offres]="offres"></app-offre-list>
+  </div>
+
+
+  <!-- LISTE DES TYPES D'OFFRES  -->
+  <div class="width list-type-offre">
+    <app-offre-type-list *ngIf="type === 'TYPE_OFFRE'" [typeOffres]="typeOffres"></app-offre-type-list>
+  </div>
+
+  <!-- LISTE DES BESOIN -->
+  <div class="width list-besoin">
+    <app-reservation-list *ngIf="type === 'BESOIN'" [besoin]="besoins"></app-reservation-list>
+  </div>
+</div>
+
+  <!-- LISTE DES REPONSES OFFICIELLES -->
+  <div class="width list-reponses-officielles">
+    <app-response-list *ngIf="type === 'REPONSE OFFICIELLE'" [response]="responses"></app-response-list>
+  </div>
+</div>
+
+
+
+
+<ng-template #TaskContent let-task='task'>
+  <div class="card tasks-box">
+      <div class="card-body">
+          <div class="text-center">
+              <div class="d-flex mb-2">
+                  <div class="dropdown" ngbDropdown>
+                      <a href="javascript:void(0);" class="text-muted arrow-none" id="dropdownMenuLink1"
+                          data-bs-toggle="dropdown" aria-expanded="false" ngbDropdownToggle>
+                      </a>
+                      <ul class="dropdown-menu dropdown-menu-end dropleft" aria-labelledby="dropdownMenuLink1"
+                          ngbDropdownMenu placement="bottom-left">
+                          <li>
+                              <a href=javascript:void(0) class="dropdown-item" (click)="action(task)">
+                                  <i class="fas fa-tools text-muted text-info"></i> Action Commercial
+                              </a>
+                          </li>
+                          <li *ngIf="task?.infoProgress !== 100">
+                              <a href=javascript:void(0) class="dropdown-item" (click)="edit(task)">
+                                  <i class="fas fa-plus text-muted text-info"></i> Completer les informations
+                              </a>
+                          </li>
+                          <li *ngIf="!task?.isCustomer">
+                              <a href=javascript:void(0) class="dropdown-item" (click)="transformation(task)">
+                                  <i class="fas fa-undo-alt text-muted text-info"></i> Conversion en locataire
+                              </a>
+                          </li>
+                          <li>
+                              <a href=javascript:void(0) class="dropdown-item" (click)="printerProspect(task)">
+                                  <i class="fas fa-print text-muted text-warning"></i> Imprimer la fiche du prospect
+                              </a>
+                          </li>
+                          <li>
+                              <a href=javascript:void(0) class="dropdown-item" (click)="assignerProspect(task)">
+                                  <i class="fas fa-share text-muted text-success"></i> Assigner a un Commercial
+                              </a>
+                          </li>
+                          <li>
+                              <a href=javascript:void(0) class="dropdown-item" (click)="note(task)">
+                                  <i class="fas fa-pen text-muted text-primary"></i> Ajouter une activiter
+                              </a>
+                          </li>
+                          <li>
+                              <a href=javascript:void(0) class="dropdown-item" (click)="abonner(task)">
+                                  <i class="fas fa-paperclip text-muted text-success"></i> s'abonner au compte du prospect
+                              </a>
+                          </li>
+                          <li>
+                              <a href=javascript:void(0) class="dropdown-item" (click)="deleteProspect(task)">
+                                  <i class="fas fa-trash text-muted text-danger"></i> Delete
+                              </a>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="col">
+                      <img class="img-radius img-fluid wid-60 hei-60" [src]="'assets/images/avatar-default.png'"
+                          onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                  </div>
+              </div>
+              <div>
+                  <h5 class="mb-1 mt-3" (click)="showProspect(task)">
+                      <span class="task-title" style="cursor: pointer;">{{task?.nom}}</span>
+                  </h5>
+              </div>
+              <div>
+                  <p class="mb-3 text-muted">
+                      <b class="m-4"><i class="feather icon-phone"></i> {{task?.telephone}}</b><br>
+                      <b class="m-4"><i class="feather icon-mail"></i> {{task?.email}}</b><br>
+                      <span class="badge badge-primary">BACK-OFFICE</span>
+                  </p>
+              </div>
+          </div>
+          <div class="text-center">
+            <b>Durée de traitement</b><br>
+            <b class="text-small text-primary">{{ getTimeDifference(task.createdAt) }}</b>
+          </div> 
+          <div class="mb-3" *ngIf="task.progress != 0">
+              <div class="d-flex mb-1">
+                  <div class="flex-grow-1">
+                      <h6 class="text-muted mb-0"><span class="text-secondary">Etat des informations</span></h6>
+                  </div>
+                  <div class="flex-shrink-0">
+                      <span class="text-muted">{{ task?.infoProgress }}%</span>
+                  </div>
+              </div>
+              <div class="rounded-3">
+                  <ngb-progressbar [value]="task?.infoProgress"
+                  [type]="task?.infoProgress  < 40 ? 'danger' : task?.infoProgress  < 60 ? 'primary' : task?.infoProgress  < 80 ? 'info' : 'success'"
+                  class="progress-sm"></ngb-progressbar>
+              </div>
+          </div>
+          <div class="d-flex align-items-center mb-2" *ngIf="task?.commerciaux?.length > 0">
+              <div class="flex-grow-1">
+                  <div class="d-flex gap-1">
+                      <span class="text-secondary">Commerciaux</span>
+                  </div>
+              </div>
+              <div class="flex-shrink-0">
+                  <div class="avatar-group">
+                      <a href="javascript: void(0);" class="avatar-group-item" placement="top"  *ngFor="let item of task?.commerciaux" ngbTooltip="{{item?.nom}}">
+                          <img [src]="item?.photoSrc ? publicUrl+'/'+item?.photoSrc : 'assets/images/avatar-default.png'" alt=""
+                              class="rounded-circle avatar-xxs" onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" >
+                      </a>
+                  </div>
+              </div>
+          </div>
+          <div class="d-flex align-items-center" *ngIf="task?.abonnees?.length > 0">
+              <div class="flex-grow-1">
+                  <div class="d-flex gap-1">
+                      <span class="text-secondary">Abonnées</span>
+                  </div>
+              </div>
+              <div class="flex-shrink-0">
+                  <div class="avatar-group">
+                      <a href="javascript: void(0);" class="avatar-group-item" placement="top" *ngFor="let item of task?.abonnees" ngbTooltip="{{item?.nom}}">
+                          <img [src]="item?.photoSrc ? publicUrl+'/'+item?.photoSrc : 'assets/images/avatar-default.png'" alt=""
+                              class="rounded-circle avatar-xxs" onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" >
+                      </a>
+                  </div>
+              </div>
+          </div>
+          <p class="text-muted" *ngIf="task?.lastActivity?.objet"> {{ task?.lastActivity?.objet }} </p>
+      </div>
+      <div class="card-footer border-top-dashed">
+          <div class="d-flex">
+              <div class="flex-grow-1">
+              </div>
+              <div class="flex-shrink-0">
+                  <ul class="link-inline mb-0">
+                      <li class="list-inline-item">
+                          <a href="javascript:void(0)" class="text-muted"><i class="fas fa-comment text-info"></i> {{task?.nbActivities}}</a>
+                      </li>
+                      <li class="list-inline-item">
+                          <a href="javascript:void(0)" class="text-muted"><i class="fas fa-paperclip text-success"></i> {{task?.nbAbonnees}}</a>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </div><!--end card-body-->
+  </div><!--end card-->
+</ng-template>

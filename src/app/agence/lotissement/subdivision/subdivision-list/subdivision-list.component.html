@@ -1,0 +1,176 @@
+<div class="row justify-content-center">
+    <!-- FILTRE DE RECHERCHE -->
+    <div class="width btn-filter-subdivision">
+        <ng-template [ngxPermissionsOnly]="['SUBDIVISION:LIST', 'ISLET:LIST', 'LOT:LIST']">
+            <app-filter class="width"
+              [bienTitle]="bienTitle"
+              [bien]="bien"
+              [name]="true"
+              [nameTitle]="nameTitle"
+              [user]="true"
+              [userTitle]="userTitle"
+            [refTitle]="refTitle" [etat]="true" [etatRow]="etatRow" [etatTitle]="etatTitle" [categorie]="true" [categorieTitle]="categorieTitle" [categorieRow]="categorieRow"
+                [dateD]="true" [dateF]="true" [create]="true" [min]="mtnFiltre" [minTitle]="minTitle" [max]="mtnFiltre" [maxTitle]="maxTitle" [ordre]="true" [code]="true" [count]="true" [type]="true" [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)"
+                (filterEvent)="onFilter($event)">
+            </app-filter>
+        </ng-template>
+    </div>
+    <ng-template [ngxPermissionsExcept]="['SUBDIVISION:LIST', 'ISLET:LIST', 'LOT:LIST']">
+        <div class="col-md-12">
+            <app-no-droit [title]="'subdivision'"></app-no-droit>
+        </div>
+    </ng-template>
+
+
+    <!-- BOUTONS DE GESTION -->
+    <div class="col-sm-12 mb-4 btn-all-subdivision">
+        <div class="first">
+            <div class="second">
+                <div class="btn-subdivision">
+                    <button *ngxPermissionsOnly="['SUBDIVISION:NEW']" class="btn btn-primary" (click)="addSubdivision()" type="button" ngbTooltip="Cliquez ici pour ajouter un lotissement">
+                      Lotissement <i class="fas fa-drafting-compass"></i>
+                    </button>
+                </div>
+                <div class="btn-ilot">
+                    <button *ngxPermissionsOnly="['ISLET:NEW']" (click)="addIslet()" type="button" class="btn btn-secondary m-1" ngbTooltip="Cliquez ici pour ajouter un ilot">
+                      Ilot <i class="fas fa-campground"></i>
+                    </button>
+                </div>
+                <!-- <div class="btn-lot" data-hint="" data-hintposition="top-right"> -->
+                <div class="btn-lot">
+                    <button *ngxPermissionsOnly="['LOT:NEW']" (click)="addLot()" type="button" class="btn btn-info m-1" ngbTooltip="Cliquez ici pour ajouter un lot">
+                      Lot <i class="fas fa-circle-notch"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group float-right m-1 btn-outil-subdivision" ngbDropdown>
+            <button class="btn btn-warning" ngbDropdownToggle type="button">
+                          Outils <i class="fas fa-tools"></i>
+                        </button>
+            <div class="dropdown-menu-right" ngbDropdownMenu>
+                <a *ngxPermissionsOnly="['SUBDIVISION:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer le listing">
+                              Imprimer <i class="feather icon-printer"></i>
+                            </a>
+                <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+                              Exporter <i class="fa fa-file-excel"></i>
+                            </a>
+                <a class="dropdown-item" (click)="onImport()" ngbTooltip="Cliquez ici pour importer un fichier">
+                              Importer <i class="feather icon-download"></i>
+                            </a>
+                <a class="dropdown-item" (click)="onModel()" ngbTooltip="Cliquez ici pour génerer un modèle">
+                              Génerer <i class="feather icon-upload"></i>
+                            </a>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- LISTE DES LOTISSEMENTS -->
+    <div class="width list-subdivision">
+        <ng-template ngxPermissionsOnly="SUBDIVISION:LIST">
+            <div class="col-md-12" *ngIf="type === 'LOTISSEMENT'">
+                <span class="badge badge-primary mb-4 f-14 width">
+                    LISTE DES LOTISSEMENTS
+                </span>
+                <app-no-data [title]="'Aucun lotissement trouvé'" *ngIf="type === 'LOTISSEMENT' && subdivisions.length === 0"></app-no-data>
+                <div class="row">
+                    <div class="col-lg-4 col-md-4" *ngFor="let item of subdivisions">
+                        <app-card [customHeader]="true" headerClass="border-0 p-2 pb-0" [options]="false" cardClass="user-card user-card-1" blockClass="pt-0 users-contact">
+                            <div class="app-card-header">
+                                <div class="row align-items-end">
+                                    <div class="col text-left pb-3"></div>
+                                    <div class="col text-right pb-3">
+                                        <span class="badge" [ngClass]="{
+                                            'badge-success' : item.etat === 'DISPONIBLE',
+                                            'badge-danger' : item.etat === 'INDISPONIBLE'
+                                            }">
+                                            {{ item?.etat }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="cover-img-block">
+                                    <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/promotion-default.jpg'" alt="{{ item?.libelle }}" title="{{ item?.libelle }}" class="img-fluid size-img-house">
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h5 class="mb-1 mt-3">{{ item?.nom }}</h5>
+                                <h6 class="mb-1 mt-3">
+                                    Situé: {{ item?.quartier + ' - ' + item?.commune+ ' - ' + item?.ville }}
+                                </h6>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col text-left">
+                                    <p class="mb-0">{{ item?.code }}</p>
+                                </div>
+                                <div class="col text-right text-primary">
+                                    <p class="mb-0">{{ item?.nbrIlot }} Ilot(s) - {{ item?.nbrLot }} Lot(s) </p>
+                                </div>
+                            </div>
+                            <div class="row align-content">
+                                <div class="col text-right">
+                                    <button *ngxPermissionsOnly="'SUBDIVISION:SHOW'" (click)="map(item)" type="button" class="btn btn-icon btn-success" ngbTooltip="Ajouter les données de Geo-Localisation">
+                                        <i class="fas fa-map"></i>
+                                    </button>
+                                    <!-- <button  (click)="visite3D(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Visite 3D">
+                                      <i class="fas fa-cube"></i>
+                                    </button> -->
+                                    <button *ngxPermissionsOnly="'SUBDIVISION:SHOW'" (click)="showSubdivision(item)" type="button" class="btn btn-icon btn-secondary ml-1" ngbTooltip="Détails">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button *ngxPermissionsOnly="'SUBDIVISION:EDIT'" (click)="editSubdivision(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                                        <i class="feather icon-edit-2"></i>
+                                    </button>
+                                    <button *ngxPermissionsOnly="'SUBDIVISION:PRINTER:SHOW'" (click)="printerSubdivision(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                                        <i class="feather icon-printer"></i>
+                                    </button>
+                                    <button *ngxPermissionsOnly="'SUBDIVISION:DELETE'" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                                       <i class="feather icon-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </app-card>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+    <ng-template ngxPermissionsExcept="SUBDIVISION:LIST" [ngxPermissionsOnly]="['ISLET:LIST', 'LOT:LIST']">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'LOTISSEMENT'" [title]="'liste lotissement'"></app-no-droit>
+        </div>
+    </ng-template>
+
+    <!-- LISTE DES ILOTS -->
+    <ng-template ngxPermissionsOnly="ISLET:LIST">
+        <div class="col-md-12" *ngIf="type === 'ILOT' && islets.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+                LISTE DES ILOTS
+            </span>
+            <app-no-data [title]="'Aucun ilot trouvé'" *ngIf="type === 'ILOT' && islets.length === 0"></app-no-data>
+        </div>
+        <app-islet-list class="width" [islets]="islets" *ngIf="type === 'ILOT' && islets.length > 0"></app-islet-list>
+    </ng-template>
+    <ng-template ngxPermissionsExcept="ISLET:LIST">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'ILOT'" [title]="'liste ilot'"></app-no-droit>
+        </div>
+    </ng-template>
+
+    <!-- LISTE DES LOTS -->
+    <ng-template ngxPermissionsOnly="LOT:LIST">
+        <div class="col-md-12" *ngIf="type === 'LOT' && lots.length === 0">
+            <span class="badge badge-info mb-4 f-14 width">
+                LISTE DES LOTS
+            </span>
+            <app-no-data [title]="'Aucun lot trouvé'" *ngIf="type === 'LOT' && lots.length === 0"></app-no-data>
+        </div>
+        <app-lot-list class="width" [lots]="lots" *ngIf="type === 'LOT'&& lots.length > 0"></app-lot-list>
+    </ng-template>
+    <ng-template ngxPermissionsExcept="LOT:LIST">
+        <div class="col-md-12">
+            <app-no-droit *ngIf="type === 'LOT'" [title]="'liste lot'"></app-no-droit>
+        </div>
+    </ng-template>
+</div>

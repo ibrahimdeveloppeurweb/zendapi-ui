@@ -1,0 +1,442 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  
+  <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+    <form [formGroup]="form">
+      
+      <!-- SELECTION DU BIEN -->
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h6 class="mb-0"><i class="fas fa-home"></i> Sélection du bien</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3">
+                  <label for="owner_id">Propriétaire <span class="asterix">*</span></label>
+                  <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true" (uuid)="setOwnerUuid($event)"
+                    [placeholder]="'Selectionez un Propriétaire'">
+                  </app-entity-finder>
+                </div>
+                <div class="col-md-3">
+                  <div *ngIf="isLoadingHouses" class="spinner-container">
+                    <div class="spinner"></div>
+                  </div>
+                  <label for="house">Bien concerné <span class="asterix">*</span></label>
+                  <select (change)="selectHouse($event)" formControlName="house" class="form-control" id="house" [ngClass]="{
+                      'is-invalid': submit && f.house.errors,
+                      'is-valid': submit && f.house.valid
+                    }">
+                    <option value="null" selected>Selectionnez un bien</option>
+                    <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                    <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6" *ngIf="selectedHouse">
+                  <div class="alert alert-info">
+                    <strong>{{ selectedHouse.nom }}</strong><br>
+                    <small>
+                      Propriétaire: {{ selectedHouse.owner?.nom }}<br>
+                      Type: {{ selectedHouse.type }}<br>
+                      Ville: {{ selectedHouse.ville }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- STATISTIQUES GÉNÉRALES (NOUVEAU) -->
+      <div class="row mb-4" *ngIf="selectedHouse && blocks.length > 0">
+        <div class="col-md-12">
+          <div class="card border-success">
+            <div class="card-header bg-success text-white">
+              <h6 class="mb-0"><i class="fas fa-chart-bar"></i> Statistiques générales</h6>
+            </div>
+            <div class="card-body">
+              <div class="row text-center">
+                <div class="col-md-3">
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <h4 class="text-primary">{{ blocks.length }}</h4>
+                      <small>Blocs</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <h4 class="text-info">{{ getTotalRentalsCount() }}</h4>
+                      <small>Locatives totales</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <h4 class="text-success">{{ getAvailableRentalsCount() }}</h4>
+                      <small>Disponibles</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <h4 class="text-warning">{{ getTotalRentalsCount() - getAvailableRentalsCount() }}</h4>
+                      <small>Occupées/Réservées</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- GESTION DES BLOCS -->
+      <div class="row mb-4" *ngIf="selectedHouse">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+              <h6 class="mb-0"><i class="fas fa-cubes"></i> Gestion des blocs</h6>
+              <button type="button" class="btn btn-success btn-sm" (click)="setActionMode('addBlock')" 
+                      [disabled]="actionMode !== 'view'">
+                <i class="fas fa-plus"></i> Nouveau bloc
+              </button>
+            </div>
+            <div class="card-body">
+              
+              <!-- Liste des blocs -->
+              <div *ngIf="actionMode === 'view'">
+                <div *ngIf="isLoadingBlocks" class="text-center">
+                  <i class="fas fa-spinner fa-spin"></i> Chargement des blocs...
+                </div>
+                
+                <div *ngIf="!isLoadingBlocks && blocks.length === 0" class="alert alert-warning">
+                  <i class="fas fa-info-circle"></i> Aucun bloc trouvé pour ce bien.
+                </div>
+                
+                <div *ngIf="!isLoadingBlocks && blocks.length > 0" class="table-responsive">
+                  <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Libellé</th>
+                        <th>Type</th>
+                        <th>Loyer</th>
+                        <th>Charge</th>
+                        <th>Superficie</th>
+                        <th>Nb Locatives</th>
+                        <th class="text-center">Locatives créées</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let block of blocks" 
+                          [class.table-active]="selectedBlock?.id === block.id"
+                          (click)="selectBlock(block)" style="cursor: pointer;">
+                        <td><strong>{{ block.libelle }}</strong></td>
+                        <td>{{ block.type }}</td>
+                        <td>{{ block.loyer | number }} {{ global.device }}</td>
+                        <td>{{ block.charge | number }} {{ global.device }}</td>
+                        <td>{{ block.superficie }} m²</td>
+                        <td>{{ block.nbLocatives }}</td>
+                        <td class="text-center">
+                          <span class="badge" [ngClass]="{
+                            'badge-success': block.rentals && block.rentals.length === block.nbLocatives,
+                            'badge-warning': block.rentals && block.rentals.length > 0 && block.rentals.length < block.nbLocatives,
+                            'badge-secondary': !block.rentals || block.rentals.length === 0
+                          }">
+                            {{ block.rentals ? block.rentals.length : 0 }} / {{ block.nbLocatives }}
+                          </span>
+                        </td>
+                        <td class="text-nowrap">
+                          <button type="button" class="btn btn-sm btn-info mr-1" 
+                                  (click)="setActionMode('editBlock', block); $event.stopPropagation()"
+                                  title="Modifier le bloc">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-danger" 
+                                  (click)="deleteBlock(block); $event.stopPropagation()"
+                                  title="Supprimer le bloc">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <!-- Formulaire d'ajout/modification de bloc -->
+              <div *ngIf="actionMode === 'addBlock' || actionMode === 'editBlock'" formGroupName="blockForm">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <h6 class="text-primary">
+                      <i class="fas fa-cube"></i> 
+                      {{ actionMode === 'addBlock' ? 'Nouveau bloc' : 'Modifier le bloc' }}
+                    </h6>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-4">
+                    <label for="libelle">Libellé <span class="asterix">*</span></label>
+                    <input formControlName="libelle" type="text" class="form-control" 
+                           placeholder="Ex: Bloc A, Bloc Commercial...">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="type">Type <span class="asterix">*</span></label>
+                    <select formControlName="type" class="form-control">
+                      <optgroup *ngFor="let item of typeRow" [label]="item.label">
+                        <option *ngFor="let row of item.type" [value]="row.value">{{ row.label }}</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="nbPieces">Nombre de pièces <span class="asterix">*</span></label>
+                    <input formControlName="nbPieces" type="number" class="form-control" min="1">
+                  </div>
+                </div>
+                
+                <div class="row mt-3">
+                  <div class="col-md-3">
+                    <label for="loyer">Loyer <span class="asterix">*</span></label>
+                    <input formControlName="loyer" type="number" step="5000" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="charge">Charge <span class="asterix">*</span></label>
+                    <input formControlName="charge" type="number" step="5000" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="pasPorte">Pas de porte <span class="asterix">*</span></label>
+                    <input formControlName="pasPorte" type="number" step="5000" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="superficie">Superficie (m²) <span class="asterix">*</span></label>
+                    <input formControlName="superficie" type="number" step="1" class="form-control">
+                  </div>
+                </div>
+                
+                <div class="row mt-3">
+                  <div class="col-md-4">
+                    <label for="nbLocatives">Nombre de locatives <span class="asterix">*</span></label>
+                    <input formControlName="nbLocatives" type="number" min="1" class="form-control">
+                  </div>
+                  <div class="col-md-8 d-flex align-items-end">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-success" (click)="saveBlock()">
+                        <i class="fas fa-save"></i> {{ actionMode === 'addBlock' ? 'Créer' : 'Modifier' }}
+                      </button>
+                      <button type="button" class="btn btn-secondary" (click)="setActionMode('view')">
+                        <i class="fas fa-times"></i> Annuler
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- GESTION DES LOCATIVES (AFFICHÉ PAR DÉFAUT) -->
+      <div class="row mb-4" *ngIf="selectedBlock">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+              <h6 class="mb-0">
+                <i class="fas fa-door-open"></i> 
+                Locatives du bloc "{{ selectedBlock.libelle }}"
+                <span class="badge badge-light ml-2">{{ blockRentals.length }}</span>
+              </h6>
+              <button type="button" class="btn btn-success btn-sm" (click)="setActionMode('addRental')"
+                      [disabled]="actionMode !== 'view'">
+                <i class="fas fa-plus"></i> Nouvelle locative
+              </button>
+            </div>
+            <div class="card-body">
+              
+              <!-- Informations du bloc sélectionné -->
+              <div class="alert alert-info mb-3">
+                <div class="row">
+                  <div class="col-md-2"><strong>Type:</strong> {{ selectedBlock.type }}</div>
+                  <div class="col-md-2"><strong>Loyer:</strong> {{ selectedBlock.loyer | number }} {{ global.device }}</div>
+                  <div class="col-md-2"><strong>Charge:</strong> {{ selectedBlock.charge | number }} {{ global.device }}</div>
+                  <div class="col-md-2"><strong>Superficie:</strong> {{ selectedBlock.superficie }} m²</div>
+                  <div class="col-md-2"><strong>Nb locatives:</strong> {{ selectedBlock.nbLocatives }}</div>
+                  <div class="col-md-2"><strong>Créées:</strong> {{ blockRentals.length }}</div>
+                </div>
+              </div>
+              
+              <!-- Liste des locatives (TOUJOURS AFFICHÉE) -->
+              <div *ngIf="actionMode === 'view'">
+                <div *ngIf="isLoadingRentals" class="text-center">
+                  <i class="fas fa-spinner fa-spin"></i> Chargement des locatives...
+                </div>
+                
+                <div *ngIf="!isLoadingRentals && blockRentals.length === 0" class="alert alert-warning">
+                  <i class="fas fa-info-circle"></i> 
+                  Aucune locative trouvée pour ce bloc. 
+                  <a href="#" class="alert-link" (click)="setActionMode('addRental'); $event.preventDefault()">
+                    Cliquez ici pour en créer une.
+                  </a>
+                </div>
+                
+                <div *ngIf="!isLoadingRentals && blockRentals.length > 0" class="table-responsive">
+                  <table class="table table-bordered table-hover table-sm">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>N° Porte</th>
+                        <th>Type</th>
+                        <th>Étage</th>
+                        <th>Pièces</th>
+                        <th>Superficie</th>
+                        <th>Loyer</th>
+                        <th>Charge</th>
+                        <th>Total</th>
+                        <th>État</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let rental of blockRentals; trackBy: trackByRentalId">
+                        <td><strong>{{ rental.porte }}</strong></td>
+                        <td>{{ rental.type }}</td>
+                        <td>{{ rental.etage }}</td>
+                        <td>{{ rental.piece }}</td>
+                        <td>{{ rental.superficie || '-' }} <span *ngIf="rental.superficie">m²</span></td>
+                        <td>{{ rental.montant | number }} {{ global.device }}</td>
+                        <td>{{ rental.charge | number }} {{ global.device }}</td>
+                        <td><strong>{{ rental.total | number }} {{ global.device }}</strong></td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                            'badge-success': rental.etat === 'DISPONIBLE',
+                            'badge-warning': rental.etat === 'RESERVE',
+                            'badge-danger': rental.etat === 'OCCUPE',
+                            'badge-secondary': !rental.etat
+                          }">{{ rental.etat || 'Non défini' }}</span>
+                        </td>
+                        <td class="text-nowrap">
+                          <button type="button" class="btn btn-sm btn-info mr-1" 
+                                  (click)="setActionMode('editRental', rental)"
+                                  title="Modifier la locative">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-danger" 
+                                  (click)="deleteRental(rental)"
+                                  title="Supprimer la locative">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  
+                  <!-- Résumé en bas de tableau -->
+                  <div class="mt-2">
+                    <small class="text-muted">
+                      Total: {{ blockRentals.length }} locative(s) sur {{ selectedBlock.nbLocatives }} prévue(s)
+                      <span *ngIf="blockRentals.length < selectedBlock.nbLocatives" class="text-warning">
+                        - {{ selectedBlock.nbLocatives - blockRentals.length }} restante(s) à créer
+                      </span>
+                    </small>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Formulaire d'ajout/modification de locative -->
+              <div *ngIf="actionMode === 'addRental' || actionMode === 'editRental'" formGroupName="rentalForm">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <h6 class="text-info">
+                      <i class="fas fa-door-open"></i> 
+                      {{ actionMode === 'addRental' ? 'Nouvelle locative' : 'Modifier la locative' }}
+                    </h6>
+                  </div>
+                </div>
+                
+                <!-- Informations de base -->
+                <div class="row">
+                  <div class="col-md-3">
+                    <label for="porte">N° Porte <span class="asterix">*</span></label>
+                    <input formControlName="porte" type="text" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="type">Type <span class="asterix">*</span></label>
+                    <select formControlName="type" class="form-control">
+                      <optgroup *ngFor="let item of typeRow" [label]="item.label">
+                        <option *ngFor="let row of item.type" [value]="row.value">{{ row.label }}</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="etage">Étage <span class="asterix">*</span></label>
+                    <select formControlName="etage" class="form-control">
+                      <option *ngFor="let item of etageRow" [value]="item.value">{{ item.label }}</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="piece">Pièces <span class="asterix">*</span></label>
+                    <input formControlName="piece" type="number" min="1" class="form-control">
+                  </div>
+                </div>
+                
+                <!-- Informations financières -->
+                <div class="row mt-3">
+                  <div class="col-md-3">
+                    <label for="montant">Loyer <span class="asterix">*</span></label>
+                    <input formControlName="montant" type="number" step="5000" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="charge">Charge <span class="asterix">*</span></label>
+                    <input formControlName="charge" type="number" step="5000" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="pasPorte">Pas de porte</label>
+                    <input formControlName="pasPorte" type="number" step="5000" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="total">Total</label>
+                    <input formControlName="total" type="number" class="form-control bg-light" readonly>
+                  </div>
+                </div>
+                
+                <!-- Superficie -->
+                <div class="row mt-3">
+                  <div class="col-md-4">
+                    <label for="superficie">Superficie (m²)</label>
+                    <input formControlName="superficie" type="number" step="1" class="form-control">
+                  </div>
+                  <div class="col-md-8 d-flex align-items-end">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-success" (click)="saveRental()">
+                        <i class="fas fa-save"></i> {{ actionMode === 'addRental' ? 'Créer' : 'Modifier' }}
+                      </button>
+                      <button type="button" class="btn btn-secondary" (click)="setActionMode('view')">
+                        <i class="fas fa-times"></i> Annuler
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="onClose()">
+      <i class="fas fa-times"></i> Fermer
+    </button>
+  </div>

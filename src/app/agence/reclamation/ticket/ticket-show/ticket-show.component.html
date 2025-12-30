@@ -1,0 +1,458 @@
+<div class="row help-desk">
+    <div class="col-md-12 mb-3">
+        <app-card [hidHeader]="true">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1 d-flex flex-column justify-content-start">
+                    <div>
+                        <h4> {{ ticket?.objet }} </h4>
+                    </div>
+                </div>
+           
+
+            </div>
+            
+                <div class="border border-2 rounded p-3 mb-4">
+                    <div class="timeline-list timeline-list-horizontal hori-timeline py-4">
+                        <perfect-scrollbar [autoPropagation]="false" class="shadow-overflow-horizontal">
+                            <ul class="list-inline events">
+                                <li *ngFor="let item of ticket?.optionTicket" class="timeline-item  mx-auto">
+                                    <div class="timeline-item--conntent">
+                                        <div class="timeline-item--icon bg-success" [ngClass]=""></div>
+                                        <h5 class="timeline-item--label mb-2 font-weight-bold">{{ item?.etape?.title }}</h5>
+                                        <p>
+                                            <span class="badge text-white bg-{{item?.etat == 'MIGRER' ? 'success' : 'warning'}}"> {{ item?.etat
+                                              }} </span>
+                                          </p>
+                                        <p>
+                                            <span *ngIf="item?.etat === 'MIGRER'" class="badge text-uppercase cursor-pointer"> Migrée le :
+                                                {{item?.migrateAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}</span>
+                                              <span *ngIf="item?.etat === 'MIGRER'" class="badge text-uppercase cursor-pointer"> Migrée par : {{
+                                                item?.migrate }}</span>
+                      
+                                    <span *ngIf="item?.etat === 'ATTENTE' && item?.etape?.title === ticket.etape.etape.title"
+                                    class="badge text-uppercase cursor-pointer">
+                                    <span>
+                                        Temps écoulé: <b> {{ getTimeDifference(item?.oldMigrate) }}</b>
+                                    </span>
+                                    </span>
+                                    <span *ngIf="item?.etat === 'MIGRER'" class="badge text-uppercase cursor-pointer">
+                                    <span>
+                                        Temps de validation: <b>{{ getTimeDifferenceTwoDate(item?.oldMigrate, item?.migrateAt) }}</b>
+                                    </span>
+                                    </span>
+                                        </p>
+                                    </div>
+                                </li>
+                            </ul> 
+                        </perfect-scrollbar>
+                    </div>
+
+
+
+
+
+
+
+
+                    <div class="hori-timeline">
+                    </div>
+                </div>
+        
+            <!-- RETOUR -->
+            <div class="col-sm-12 mb-2">
+                <button (click)="back()" type="button" class="btn btn-secondary m-1">
+                    <i class="fa fa-arrow-alt-circle-left"></i> Retour
+                </button>
+                <button *ngIf="ticket?.qualifier === 'NON'" type="button" (click)="edit(ticket)"
+                    class="btn btn-primary  mr-1"><i class="feather icon-edit-2"></i> Editer
+                </button>
+            
+                <button *ngIf="ticket?.qualifier === 'NON'" type="button" (click)="qualifier(ticket)"
+                    class="btn btn-success  mr-1"><i class="feather icon-share-2"></i></button>
+                <button *ngIf="ticket?.etat != 'FERME'" (click)="ferme(ticket)" type="button"
+                    class="btn  btn-danger mr-1" ngbTooltip="Cloturer">
+                    <i class="fas fa-check-circle"></i> Cloturer
+                </button>
+                <button *ngIf="ticket?.qualifier === 'OUI' && ticket?.etat != 'FERME'" (click)="note(ticket)" type="button"
+                    class="btn  btn-secondary mr-1" ngbTooltip="Note">
+                    <i class="fas fa-book"></i> Note
+                </button>
+                <button type="button" (click)="delete()" class="btn btn-danger" ngbTooltip="Supprimer"><i
+                        class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+            <div class="col-md-12">
+                <ul class="nav nav-tabs profile-tabs nav-fill " id="tabShow" role="tablist">
+                    <li class="nav-item text-black">
+                        <a class="nav-link" [ngClass]="{'active': this.activeTab === 'INFORMATION'}"
+                            id="information-tab" data-toggle="tab" href="javascript:" role="tab"
+                            aria-controls="information" aria-selected="true" (click)="onTabs('INFORMATION')">
+                            <i class="fas fa-play text-primary"></i> INFORMATION
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [ngClass]="{'active': this.activeTab === 'INTERVENTION'}"
+                            id="intervention-tab" data-toggle="tab" href="javascript:" role="tab"
+                            aria-controls="intervention" aria-selected="true" (click)="onTabs('INTERVENTION')">
+                            <i class="fa-paint-roller fas"></i> INTERVENTION
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [ngClass]="{'active': this.activeTab === 'NOTE'}" id="note-tab"
+                            data-toggle="tab" href="javascript:" role="tab" aria-controls="note" aria-selected="true"
+                            (click)="onTabs('NOTE')">
+                            <i class="fas fa-book"></i> NOTE
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [ngClass]="{'active': this.activeTab === 'FERME'}" id="ferme-tab"
+                            data-toggle="tab" href="javascript:" role="tab" aria-controls="ferme" aria-selected="true"
+                            (click)="onTabs('FERME')">
+                            <i class="fas fa-star text-primary"></i> FERMER
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'INFORMATION'}" id="detail"
+                    role="tabpanel" aria-labelledby="detail-tab">
+                    <div class="border border-2 rounded p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1 d-flex flex-column justify-content-start">
+                                <h6> Status: <span
+                                        class="badge badge-{{ticket?.etat == 'OUVER' ? 'danger' : ticket?.etat == 'EN COURS' ? 'warning' : 'success'}}">{{
+                                        ticket?.etat }} </span></h6>
+                            </div>
+
+                            <div>
+                                <a href="javascript:void(0)" (click)="openShareModal(shareModal)"
+                                    ngbTooltip="Partager un lien externe pour visualiser le ticket"
+                                    class="text-primary"> <i class="feather icon-share-2 text-primary"></i> Partager
+                                    avec l'exterieur </a>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="flex-fill">
+                                <p>
+                                    <span>Ticket ID: </span>
+                                    <span><b># {{ ticket?.code }}</b></span>
+                                </p>
+                                <p>
+                                    <span>Ticket soumis par: </span>
+                                    <span><b>{{ ticket?.type === "AUTRES" ? 'TIERS PERSONNE' : ticket?.type}}</b></span>
+                                </p>
+                                <p>
+                                    <span>Plaignant</span>
+                                    <span><b> {{ ticket?.libelle }}</b></span>
+                                </p>
+                                <p>
+                                    <span>Catégorie: </span>
+                                    <span><b> {{ ticket?.category?.libelle }}</b></span>
+                                </p>
+                                <p>
+                                    <span>Niveau d'urgence: </span>
+                                    <span
+                                        class="badge badge-{{ticket?.urgence == 'URGENT' ? 'danger' : ticket?.urgence == 'IMPORTANT' ? 'danger' : 'warning'}}">
+                                        {{ ticket?.urgence }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="flex-fill">
+
+
+                                <p>
+                                    <span>Qualification: </span>
+                                    <span
+                                        class="badge badge-{{ticket?.qualifier == 'NON' ? 'warning' : ticket?.qualifier == 'NON' ? 'warning' : 'success'}}">{{
+                                        ticket?.qualifier }} </span>
+                                </p>
+                                <p>
+                                    <span>Bien: </span>
+                                    <span><b> {{ ticket?.house?.searchableTitle ? ticket?.house?.searchableTitle : "N/A"
+                                            }}</b></span>
+                                </p>
+                                <p>
+                                    <span>Locative: </span>
+                                    <span><b> {{ ticket?.rental?.libelle ? ticket?.rental?.libelle : "N/A" }}</b></span>
+                                </p>
+                                <p>
+                                    <span>Ressource: </span>
+                                    <span><b> {{ ticket?.ressource?.libelle ? ticket?.ressource?.libelle : "N/A"
+                                            }}</b></span>
+                                </p>
+                                <p>
+                                    <span>Service Concerner: </span>
+                                    <span><b> {{ ticket?.service?.nom ? ticket?.service?.nom : "N/A" }}</b></span>
+                                </p>
+                                <p>
+                                    <span>Assigner à : </span>
+                                    <span><b> {{ ticket?.user?.libelle ? ticket?.user?.libelle : "N/A" }}</b></span>
+                                </p>
+                            </div>
+                            <div class="flex-fill">
+                                <p>
+                                    <span>Crée le: </span>
+                                    <span><b> {{ticket?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                                            'fr-FR'}}</b></span>
+                                </p>
+                                <p>
+                                    <span>Par: </span>
+                                    <span><b> {{ticket?.create}}</b></span>
+                                </p>
+                                <p>
+                                    <span>Modifié le: </span>
+                                    <span><b> {{ticket?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                                            'fr-FR'}}</b></span>
+                                </p>
+                                <p>
+                                    <span>Par: </span>
+                                    <span><b> {{ticket?.update}}</b></span>
+                                </p>
+                            </div>
+
+                        </div>
+                        <div>
+                            <p>
+                                <span><b>Description: </b> </span> <br>
+                                <span class="comment-content">
+                                    <span [innerHTML]=ticket?.description></span>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md" *ngIf="ticket">
+                            <span class="badge badge-primary mb-4 f-14 width">PIECES JOINTES</span>
+                            <div class="row">
+                                <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                                    <app-folder-uploader (click)="showFile(ticket?.folder)" [maxSize]="3"
+                                        [folder]="ticket?.folder" [etat]="'show'" [allowFileUpload]="false"
+                                        [allowDownload]="true">
+                                    </app-folder-uploader>
+                                </div>
+                                <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                                    <div class="row">
+                                        <div class="col-sm-12 mb-2">
+                                            <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                                                <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                                    </ngx-doc-viewer>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade mt-4" [ngClass]="{'show active': activeTab === 'INTERVENTION'}"
+                    id="intervention" role="tabpanel" aria-labelledby="intervention-tab">
+                    <!-- LISTE DES INTERVENTIONS -->
+                    <div class="width list-construction">
+                        <ng-template ngxPermissionsOnly="CONSTRUCTION:LIST">
+                            <div class="col-md-12"
+                                *ngIf="constructions && constructions.length === 0">
+                                <span class="badge badge-primary mb-4 f-14 width"
+                                    ngbTooltip="(Maintenance / Renovation / Entretien)">
+                                    LISTE DES INTERVENTIONS
+                                </span>
+                                <app-no-data [title]="'Aucune intervention trouvée'"
+                                    *ngIf="constructions && constructions.length === 0"></app-no-data>
+                            </div>
+                            <div class="col-md-12"
+                                *ngIf=" constructions && constructions.length > 0">
+                                <span class="badge badge-primary mb-4 f-14 width"
+                                    ngbTooltip="(Maintenance / Renovation / Entretien)">
+                                    LISTE DES INTERVENTIONS </span>
+                                    <app-construction-table [constructions]="constructions"> </app-construction-table>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade mt-4" [ngClass]="{'show active': activeTab === 'NOTE'}"
+                id="intervention" role="tabpanel" aria-labelledby="intervention-tab">
+                <!-- LISTE DES NOTES -->
+                <div class="row">
+                  
+                    <div class="col-md-12" *ngIf="activeTab === 'NOTE' && notes && notes.length === 0">
+                      <span class="badge badge-secondary mb-4 f-14 width">
+                        LISTE DES NOTES
+                      </span>
+                      <app-no-data [title]="'Aucune note  trouvé'"
+                        *ngIf="activeTab === 'NOTE' && notes && notes.length === 0">
+                      </app-no-data>
+                    </div>
+                    <div class="col-md-12" *ngIf="notes && notes.length > 0">
+                      <span class="badge badge-info mb-4 f-14 width">
+                        LISTE DES NOTES
+                      </span>
+                      <div *ngIf="notes && notes.length > 0" >
+                        <div class="row">
+                          <app-ressource-historique  [historiques]="notes"
+                            class="width"></app-ressource-historique>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                
+            </div>
+            <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'FERME'}" id="forme"
+            role="tabpanel" aria-labelledby="detail-tab" *ngIf="ticket?.fermes">
+            <div class="border border-2 rounded p-3">
+                <div>
+                    <p>
+                        <span><b>Objet: </b> </span> <br>
+                        <span class="comment-content">
+                            <span >{{ ticket?.fermes?.objet }}</span>
+                        </span>
+                    </p>
+                    <p>
+                        <span><b>Description: </b> </span> <br>
+                        <span class="comment-content">
+                            <span >{{ ticket?.fermes?.description }}</span>
+                        </span>
+                    </p>
+                </div>
+                <div class="col-md" *ngIf="ticket">
+                    <span class="badge badge-primary mb-4 f-14 width">PIECES JOINTES</span>
+                    <div class="row">
+                        <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                            <app-folder-uploader (click)="showFile(ticket?.folder)" [maxSize]="3"
+                                [folder]="ticket?.folder" [etat]="'show'" [allowFileUpload]="false"
+                                [allowDownload]="true">
+                            </app-folder-uploader>
+                        </div>
+                        <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                            <div class="row">
+                                <div class="col-sm-12 mb-2">
+                                    <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                                        <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                                    </button>
+                                </div>
+                            </div>
+                            <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                            </ngx-doc-viewer>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+       
+
+            </div>
+
+
+
+        </app-card>
+    </div>
+</div>
+
+<ng-template #shareModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Partager avec l'extérieur</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <ul>
+            <li>
+                <a [href]="whatsappUrl" target="_blank">
+                    <i class="feather icon-message-circle text-success"></i> Partager via WhatsApp
+                </a>
+            </li>
+            <li>
+                <a [href]="slackUrl" target="_blank">
+                    <i class="feather icon-slack text-info"></i> Partager via Slack
+                </a>
+            </li>
+            <li>
+                <a [href]="mailUrl">
+                    <i class="feather icon-mail text-warning"></i> Partager via Mail
+                </a>
+            </li>
+            <li>
+                <a [href]="facebookUrl" target="_blank">
+                    <i class="feather icon-facebook text-primary"></i> Partager via Facebook
+                </a>
+            </li>
+        </ul>
+    </div>
+</ng-template>
+
+
+<div class="q-view" [ngClass]="showComment ? 'active' : ''">
+    <div class="overlay" (click)="this.showComment = !this.showComment"></div>
+    <div class="content">
+        <div class="card-body">
+            <h4> ID: # {{ ticket?.code }}</h4>
+            <h4>{{ ticket?.objet }}</h4>
+
+            <!-- <div class="border-bottom pb-3 pt-3">
+          <div class="row">
+            <div class="col-md-7">
+              <button *ngIf="ticket.etat!='FERME'" type="button" (click)="close(ticket)"
+                class="btn btn-outline-success btn-sm mr-2">Fermer
+                <i class="feather icon-check mr-1"></i>
+              </button>
+            </div>
+            <div class="col-md-5 text-right">
+            </div>
+          </div>
+        </div> -->
+        </div>
+        <div class="chat-card" #scrollMe style="height: 50%; overflow-y: auto;">
+            <div style="overflow: hidden;">
+                <div class="card-body">
+                    <div *ngFor="let item of chats">
+                        <div *ngIf="item?.user?.uuid == user?.uuid" class="row m-b-20 send-chat">
+                            <div class="col">
+                                <div class="msg">
+                                    <p [innerHTML]="item?.message" class="m-b-0"></p>
+                                    <img *ngFor="let image of item?.folder?.files"
+                                        src="{{publicUrl+'/'+image?.fullPath}}" alt=""
+                                        (click)="open(publicUrl+'/'+image?.fullPath)">
+                                </div>
+                                <p class="text-muted m-b-0"><i class="fa fa-clock-o m-r-10"></i>{{item?.user?.nom}}</p>
+                            </div>
+                            <div class="col-auto p-l-0">
+                                <img src="assets/images/avatar-default.png" alt="user image" class="img-radius wid-40">
+                            </div>
+                        </div>
+                        <div *ngIf="item?.user?.uuid != user?.uuid" class="row m-b-20 received-chat">
+                            <div class="col-auto p-r-0">
+                                <img src="assets/images/avatar-default.png" alt="user image" class="img-radius wid-40">
+                            </div>
+                            <div class="col">
+                                <div class="msg">
+                                    <p [innerHTML]="item.message" class="m-b-0"></p>
+                                    <img *ngFor="let image of item?.folder?.files"
+                                        src="{{publicUrl+'/'+image?.fullPath}}" alt=""
+                                        (click)="open(publicUrl+'/'+image?.fullPath)">
+                                </div>
+                                <p class="text-muted m-b-0"><i class="fa fa-clock-o m-r-10"></i>{{item?.user?.nom}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-5">
+            <form>
+                <div class="form-group">
+                    <input type="text" formControlName="message" placeholder="Message" name="task-insert" id="Project"
+                        class="form-control">
+                    <div class="form-icon">
+                        <button type="submit" class="btn btn-primary btn-icon">
+                            <i *ngIf="!loading" class="feather icon-message-circle"></i>
+                            <span *ngIf="loading" role="status" class="spinner-border spinner-border-sm"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

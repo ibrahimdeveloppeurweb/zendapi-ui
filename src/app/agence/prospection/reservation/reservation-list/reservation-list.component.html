@@ -1,0 +1,66 @@
+
+      <div class="col-md-12">
+        <span class="badge badge-primary mb-4 f-14 width">
+            LISTE DES PRÉ-RÉSERVATIONS
+        </span>
+        <div>
+            <app-no-data [title]="'Aucune pré-réservation trouvé'" *ngIf="reservations && reservations.length === 0"></app-no-data>
+            <div class="row">
+                <div class="col-md-4" *ngFor="let item of reservations">
+                    <app-card [hidHeader]="true">
+                        <div class="d-flex align-items-center">
+                            <div class="text-left mr-2">
+                                <i class="fas fa-folder-open f-60 text-secondary"></i>
+                            </div>
+                            <div *ngIf="item?.invoice">
+                                <h4><b>{{item?.numero}}</b></h4>
+                               <div class="text-right">
+                                <span class="mr-2 badge" [ngClass]="{
+                                  'badge-light-danger' : item?.invoice?.etat === 'IMPAYE',
+                                  'badge-light-primary' : item?.invoice?.etat === 'ATTENTE',
+                                  'badge-light-warning' : item?.invoice?.etat === 'EN COURS',
+                                  'badge-light-success' : item?.invoice?.etat === 'SOLDE'
+                                  }" title="Etat de la facture">Facture {{ item?.invoice?.etat }}
+                                </span>
+                              </div> 
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="bold">Prospect : {{ item?.prospect?.libelle }} </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bold">Frais de pré-réservation : <span class="text-success font-weight-bold"><b>{{ item?.invoice ? item?.invoice?.montant : 0 | number }} {{global.device}} </b></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bold">Budget : <span class="text-danger font-weight-bold"><b>{{ item?.min | number }} - {{ item?.max | number }} {{global.device}} </b></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bold">Mode de Financement : <span class="font-weight-bold"><b>{{ item?.mode }} </b></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <button (click)="show(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button (click)="edit(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                                <i class="feather icon-edit-2"></i>
+                            </button>
+                            <button (click)="printer(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                                <i class="feather icon-printer"></i>
+                            </button>
+                            <button (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                                <i class="feather icon-trash"></i>
+                            </button>
+                        </div>
+                    </app-card>
+                </div>
+            </div>
+        </div>
+    </div>

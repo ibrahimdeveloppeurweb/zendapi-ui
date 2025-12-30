@@ -1,0 +1,56 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label for="businessName">Nom du compte</label>
+                        <input type="text" formControlName="businessName"
+                            id="businessName" placeholder="Nom du compte" [class]="'form-control'">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label for="country">Pays supportés par Paystack</label>
+                        <select nom="country" id="country" formControlName="country" class="form-control" (change)="onChangeCountry($event.target.value)">
+                            <option *ngFor="let country of countries" [value]="country.name">{{ country.name }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="bank">Banques / Mobile Money supportées par Paystack</label>
+                        <select nom="bank" id="bank" formControlName="bank" class="form-control">
+                            <option *ngFor="let bank of banks" [value]="bank.name">{{ bank.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label for="accountNumber">Numéro de compte (Bancaire / Mobile)</label>
+                        <input type="text" formControlName="accountNumber"
+                            id="accountNumber" placeholder="XXXX - XXXX - XXXX - XXXX" [class]="'form-control'">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <label for="description">Description du compte</label>
+                        <textarea formControlName="description"
+                            id="description" [class]="'form-control'"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <!-- <ng-container *ngxPermissionsOnly="'SETTING:PAYSTACK:AGENCY'"> -->
+                <button type="submit" class="btn btn-primary">Enregistrer <i class="feather icon-save"></i></button>
+            <!-- </ng-container> -->
+        </div>
+    </div>
+</form>

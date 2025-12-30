@@ -1,0 +1,104 @@
+.folder-container {
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 140px;
+  outline: 1px dashed #92b0b3;
+  outline-offset: -10px;
+  padding: 20px;
+  position: relative;
+}
+
+.files {
+  max-height: 240px;
+  overflow-x: auto;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.file-name {
+  font-size: .8em;
+  font-weight: bolder;
+}
+
+.file-container {
+  width: 100%;
+  //padding: 1px 0;
+  border-top: 1px gray dashed;
+  padding: 3px 0;
+  //margin: 5px auto;
+  display: flex;
+  align-items: center;
+}
+
+.file-container:last-child{
+  border-bottom: 1px gray dashed;
+}
+
+.file-occurrence {
+  display: flex;
+}
+
+.progress {
+  position: relative;
+  //bottom: 20px;
+  margin-top: 5px;
+  width: 90%;
+  max-width: 200px;
+  height: 15px;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, .4);
+  box-shadow: 0 0 1px grey;
+  border-radius: 5px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.percent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.percent-text {
+  text-align: center;
+  z-index: 2;
+  position: relative;
+  font-weight: bolder;
+  font-size: 1.5em;
+}
+
+.remove-btn {
+  padding: 5px 10px;
+  background: #ff5252;
+  border: none;
+  color: white;
+  font-size: .8em;
+  cursor: pointer;
+}
+
+.download-btn {
+  padding: 5px 10px;
+  background: #4680ff;
+  border: none;
+  color: white;
+  font-size: .8em;
+  cursor: pointer;
+}
+
+.file-preview{
+  width: 35px;
+  min-height: 35px;
+  box-shadow: 0 0 3px grey;
+  border-radius: 3px;
+  margin-right: 5px;
+}

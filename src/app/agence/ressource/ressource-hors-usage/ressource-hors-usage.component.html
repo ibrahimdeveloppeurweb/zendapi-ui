@@ -1,0 +1,83 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+      <div class="col-md-12">
+          <div class="form-group">
+              <div class="row mb-2">
+                  <div class="col-md-12">
+                      <label for="object">Object <span class="asterix">*</span></label>
+
+                      <input class="form-control" name="description" id="object" formControlName="objet" placeholder="Object">
+
+                      <div class="invalid-feedback" *ngIf="submit && f.objet.errors">
+                          <div *ngIf="f.objet.errors.required">{{required.novide}}</div>
+                      </div>
+                  </div>
+                  <div class="col-md-12">
+                    <label for="description">Description </label>
+                    <textarea class="form-control" name="description" id="description" formControlName="description" placeholder="Description"></textarea>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+            <span class="badge badge-primary my-2 f-14 width"> QUELQUES DOCUMENTS SUPPLEMENTAIRES </span>
+          </div>
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-2">
+                <app-image-uploader (filesd)="loadfile($event)" [maxSize]="2" [type]="['image/png', 'image/jpg', 'image/jpeg']" [photo]="edit && ressource ? ressource.photo : null"
+                  (imageUploaded)="setParam('photoUuid', $event)"></app-image-uploader>
+              </div>
+              <div class="col-md">
+                <label class="ml-2">Pièces et documents à joindre</label>
+                <div class="row">
+                  <div [ngClass]="fileO ? 'col-md-4' : 'col-md-12'">
+                    <app-folder-uploader
+                      [maxSize]="3"
+                      (click)="showFile(ressource?.folder)"
+                      (filesd)="files($event)"
+                      (filesUploaded)="setParam('folderUuid',$event)"
+                      [type]="['application/pdf']"
+                      [path]="'Ressource'"
+                      [etat]="edit ? 'edit': 'add'"
+                      [folder]="edit && ressource ? ressource.folder : null">
+                    </app-folder-uploader>
+                  </div>
+    
+                  <div [ngClass]="fileO ? 'col-md-8' : ''" *ngIf="fileO">
+                    <div class="row">
+                      <div class="col-sm-12 mb-2">
+                        <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                          <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                        </button>
+                      </div>
+                    </div>
+                    <ngx-doc-viewer [url]="fileO" viewer="url" style="width:100%;height: 64vh;">
+                    </ngx-doc-viewer>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+          Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="onReset()" type="button" class="btn btn-warning">
+          Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+          Enregistrer <i class="feather icon-save"></i>
+      </button>
+
+  </div>
+</form>

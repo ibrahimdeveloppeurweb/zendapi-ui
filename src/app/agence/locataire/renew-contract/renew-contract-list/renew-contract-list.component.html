@@ -1,0 +1,119 @@
+<div class="col-sm-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+      <div *ngIf="validate && dataSelected.length>0" class="btn-rental float-right mb-2">
+        <button (click)="onConfirme()"  type="submit" class="btn btn-success m-1">
+          Valider <i class="feather icon-check-square"></i>
+        </button>
+      </div>
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+        <tr>
+          <th>
+            <div class="form-group">
+              <div class="form-check">
+                <input id="selectAll" class="form-check-input" formControlName="valueOne" type="checkbox" id="checkAll"
+                (change)="onCheckAll($event)">
+              </div>
+            </div>
+          </th> 
+          <th>Locative</th>
+          <th *ngIf="locataire">Locataire</th>
+          <th>Contrat</th>
+          <th>Etat</th>
+          <th>Date</th>
+          <th>Date fin</th>
+          <th>Montant</th>
+          <th>Loyer</th>
+          <th>Charge</th>
+          <th *ngIf="action">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of renews; let i = index">
+            <td>
+              <div class="form-group">
+                <div class="form-check">
+                  <input formControlName="checked" class="form-check-input"  type="checkbox" id="check{{i}}"
+                  (change)="onCheckItem(item)">
+                </div>
+              </div>
+            </td> 
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.contract?.rental?.libelle}}</span> <br />
+                Superficie : {{item?.invoice?.contract?.rental?.superficie}} m² - {{item?.invoice?.contract?.rental.piece}} pièce(s): <br />
+                Propriétaire : {{item?.invoice?.contract?.rental?.house?.owner?.nom}}
+              </p>
+            </td>
+            <td *ngIf="locataire">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.contract?.tenant?.searchableTitle}}</span> <br />
+                Type : {{item?.contract?.tenant?.type}}<br />
+                Telephone : {{item?.contract?.tenant?.telephone}}
+              </p>
+            </td>
+            <td>
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-warning">{{item?.contract?.libelle}}</span>
+              </p>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+              'badge-success' : item.etat === 'ACTIF',
+              'badge-warning' : item.etat === 'INACTIF',
+              'badge-danger' : item.etat === 'EXPIRER'
+              }">{{item.etat}}</span>
+            </td>
+            <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+            <td>{{item?.dateFin|date: "d MMMM" : '' : 'fr-FR'}}</td>
+            <td><p class="m-0 d-inline-block align-middle font-16"><span class="text-warning">{{item?.invoice?.montant|number}} {{global.device}}</span> <br /></p></td>
+            <td><p class="m-0 d-inline-block align-middle font-16"><span class="text-warning">{{item?.loyer|number}} {{global.device}}</span> <br /></p></td>
+            <td><p class="m-0 d-inline-block align-middle font-16"><span class="text-warning">{{item?.charge|number}} {{global.device}}</span> <br /></p></td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showRenew(item)" type="button" class="btn btn-icon btn-secondary ml-1"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="RENEW:EDIT">
+                  <button  *ngIf="item.etat ==='INACTIF'" (click)="editRenew(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                    ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="RENEW:ACTIVATE">
+                  <button *ngIf="item.etat ==='INACTIF'" (click)="activateRenew(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Activer">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="RENEW:PRINTER:SHOW">
+                  <button (click)="printerRenew(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                    ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngxPermissionsOnly="RENEW:DELETE">
+                  <button type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-warning"> {{total | number}} {{global.device}}</td>
+            <td class="font-weight-bold font-size-40 text-success"> {{loyer | number}} {{global.device}}</td>
+            <td class="font-weight-bold font-size-40 text-danger"> {{charge | number}} {{global.device}}</td>
+            <td *ngIf="action"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </form>
+  </app-card>
+</div>

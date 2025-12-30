@@ -1,0 +1,94 @@
+<div class="row btn-page">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-body topic-name">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h4 class="d-inline-block mb-0">Mes notes internes</h4>
+            </div>
+            <div class="col-md-4">
+            </div>
+          </div>
+        </div>
+        <div class="bg-light p-3">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <button type="button" class="btn btn-secondary text-uppercase" (click)="add()"><i
+                  class="mr-2 feather icon-message-square"></i>Ajouter une note interne </button>
+              <button type="button" class="btn btn-info text-uppercase" (click)="rdv()"><i
+                  class="mr-2 fas feather icon-clock"></i>Rendez-vous </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body hd-detail hdd-user border-bottom bg-light" *ngFor="let item of notes">
+          <div class="row">
+            <div class="col-auto text-center">
+              <img class="media-object wid-60 img-radius mb-2"
+                [src]="item.profil ? publicUrl+'/'+item.profil : 'assets/images/avatar-default.png'"
+                alt="Generic placeholder image ">
+            </div>
+            <div class="col">
+              <div class="comment-top">
+                <h3>{{item?.user?.libelle}} <small class="text-muted f-w-400">{{item?.objet}}</small></h3>
+                <p>{{ item?.createdAt | date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</p>
+              </div>
+              <div class="comment-content">
+                <div [innerHTML]=item?.description></div>
+              </div>
+              <div class="row text-center mb-2">
+                <div class="col-xl-2 col-lg-3 col-sm-4 col-xs-12" *ngFor="let elem of item?.image">
+                  <a href="assets/images/light-box/l1.jpg" data-toggle="lightbox" data-gallery="example-gallery"><img
+                      [src]="elem?.file" class="img-fluid m-b-10" style="width: 70px; height: 70px;" alt=""></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card hdd-right-inner">
+        <div class="card-header pt-4 pb-4">
+          <h5>Mes rendez-vous</h5>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-success d-block text-center text-uppercase"><i
+              class="feather icon-check-circle mr-2"></i>Rendez-vous validé</div>
+          <div class="select-block">
+            <div class="form-group">
+              <label for="objet">Etat </label>
+              <select title="Ticket Status" class="js-status-multiple col-sm-12 form-control">
+                <option>Ouvert</option>
+                <option>Fermer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="objet">Commercial <span class="asterix"></span></label>
+              <select title="Assigned To" class="js-assigned-multiple col-sm-12 form-control">
+                <option value="avatar-5">Jack Pall</option>
+                <option value="avatar-4">Liza Mac</option>
+                <option value="avatar-3">Lina Hop</option>
+                <option value="avatar-2">Sam Hunk</option>
+                <option value="avatar-1">Jhon White</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="row border-bottom pt-3 pb-2" *ngFor="let item of rdvs">
+            <div class="col-sm-4 col-xl-4"> <label class="mb-0">{{item.user.libelle}}</label></div>
+            <div class="col-sm-4 col-xl-4 d-inline-block mb-0">
+              <p>{{ item?.date | date: "d MMMM y" : '' : 'fr-FR' }}</p>
+            </div>
+            <div class="col-sm-4 col-xl-4 d-inline-block mb-0">
+              <p>à {{item?.heure}}</p>
+            </div>
+          </div>
+    
+          <div class="row mt-3 justify-content-center align-items-center">
+            <button type="button" class="btn btn-danger"><i class="mr-2 feather icon-trash-2"></i>Supprimer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

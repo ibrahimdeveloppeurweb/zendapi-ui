@@ -1,0 +1,178 @@
+import {Injectable} from '@angular/core';
+
+export interface NavigationItem {
+  id: string;
+  title: string;
+  type: 'item' | 'collapse' | 'group';
+  translate?: string;
+  icon?: string;
+  hidden?: boolean;
+  url?: string;
+  classes?: string;
+  exactMatch?: boolean;
+  external?: boolean;
+  target?: boolean;
+  breadcrumbs?: boolean;
+  function?: any;
+  badge?: {
+    title?: string;
+    type?: string;
+  };
+  children?: Navigation[];
+}
+
+export interface Navigation extends NavigationItem {
+  children?: NavigationItem[];
+}
+
+const NavigationItems = [
+  {
+    id: 'gestion',
+    title: 'GESTION IMMOBILIERE',
+    type: 'group',
+    icon: 'feather icon-monitor',
+    children: [
+      {
+        id: 'dashboard',
+        title: 'Tableau de bord',
+        type: 'collapse',
+        icon: 'fas fa-chart-line',
+        children: [
+          { id: 'default', title: 'Principale', type: 'item', url: '/admin/dashboard/principal', breadcrumbs: true },
+          { id: 'proprietaire', title: 'Propriétaire', type: 'item', url: '/admin/dashboard/proprietaire', breadcrumbs: true },
+          { id: 'locataire', title: 'Locataire', type: 'item', url: '/admin/dashboard/locataire', breadcrumbs: true },
+          { id: 'promotion', title: 'Promotion', type: 'item', url: '/admin/dashboard/promotion', breadcrumbs: true },
+          { id: 'lotissement', title: 'Lotissement', type: 'item', url: '/admin/dashboard/lotissement', breadcrumbs: true },
+          // { id: 'prospection', title: 'Prospection', type: 'item', url: '/admin/dashboard/prospection', breadcrumbs: true },
+        ]
+      },
+      {
+        id: 'tiers',
+        title: 'Tiers',
+        type: 'collapse',
+        icon: 'fas fa-child',
+        children: [
+          { id: 'proprietaire', title: 'Propriétaire', type: 'item', url: '/admin/proprietaire', breadcrumbs: true },
+          { id: 'locataire', title: 'Locataire', type: 'item', url: '/admin/locataire', breadcrumbs: true },
+          { id: 'client', title: 'Client', type: 'item', url: '/admin/client', breadcrumbs: true }
+        ]
+      },
+      // {
+      //   id: 'tiers',
+      //   title: 'CRM',
+      //   type: 'collapse',
+      //   icon: 'feather icon-share-2',
+      //   children: [
+      //     { id: 'prospect', title: 'Prospect', type: 'item', url: '/admin/prospection', breadcrumbs: true },
+      //     { id: 'parametre', title: 'Pipe', type: 'item', url: '/admin/prospection/parametre', breadcrumbs: true }
+      //   ]
+      // },
+      {
+        id: 'intervention',
+        title: 'Patrimoines',
+        type: 'collapse',
+        icon: 'fas fa-city',
+        children: [
+          { id: 'construction', title: 'Promotion', type: 'item', url: '/admin/promotion', breadcrumbs: true },
+          { id: 'prestataire', title: 'Lotissement', type: 'item', url: '/admin/lotissement', breadcrumbs: true }
+        ]
+      },
+      // {
+      //   id: 'intervention',
+      //   title: 'Cartographies',
+      //   type: 'collapse',
+      //   icon: 'feather icon-map',
+      //   children: [
+      //     // { id: 'construction', title: 'Promotions', type: 'item', url: '/outils/geo-localisation/null/PROMOTION/LIST', breadcrumbs: true },
+      //     { id: 'construction', title: 'Lotissements', type: 'item', url: '/outils/geo-localisation/null/LOTISSEMENT/LIST', breadcrumbs: true },
+      //     { id: 'prestataire', title: 'Patrimoines', type: 'item', url: '/outils/geo-localisation/null/PATRIMOINE/LIST', breadcrumbs: true },
+      //   ]
+      // },
+      {
+        id: 'intervention',
+        title: 'Intervention',
+        type: 'collapse',
+        icon: 'fas fa-paint-roller',
+        children: [
+          { id: 'construction', title: 'Intervention', type: 'item', url: '/admin/intervention', breadcrumbs: true },
+          { id: 'prestataire', title: 'Prestataire', type: 'item', url: '/admin/prestataire', breadcrumbs: true }
+        ]
+      },
+      {
+        id: 'tresorerie',
+        title: 'Trésorerie',
+        type: 'collapse',
+        icon: 'fas fa-piggy-bank',
+        breadcrumbs: true,
+        children: [
+          { id: 'tresorerie', title: 'Trésorerie ', type: 'item', url: '/admin/tresorerie', breadcrumbs: true },
+          { id: 'demande', title: 'Demandes ', type: 'item', url: '/admin/demande', breadcrumbs: true },
+        ]
+      },
+      {
+        id: 'rapport',
+        title: 'Rapport',
+        type: 'collapse',
+        icon: 'fas fa-file-alt',
+        breadcrumbs: true,
+        children: [
+          { id: 'proprietaire', title: 'Propriétaire', type: 'item', url: '/admin/rapport/proprietaire', breadcrumbs: true },
+          { id: 'locataire', title: 'Locataire', type: 'item', url: '/admin/rapport/locataire', breadcrumbs: true },
+          { id: 'client', title: 'Client', type: 'item', url: '/admin/rapport/client', breadcrumbs: true }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'extra',
+    title: 'EXTRA',
+    type: 'group',
+    icon: 'feather icon-monitor',
+    children: [
+      {
+        id: 'extra',
+        title: 'Extra',
+        type: 'collapse',
+        icon: 'feather icon-map',
+        children: [
+          { id: 'mapp', title: 'Géolocalisation des biens', type: 'item', url: '/admin/extra/maps', breadcrumbs: true },
+          { id: 'calendrier', title: 'Calendrier', type: 'item', url: '/admin/extra/calendrier', breadcrumbs: true },
+          { id: 'send', title: 'Envoi Mail/Sms', type: 'item', url: '/admin/extra/send', breadcrumbs: true },
+        ]
+      },
+      {
+        id: 'ticket',
+        title: 'Réclamation',
+        type: 'collapse',
+        icon: 'fas fa-ticket-alt',
+        children: [
+          { id: 'ticket', title: 'Faire une réclamation', type: 'item', url: '/admin/ticket', breadcrumbs: true },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'securite',
+    title: 'SECURITE',
+    type: 'group',
+    icon: 'feather icon-monitor',
+    children: [
+      {
+        id: 'utilisateur',
+        title: 'Utilisateur',
+        type: 'collapse',
+        icon: 'fas fa-user-check',
+        children: [
+          { id: 'user', title: 'Utilisateur', type: 'item', url: '/admin/user', breadcrumbs: true },
+        ]
+      }
+    ]
+  }
+];
+
+@Injectable()
+export class NavigationItem {
+  public get() {
+    return NavigationItems;
+  }
+}

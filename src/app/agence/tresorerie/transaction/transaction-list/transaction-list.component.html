@@ -1,0 +1,82 @@
+<div class="col-md-12">
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Référence</th>
+            <th>Concerner</th>
+            <th>Type</th>
+            <th>Operateur</th>
+            <th>Etat</th>
+            <th>Montant</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of transactions">
+            <td class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">Référence: {{item?.reference}}</span>
+              </p>
+              <p class="m-0 align-middle font-16">
+                <span>Code généré: {{item?.code}}</span>
+              </p>
+            </td>
+            <td>
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span>{{item?.concerne}} </span>
+              </p>
+            </td>
+            <td>
+              <span *ngIf="item?.type === 'PAYMENT'" class="badge badge-info">Paiement locataire</span>
+              <span *ngIf="item?.type === 'PAYMENT_CUSTOMER'" class="badge badge-warning">Paiement client</span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'badge-info' : item?.operator === 'DEBITCARD',
+                'badge-primary' : item?.operator === 'WAVE',
+                'badge-light-warning' : item?.operator === 'MTN',
+                'badge-success' : item?.operator=== 'MOOV',
+                'badge-warning' : item?.operator === 'ORANGE'
+                }">
+                Via {{item?.operator}}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'badge-danger' : item?.status === 'FAILED',
+                'badge-success' : item?.status === 'SUCCEEDED',
+                'badge-primary' : item?.status === 'PROCESSING'
+                }">
+                <span *ngIf="item?.status === 'PROCESSING'">En cours de traitement</span>
+                <span *ngIf="item?.status === 'FAILED'">Échec</span>
+                <span *ngIf="item?.status === 'SUCCEEDED'">Effectuée avec succès</span>
+              </span>
+            </td>
+            <td>
+              <p class="m-0 d-inline-block align-middle font-16">
+                <span class="text-primary">{{item?.amount|number}} {{global.device}}</span>
+              </p>
+            </td>
+            <td class="table-action">
+              <div class="overlay-edit">
+                <button (click)="showTransaction(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td [attr.colspan]="'5'" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+            <td class="font-weight-bold font-size-40 text-warning"> {{ total | number}} {{global.device}}</td>
+            <td [attr.colspan]="'2'"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

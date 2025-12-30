@@ -1,0 +1,154 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modale.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="d-flex">
+      <!-- COL MILLIEU -->
+      <div class="flex-fill">
+        <p><span class="title-show bold">Code budgétaire: </span> {{ typeInfo?.code }}</p>
+      </div>
+        <!-- COL DROITE -->
+        <div class="flex-fill">
+          <p><span class="title-show bold">Catétorie de charge: </span> {{ typeLoad?.loadCategoryLibelle }}</p>                     
+        </div>
+    </div>
+   
+    <br>
+    <div class="row mb-2">
+      <div class="col-sm-4">
+        <span class="badge badge-primary text-center width">
+          <h5 class="text-white py-2">BUDGET : {{ typeInfo?.montantV  | number }} {{global.device}}</h5>
+        </span>
+      </div>
+      <div class="col-sm-4">
+        <span class="badge badge-danger text-center width">
+          <h5 class="text-white py-2">TOTAL DÉPENSÉ: {{ typeInfo?.charges  | number }} {{global.device}}</h5>
+        </span>
+      </div>
+      <div class="col-sm-4">
+        <span class="badge badge-info text-center width">
+          <h5 class="text-white py-2">ECART : {{ (typeInfo?.montantV - typeInfo?.charges) | number }} {{global.device}}</h5>
+        </span>
+      </div>
+    </div>
+
+
+    <div class="col-md-12" *ngIf="typeInfo?.invoiceDetails.length > 0">
+      <span class="badge badge-info my-2 f-14 formBadge width"> LISTE DES FACTURES </span>
+    </div>
+    <div class="p-3" *ngIf="typeInfo?.invoiceDetails.length > 0">
+      <div class="table-responsive">
+        <table datatable class="table table-bordered nowrap ">
+          <thead class="thead-light">
+            <tr>
+                <th>Libellé Facture</th>
+                <th>Type</th>
+                <th>Détails</th>
+                <th>Date de transmission</th>
+                <th>Montant TTC</th>
+                <th>Montant Payé</th>
+                <th>Montant Restant</th>
+            </tr>
+          </thead>
+            <tbody>
+              <tr *ngFor="let item of typeInfo?.invoiceDetails">
+                  <td>
+                      <span>{{ item?.libelle }}</span>
+                  </td>
+                  <td>
+                      <span>
+                          <span>Type: {{item?.type}}</span><br />
+                      </span>
+                      <p *ngIf="item?.provider" class="m-0 d-inline-block align-middle font-16">
+                         Fournisseur: <span class="text-primary">{{item?.provider?.nom}}</span><br />
+                          Type: {{item?.provider?.type }} <br />
+                      </p>
+                  </td>
+                  <td>
+                     <span>
+                          <span>Lot : {{item?.house?.type}} {{item?.house?.nom}}</span><br />
+                          <span *ngIf="item?.home">{{item?.home?.type}}: {{item?.home?.nom}}</span><br />
+                          <span *ngIf="item?.infrastructure">Infrastructure : {{item?.infrastructure?.nom}}</span><br />                                    
+                      </span>                                
+                  </td>
+                  <td>{{ item.date|date: "d MMMM y hh:mm" : '' : 'fr-FR' }}</td>                          
+                  <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                          <span class="text-danger font-weight-blod">{{ item?.montant|number }} {{
+                              global.device
+                              }}</span>
+                      </p>
+                  </td>
+                  <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                          <span class="text-success font-weight-blod">{{ item?.montantPaye|number }} {{
+                              global.device
+                              }}</span>
+                      </p>
+                  </td>
+                  <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                          <span class="text-danger font-weight-blod">{{ (item?.montant - item?.montantPaye)
+                              |number }} {{ global.device
+                              }}</span>
+                      </p>
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+
+    <div class="col-md-12" *ngIf="typeInfo?.spents.length > 0">
+      <span class="badge badge-info my-2 f-14 formBadge width"> LISTE DES DÉPENSES </span>
+    </div>
+    <div class="p-3" *ngIf="typeInfo?.spents.length > 0">
+      <div class="table-responsive">
+        <table datatable class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Référence</th>
+              <th>Trésorerie</th>
+              <th *ngFor="spent?.houseCo">Type</th>
+              <th>Motif</th>
+              <th>Date</th>
+              <th>Montant</th>
+            </tr>
+          </thead>
+          <tbody>
+          <!-- <ng-container> -->
+            <tr *ngFor="let spent of typeInfo?.spents">              
+              <td>{{spent?.reference}}</td>
+              <td>{{spent?.tresorerie}}</td>
+              <td *ngFor="spent?.houseCo">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  CO-PROPRIÉTÉ : {{ spent?.houseCo ? (spent?.houseCo?.nom) : 'N/A' }} <br />
+                  BIEN : {{ spent?.homeCo ? (spent?.homeCo?.nom) : 'N/A' }}<br />
+                  INFRASTRUCTURE :{{ spent?.infrastructure ? (spent?.infrastructure?.nom) : 'N/A' }} <br />
+                </p>
+              </td>
+             <td> {{spent?.motif}}</td>                             
+            <td> <p class="m-0 d-inline-block align-middle font-16">{{ spent?.date|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</p> </td>
+            <td>{{spent?.montant|number}}</td>              
+            </tr>
+          <!-- </ng-container> -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <hr class="m-0">
+  <div class="modal-footer">
+    <!-- <button (click)="printer(typeLoad)" type="submit" class="btn btn-warning" ngbTooltip="Imprimer détails de l'état budgétaire">
+      Imprimer <i class="feather icon-printer"></i>
+    </button> -->
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary" data-dismiss="modal">
+      <i class="ion-md-close-circle"></i> Fermer
+    </button>   
+  </div>

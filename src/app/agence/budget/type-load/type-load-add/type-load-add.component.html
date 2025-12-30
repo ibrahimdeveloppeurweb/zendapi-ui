@@ -1,0 +1,129 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button
+      type="button"
+      class="close basic-close"
+      data-dismiss="modal"
+      aria-label="Close"
+      (click)="modale.close('ferme')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+      <div class="row">
+        <span class="badge badge-info my-2 f-14 formBadge width">
+          INFORMATION SUR LE TYPE DE CHARGE
+        </span>
+      </div>  
+      <div class="col-md-12">        
+        <div class="form-group">
+          <div class="row mb-2">   
+            <div class="col-md-6">
+              <label for="libelle">Catégorie <span class="asterix">*</span></label>
+                <app-entity-finder [namespace]="'Budget'" [class]="'LoadCategory'" [groups]="['load-category']"
+                  [required]="true"  [selected]="selectedCategory" [disabled]="edit" (uuid)="setCategoryUuid($event)"
+                  [placeholder]="'Selectionez une catégorie'">
+                </app-entity-finder>
+            </div>   
+            <div class="mt-4" *ngIf="!edit">
+              <button (click)="add()" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i>
+              </button> 
+            </div>
+            <div class="col-md" *ngIf="edit">
+              <label for="libelle">Libellé <span class="asterix">*</span></label>
+              <input
+                type="text"
+                formControlName="libelle"
+                class="form-control"
+                id="libelle"
+                [ngClass]="{
+                  'is-invalid': submit && edit && f.libelle.errors,
+                  'is-valid': submit && edit && f.libelle.valid
+                }"
+                placeholder="Libellé"
+              />
+              <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                <div *ngIf="f.libelle.errors.required">{{ required.novide }}</div>
+              </div>
+            </div>
+          </div>      
+        </div>
+      </div>
+
+    <div *ngIf="!edit">    
+      <div formArrayName="products">
+        <form [formGroup]="productForm">        
+          <div class="row"> 
+            <div class="col-md">
+              <label for="libelle">Libellé <span class="asterix">*</span></label>
+              <input
+                type="text"
+                formControlName="libelle"
+                class="form-control"
+                id="libelle"
+                [ngClass]="{
+                  'is-invalid': submit  && edit && f.libelle.errors,
+                  'is-valid': submit  && edit && f.libelle.valid
+                }"
+                placeholder="Libellé"
+              />
+              <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                <div *ngIf="f.libelle.errors.required">{{ required.novide }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-right">
+            <button  (click)="addType()" class="btn btn-primary">
+              Ajouter
+            </button>
+          </div>
+        </form>
+      </div> 
+      <div class="col-md-12">
+        <span class="badge badge-info my-2 f-14 formBadge width"> LISTE DES TYPES DE CHARGES </span>
+      </div>  
+      <div class="py-3">
+        <div class="table-responsive m-0">
+          <table class="table table-hover m-0">
+            <thead>
+              <tr>
+                <th>Libelle</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of products.value; let i = index">
+                <td>{{item.libelle}}</td>
+                <td class="text-center">
+                  <button type="button" (click)="onDelete(item, i)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>   
+    </div>    
+    <div class="modal-footer">
+      <button
+        (click)="modale.close('ferme')"
+        type="button"
+        class="btn btn-secondary text-left"
+        data-dismiss="modal"
+      >
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+  </form>
+  

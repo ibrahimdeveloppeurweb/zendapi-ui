@@ -1,0 +1,541 @@
+<div class="user-profile user-card mb-4" *ngIf="owner">
+  <div class="card-body py-0">
+    <div class="user-about-block m-0">
+      <div class="row">
+        <div class="col-md-3 text-center mt-n5">
+          <div class="change-profile text-center">
+            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+              <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                aria-expanded="false">
+                <div class="profile-dp">
+                  <div class="position-relative d-inline-block">
+                    <img *ngIf="owner?.type === 'PARTICULIER' && owner?.sexe === 'Masculin'"
+                      class="img-radius img-fluid wid-80 hei-80"
+                      [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-default.png'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                    <img *ngIf="owner?.type === 'PARTICULIER' && owner?.sexe === 'Féminin'"
+                      class="img-radius img-fluid wid-80 hei-80"
+                      [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-mlle.jpeg'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'" />
+                    <img *ngIf="owner?.type === 'ENTREPRISE' && owner?.photoSrc"
+                      class="img-radius img-fluid wid-80 hei-80"
+                      [src]="owner.photoSrc ? publicUrl+'/'+owner.photoSrc : 'assets/images/avatar-default.png'"
+                      onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                    <i *ngIf="owner?.type === 'ENTREPRISE' && !owner?.photoSrc" class="fas fa-building fa-5x"></i>
+                  </div>
+                  <div class="overlay">
+                    <span>change</span>
+                  </div>
+                </div>
+                <div class="certificated-badge">
+                  <i class="fas fa-certificate text-c-blue bg-icon"></i>
+                  <i class="fas fa-check front-icon text-white"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+          <h5 class="mb-1">{{ owner?.nom }}</h5>
+          <p class="mb-2 text-muted text-uppercase">{{ owner?.type }}</p>
+        </div>
+        <div class="col-md-9 mt-md-4">
+          <div class="row">
+            <div class="col-md-3">
+              <p class="mb-1 text-muted d-flex align-items-end text-h-primary">
+                <i class="fas fa-business-time mr-2"></i>{{owner?.profession}}
+              </p>
+              <div class="clearfix"></div>
+              <p class="mb-1 text-muted d-flex align-items-end text-h-primary">
+                <i class="feather icon-phone mr-2 f-18"></i>{{owner?.telephone}}
+              </p>
+            </div>
+            <div class="col-md-3">
+              <div class="media">
+                <i class="feather icon-map-pin mr-2 mt-1 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{owner?.domicile}}</p>
+                </div>
+              </div>
+              <div class="media">
+                <i class="feather icon-mail mr-2 f-18"></i>
+                <div class="media-body">
+                  <p class="mb-0 text-muted">{{owner?.email}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="media">
+                <div class="media-body">
+                   <!-- <p class="mb-0 text-muted text-danger font-size-table font-weight-bold">BRUT À REVERSER : {{ owner?.impaye | number }} {{global.device}}</p> -->
+                  <p class="mb-0 text-muted text-success font-size-table font-weight-bold">SOLDE : {{ owner?.solde | number }} {{global.device}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- MENU TABS PROPRIETAIRE -->
+          <ul class="nav nav-tabs profile-tabs nav-fill" id="tabShowOwner" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'WALLET'}"
+                (click)="onChangeLoad('WALLET')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="fa fa-piggy-bank"></i> Portefeuille
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'PROPRIETAIRE'}"
+                (click)="onChangeLoad('PROPRIETAIRE')" id="profil-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="profil" aria-selected="true">
+                <i class="far fa-user"></i> Profil
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': activeTab === 'BIEN'}" (click)="onChangeLoad('BIEN')"
+                id="bien-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="bien" aria-selected="true">
+                <i class="feather icon-home"></i> Bien
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'LOCATIVE'}"
+                (click)="onChangeLoad('LOCATIVE')" id="locative-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="locative" aria-selected="false">
+                <i class="fas fa-home"></i> Locative
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'MANDAT'}"
+                (click)="onChangeLoad('MANDAT')" id="mandat-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="mandat" aria-selected="false">
+                <i class="feather icon-file-text"></i> Mandat
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'REVERSEMENT'}"
+                (click)="onChangeLoad('REVERSEMENT')" id="reversement-tab" data-toggle="tab" href="javascript:"
+                role="tab" aria-controls="reversement" aria-selected="false">
+                <i class="fas fa-money-bill-wave"></i> Reversement
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'TICKET'}"
+                (click)="onChangeLoad('TICKET')" id="ticket-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="note" aria-selected="true">
+                <i class="feather icon-file-text"></i> Ticket
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'RETRAIT'}"
+                (click)="onChangeLoad('RETRAIT')" id="ticket-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="note" aria-selected="true">
+                <i class="fas fa-money-bill-wave"></i>  Depense 
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-reset" [ngClass]="{'active': this.activeTab === 'DEPOT'}"
+                (click)="onChangeLoad('DEPOT')" id="ticket-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="note" aria-selected="true">
+                <i class="fas fa-money-bill-wave"></i>  Approvisionnement   
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RETOUR -->
+<div class="row">
+  <div class="col-sm-12 mb-2">
+    <button (click)="back()" type="button" class="btn btn-secondary mr-1">
+      <i class="fa fa-arrow-alt-circle-left"></i> Retour
+    </button>
+    <button  (click)="addDeposit()" type="button" class="btn btn-success m-1 btn-treasury-show-Spent" ngbTooltip="Effectuer un dépot">
+      Approvisionnement  <i class="fas fa-money-bill-alt"></i>
+    </button>
+    <button (click)="addWithdrawll()" type="button"
+      class="btn btn-danger m-1 btn-treasury-show-Spent" ngbTooltip="Effectuer un retrait" >
+      Depense
+      <i class="fas fa-money-bill-alt"></i>
+    </button>
+    <button  (click)="getReveler()" type="button" class="btn btn-warning m-1"
+      ngbTooltip="Cliquez ici pour voir le relevé de compte">
+      Relevé de compte <i class="fas fa-file"></i>
+    </button>
+  </div>
+</div>
+
+<!-- FILTRE DE RECHERCHE -->
+<div class="row" *ngIf=" activeTab !== 'TICKET' &&  activeTab != 'PROPRIETAIRE' ">
+  <ng-template
+    [ngxPermissionsOnly]="['HOUSE:LIST', 'RENTAL:LIST', 'MANDATE:LIST', 'PAYMENT:REPAYMENT:LIST', 'REPAYMENT:LIST', 'RENEW:MANDATE:LIST']">
+    <app-filter class="width" [name]="name" [nameTitle]="nameTitle" [user]="true" [userTitle]="userTitle" [etat]="etat"
+      [etatRow]="etatRow" [etatTitle]="etatTitle" [categorie]="categorie" [categorieRow]="categorieRow"
+      [categorieTitle]="categorieTitle" [dateD]="true" [dateF]="true" [create]="true" [min]="true" [minTitle]="minTitle"
+      [max]="true" [maxTitle]="maxTitle" [ordre]="true" [code]="true" [count]="true" [type]="true" [typeRow]="typeRow"
+      [uuid]="owner?.uuid" (filterEvent)="onFilter($event)">
+    </app-filter>
+  </ng-template>
+  <ng-template
+    [ngxPermissionsExcept]="['HOUSE:LIST', 'RENTAL:LIST', 'MANDATE:LIST', 'PAYMENT:REPAYMENT:LIST', 'REPAYMENT:LIST', 'RENEW:MANDATE:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'propriétaire'"></app-no-droit>
+    </div>
+  </ng-template>
+</div>
+
+<!-- AFFICHAGE DU TABS -->
+<div class="row">
+  <div class="col-md-12 order-md-2">
+    <div class="tab-content" id="myTabContent">
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'PROPRIETAIRE'}" id="profil" role="tabpanel"
+        aria-labelledby="profil-tab">
+        <div class="card">
+          <div class="col-md-12 mt-2 text center">
+            <div class="d-flex">
+              <!-- COL GAUCHE -->
+              <div class="flex-fill">
+                <p>
+                  <span class="title-show">Référence : </span>
+                  <span class="title-result-show">{{ owner?.code }}</span>
+                </p>
+                <p>
+                  <span class="title-show">
+                    {{ owner?.type === 'ENTREPRISE' ? 'Raison sociale' : 'Nom et prénoms' }} :
+                  </span>
+                  <span class="title-result-show">
+                    {{ owner?.type === 'ENTREPRISE' ? owner?.nom : owner?.civilite + ' ' + owner?.nom }}
+                  </span>
+                </p>
+                <p>
+                  <span class="title-show">Type : </span>
+                  <span class="title-result-show">{{ owner?.type }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Email : </span>
+                  <span class="title-result-show">{{ owner?.email }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Telephone : </span>
+                  <span class="title-result-show">{{ owner?.telephone }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Telephone whatsapp  : </span>
+                  <span class="title-result-show">{{ owner?.numbWhatsapp }}</span>
+                </p>
+                <p>
+                  <span class="title-show">
+                    {{ owner?.type === 'ENTREPRISE' ? 'Siège social' : 'Domicile' }} :
+                  </span>
+                  <span class="title-result-show">
+                    {{ owner?.type === 'ENTREPRISE' ? owner?.siegeSocial : owner?.domicile }}
+                  </span>
+                </p>
+                <p>
+                  <span class="title-show">Code postal : </span>
+                  <span class="title-result-show">{{ owner?.codePostal }}</span>
+                </p>
+                <p>
+                  <span class="title-show">
+                    {{ owner?.type === 'ENTREPRISE' ? "Domaine d'activité" : 'Profession' }} :
+                  </span>
+                  <span class="title-result-show">{{ owner?.profession }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'ENTREPRISE'">
+                  <span class="title-show">Capital : </span>
+                  <span class="title-result-show">{{ owner?.capital }}</span>
+                </p>
+              </div>
+              <!-- COL MILLIEU -->
+              <div class="flex-fill">
+                <p *ngIf="owner?.type === 'ENTREPRISE'">
+                  <span class="title-show">Nom du responsable: </span>
+                  <span class="title-result-show">{{ owner?.civilite + ' ' + owner?.nomResponsable }}</span>
+                </p>
+                <p>
+                  <span class="title-show">
+                    {{ owner?.type === 'ENTREPRISE' ? 'Date naissance du responsable' : 'Date naissance' }} :
+                  </span>
+                  <span class="title-result-show">{{ owner?.dateN | date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                </p>
+                <p>
+                  <span class="title-show">
+                    {{ owner?.type === 'ENTREPRISE' ? 'Lieu de naissance du responsable' : 'Lieu de naissance' }} :
+                  </span>
+                  <span class="title-result-show">{{ owner?.lieuN }}</span>
+                </p>
+                <p>
+                  <span class="title-show">
+                    {{ owner?.type === 'ENTREPRISE' ? 'Nationnalité du responsable' : 'Nationnalité' }} :
+                  </span>
+                  <span class="title-result-show">{{ owner?.nationalite }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'ENTREPRISE' || owner?.type === 'PARTICULIER' ">
+                  <span class="title-show">N° Compte contribualbe: </span>
+                  <span class="title-result-show">{{ owner?.ncc }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'ENTREPRISE'">
+                  <span class="title-show">N° Registre de commerce: </span>
+                  <span class="title-result-show">{{ owner?.nrc }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'ENTREPRISE'">
+                  <span class="title-show">Telephone du responsable: </span>
+                  <span class="title-result-show">{{ owner?.telResponsable }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'ENTREPRISE'">
+                  <span class="title-show">Poste du responsable: </span>
+                  <span class="title-result-show">{{ owner?.postOccupe }}</span>
+                </p>
+                <p>
+                  <span class="title-show">
+                    {{ owner?.type === 'ENTREPRISE' ? 'Sexe du responsable' : 'Sexe' }} :
+                  </span>
+                  <span class="title-result-show">{{ owner?.sexe }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'PARTICULIER'">
+                  <span class="title-show">Situation matrimonial: </span>
+                  <span class="title-result-show">{{ owner?.situationMatrimoniale }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'PARTICULIER'">
+                  <span class="title-show">Nombre d'enfant: </span>
+                  <span class="title-result-show">{{ owner?.enfant }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'PARTICULIER'">
+                  <span class="title-show">Nom conjoint: </span>
+                  <span class="title-result-show">{{ owner?.conjoint }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'PARTICULIER'">
+                  <span class="title-show">Releve d'indetite bancaire(RIB): </span>
+                  <span class="title-result-show">{{ owner?.rib }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'PARTICULIER'">
+                  <span class="title-show">Nom employeur: </span>
+                  <span class="title-result-show">{{ owner?.employeur }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'PARTICULIER'">
+                  <span class="title-show">Personne en cas d'urgence : </span>
+                  <span class="title-result-show">{{ owner?.nomUrgence }}</span>
+                </p>
+                <p *ngIf="owner?.type === 'PARTICULIER'">
+                  <span class="title-show">Numero d'urgence : </span>
+                  <span class="title-result-show">{{ owner?.contactUrgence }}</span>
+                </p>
+              </div>
+              <!-- COL DROITE -->
+              <div class="flex-fill">
+                <p *ngIf="owner?.type === 'PARTICULIER'">
+                  <span class="title-show">Affinité partagée : </span>
+                  <span class="title-result-show">{{ owner?.affiniteUrgence}}</span>
+                </p>
+                <p>
+                  <span class="title-show">Nature de la pièce: </span>
+                  <span class="title-result-show">{{ owner?.naturePiece }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Numéro de la pièce: </span>
+                  <span class="title-result-show">{{ owner?.numPiece }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Validité de la pièce : </span>
+                  <span class="title-result-show">{{ owner?.dateExpirePiece | date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Date d'émission: </span>
+                  <span class="title-result-show">{{ owner?.dateEmission | date: "d MMMM y" : '' : 'fr-FR' }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Signature de l'autorité: </span>
+                  <span class="title-result-show">{{ owner?.signatureAutorite }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Crée le : </span>
+                  <span class="title-result-show">{{ owner?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ owner?.create }}</span>
+                </p>
+                <p>
+                  <span class="title-show">Modifié le : </span>
+                  <span class="title-result-show">{{ owner?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' :
+                    'fr-FR'}}</span>
+                  <span class="title-show ml-5"> Par : </span>
+                  <span class="title-result-show">{{ owner?.update }}</span>
+                </p>
+              </div>
+            </div>
+            <div class="col-md" *ngIf="owner">
+              <span class="badge badge-primary mb-4 f-14 width">FICHE DE DOSSIER</span>
+              <div class="row">
+                <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+                  <app-folder-uploader (click)="showFile(owner?.folder)" [maxSize]="3" [folder]="owner?.folder" [etat]="'show'"
+                    [allowFileUpload]="false" [allowDownload]="true">
+                  </app-folder-uploader>
+                </div>
+                <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+                  <div class="row">
+                    <div class="col-sm-12 mb-2">
+                      <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                        <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+                      </button>
+                    </div>
+                  </div>
+                  <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+                  </ngx-doc-viewer>
+
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button *ngxPermissionsOnly="'OWNER:EDIT'" (click)="editOwner(owner)" type="button"
+                class="btn btn-primary" ngbTooltip="Modifier">
+                Modifier <i class="feather icon-edit-2"></i>
+              </button>
+              <button *ngxPermissionsOnly="'OWNER:PRINTER:SHOW'" (click)="printerOwner(owner)" type="submit"
+                class="btn btn-warning" ngbTooltip="Imprimer">
+                Imprimer <i class="feather icon-printer"></i>
+              </button>
+              <ng-template ngxPermissionsOnly="OWNER:DELETE">
+                <button *ngIf="owner?.isDelete" (click)="delete(owner)" type="button"
+                  class="btn btn-danger text-left" data-dismiss="modal" ngbTooltip="Supprimer">
+                  Supprimer <i class="feather icon-trash"></i>
+                </button>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'BIEN'}" id="bien" role="tabpanel"
+        aria-labelledby="bien-tab">
+        <div class="row">
+          <!-- LISTE DES BIENS -->
+          <div class="col-md-12" *ngIf="type === 'BIEN' && houses && houses.length === 0">
+            <span class="badge badge-secondary mb-4 f-14 width">
+              LISTE DES BIENS
+            </span>
+            <app-no-data [title]="'Aucun bien trouvé'" *ngIf="type === 'BIEN' && houses && houses.length === 0">
+            </app-no-data>
+          </div>
+          <app-house-list [houses]="houses" [proprietaire]="false" class="width"></app-house-list>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'LOCATIVE'}" id="locative" role="tabpanel"
+        aria-labelledby="locative-tab">
+    
+        <div class="row">
+          <!-- LISTE DES LOCATIVES -->
+          <div class="col-md-12" *ngIf="type === 'BIEN' && houses && houses.length === 0">
+            <span class="badge badge-info mb-4 f-14 width">
+              LISTE DES LOCATIVES
+            </span>
+            <app-no-data [title]="'Aucune locative trouvée'" *ngIf="rentals && rentals.length === 0"></app-no-data>
+          </div>
+          <div class="col-md-12" *ngIf="rentals">
+            <span class="badge badge-info mb-4 f-14 width">
+              LISTE DES LOCATIVES
+            </span> 
+            <app-card *ngIf="rentals && rentals.length > 0" [hidHeader]="true" cardClass="card-datatable">
+              <div class="row">
+                <app-rental-list [rentals]="rentals" [action]="true" class="width"></app-rental-list>
+              </div>
+            </app-card>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'MANDAT'}" id="mandat" role="tabpanel"
+        aria-labelledby="mandat-tab">
+        <div class="row">
+          <!-- LISTE DES LOCATIVES -->
+          <div class="col-md-12" *ngIf="mandates && mandates.length === 0">
+            <span class="badge badge-warning mb-4 f-14 width">
+              LISTE DES MANDATS
+            </span>
+            <app-no-data [title]="'Aucun mandat trouvé'" *ngIf="mandates.length == 0"></app-no-data>
+          </div>
+          <div class="col-md-12">
+            <div class="row" *ngIf="mandates && mandates.length > 0">
+              <app-mandate-list [mandates]="mandates" [action]="true" class="width"></app-mandate-list>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'REVERSEMENT'}" id="reversement"
+        role="tabpanel" aria-labelledby="reversement-tab">
+        <div class="row">
+          <!-- LISTE DES REVERSEMENTS -->
+          <div class="col-md-12" *ngIf="repayments">
+            <span class="badge badge-success mb-4 f-14 width">
+              LISTE DES REVERSEMENTS
+            </span>
+            <app-no-data [title]="'Aucun réversement trouvé'" *ngIf="repayments && repayments.length === 0">
+            </app-no-data>
+          </div>
+          <app-repayment-list *ngIf="repayments && repayments.length > 0" [repayments]="repayments" class="width">
+          </app-repayment-list>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'RETRAIT'}" id="reversement"
+        role="tabpanel" aria-labelledby="reversement-tab">
+        <div class="row">
+          <!-- LISTE DES RETRAIT PORTEFEUILLE -->
+          <div class="col-md-12" *ngIf="withdrawlls">
+            <span class="badge badge-success mb-4 f-14 width">
+              LISTE DES RETRAIT DU PORTEFEUILLE
+            </span>
+            <app-no-data [title]="'Aucun retrait trouvé'" *ngIf="withdrawlls && withdrawlls.length === 0">
+            </app-no-data>
+          </div>
+          <app-owner-withdrawll *ngIf="withdrawlls && withdrawlls.length > 0" [withdrawlls]="withdrawlls" class="width">
+          </app-owner-withdrawll>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'DEPOT'}" id="reversement"
+        role="tabpanel" aria-labelledby="reversement-tab">
+        <div class="row">
+          <!-- LISTE DES DEPOT PORTEFEUILLE -->
+          <div class="col-md-12" *ngIf="deposits">
+            <span class="badge badge-success mb-4 f-14 width">
+              LISTE DES DEPOTS DU PORTEFEUILLE
+            </span>
+            <app-no-data [title]="'Aucun dépôt trouvé'" *ngIf="deposits && deposits.length === 0">
+            </app-no-data>
+          </div>
+          <app-owner-deposit *ngIf="deposits && deposits.length > 0" [deposits]="deposits" class="width">
+          </app-owner-deposit>
+        </div>
+      </div>
+
+      <!-- LISTE DES NOTES_INTERNES -->
+      <div class="width list-notes-internes" *ngIf="activeTab === 'NOTE_INTERNE'">
+        <app-activity-list [notes]="notes" [rdvs]="rdvs"></app-activity-list>
+      </div>
+
+      <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'TICKET'}" id="ticket"
+      role="tabpanel" aria-labelledby="reversement-tab">
+      <div class="row">
+        <!-- LISTE DES TICKETS -->
+        <div class="col-md-12" *ngIf="tickets">
+          <span class="badge badge-success mb-4 f-14 width">
+            LISTE DES TICKETS
+          </span>
+          <app-no-data [title]="'Aucun ticket trouvé'" *ngIf="tickets && tickets.length === 0">
+          </app-no-data>
+        </div>
+        <app-ticket-table *ngIf="tickets && tickets.length > 0" [tickets]="tickets" class="width">
+        </app-ticket-table>
+      </div>
+    </div>
+
+
+    <div class="tab-pane fade" [ngClass]="{'show active': activeTab === 'WALLET'}" id="wallet" role="tabpanel"
+    aria-labelledby="wallet-tab">
+      <app-owner-wallet  class="width" [widget]="widget" [listing]="listing" [graph]="graph" [owner]="owner"> </app-owner-wallet>
+    </div>
+
+    </div>
+  </div>
+</div>

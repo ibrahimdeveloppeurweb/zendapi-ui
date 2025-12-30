@@ -1,0 +1,49 @@
+
+<div class="col-md-12">
+  <span class="badge badge-primary my-2 f-14 formBadge width"> LISTE DES AGENTS </span>
+  <app-no-data [title]="'Aucun agent trouvé'" *ngIf=" agents && agents.length === 0"></app-no-data>
+</div>
+
+<div class="col-md-12 mt-3" *ngIf=" agents && agents.length > 0">
+  <div class="row">
+    <div class="col-md-4" *ngFor="let item of agents">
+      <app-card [hidHeader]="true" cardClass="user-card user-card-1 mt-4" blockClass="pt-0" >
+        <div (click)="showAgent(item)" class="cursor-pointer">
+
+          <div class="user-about-block text-center">
+            <div class="d-flex justify-content-center">
+              <div class="col">
+                <img class="img-radius img-fluid wid-80 hei-80"
+                [src]="item?.photoSrc ? publicUrl+'/'+item?.photoSrc : 'assets/images/avatar-default.png'"
+                onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+              </div>
+            </div>
+          </div>
+
+
+          <div class="text-center">
+            <h4 class="mb-1 mt-3">{{item.nom}}</h4>
+            <p class="mb-3 text-muted">
+              <i class="feather icon-phone"></i> {{item.telephone}}
+              <span class="badge badge-info">{{item.email}}</span>
+            </p>
+            <p class="mb-1">
+              <b>Domicile : </b> {{ item.domicile }}
+            </p>
+          </div>
+        </div>
+        <div class="text-right">
+          <button (click)="showAgent(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button (click)="editAgent(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+            <i class="feather icon-edit-2"></i>
+          </button>
+          <button (click)="deleteAgent(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+            <i class="feather icon-trash"></i>
+          </button>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

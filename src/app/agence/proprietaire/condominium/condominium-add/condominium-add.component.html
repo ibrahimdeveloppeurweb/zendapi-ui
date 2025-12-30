@@ -1,0 +1,103 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width"> INFORMATIONS SUR LE LOT </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="syndic">Syndic <span class="asterix">*</span></label>
+              <select (ngModelChange)="setSyndicUuid($event)" class="form-control" id="syndic" formControlName="syndic"
+                [ngClass]="{'is-invalid': submit && f.syndic.errors,'is-valid': submit && f.syndic.valid}">
+                <option *ngFor="let item of syndics" [ngValue]="item.uuid">{{item.nom}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.syndic.errors">
+                <div *ngIf="f.syndic.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="position-relative form-group">
+              <app-entity-finder [class]="'OwnerCo'" [groups]="['owner-co']" [required]="true" [label]="'Co-propriétaire'"
+                (uuid)="setOwnerCoUuid($event)" [selected]="ownerCoSelected" [placeholder]="'Selectionez un propriétaire'">
+              </app-entity-finder>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="position-relative form-group">
+              <label for="house">Bien <span class="asterix">*</span></label>
+              <select (change)="onChangeHouse()" class="form-control" id="house" formControlName="house">
+                <option [value]="null">Selectionner un Bien</option>
+                <option *ngFor="let item of houses" [value]="item.uuid">{{item.nom}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+                <div *ngIf="f.house.errors.pattern">{{required.nolettre}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width"> VALEUR DES MILLIÈMES </span>
+      </div>
+      <div class="form-group" formArrayName="tantiemes">
+        <div class="row mb-2" *ngFor="let item of tantieme.controls; let i = index" [formGroupName]="i">
+          <div class="col-md-6" *ngIf="item.get('type').value === 'RENTAL'">
+              <label for="libelle">Locative <span class="asterix">*</span></label>
+              <input type="text" id="libelle{{i}}" formControlName="libelle" class="form-control" placeholder="La locative" readonly>
+          </div>
+          <div class="col-md-5" *ngIf="item.get('type').value === 'RENTAL'">
+            <div class="position-relative form-group">
+              <app-entity-finder [class]="'OwnerCo'" [groups]="['owner-co']" [required]="false" [label]="'Co-propriétaire'"
+                (uuid)="setOwnerTantiemeUuid($event, item)"  [placeholder]="'Selectionez un propriétaire'">
+              </app-entity-finder>
+            </div>
+          </div>
+          <div class="col-md-1 mb-1 d-flex justify-content-between align-items-center">
+            <button (click)="onDelete(i)" type="button" class="btn btn-danger">
+              <i class="feather icon-trash"></i>
+            </button>
+          </div>
+          <div class="col-md-12" formArrayName="options">
+              <table id="invoices" class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead>
+                  <tr>
+                    <th class="col-sm-7">Tantièmes</th>
+                    <th>Valeurs</th>
+                  </tr>
+                </thead>
+                <tbody class="task-page">
+                  <tr *ngFor="let el of item.get('options').controls; let j = index" [formGroupName]="j">
+                    <td class="col-sm-7">
+                      <label>{{ el?.get('libelle').value }}</label>
+                    </td>
+                    <td>
+                      <input (input)="onChangeTantiemeHorizontal($event.target.value, el, el.get('valeur'), j)"
+                        type="number" min="0" id="valeur{{i}}{{j}}" formControlName="valeur" class="form-control">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+      Enregistrer <i class="feather icon-save p-1"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,131 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <div class="d-flex">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Référence : </span>
+          <span class="title-result-show">{{ funding?.code }}</span>
+        </p>
+        <p>
+          <span class="title-show">Intervention : </span>
+          <span class="title-result-show">{{ funding?.construction?.nom }}</span>
+        </p>
+        <p>
+          <span class="title-show">Bien : </span>
+          <span class="title-result-show">{{ funding?.construction?.rental  ? funding?.construction?.rental?.libelle : funding?.construction?.house?.searchableTitle}}</span>
+        </p>
+        <p>
+          <span class="title-show">Financer par : </span>
+          <span class="title-result-show">{{ funding?.financeur }}</span>
+        </p>
+        <p>
+          <span class="title-show">Montant proprietaire : </span>
+          <span class="title-result-show text-warning">{{ funding?.montantP |number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Montant agence : </span>
+          <span class="title-result-show text-warning">{{ funding?.montantA |number }} {{ global.device }}</span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Etat : </span>
+          <span class="title-result-show">
+            <span class="badge" [ngClass]="{
+              'badge-danger' : funding?.etat === 'INVALIDE',
+              'badge-success' : funding?.etat === 'VALIDE'
+              }">{{ validation(funding?.etat)}}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Nombre de mois : </span>
+          <span class="title-result-show">{{ funding?.mois }} </span>
+        </p>
+        <p>
+          <span class="title-show">Taux d'interet : </span>
+          <span class="title-result-show">{{ funding?.interet }} %</span>
+        </p>
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{ funding?.createdAt }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ funding?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ funding?.updatedAt }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ funding?.update }}</span>
+        </p>
+        <p>
+          <span class="title-show">Validé le : </span>
+          <span class="title-result-show">{{ funding?.validateAt }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ funding?.validate }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Periode</th>
+            <th>Capital</th>
+            <th>Interet</th>
+            <th>Amortissement</th>
+            <th>Mensulaite</th>
+            <th>Capital Fin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of funding?.options" >
+            <td><p class="m-0 d-inline-block align-middle font-16">{{item?.periode}}</p></td>
+            <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.capital|number}} {{global.device}}</span></p></td>
+            <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.interet|number}} {{global.device}}</span></p></td>
+            <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.amortissement|number}} {{global.device}}</span></p></td>
+            <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.mensualite|number}} {{global.device}}</span></td>
+            <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{(item?.capitalF)|number}} {{global.device}}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <table class="width">
+      <tbody>
+        <tr class="border-bottom-success">
+          <td></td>
+          <td colspan="5" class="text-right font-weight-bold"></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="border border-success">
+          <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+          <td class="font-weight-bold font-size-default text-right">{{ funding?.montantA | number }} {{global.device}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template *ngxPermissionsOnly="'FUNDING:EDIT'">
+    <button *ngIf="funding?.etat === 'INVALIDE'" (click)="editFunding(funding)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <button *ngxPermissionsOnly="'FUNDING:PRINTER:SHOW'" (click)="printerFunding(funding)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

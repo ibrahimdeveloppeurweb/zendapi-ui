@@ -1,0 +1,160 @@
+<div class="col-md-12">
+  <span *ngIf="houses && houses.length > 0" class="badge badge-secondary mb-4 f-14 width">LISTE DES BIENS</span>
+
+  <div class="btn-group float-right m-1 btn-outil-owner" ngbDropdown>
+    <div class="btn-owner">
+      <div class="btn-group mr-1" ngbDropdown
+        ngbTooltip="Cliquez ici pour ajouter">
+        <button class="btn btn-primary" ngbDropdownToggle type="button">
+          Ajouter <i class="fas fa-plus"></i>
+        </button>
+        <div ngbDropdownMenu>
+          <a  class="dropdown-item" (click)="addHouse('LOCATION')"><i class="feather icon-home"></i> Bien en location </a>
+          <a class="dropdown-item" (click)="addHouse('VENTE')"> <i class="feather icon-home"></i> Bien en vente </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4 col-md-4" *ngFor="let item of houses">
+      <app-card [customHeader]="true" headerClass="border-0 p-2 pb-0" [options]="false" cardClass="user-card user-card-1" blockClass="pt-0 users-contact">
+        <div class="app-card-header">
+          <div *ngIf="!item.isMandat" class="row align-items-end">
+            <div class="col text-left pb-3"></div>
+            <div class="col text-right pb-3">
+              <span class="badge badge-light-{{item?.isMandat ? 'warning' : 'danger'}} ml-1"><small>{{item?.isMandat ? 'MANDAT EN COURS' : 'SANS MANDAT'}}</small> </span>
+            </div>
+          </div>
+          <div class="cover-img-block">
+            <img [src]="item?.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/house-default.png'" alt="{{ item?.nom }}"
+             title="{{ item?.nom }}" class="img-fluid">
+          </div>
+        </div>
+        <div class="text-center">
+          <div class="row align-items-end">
+            <div class="col text-left pb-3">
+              <span class="badge badge-light-{{ item.disponible === 'LOCATION' ? 'info' : 'secondary' }}">
+                {{ item?.disponible === 'LOCATION' ? 'En location' : 'En vente' }}
+              </span>
+            </div>
+            <div class="col text-right pb-3">
+              <span *ngIf="item?.disponible === 'VENTE'" class="badge" [ngClass]="{
+                'badge-success' : item?.etat === 'DISPONIBLE',
+                'badge-warning' : item?.etat === 'RESERVE',
+                'badge-danger' : item?.etat === 'VENDU'
+                }">
+                {{ item?.etat }}
+              </span>
+            </div>
+          </div>
+          <p *ngIf="item?.folderCustomer?.modalite === 'ECHEANCE'">
+            <ngb-progressbar type="primary" [showValue]="true" [value]="item?.folderCustomer?.prcEcheancier"></ngb-progressbar>
+          </p>
+          <p *ngIf="item?.folderCustomer?.modalite === 'AVANCEMENT'">
+            <ngb-progressbar type="primary" [showValue]="true" [value]="item?.folderCustomer?.prcEtatA"></ngb-progressbar>
+          </p>
+          <h5 *ngIf="item?.disponible === 'VENTE'" class="mb-1 mt-3">
+            <small class="text-muted sz-10 font-weight-bold" *ngIf="item?.etat !== 'DISPONIBLE'">
+              {{ item?.etat === 'VENDU' ? 'Acquereur' : 'Réservé par' }}: {{ item?.acquereur }}
+            </small>
+          </h5>
+          <h5 class="mb-1 mt-3">{{ item?.nom }}</h5>
+          <h6 *ngIf="proprietaire" class="mb-1 mt-3">
+            Propriétaire: {{ item?.owner?.searchableTitle }}
+          </h6>
+          <h6 class="mb-1 mt-3">
+            Situé: {{ item?.quartier + ' - ' + item?.commune+ ' - ' + item?.ville }}
+          </h6>
+          <div class="mt-2">
+            <div class="d-flex">
+              <div class="flex-fill">
+                <h5><i class="fas fa-home text-success"></i> {{item?.nbrLocative}} Locatives</h5>
+                <ul class="list-unstyled">
+                  <li>
+                    <div class="media d-flex justify-content-between align-items-center">
+                      <div>
+                        <i class="fas fa-tag text-success me-1"></i>
+                        <strong>Total Loyer</strong>
+                      </div>
+                      <span>{{ item?.loyer | number }} {{ global.device }}</span>
+                    </div>
+                  </li>
+                  
+                  <li class="mt-2">
+                    <div class="media d-flex justify-content-between align-items-center">
+                      <div>
+                        <i class="fas fa-tag text-success me-1"></i>
+                        <strong>Total Charges</strong>
+                      </div>
+                      <span>{{ item?.charges | number }} {{ global.device }}</span>
+                    </div>
+                  </li>
+                  
+                  <li class="mt-2">
+                    <div class="media d-flex justify-content-between align-items-center">
+                      <div>
+                        <i class="fas fa-tag text-success me-1"></i>
+                        <strong>Valeur des locatives</strong>
+                      </div>
+                      <span>{{ item?.valeurLocatives | number }} {{ global.device }}</span>
+                    </div>
+                  </li>
+                </ul>
+                
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="row align-items-end mb-2">
+          <div class="col text-right">
+            <p *ngIf="item?.disponible === 'VENTE'" class="mb-1 text-muted text-warning">
+              Valeur: {{ !item.isMandat ? item?.valeur : item?.mandate?.valeur|number }} {{global.device}}
+            </p>
+            <p *ngIf="item?.disponible === 'LOCATION'" class="mb-1 text-muted text-warning">
+              Type: {{ item?.type}}
+            </p>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col text-left">
+            <p class="mb-0">{{ item?.code }}</p>
+          </div>
+        </div>
+        <div class="row align-content">
+          <div class="col text-right">
+            <button (click)="shareLocation(item)" type="button" class="btn btn-icon btn-success"
+            ngbTooltip="Partager la localisation">
+              <i class="fas fa-share-alt"></i>
+            </button>
+            <span style="margin-right: 3px;"></span>
+            <button (click)="showHouse(item)" type="button" class="btn btn-icon btn-secondary"
+                    ngbTooltip="Détails">
+                <i class="fas fa-eye"></i>
+            </button>
+              <!-- <button (click)="visite3D(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Visite 3D">
+                <i class="fas fa-cube"></i>
+              </button> -->
+            <ng-template ngxPermissionsOnly="HOUSE:EDIT">
+              <button *ngIf="item?.disponible === 'LOCATION' || (item?.disponible === 'VENTE' && item?.etat === 'DISPONIBLE')" (click)="editHouse(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                <i class="feather icon-edit-2"></i>
+              </button>
+            </ng-template>
+            <ng-template ngxPermissionsOnly="HOUSE:PRINTER:SHOW">
+              <button (click)="printerHouse(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                ngbTooltip="Imprimer">
+                <i class="feather icon-printer"></i>
+              </button>
+            </ng-template>
+            <ng-template ngxPermissionsOnly="HOUSE:DELETE">
+              <button *ngIf="item?.isDelete === true && item?.disponible === 'LOCATION' || (item?.disponible === 'VENTE' && item?.etat === 'DISPONIBLE')" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                <i class="feather icon-trash"></i>
+              </button>
+            </ng-template>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

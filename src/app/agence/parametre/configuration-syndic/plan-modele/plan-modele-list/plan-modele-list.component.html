@@ -1,0 +1,64 @@
+<div class="card card-box rounded border-0 p-3">
+    <div class="py-0">
+        <h3 class="text-center">Modèle de plan de compte</h3>
+    </div>
+    <hr class="border-2">
+    <div class="d-flex justify-content-end my-1">
+        <div class="d-flex align-items-center">
+            <button (click)="add()" class="btn btn-primary button-radius" tooltip="Ajouter un compte tva" type="button">
+                <i class="fas fa-plus-circle"></i> Ajouter
+            </button>
+        </div>
+    </div>
+
+    <span class="badge badge-primary my-2 f-14 width">LISTE DES MODÈLES DE PLAN COMPTES </span>
+    <app-no-data *ngIf="models && models.length === 0" [title]="'Aucun modèle de plan comptable trouvé'"></app-no-data>
+    <div *ngIf="models && models.length > 0">
+        <div class="table-responsive m-0">
+            <table datatable [dtOptions]="dtOptions" class="table table-striped m-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Modèle de plan de compte</th>
+                        <th>Libellé</th>
+                        <th>Pays</th>
+                        <th>Etat</th>
+                        <th>Créer le</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of models; let i = index">
+                        <td>
+                            {{item?.code}}
+                        </td>
+                        <td>
+                            {{item?.modelP}}
+                        </td>
+                        <td>
+                            {{item?.libelle}}
+                        </td>
+                        <td>
+                            {{item?.pays?.nom}}
+                        </td>
+                        <td>
+                            <div class="switch d-inline m-r-10">
+                                <input (change)="onChange(item)" type="checkbox" id="switch-{{i}}" [checked]="item.etat === 'ACTIF' ? true : false">
+                                <label for="switch-{{i}}" class="cr"></label>
+                            </div>                     
+                        </td>
+                        <td>{{item?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                        <td class="text-center">
+                            <button type="button" (click)="edit(item)" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                                <i class="feather icon-edit-2"></i>
+                            </button>
+                            <button type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                                <i class="feather icon-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

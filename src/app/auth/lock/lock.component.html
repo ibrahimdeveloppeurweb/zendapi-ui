@@ -1,0 +1,34 @@
+<div class="auth-wrapper">
+  <div class="auth-content">
+    <div class="auth-bg">
+      <span class="r"></span>
+      <span class="r s"></span>
+      <span class="r s"></span>
+      <span class="r"></span>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <h5 class="mb-4">Session verrouiller</h5>
+        <img *ngIf="user?.sexe === 'Masculin'" class="img-radius img-fluid mb-4" [src]="user?.photo && user?.photo !== 'null' ? publicUrl+'/'+user?.photo : 'assets/images/avatar-default.png'" onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+        <img *ngIf="user?.sexe === 'Féminin'" class="img-radius img-fluid wid-140 hei-140 mb-4" [src]="user?.photo && user?.photo !== 'null' ? publicUrl+'/'+user?.photo : 'assets/images/avatar-mlle.jpeg'" onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+        <h4 class="text-center">{{ user?.nom }}</h4>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="input-group mb-1">
+            <input [type]="password" formControlName="password" id="password" class="form-control"
+              [ngClass]="{'is-invalid': f.password.invalid && (f.password.dirty || f.password.touched)}"
+              placeholder="Mot de passe">
+            <div class="input-group-append" (click)="onTogglePassword()">
+              <span class="input-group-text">
+                <span class="fas" [ngClass]="password === 'password' ? 'fa-eye' : 'fa-eye-slash'"></span>
+              </span>
+            </div>
+            <label *ngIf="!f.password.valid && (f.password.dirty || f.password.touched)" id="password-error"
+              class="error jquery-validation-error small form-text invalid-feedback">Le mot de passe est
+              requis.</label>
+          </div>
+          <p class="mb-2 text-muted"><a routerLink="/auth/forgot/password" class="f-w-400">Mot de passe oublié ?</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

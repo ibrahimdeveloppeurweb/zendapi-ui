@@ -1,0 +1,469 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="width btn-filter-owner">
+    <ng-template
+      [ngxPermissionsOnly]="['OWNER:LIST', 'HOUSE:LIST', 'RENTAL:LIST', 'MANDATE:LIST', 'PAYMENT:REPAYMENT:LIST', 'REPAYMENT:LIST', 'RENEW:MANDATE:LIST']">
+      <app-filter class="width" [name]="true" [nameTitle]="nameTitle" [user]="true" [userTitle]="userTitle"
+        [bien]="bien" [bienTitle]="bienTitle" [etat]="etat" [etatRow]="etatRow" [etatTitle]="etatTitle"
+        [categorie]="true" [categorieRow]="categorieRow" [categorieTitle]="categorieTitle" [dateD]="true" [dateF]="true"
+        [create]="true" [min]="min" [minTitle]="minTitle" [max]="max" [maxTitle]="maxTitle" [ordre]="true"
+        [code]="true" [count]="true" [type]="true" [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)"
+        (filterEvent)="onFilter($event)">
+      </app-filter>
+    </ng-template>
+  </div>
+  <ng-template
+    [ngxPermissionsExcept]="['OWNER:LIST', 'HOUSE:LIST', 'RENTAL:LIST', 'MANDATE:LIST', 'PAYMENT:REPAYMENT:LIST', 'REPAYMENT:LIST', 'RENEW:MANDATE:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'propriétaire'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- BOUTONS DE GESTION -->
+  <div class="col-sm-12 mb-4 btn-all-owner">
+
+    <div class="width alert alert-warning" role="alert">
+      <p><b>Bonjour chers utilisateurs, </b></p>
+      <p>Nous vous informons qu'une mise à jour a été effectuée. Désormais, toutes les actions se trouvent regroupées sous le bouton "Ajouter". Veuillez cliquer sur ce bouton pour effectuer toutes vos créations.</p>
+    </div>
+
+
+   <!-- <div class="first">
+      <div class="btn-owner">
+        <div *ngxPermissionsOnly="'OWNER:NEW'" class="btn-group m-1" ngbDropdown
+          ngbTooltip="Cliquez ici pour ajouter un propriétaire">
+          <button class="btn btn-primary" ngbDropdownToggle type="button">
+            Propriétaire <i class="feather icon-user"></i>
+          </button>
+          <div ngbDropdownMenu>
+            <a class="dropdown-item" (click)="addOwner('PARTICULIER')">PARTICULIER</a>
+            <a class="dropdown-item" (click)="addOwner('ENTREPRISE')">ENTREPRISE</a>
+          </div>
+        </div>
+      </div>
+      <div class="btn-house">
+        <div *ngxPermissionsOnly="'HOUSE:NEW'" class="btn-group m-1" ngbDropdown
+          ngbTooltip="Cliquez ici pour ajouter un bien">
+          <button class="btn btn-secondary" ngbDropdownToggle type="button">
+            Bien <i class="feather icon-home"></i>
+          </button>
+          <div ngbDropdownMenu>
+            <a *ngIf="autorisation?.CONTRAT" class="dropdown-item" (click)="addHouse('LOCATION')">En location</a>
+            <a *ngIf="autorisation?.DOSSIER" class="dropdown-item" (click)="addHouse('VENTE')">En vente</a>
+          </div>
+        </div>
+      </div>
+      <div class="btn-rental">
+        <button *ngxPermissionsOnly="'RENTAL:NEW'" (click)="addRental()" type="button" class="btn btn-info m-1"
+          ngbTooltip="Cliquez ici pour ajouter une locative">
+          Locative <i class="fas fa-home"></i>
+        </button>
+      </div>
+      <div class="btn-rental">
+        <button  (click)="addEquipment()" type="button" class="btn btn-success m-1"
+          ngbTooltip="Cliquez ici pour ajouter un equipement a une locative">
+          Ajouter un équipement <i class="fas fa-shapes"></i>
+        </button>
+      </div>
+      <div class="btn-mandate">
+        <div *ngxPermissionsOnly="['MANDATE:NEW', 'RENEW:MANDATE:NEW']" class="btn-group m-1" ngbDropdown
+          ngbTooltip="Cliquez ici pour ajouter un mandat">
+          <button class="btn btn-warning" ngbDropdownToggle type="button">
+            Mandat <i class="feather icon-home"></i>
+          </button>
+          <div ngbDropdownMenu>
+            <a *ngxPermissionsOnly="'MANDATE:NEW'" class="dropdown-item" (click)="addMandate()">Ajouter</a>
+            <a *ngxPermissionsOnly="'RENEW:MANDATE:NEW'" class="dropdown-item"
+              (click)="addRenewMandate()">Renouveller</a>
+            <a *ngxPermissionsOnly="['TERMINATE:NEW']" class="dropdown-item" (click)="addTerminate()">Résilier</a>
+          </div>
+        </div>
+      </div>
+      <div class="btn-repayment" data-hint="" data-hintposition="top-right">
+      <div class="btn-repayment">
+        <div *ngxPermissionsOnly="'REPAYMENT:NEW'" class="btn-group" ngbDropdown
+          ngbTooltip="Cliquez ici pour ajouter un reversement">
+          <button class="btn btn-info m-1" ngbDropdownToggle type="button">
+            Reversement <i class="feather icon-package"></i>
+          </button>
+          <div ngbDropdownMenu>
+            <a *ngIf="autorisation?.CONTRAT" class="dropdown-item" (click)="addRepayment('LOCATION')">Bien en
+              location</a>
+            <a *ngIf="autorisation?.DOSSIER" class="dropdown-item" (click)="addRepayment('VENTE')">Bien en vente</a>
+          </div>
+        </div>
+      </div>
+      <div class="btn-attribution">
+        <button  (click)="addAttribution()" type="button" class="btn btn-secondary m-1"
+          ngbTooltip="Cliquez ici pour attribuer un bien a un agent">
+          Attribution <i class="fas fa-share"></i>
+        </button>
+      </div>
+      <div class="btn-rental">
+        <button [disabled]="false"  (click)="getAccountStatement()" type="button" class="btn btn-primary m-1"
+          ngbTooltip="Cliquez ici pour voir le relevé de compte d'un propriétaire">
+          Relevé de compte <i class="fas fa-file"></i>
+        </button>
+      </div>
+      <div class="btn-rental">
+        <button [disabled]="false"  (click)="getCommittees()" type="button" class="btn btn-warning m-1"
+          ngbTooltip="Cliquez ici pour voir les commissions d'un propriétaire">
+          Commissions <i class="fas fa-file"></i>
+        </button>
+      </div>
+      <div class="btn-rental ">
+        <button (click)="addValidateur()" type="button" class="btn btn-success m-1"
+          ngbTooltip="Cliquez ici pour Definir Mes Validateurs">
+          Definir Mes Validateurs <i class="feather icon-check-square"></i>
+        </button>
+      </div>
+    </div>-->
+    <div class="btn-group float-right m-1 btn-outil-owner" ngbDropdown>
+      <!-- Bouton Notifications de Reversement -->
+      <button class="btn btn-info mr-1 position-relative" (click)="openNotifications()" ngbTooltip="Notifications de reversement">
+        <i class="feather icon-bell"></i>
+        <span *ngIf="unreadNotificationsCount > 0" class="badge badge-danger badge-pill position-absolute" 
+              style="top: -8px; right: -8px; font-size: 10px; padding: 3px 6px;">
+          {{ unreadNotificationsCount }}
+        </span>
+      </button>
+      <br><br>
+      <a class="btn btn-secondary mr-1" (click)="onChangeView()" ngbTooltip="Cliquez ici pour changer de vue">
+        <i class="feather icon-grid" *ngIf="view"></i>
+        <i class="fas fa-table" *ngIf="!view"></i>
+      </a>
+      <div class="btn-owner">
+        <div class="btn-group mr-1" ngbDropdown
+          ngbTooltip="Cliquez ici pour ajouter">
+          <button class="btn btn-primary" ngbDropdownToggle type="button">
+            Ajouter <i class="fas fa-plus"></i>
+          </button>
+          <div ngbDropdownMenu>
+            <a class="dropdown-item" (click)="addOwner('PARTICULIER')"><i class="feather icon-user"></i> Propriétaire particulier </a>
+            <a class="dropdown-item" (click)="addOwner('ENTREPRISE')"> <i class="fas fa-building"></i> Propriétaire Entreprise </a>
+            <a *ngIf="autorisation?.CONTRAT" class="dropdown-item" (click)="addHouse('LOCATION')"><i class="feather icon-home"></i> Bien en location </a>
+            <a *ngIf="autorisation?.DOSSIER" class="dropdown-item" (click)="addHouse('VENTE')"> <i class="feather icon-home"></i> Bien en vente </a>
+            <a *ngxPermissionsOnly="'RENTAL:NEW'" class="dropdown-item"(click)="addRental('LOCATIVE')"> <i class="fas fa-home"></i> Une locative </a>
+            <a *ngxPermissionsOnly="'RENTAL:NEW'" class="dropdown-item"(click)="addRentalBlock('LOCATIVE')"> <i class="fas fa-home"></i> Ajout de block de locative </a>
+            <a *ngxPermissionsOnly="'MANDATE:NEW'" class="dropdown-item" (click)="addMandate()"><i class="feather icon-home"></i> Un mandat </a>
+            <a *ngxPermissionsOnly="'RENEW:MANDATE:NEW'" class="dropdown-item"
+              (click)="addRenewMandate()"> <i class="fas fa-sync-alt"></i> Renouveller un mandat</a>
+            <a *ngxPermissionsOnly="['TERMINATE:NEW']" class="dropdown-item" (click)="addTerminate()"> <i class="fas fa-times-circle"></i> Résilier un mandat</a>
+            <a *ngIf="autorisation?.CONTRAT" class="dropdown-item" (click)="addRepayment('LOCATION')"><i class="fas fa-dollar-sign"></i> Reversement de bien en
+              location</a>
+            <a *ngIf="autorisation?.DOSSIER" class="dropdown-item" (click)="addRepayment('VENTE')"><i class="fas fa-dollar-sign"></i> Reversement de bien en vente</a>
+            <a class="dropdown-item" (click)="addAttribution()"><i class="fas fa-share"></i> Portefeuille de gestion </a>
+            <a class="dropdown-item" (click)="getCommittees()"><i class="fas fa-users"></i> Commission </a>
+            <a class="dropdown-item" (click)="addValidateur()"> <i class="feather icon-check-square"></i> Definir Mes Validateurs</a>
+            <a class="dropdown-item" (click)="getAccountStatement()"> <i class="fas fa-file"></i> Relevé de compte</a>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-warning mr-1" ngbDropdownToggle type="button">
+        Outils <i class="fas fa-tools"></i>
+      </button>
+      <div class="dropdown-menu-right" ngbDropdownMenu>
+        <a *ngxPermissionsOnly="['OWNER:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()"
+          ngbTooltip="Cliquez ici pour imprimer le listing">
+          Imprimer <i class="feather icon-printer"></i>
+        </a>
+        <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+          Exporter <i class="fa fa-file-excel"></i>
+        </a>
+        <a class="dropdown-item" [hidden]="visible" (click)="onImport()"
+          ngbTooltip="Cliquez ici pour importer un fichier">
+          Importer <i class="feather icon-download"></i>
+        </a>
+        <a class="dropdown-item" [hidden]="visible" (click)="onModel()" ngbTooltip="Cliquez ici pour génerer un modèle">
+          Génerer <i class="feather icon-upload"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTE DES PROPRIETAIRES -->
+  <div class="width list-owner">
+    <ng-template ngxPermissionsOnly="OWNER:LIST">
+      <div class="col-md-12" *ngIf="type === 'PROPRIETAIRE'">
+        <span class="badge badge-primary mb-4 f-14 width">
+          LISTE DES PROPRIETAIRES
+        </span>
+        <app-no-data [title]="'Aucun propriétaire trouvé'" *ngIf="owners && owners.length === 0"></app-no-data>
+        <div *ngIf="!view">
+          <div class="row" *ngIf="owners && owners.length > 0">
+            <div class="col-md-6" *ngFor="let item of owners">
+              <app-card [hidHeader]="true" cardClass="user-card user-card-1 mt-4" blockClass="pt-0">
+                <div class="user-about-block text-center">
+                  <div class="row align-items-end">
+                    <div class="col text-left pb-3">
+                      <span
+                        class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item?.type}}</span>
+                    </div>
+                    <div class="col">
+                      <img *ngIf="item?.type === 'PARTICULIER' && item?.sexe === 'Masculin'"
+                        class="img-radius img-fluid wid-80 hei-80"
+                        [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'"
+                        onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                      <img *ngIf="item?.type === 'PARTICULIER' && item?.sexe === 'Féminin'"
+                        class="img-radius img-fluid wid-80 hei-80"
+                        [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-mlle.jpeg'"
+                        onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'" />
+                      <img *ngIf="item?.type === 'ENTREPRISE' && item?.photoSrc"
+                        class="img-radius img-fluid wid-80 hei-80"
+                        [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'"
+                        onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" />
+                      <i *ngIf="item?.type === 'ENTREPRISE' && !item?.photoSrc" class="fas fa-building fa-5x"></i>
+                    </div>
+                    <div class="col text-right pb-3">
+                      <span class="badge badge-{{ item?.etat === 'INACTIF' ? 'danger': (item?.etat === 'AUCUN MANDAT' ? 'warning' : 'success') }}">
+                        {{ item?.etat }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <a (click)="showOwner(item)" href="javascript:">
+                    <h4 class="mb-1 mt-3">{{item?.nom}}</h4>
+                    <p class="mb-3 text-muted">
+                      <b><i class="fas fa-qrcode"></i> {{ item.code }}</b>
+                      <b class="m-4"><i class="feather icon-phone"></i> {{item?.telephone}}</b>
+                    </p>
+                    <p class="mb-1">
+                      <b> {{ item?.type === 'ENTREPRISE' ? 'Siège social' : 'Domicile' }} : </b>
+                      {{ item?.type === 'ENTREPRISE' ? item?.siegeSocial : item?.domicile }}
+                    </p>
+                    <p class="mb-1">
+                      <b class="m-3 text-warning"> Mandat : {{ item?.mandat }} </b>
+                      
+                    </p>
+                    <p class="mb-1">
+                       <!-- <b class="m-4 text-danger font-weight-bold">BRUT À REVERSER : {{item?.impaye| number }} {{global.device}}</b>  --> 
+                      <b class="m-4 text-success font-weight-bold">SOLDE : {{item?.solde| number }} {{global.device}}</b>
+                    </p>
+                  </a>
+                </div>
+                <div class="text-right">
+                  <button *ngxPermissionsOnly="'OWNER:SHOW'" (click)="showOwner(item)" type="button"
+                    class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="'OWNER:EDIT'" (click)="editOwner(item)" type="button"
+                    class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="'OWNER:PRINTER:SHOW'" (click)="printerOwner(item)" type="button"
+                    class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="OWNER:DELETE">
+                    <button *ngIf="item?.isDelete" (click)="delete(item)" type="button"
+                      class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </app-card>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="view">
+          <app-card [hidHeader]="true" cardClass="card-datatable" *ngIf="owners && owners.length > 0">
+            <div class="table-responsive" *ngIf="owners && owners.length > 0">
+              <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Référence</th>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Etat</th>
+                    <th>À reverser</th>
+                    <th>Déjà perçu</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of owners">
+                    <td>{{item?.code}}</td>
+                    <td class="align-middle">
+                      <img *ngIf="item?.type === 'PARTICULIER' && item?.sexe === 'Masculin'" class="img-radius img-fluid"
+                        [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'"
+                        onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" width="20%" />
+                      <img *ngIf="item?.type === 'PARTICULIER' && item?.sexe === 'Féminin'" class="img-radius img-fluid"
+                        [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-mlle.jpeg'"
+                        onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'" width="20%" />
+                      <img *ngIf="item?.type === 'ENTREPRISE' && item?.photoSrc" class="img-radius img-fluid"
+                        [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'"
+                        onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" width="20%" />
+                      <i *ngIf="item?.type === 'ENTREPRISE' && !item?.photoSrc" class="fas fa-building fa-3x"></i>
+                      <p class="m-2 d-inline-block align-middle font-16">
+                        <span class="text-primary">{{ item?.nom }}</span> <br />
+                        Email : {{ item?.email ? item?.email : 'N/A' }} <br />
+                        Contact : {{ item?.telephone ? item?.telephone : 'N/A' }}
+                      </p>
+                    </td>
+                    <td>
+                      <span class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item?.type}}</span>
+                    </td>
+                    <td>
+                      <span class="badge badge-{{ item?.etat === 'INACTIF' ? 'danger': (item?.etat === 'AUCUN MANDAT' ? 'warning' : 'success') }}">
+                        {{ item?.etat }}
+                      </span>
+                    </td>
+                    <td class="align-middle">
+                      <span class="text-danger">{{item?.impaye|number}} {{global.device}}</span>
+                    </td>
+                    <td class="align-middle">
+                      <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-warning">{{item?.reverse|number}} {{global.device}}</span>
+                      </p>
+                    </td>
+                    <td class="table-action">
+                      <button *ngxPermissionsOnly="'OWNER:SHOW'" (click)="showOwner(item)" type="button" class="btn btn-icon btn-secondary"
+                        ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button *ngxPermissionsOnly="'OWNER:EDIT'" (click)="editOwner(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                        ngbTooltip="Modifier">
+                        <i class="feather icon-edit-2"></i>
+                      </button>
+                      <button *ngxPermissionsOnly="'OWNER:PRINTER:SHOW'" (click)="printerOwner(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                        ngbTooltip="Imprimer">
+                        <i class="feather icon-printer"></i>
+                      </button>
+                      <ng-template ngxPermissionsOnly="OWNER:DELETE">
+                        <button *ngIf="item?.etat === 'DISPONIBLE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                          <i class="feather icon-trash"></i>
+                        </button>
+                      </ng-template>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                    <td class="font-weight-bold font-size-40 text-warning"> {{totalImpaye | number}} {{global.device}}</td>
+                    <td class="font-weight-bold font-size-40 text-success"> {{totalReverse | number}} {{global.device}}</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template ngxPermissionsExcept="OWNER:LIST" [ngxPermissionsOnly]="['HOUSE:LIST', 'RENTAL:LIST', 'MANDATE:LIST', 'PAYMENT:REPAYMENT:LIST',
+    'REPAYMENT:LIST', 'RENEW:MANDATE:LIST']">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'PROPRIETAIRE'" [title]="'liste propriétaire'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES BIENS -->
+  <ng-template ngxPermissionsOnly="HOUSE:LIST">
+    <div class="col-md-12" *ngIf="type === 'BIEN' && houses && houses.length === 0">
+      <span class="badge badge-secondary mb-4 f-14 width">
+        LISTE DES BIENS
+      </span>
+      <app-no-data [title]="'Aucun bien trouvé'" *ngIf="type === 'BIEN' && houses && houses.length === 0"></app-no-data>
+    </div>
+    <app-house-list [houses]="houses" *ngIf="type === 'BIEN' && houses && houses.length > 0" class="width">
+    </app-house-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="HOUSE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'BIEN'" [title]="'liste bien'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES LOCATIVES -->
+  <ng-template ngxPermissionsOnly="RENTAL:LIST">
+    <div class="col-md-12" *ngIf="type === 'LOCATIVE'">
+      <span class="badge badge-info mb-4 f-14 width">
+        
+      </span>
+      <app-card [hidHeader]="true" cardClass="card-datatable" *ngIf="rentals && rentals.length > 0">
+    
+        <div class="row">
+          <app-rental-list [rentals]="rentals" [action]="true" class="width"></app-rental-list>
+        </div>
+      </app-card>
+      <app-no-data [title]="'Aucune locative trouvée'" *ngIf="rentals && rentals.length === 0"></app-no-data>
+    </div>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="RENTAL:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'LOCATIVE'" [title]="'liste locative'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES MANDATS -->
+  <ng-template ngxPermissionsOnly="MANDATE:LIST">
+    <div class="col-md-12" *ngIf="type === 'MANDAT'">
+      <span class="badge badge-warning mb-4 f-14 width">
+        LISTE DES MANDATS
+      </span>
+      <app-no-data [title]="'Aucun mandat trouvé'" *ngIf="mandates && mandates.length === 0"></app-no-data>
+    </div>
+    <app-mandate-list [mandates]="mandates" *ngIf="type === 'MANDAT' && mandates && mandates.length > 0" class="width">
+    </app-mandate-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="MANDATE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'MANDAT'" [title]="'liste mandat'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES REVERSEMENTS -->
+  <ng-template ngxPermissionsOnly="REPAYMENT:LIST">
+    <div class="col-md-12" *ngIf="type === 'REVERSEMENT'">
+      <span class="badge badge-success mb-4 f-14 width">
+        LISTE DES REVERSEMENTS
+      </span>
+      <app-no-data [title]="'Aucun réversement trouvé'" *ngIf="repayments && repayments.length === 0"></app-no-data>
+    </div>
+    <app-repayment-list [repayments]="repayments" *ngIf="type === 'REVERSEMENT' && repayments && repayments.length > 0"
+      class="width"></app-repayment-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="REPAYMENT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'REVERSEMENT'" [title]="'liste reversement'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES RENOUVELLEMENTS -->
+  <ng-template ngxPermissionsOnly="RENEW:MANDATE:LIST">
+    <div class="col-md-12" *ngIf="type === 'RENOUVELLEMENT_M'">
+      <span class="badge badge-warning mb-4 f-14 width">
+        LISTE DES RENOUVELLEMENTS
+      </span>
+      <app-no-data [title]="'Aucun renouvellement trouvé'" *ngIf="renews && renews.length === 0"></app-no-data>
+    </div>
+    <app-renew-mandate-list [renews]="renews" *ngIf="type === 'RENOUVELLEMENT_M' && renews && renews.length > 0"
+      class="width"></app-renew-mandate-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="RENEW:MANDATE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'RENOUVELLEMENT_M'" [title]="'liste renouvellement mandat'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES RESILIATIONS -->
+  <!-- <ng-template ngxPermissionsOnly="TERMINATE:MANDATE:LIST"> -->
+  <div class="col-md-12" *ngIf="type === 'RESILIATION_M'">
+    <span class="badge badge-danger mb-4 f-14 width">
+      LISTE DES RESILIATIONS
+    </span>
+    <app-no-data [title]="'Aucun résiliation trouvé'" *ngIf="terminates && terminates.length === 0"></app-no-data>
+  </div>
+  <app-terminate-mandate-list [terminates]="terminates"
+    *ngIf="type === 'RESILIATION_M' && terminates && terminates.length > 0" class="width"></app-terminate-mandate-list>
+  <!-- </ng-template> -->
+  <!-- <ng-template ngxPermissionsExcept="TERMINATE:MANDATE:LIST"> -->
+  <!-- <ng-template>
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'RESILIATION_M'" [title]="'liste résiliation mandat'"></app-no-droit>
+    </div>
+  </ng-template> -->
+</div>

@@ -1,0 +1,60 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-primary my-2 f-14 width">AJOUTER UN MODÈLE DE PLAN COMPTABLE </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2"> 
+                    <!-- <div class="col-md-3">
+                        <label>Syndic <span class="asterix">*</span></label>
+                        <app-entity-finder [class]="'Syndic'" [namespace]="'Syndic'" [groups]="['syndic']"
+                        [required]="true" [selected]="currentSyndic"
+                        (uuid)="setSyndicUuid($event)">
+                        </app-entity-finder>
+                    </div> -->
+                    <div class="col-md-4">
+                        <label for="modelP">Modèle de plan de compte <span class="asterix">*</span></label>
+                        <input type="text" class="form-control" formControlName="modelP" id="modelP"
+                        [ngClass]="{'is-invalid': submit && f.modelP.errors,'is-valid': submit && f.modelP.valid}" placeholder="Modèle de plan de compte">
+                        <div class="invalid-feedback" *ngIf="submit && f.modelP.errors">
+                            <div *ngIf="f.modelP.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="libelle">Libellé <span class="asterix">*</span></label>
+                        <input type="text" class="form-control" formControlName="libelle" id="libelle"
+                        [ngClass]="{'is-invalid': submit && f.libelle.errors,'is-valid': submit && f.libelle.valid}" placeholder="Libellé">
+                        <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                            <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>        
+                    <div class="col-md-4">
+                        <label for="pays">Pays <span class="asterix">*</span></label>
+                        <select class="form-control" id="pays" formControlName="pays"
+                            [ngClass]="{'is-invalid': submit && f.pays.errors,'is-valid': submit && f.pays.valid}">
+                            <option *ngFor="let item of country" [ngValue]="item.uuid">{{item.nom}}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="submit && f.pays.errors">
+                            <div *ngIf="f.pays.errors.required">{{required.novide}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+        Enregistrer <i class="feather icon-save p-1"></i>
+        </button>
+    </div>
+</form>

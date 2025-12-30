@@ -1,0 +1,37 @@
+<div class="row">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width" [name]="true" [nameTitle]="nameTitle" [etat]="true" [etatRow]="etatRow" [dateD]="true"
+    [dateF]="true" [type]="true" [code]="true" [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)"
+    (filterEvent)="onFilter($event)">
+  </app-filter>
+
+  <div class="col-sm-12">
+    <app-card cardTitle="Calendrier" cardClass="elite-calendar" [options]="false">
+      <div class="row justify-content-center" style="padding-bottom: 2%;">
+        <div class=" d-flex justify-content-center">
+         
+          <div id="inactif"></div>
+          <span class="fontWeight">Inactif  </span>
+        </div>
+        <div class=" d-flex justify-content-center">
+          
+          <div id="actif"></div>
+          <span class="fontWeight">{{ type !== 'CONTRAT' ? 'Valide' : 'Actif' }}   </span>
+        </div>
+        <div class=" d-flex justify-content-center">
+         
+          <div id="expire"></div>
+          <span class="fontWeight">{{ type !== 'DOSSIER' ? 'Expiré' : 'Invalide' }}  </span>
+        </div>
+        <div *ngIf="type !== 'DOSSIER'" class=" d-flex justify-content-center">
+          
+          <div id="expireD"></div>
+          <span class="fontWeight">Expire dans plus ou moins 3 mois </span>
+        </div>
+      </div>
+      <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
+
+      <bryntum-calendar *ngIf="loaded == true"  #calendar [resources]=events  [readOnly]=true  [events]=datas></bryntum-calendar>
+    </app-card>
+  </div>
+</div>

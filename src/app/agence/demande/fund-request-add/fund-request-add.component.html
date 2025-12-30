@@ -1,0 +1,122 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width"> INFORMATION SUR LE DEMANDEUR </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-4">
+            <label>Nom </label>
+            <input type="text" readonly [value]="user?.nom" class="form-control bold p-2">
+          </div>
+          <div class="col-md-4">
+            <label>Email </label>
+            <input type="text" readonly [value]="user?.email" class="form-control bold p-2">
+          </div>
+          <div class="col-md-4">
+            <label>Telephone </label>
+            <input type="text" readonly [value]="user?.telephone" class="form-control bold p-2">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width"> INFORMATION SUR LA DEMANDE DE FOND </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <app-entity-finder [class]="'Treasury'" [groups]="['treasury']" [required]="true"
+              [params]="[{ type: [{type : 'CAISSE'}]}]" [label]="'Trésorerie'" (uuid)="setTreasuryUuid($event)"
+              [disabled]="edit" [selected]="currentFund" [placeholder]="'Selectionez une tresorerie'">
+            </app-entity-finder>
+            <div class="invalid-feedback" *ngIf="submit && f.treasury.errors">
+              <div *ngIf="f.treasury.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="motif">Motif <span class="asterix">*</span></label>
+            <input type="motif" formControlName="motif" min="0" class="form-control" id="motif" [ngClass]="{
+              'is-invalid': submit && f.motif.errors,
+              'is-valid': submit && f.motif.valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.motif.errors">
+              <div *ngIf="f.motif.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="date">Date <span class="asterix">*</span></label>
+            <input type="date" formControlName="date" class="form-control" id="date" [ngClass]="{
+              'is-invalid': submit && f.date.errors,
+              'is-valid': submit && f.date.valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+              <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="priorite">Priorité<span class="asterix">*</span></label>
+            <select class="form-control" id="priorite" formControlName="priorite" [ngClass]="{
+                'is-invalid': submit && f.priorite.errors,
+                'is-valid': submit && f.priorite.valid
+              }">
+              <option *ngFor="let item of prioriteRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.priorite.errors">
+              <div *ngIf="f.priorite.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="details">Details </label>
+            <textarea class="form-control b-2" id="exampleFormControlTextarea5" formControlName="details" rows="2"></textarea>
+          </div>
+          <div class="col-md-6">
+            <label for="montant">Montant <span class="asterix">*</span></label>
+            <input type="number" formControlName="montant" min="0" step="1000" class="form-control" id="montant" [ngClass]="{
+              'is-invalid': submit && f.montant.errors,
+              'is-valid': submit && f.montant.valid
+            }">
+            <div class="invalid-feedback" *ngIf="submit && f.montant.errors">
+              <div *ngIf="f.montant.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md">
+              <label>Pièces et documents à joindre</label>
+              <app-folder-uploader
+                [maxSize]="3"
+                (filesd)="files($event)"
+                (filesUploaded)="setParam('folderUuid',$event)"
+                [path]="'demande'"
+                [etat]="edit ? 'edit': 'add'"
+                [folder]="edit && fundRequest ? fundRequest?.folder : null">
+              </app-folder-uploader>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="onReset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

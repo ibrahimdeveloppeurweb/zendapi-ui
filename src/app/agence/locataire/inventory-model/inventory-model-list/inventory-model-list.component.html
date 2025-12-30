@@ -1,0 +1,38 @@
+<div class="col-md-12" *ngIf="models.length > 0">
+  <span class="badge badge-info mb-4 f-14 width">LISTE DES MODELS D'ETAT DES LIEUX</span>
+
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+      <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+              <thead class="thead-light">
+                  <tr>
+                      <th>Type de maison</th>
+                      <th>Nombre de pièce</th>
+                      <th>Crée le</th>
+                      <th>Action</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let item of models">
+                      <td>{{item?.type?.libelle}}</td>
+                      <td>{{item?.pieces?.length}}</td>
+                      <td>{{item.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                      <td class="table-action">
+                          <div class="overlay-edit">
+                              <button (click)="show(item)" type="button" title="Détails" class="btn btn-icon btn-secondary ml-1" ngbTooltip="Détails">
+                                  <i class="fas fa-eye"></i>
+                              </button>
+                              <button (click)="edit(item)" type="button" title="Modifier" class="btn btn-icon btn-info ml-1" ngbTooltip="Modifier">
+                                  <i class="feather icon-edit-2"></i>
+                              </button>
+                              <!-- <button (click)="delete(item)" type="button" title="Supprimer" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                                  <i class="feather icon-trash"></i>
+                              </button> -->
+                          </div>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+  </app-card>
+</div>

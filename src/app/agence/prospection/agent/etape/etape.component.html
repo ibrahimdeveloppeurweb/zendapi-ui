@@ -1,0 +1,42 @@
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div *ngIf="type === 'ABONNEES'" class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label for="user">Selectionner le(s) utilisateur(s) </label>
+                            <ng-select [multiple]="true" class="form-control" formControlName="user" [ngClass]="{
+                                'is-invalid': submit && f.user.errors, 'is-valid': submit && f.agent.valid }">
+                                <ng-option *ngFor="let item of users" [value]="item?.uuid" >{{item?.libelle}}</ng-option>
+                            </ng-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="type === 'PROSPECT'" class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label for="user">Selectionner le(s) agent(s) </label>
+                            <ng-select [multiple]="true" class="form-control" formControlName="user" [ngClass]="{
+                                'is-invalid': submit && f.user.errors, 'is-valid': submit && f.agent.valid }">
+                                <ng-option *ngFor="let item of users" [value]="item?.uuid" >{{item?.libelle}}</ng-option>
+                            </ng-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

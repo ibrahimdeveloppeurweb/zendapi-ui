@@ -1,0 +1,9 @@
+agm-map {
+    height: 300px;
+}
+.pac-container {
+    z-index: 9999999999 !important;
+  }
+  ::ng-deep.swal2-container {
+    z-index: 10000 !important;
+ }

@@ -1,0 +1,162 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Référence : </span>
+        <span class="title-result-show">{{terminate?.code }}</span>
+      </p>
+      <p>
+        <span class="title-show">Client : </span>
+        <span class="title-result-show">{{ terminate?.folder?.customer?.searchableTitle }}</span>
+      </p>
+      <p>
+        <span class="title-show">Dossier : </span>
+        <span class="title-result-show">{{ terminate?.folder?.code }}</span>
+      </p>
+      <p>
+        <span class="title-show">Au crédit : </span>
+        <span class="title-result-show">
+          <span class="badge badge-primary">
+            {{ terminate?.signe === 'NEGATIF' ? "Au bénéfice de l'agence" : "Au bénéfice du client" }}
+          </span>
+        </span>
+      </p>
+    </div>
+    <!-- COL MILLIEU -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Penalité : </span>
+        <span class="title-result-show">{{ terminate?.penalite }} %</span>
+      </p>
+      <p>
+        <span class="title-show ">Montant du bien : </span>
+        <span class="title-result-show text-warning">{{ terminate?.folder?.montantBien|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show ">Montant de l'agence : </span>
+        <span class="title-result-show text-warning">{{ terminate?.montantAgence|number }} {{global.device}}</span>
+      </p>
+      <p>
+        <span class="title-show">Etat : </span>
+        <span class="title-result-show">
+          <span class="badge" [ngClass]="{
+          'badge-success' : terminate?.etat === 'VALIDE',
+          'badge-danger' : terminate?.etat === 'INVALIDE'
+          }">{{validation(terminate?.etat)}}</span>
+        </span>
+      </p>
+    </div>
+    <!-- COL DROITE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Date : </span>
+        <span class="title-result-show">{{ terminate?.date|date: "d MMMM y" : '' : 'fr-FR' }}</span>
+      </p>
+      <p>
+        <span class="title-show">Crée le : </span>
+        <span class="title-result-show">{{terminate?.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{ terminate?.create }}</span>
+      </p>
+      <p>
+        <span class="title-show">Modifié le : </span>
+        <span class="title-result-show">{{ terminate?.updatedAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</span>
+        <span class="title-show ml-5"> Par : </span>
+        <span class="title-result-show">{{terminate?.update }}</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Lot / Ilot</th>
+              <th>Prix U.</th>
+              <th>Qte</th>
+              <th>Tva</th>
+              <th>Remise</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of terminate?.folder?.houses">
+              <td>{{item?.libelle }}</td>
+              <td>{{item?.prix | number }} {{global.device}}</td>
+              <td>{{item?.qte }}</td>
+              <td>{{item?.tva }} %</td>
+              <td>{{item?.remise }}</td>
+              <td>{{item.total | number}} {{global.device}} </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ terminate.folder?.montantBien | number}} {{global.device}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOTAL DES OPTIONS -->
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-responsive invoice-table invoice-total">
+        <tbody>
+          <tr>
+            <th>TOTAL HT : </th>
+            <td> {{ terminate?.invoice?.montantHt | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL REMISE : </th>
+            <td> {{ terminate?.invoice?.montantRemise | number }} {{global.device}}</td>
+          </tr>
+          <tr>
+            <th>TOTAL TVA : </th>
+            <td> {{ terminate?.invoice?.montantTva | number }} {{global.device}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- TOTAL GLOBAL -->
+  <table class="width">
+    <tbody>
+      <tr class="border-bottom-success">
+        <td></td>
+        <td colspan="5" class="text-right font-weight-bold"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="border border-success">
+        <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+        <td class="font-weight-bold font-size-default text-right">{{ terminate?.invoice?.montant | number }} {{global.device}}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template *ngxPermissionsOnly="'FOLDER:TERMINATE:EDIT'">
+    <button *ngIf="terminate?.etat === 'INVALIDE'" (click)="editFolderTerminate(terminate)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <button *ngxPermissionsOnly="'FOLDER:TERMINATE:PRINTER:SHOW'" (click)="printerTerminate(terminate)" class="btn btn-warning">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

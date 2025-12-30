@@ -1,0 +1,24 @@
+<div class="card-body hd-detail hdd-user border-bottom bg-light" *ngFor="let item of historiques">
+    <div class="row">
+        <div class="col-auto text-center">
+            <img class="media-object wid-60 img-radius mb-2"
+                [src]="item.profil ? publicUrl+'/'+item.profil : 'assets/images/avatar-default.png'"
+                alt="Generic placeholder image ">
+        </div>
+        <div class="col">
+            <div class="comment-top">
+                <h3>{{item?.create}} <small class="text-muted f-w-400">{{item?.objet}}</small></h3>
+                <p>{{ item?.createdAt | date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR' }}</p>
+            </div>
+            <div class="comment-content">
+                <div [innerHTML]=item?.description></div>
+            </div>
+            <div class="row text-center mb-2">
+                <div class="col-xl-2 col-lg-3 col-sm-4 col-xs-12" *ngFor="let elem of item?.image">
+                    <a href="assets/images/light-box/l1.jpg" data-toggle="lightbox" data-gallery="example-gallery"><img
+                            [src]="elem?.file" class="img-fluid m-b-10" style="width: 70px; height: 70px;" alt=""></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,235 @@
+<div class="row justify-content-center">
+    <!-- FILTRE DE RECHERCHE -->
+    <app-filter class="width"
+        [name]="true"
+        [type]="true"
+        [dateD]="true"
+        [dateF]="true"
+        [typeRow]="typeRow" 
+        [nameTitle]="'Prospection'"
+        (filterEvent)="onFilter($event)"
+        (typeEvent)="onChangeLoad($event)" 
+        >
+    </app-filter>
+    <!-- FILTRE DE RECHERCHE -->
+
+    <!-- WIDGET -->
+    <div class="col-xl-3 col-md-6">
+      <app-card [hidHeader]="true">
+        <div class="row align-items-center m-l-0">
+          <div class="col-auto"> <i class="icon feather icon-activity f-30 text-c-red"></i> </div>
+          <div class="col-auto">
+            <h6 class="text-muted m-b-10">Estimation CA</h6>
+            <h6 class="m-b-0">12 000 000 000 000  XOF</h6>
+          </div>
+        </div>
+      </app-card>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <app-card [hidHeader]="true">
+        <div class="row align-items-center m-l-0">
+          <div class="col-auto">
+            <i class="icon feather icon-arrow-up-right f-30 text-c-green"></i>
+          </div>
+          <div class="col-auto">
+          <h6 class="text-muted m-b-10">Nombre de vente</h6>
+          <h2 class="m-b-0"> 250 </h2>
+          </div>
+        </div>
+      </app-card>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <app-card [hidHeader]="true">
+        <div class="row align-items-center m-l-0">
+          <div class="col-auto">
+            <i class="icon feather icon-percent f-30 text-c-yellow"></i>
+          </div>
+          <div class="col-auto">
+            <h6 class="text-muted m-b-10">Taux de conversion</h6>
+            <h2 class="m-b-0"> 44,5 %</h2>
+          </div>
+        </div>
+      </app-card>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <app-card [hidHeader]="true">
+        <div class="row align-items-center m-l-0">
+          <div class="col-auto">
+            <i class="icon feather icon-clock f-30 text-c-blue"></i>
+          </div>
+          <div class="col-auto">
+            <h6 class="text-muted m-b-10">Temps moyens de conversions</h6>
+            <h2 class="m-b-0">22 Jours</h2>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-md-4">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-red">
+            <div class="row align-items-center">
+                <div class="col-8">
+                    <h6 class="text-muted m-b-0">Nombre de prospect</h6>
+                </div>
+                <div class="col-4 text-right">
+                    <i class="feather icon-user f-28"></i>
+                </div>
+            </div>
+            <div class="app-card-footer">
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        <p class="text-white m-b-0">115</p>
+                    </div>
+                    <div class="col-8 text-right">
+                        <p class="text-white m-b-0"></p>
+                    </div>
+                </div>
+            </div>
+        </app-card>
+    </div>
+    <div class="col-md-4">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-yellow">
+            <div class="row align-items-center">
+                <div class="col-8">
+                    <h6 class="text-muted m-b-0">Nombre de négociation</h6>
+                </div>
+                <div class="col-4 text-right">
+                    <i class="feather icon-shuffle f-28"></i>
+                </div>
+            </div>
+            <div class="app-card-footer">
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        <p class="text-white m-b-0">12</p>
+                    </div>
+                    <div class="col-8 text-right">
+                        <p class="text-white m-b-0"></p>
+                    </div>
+                </div>
+            </div>
+        </app-card>
+    </div>
+    <div class="col-md-4">
+        <app-card [hidHeader]="true" [isCardFooter]="true" footerClass="bg-c-green">
+            <div class="row align-items-center">
+                <div class="col-8">
+                    <h6 class="text-muted m-b-0">Nombre de réunion</h6>
+                </div>
+                <div class="col-4 text-right">
+                    <i class="feather icon-users f-28"></i>
+                </div>
+            </div>
+            <div class="app-card-footer">
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        <p class="text-white m-b-0">{{ 10 }}</p>
+                    </div>
+                    <div class="col-8 text-right">
+                        <p class="text-white m-b-0"></p>
+                    </div>
+                </div>
+            </div>
+        </app-card>
+    </div>
+    <!-- WIDGET -->
+
+    <!-- PERFORMANCE AGENT -->
+    <div class="col-xl-12 col-md-12">
+        <app-card [hidHeader]="true">
+            <div class="col-md-12">
+            <span class="badge badge-primary my-2 f-14 formBadge width">PERFORMANCE AGENT</span>
+        </div>
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Agent commercial</th>
+                            <th>A contacter</th>
+                            <th>Qualification</th>
+                            <th>Négociation</th>
+                            <th>Gagné</th>
+                            <th>Perdu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let performance of performances">
+                            <td>
+                                <p class="m-0 d-inline-block align-middle font-16">{{performance?.label}}</p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16">{{performance?.cont}}</p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16">{{performance?.qual}}</p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16">{{performance?.perdu}}</p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16">{{performance?.gan}}</p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16">{{performance?.perdu}}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>TOTAL</td>
+                            <td>81</td>
+                            <td>76</td>
+                            <td>27</td>
+                            <td>120</td>
+                            <td>20</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- <app-no-data class="width" [title]="'Aucun echéancier trouvée'" *ngIf="echeanciers && echeanciers.length === 0"></app-no-data> -->
+        </div>
+        </app-card>
+    </div>
+    <!-- PERFORMANCE AGENT -->
+
+    <!-- LISTE DES 10 DERNIERS LEADS EN ATTENTE D'ASSIGNATION -->
+    <div class="col-xl-12 col-md-12">
+        <app-card [hidHeader]="true">
+            <div class="col-md-12">
+            <span class="badge badge-warning my-2 f-14 formBadge width">LISTE DES 10 DERNIERS LEADS EN ATTENTE D'ASSIGNATION</span>
+        </div>
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered nowrap table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>N°</th>
+                            <th>Nom/Raison sociale</th>
+                            <th>Date de prise de contact</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let lead of leadattentes; let i = index">
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16">{{ i + 1 }}</p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16">{{lead?.label}}</p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16">15/06/2023</p>
+                            </td>
+                            <td class="align-middle">
+                                <p class="m-0 d-inline-block align-middle font-16"></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- <app-no-data class="width" [title]="'Aucun echéancier trouvée'" *ngIf="echeanciers && echeanciers.length === 0"></app-no-data> -->
+        </div>
+        </app-card>
+    </div>
+    <!-- LISTE DES 10 DERNIERS LEADS EN ATTENTE D'ASSIGNATION -->
+</div>

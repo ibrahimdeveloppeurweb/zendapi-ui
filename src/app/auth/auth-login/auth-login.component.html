@@ -1,0 +1,72 @@
+<div class="auth-wrapper align-items-stretch aut-bg-img">
+  <div class="flex-grow-1">
+    <!-- SLIDE AUTH -->
+    <div class="h-auto d-md-flex align-items-center auth-side-img">
+      <!-- CONTENU DU SLIDE
+      <div class="slideshow-container">
+
+        IMAGE SLIDES
+        <div *ngFor="let item of slideRow" class="slide__auth fade">
+          <img [src]="'../../../assets/images/auth/'+item.img+'.png'" style="width:100%">
+        </div>
+
+        NEXT ET PREV BOUTON
+        <a class="prev" (click)="plusSlides(-1)">&#10094;</a>
+        <a class="next" (click)="plusSlides(1)">&#10095;</a>
+
+        POINT DE SWITCH
+        <div class="current__slide">
+          <span *ngFor="let item of slideRow" class="dot" (click)="currentSlide(item.position)"></span>
+        </div>
+      </div> -->
+      <div class="col-sm-10 auth-content w-auto">
+        <h1 class="text-white my-4">Content de te revoir !</h1>
+        <h4 class="text-white font-weight-normal">
+          La plateforme numéro un (N˚1) dans la Gestion Immobilière, Recouvrement, Vente<br/>(Promotion Immobilière, Lotissement)
+        </h4>
+      </div>
+    </div>
+
+    <!-- FORM AUTH -->
+    <div class="auth-side-form">
+      <div class="auth-content">
+        <img src="assets/images/logo.png" alt="" class="img-fluid mb-4 img-center">
+        <h3 class="mb-4 f-w-400 text-center">Connexion</h3>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="input-group mb-3">
+            <input type="text" formControlName="username" id="username" class="form-control" placeholder="Adresse email"
+            [ngClass]="{'is-invalid': f.username.invalid && (f.username.dirty || f.username.touched)}">
+            <label *ngIf="!f.username.valid && (f.username.dirty || f.username.touched)" id="username-error"
+            class="error jquery-validation-error small form-text invalid-feedback">L'adresse email est incorrect.</label>
+          </div>
+          <div class="input-group mb-4">
+            <input [type]="password" formControlName="password" id="password" class="form-control"
+              [ngClass]="{'is-invalid': f.password.invalid && (f.password.dirty || f.password.touched)}"
+              placeholder="Mot de passe">
+            <div class="input-group-append" (click)="onTogglePassword()">
+              <span class="input-group-text"><span class="fas"
+                  [ngClass]="password === 'password' ? 'fa-eye' : 'fa-eye-slash'"></span></span>
+            </div>
+            <label *ngIf="!f.password.valid && (f.password.dirty || f.password.touched)" id="password-error"
+              class="error jquery-validation-error small form-text invalid-feedback">Le mot de passe est
+              requis.</label>
+          </div>
+          <button type="submit" [disabled]="!form.valid || loading"
+            class="btn btn-block btn-primary text-white mb-4">
+            Se Connecter
+            <ng-container *ngIf="loading">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span class="sr-only">Chargement...</span>
+            </ng-container>
+          </button>
+          <div class="text-center">
+            <p class="mb-2 text-muted"><a routerLink="/auth/forgot/password" class="f-w-400">Mot de passe oublié ?</a></p>
+            <p class="text-small">Vous n'avez pas de compte ?
+              <a target="_blank" href="https://register.zenapi.immo/#/agency">créer un compte ici</a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

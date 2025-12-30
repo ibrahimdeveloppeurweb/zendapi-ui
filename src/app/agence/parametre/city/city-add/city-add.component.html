@@ -1,0 +1,37 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" (click)="modal.close('ferme')" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-6">
+            <label for="country">Pays <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Country'" [groups]="['country']" [required]="true"
+              [namespace]="'Extra'"
+              (uuid)="setCountryUuid($event)" [selected]="selected"
+              [placeholder]="'Selectionez un pays'">
+            </app-entity-finder>
+          </div>
+          <div class="col-md-6">
+            <label for="libelle">Ville<span class="asterix">*</span></label>
+            <input formControlName="libelle" (uuid)="setCityUuid($event)" [selected]="selected" class="form-control" id="libelle" placeholder="ville">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

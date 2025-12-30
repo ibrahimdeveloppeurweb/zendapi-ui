@@ -1,0 +1,260 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="row">
+                <span class="badge badge-warning my-2 f-14 width"> INFORMATIONS SUR LE REGLEMENT </span>
+            </div>
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label>Syndic <span class="asterix">*</span></label>
+                            <app-entity-finder [class]="'Trustee'" [namespace]="'Trustee'" [groups]="['trustee']"
+                            [required]="true" [selected]="currentSyndic" [disabled]="edit"
+                            (uuid)="setSyndicUuid($event)">
+                            </app-entity-finder>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="owner">Co-propriétaire <span class="asterix">*</span></label>
+                            <select [(ngModel)]="selectedOwner" (ngModelChange)="onChange($event)" class="form-control" id="owner" formControlName="owner"
+                                [ngClass]="{'is-invalid': submit && f.owner.errors,'is-valid': submit && f.owner.valid}">
+                                <option *ngFor="let item of ownercos" [ngValue]="item.uuid">{{item?.type === 'PARTICULIER' ? item?.civilite : ' '}} {{item.nom}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.owner.errors">
+                                <div *ngIf="f.owner.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="fundsApeal">Appel de charge <span class="asterix">*</span></label>
+                            <select [(ngModel)]="selectedFundsApeals" (ngModelChange)="onChangeFundsApeal($event)" class="form-control" id="fundsApeal" formControlName="fundsApeal"
+                                [ngClass]="{'is-invalid': submit && f.fundsApeal.errors,'is-valid': submit && f.fundsApeal.valid}" [attr.disabled]="f.owner.value ? null : 'true'">
+                                <option *ngIf="fundsApeals.length > 0 && f.owner.value" [ngValue]="null">Selectionnez un appel de charges </option>
+                                <option *ngIf="fundsApeals.length === 0 && f.owner.value" [ngValue]="null">Ce proprietaire ne possède aucun appel de charge </option>
+                                <option *ngFor="let item of fundsApeals" [ngValue]="item?.uuid">{{item?.libelle}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.fundsApeal.errors">
+                                <div *ngIf="f.fundsApeal.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr *ngIf="fundsApealValue">
+            <div class="col-md-12" *ngIf="fundsApealValue">
+                <div class="row">
+                    <div class="col-md-2 item-condominium"></div>
+                    <div class="col-md-8 card card-box">
+                        <div class="pt-4">
+                            <div class="row py-2 item-condominium">
+                                <div class="col-md-3">
+                                    <h5>
+                                    Libellé :
+                                    </h5>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="bold">
+                                    {{fundsApeal?.libelle}}
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="row py-2">
+                                <div class="col-md-3">
+                                    <h5>
+                                    Période :
+                                    </h5>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="bold">
+                                    {{fundsApeal?.periode}}
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="row py-2 item-condominium">
+                                <div class="col-md-3">
+                                    <h5>
+                                    Etat :
+                                    </h5>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="bold">
+                                        <span *ngIf="fundsApeal?.etat === 'PAYER'" class="badge badge-success">Payer</span>
+                                        <span *ngIf="fundsApeal?.etat === 'IMPAYER'" class="badge badge-danger">Impayer</span>
+                                        <span *ngIf="fundsApeal?.etat === 'ATTENTE'" class="badge badge-warning">En attente</span>
+                                        <span *ngIf="fundsApeal?.etat === 'EN COURS'" class="badge badge-info">En cours</span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="row py-2">
+                                <div class="col-md-3">
+                                    <h5 class="text-primary">
+                                    Montant de l'appel de charges :
+                                    </h5>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="bold text-primary">
+                                    {{fundsApeal?.montant | number}} XOF
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="row py-2 item-condominium">
+                                <div class="col-md-3">
+                                    <h5 class="text-success">
+                                    Montant à payer :
+                                    </h5>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="bold text-success">
+                                    {{payer | number}} XOF
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="row py-2">
+                                <div class="col-md-3">
+                                    <h5 class="text-danger">
+                                    Montant restant :
+                                    </h5>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="bold text-danger">
+                                    {{reste | number}} XOF
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 item-condominium"></div>
+                </div>
+            </div>
+            <hr *ngIf="fundsApealValue">
+            <div class="form-group" *ngIf="fundsApealValue">
+              <div class="alert-warning col-md-12">
+                  <div class="col-md-12 mt-2 text-center p-2">
+                      <h5 class="text-warning">Le montant saisi doit être inférieur ou égal au montant total à payer.</h5>
+                  </div>
+              </div>
+              <div class="row mb-2 text-center">
+                  <div class="col-md-3"></div>
+                  <div class="col-md-6">
+                      <div class="position-relative form-group">
+                          <label for="montant" class="text-montant-paye text-primary">Saisissez le montant à payer </label>
+                          <input (ngModelChange)="onModelChange($event)" type="number" class="form-control input-montant-paye text-primary" min="0" formControlName="montant" id="montant"
+                          [ngClass]="{'is-invalid': submit && f.montant.errors,'is-valid': submit && f.montant.valid}" placeholder="Saisissez le montant à payer">
+                          <div class="invalid-feedback" *ngIf="submit && f.montant.errors">
+                              <div *ngIf="f.montant.errors.required">{{required.novide}}</div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <h3 class="bold mt-5">
+                          <span class="mt-2 text-info">
+                              {{payerMontant | number}} XOF
+                          </span>
+                      </h3>
+                  </div>
+              </div>
+            </div>
+            <hr *ngIf="fundsApealValue">
+            <div class="form-group" *ngIf="fundsApealValue">
+                <div class="row mb-2">
+                    <div class="col-md-{{f.moyen.value === 'ESPECE' ? 4 : f.moyen.value === 'AUTRE' ? 3 : 4}}">
+                        <div class="position-relative form-group">
+                            <label for="moyen">Moyen de paiement <span class="asterix">*</span></label>
+                            <select class="form-control" id="moyen" formControlName="moyen"
+                                [ngClass]="{'is-invalid': submit && f.moyen.errors,'is-valid': submit && f.moyen.valid}">
+                                <option *ngFor="let item of moyens" [ngValue]="item.value">{{item.label}}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submit && f.moyen.errors">
+                                <div *ngIf="f.moyen.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-{{f.moyen.value === 'ESPECE' ? 4 : f.moyen.value === 'AUTRE' ? 3 : 4}}">
+                      <div class="position-relative form-group">
+                          <label for="treasury">Trésorerie <span class="asterix">*</span></label>
+                          <select (ngModelChange)="onChangeTreasury($event)" class="form-control" id="treasury" formControlName="treasury"
+                              [ngClass]="{'is-invalid': submit && f.treasury.errors,'is-valid': submit && f.treasury.valid}">
+                              <option *ngFor="let item of treasuryList" [ngValue]="item.uuid">{{item.nom}}</option>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="submit && f.treasury.errors">
+                              <div *ngIf="f.treasury.errors.required">{{required.novide}}</div>
+                          </div>
+                      </div>
+                  </div>
+                    <div class="col-md-{{f.moyen.value === 'ESPECE' ? 4 : f.moyen.value === 'AUTRE' ? 3 : 4}}" *ngIf="f.moyen.value === 'VIREMENT' || f.moyen.value === 'CHEQUE'">
+                        <div class="position-relative form-group">
+                            <label for="banque">Nom de la banque <span class="asterix">*</span></label>
+                            <input type="text" class="form-control" formControlName="banque" id="banque"
+                            [ngClass]="{'is-invalid': submit && f.banque.errors,'is-valid': submit && f.banque.valid}" placeholder="Nom de la banque">
+                        </div>
+                    </div>
+                    <div class="col-md-{{f.moyen.value === 'ESPECE' ? 4 : f.moyen.value === 'AUTRE' ? 3 : 6}}" *ngIf="f.moyen.value === 'VIREMENT' || f.moyen.value === 'CHEQUE'">
+                        <div class="position-relative form-group">
+                            <label for="numero">Numéro <span class="asterix">*</span></label>
+                            <input type="number" class="form-control" formControlName="numero" id="numero"
+                            [ngClass]="{'is-invalid': submit && f.numero.errors,'is-valid': submit && f.numero.valid}" placeholder="Numéro">
+                        </div>
+                    </div>
+                    <div class="col-md-{{f.moyen.value === 'ESPECE' ? 4 : f.moyen.value === 'AUTRE' ? 3 : 6}}" *ngIf="f.moyen.value === 'AUTRE'">
+                        <div class="position-relative form-group">
+                            <label for="moyenAutre">Autre moyen <span class="asterix">*</span></label>
+                            <input type="number" class="form-control" formControlName="moyenAutre" id="moyenAutre"
+                            [ngClass]="{'is-invalid': submit && f.moyenAutre.errors,'is-valid': submit && f.moyenAutre.valid}" placeholder="Autre moyen">
+                        </div>
+                    </div>
+                    <div class="col-md-{{f.moyen.value === 'ESPECE' ? 4 : f.moyen.value === 'AUTRE' ? 3 : 6}}">
+                        <div class="position-relative form-group">
+                            <label for="date">Date de paiement <span class="asterix">*</span></label>
+                            <input type="date" class="form-control" formControlName="date" id="date"
+                            [ngClass]="{'is-invalid': submit && f.date.errors,'is-valid': submit && f.date.valid}">
+                            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                                <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--
+              <div class="form-group" *ngIf="fundsApealValue">
+                <div class="alert-danger col-md-12">
+                  <div class="col-md-12 mt-2 text-center p-2">
+                    <h5 class="text-danger">Le montant total à payer</h5>
+                    <h4 class="text-danger bold">{{montantTotal | number}} XOF</h4>
+                  </div>
+                </div>
+            </div>
+            -->
+            <div class="row" *ngIf="fundsApealValue">
+                <span class="badge badge-warning my-2 f-14 width"> QUELQUES DOCUMENTS JUSTIFICATIFS </span>
+            </div>
+            <div class="form-group" *ngIf="fundsApealValue">
+                <div class="row mb-2">
+                    <div class="col-md">
+                        <label>Pièces et documents à joindre</label>
+                        <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                        [path]="'fundsPayment'" [etat]="edit ? 'edit': 'add'" [folder]="edit && fundsPayment ? fundsPayment?.folder : null">
+                        </app-folder-uploader>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+            Enregistrer <i class="feather icon-save p-1"></i>
+        </button>
+    </div>
+</form>

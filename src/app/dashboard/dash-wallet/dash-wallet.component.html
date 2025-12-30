@@ -1,0 +1,248 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <app-filter class="width"
+    [dateD]="true"
+    [dateF]="true"
+    [name]="false"
+    [nameTitle]="'Wallet'"
+    [type]="true"
+    [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+  </app-filter>
+  
+  <div class="col-xl-12 col-md-12" *ngIf="(type === 'SOLDE_AGENCY' ||type === 'COMMISSION_LOYER' ||type === 'CAUTION_AGENCY' ||type === 'TVA_COMMISSION_AGENCY' ||type === 'DEPENSE_AGENCY' ||
+  type === 'CIE_SODECI_AGENCY' ||type === 'HONORAIRE_AGENCE_AGENCY' ||type === 'TIMBRES_FISCAUX_AGENCY' ||type === 'DROIT_ENREGISTREMENT_AGENCY' ||
+  type === 'FRAIS_DOSSIER_AGENCY' ||type === 'FRAIS_ASSURANCE_AGENCY' ||type === 'AUTRE_AGENCY')">
+    <app-card [hidHeader]="true">        
+      <div class="col-md-12" >
+        <button class="btn btn-Warning btn-sm" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer">
+          Imprimer <i class="feather icon-printer"></i>
+        </button>
+      </div>
+      <div class="col-md-12">
+        <span class="badge badge-primary my-2 f-14 formBadge width">Historique des transactions</span>
+      </div>
+      <div class="col-md-12" *ngIf="wallets && wallets.length > 0">
+        <div class="table-responsive">
+          <table class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+            <tr>
+              <th>ID</th>
+              <th>DATE</th>
+              <th>LIBELLE</th>
+              <th>DÉBIT</th>
+              <th>CRÉDIT</th>
+              <th>SOLDE</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of wallets">
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">{{ item?.id }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.date| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">{{ item?.libelle }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.debit|number }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.credit|number }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.soldeNew|number }}</p>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-12" *ngIf="wallets && wallets.length === 0">
+        <app-no-data class="width" [title]="'Aucun élément trouvée'" *ngIf="wallets && wallets.length === 0"></app-no-data>
+      </div>
+    </app-card>
+  </div>
+
+
+  <!-- ANALYTICS -->
+  <div class="col-xl-12 col-sm-12" *ngIf="type ==='AGENCY'">
+    <div class="row">
+
+      <!-- SOLDE -->
+      <div class="col-md-4" (click)="openModal('SOLDE_AGENCY', 'LISTES DE TOUTES LES TRANSACTIONS')">
+        <app-card [hidHeader]="true" cardClass="bg-c-green order-card">
+          <h6 class="text-white">Solde</h6>
+          <h4 class="text-white">{{ widget?.solde ?( widget?.solde | number) : 0 }} {{global.device}}</h4>
+          <i class="card-icon fas fa-piggy-bank"></i>
+        </app-card>
+      </div>
+      <!-- SOLDE END -->
+
+      <!-- Commission agence -->
+      <div class="col-md-4" (click)="openModal('COMMISSION_LOYER', 'LISTES DES COMMISSIONS SUR LOYER')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">Commission agence</h6>
+          <h4 class="text-white">{{ widget?.commission ? (widget?.commission | number) : 0 }} {{global.device}}</h4>
+          <i class="card-icon feather icon-corner-up-left"></i>
+        </app-card>
+      </div>
+      <!-- Commission agence END -->
+
+      <!-- Caution -->
+      <div class="col-md-4" (click)="openModal('CAUTION_AGENCY', 'LISTES DES CAUTIONS')">
+        <app-card [hidHeader]="true" cardClass="bg-c-yellow order-card">
+          <h6 class="text-white">Caution</h6>
+          <h4 class="text-white">{{ widget?.caution ? (widget?.caution | number) : 0}} {{global.device}}</h4>
+          <i class="card-icon feather icon-corner-up-right"></i>
+        </app-card>
+      </div>
+      <!--  Caution END -->
+
+      <!-- TVA fonds -->
+      <div class="col-md-3" (click)="openModal('TVA_COMMISSION_AGENCY', 'LISTES DES IMPOTS SUR COMMISSIONS')">
+        <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+          <h6 class="text-white">Tva sur commission</h6>
+          <h4 class="text-white">{{ widget?.tva ? (widget?.tva | number) : 0 }} {{global.device}}</h4>
+          <i class="card-icon feather icon-corner-up-right"></i>
+        </app-card>
+      </div>
+      <!--  Autres fonds TVA -->
+      <!-- Dépense -->
+      <div class="col-md-3" (click)="openModal('DEPENSE_AGENCY', 'LISTES DES DESPENSES')">
+        <app-card [hidHeader]="true" cardClass="bg-c-red order-card">
+          <h6 class="text-white">Dépense</h6>
+          <h4 class="text-white">{{ widget?.depense ? (widget?.depense | number) : 0}} {{global.device}}</h4>
+          <i class="card-icon feather icon-corner-up-right"></i>
+        </app-card>
+      </div>
+      <!--  Dépense END -->
+
+      <!-- Caution CIE/SODECI -->
+      <div class="col-md-3" (click)="openModal('CIE_SODECI_AGENCY', 'LISTES DES CAUTIONS CIE ET SODECIE')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">Caution CIE/SODECI</h6>
+          <h4 class="text-white">{{ widget?.cie ? (widget?.cie | number) : 0 }} {{global.device}}</h4>
+          <i class="card-icon fas fa-piggy-bank"></i>
+        </app-card>
+      </div>
+      <!--  Caution CIE/SODECI END -->
+
+      <!-- Honoraire agence -->
+      <div class="col-md-3" (click)="openModal('HONORAIRE_AGENCE_AGENCY', 'LISTES DES HONORAIRES')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">Honoraire agence</h6>
+          <h4 class="text-white">{{ widget?.honoraire ? (widget?.honoraire | number) : 0 }} {{global.device}}</h4>
+          <i class="card-icon feather icon-corner-up-right"></i>
+        </app-card>
+      </div>
+      <!-- Honoraire agence END -->
+
+      <!-- Timbres fiscaux -->
+      <div class="col-md-3" (click)="openModal('TIMBRES_FISCAUX_AGENCY', 'LISTES DES TIMBRES FISCAUX')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">Timbres fiscaux (Légalisation bail)</h6>
+          <h4 class="text-white">{{ widget?.timbre ? (widget?.timbre | number) : 0 }} {{global.device}}</h4>
+          <i class="card-icon feather icon-corner-up-right"></i>
+        </app-card>
+      </div>
+      <!--  Timbres fiscaux END -->
+
+      <!-- Droit d'enregistrement -->
+      <div class="col-md-3" (click)="openModal('DROIT_ENREGISTREMENT_AGENCY', 'LISTES DES DROITS D ENREGISTREMENTS')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">Droit d'enregistrement</h6>
+          <h4 class="text-white">{{ widget?.droit ? (widget?.droit | number) : 0 }} {{global.device}}</h4>
+          <i class="card-icon feather icon-corner-up-right"></i>
+        </app-card>
+      </div>
+      <!--  Droit d'enregistrement END -->
+
+      <!-- Frais de dossiers -->
+      <div class="col-md-3" (click)="openModal('FRAIS_DOSSIER_AGENCY', 'LISTES DES FRAIS DE DOSSIER')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">Frais de dossiers</h6>
+          <h4 class="text-white">{{ widget?.dossier ? (widget?.dossier | number) : 0 }} {{global.device}}</h4>
+          <i class="card-icon feather icon-corner-up-right"></i>
+        </app-card>
+      </div>
+      <!--  Frais de dossiers END -->
+
+      <!-- Frais d'assurance -->
+      <div class="col-md-3" (click)="openModal('FRAIS_ASSURANCE_AGENCY', 'LISTES DES FRAIS D ASSURANCES')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">Frais d'assurance</h6>
+          <h4 class="text-white">{{ widget?.assurance ? (widget?.assurance | number) : 0}} {{global.device}}</h4>
+          <i class="card-icon fas fa-piggy-bank"></i>
+        </app-card>
+      </div>
+      <!--  Frais d'assurance END -->
+
+      <!-- Autres fonds -->
+      <div class="col-md-3" (click)="openModal('AUTRE_AGENCY', 'AUTRES TRANSACTIONS')">
+        <app-card [hidHeader]="true" cardClass="bg-c-blue order-card">
+          <h6 class="text-white">Autres fonds</h6>
+          <h2 class="text-white">{{ 0 |number}} {{global.device}}</h2>
+          <i class="card-icon feather icon-corner-up-right"></i>
+        </app-card>
+      </div>
+      <!--  Autres fonds END -->
+    </div>
+  </div>
+
+  <!-- DIAGRAMME-->
+  <div class="col-md-12 mb-4">
+    <lib-highcharts-angular [Highcharts]="Highcharts" [options]="barOptions" style="width: 100%; height: 400px; display: block;"></lib-highcharts-angular>
+  </div>
+
+  <!--TABLEAU DES Historiques des transactions -->
+  <div class="col-xl-12 col-md-12" *ngIf="type ==='AGENCY'">
+    <app-card [hidHeader]="true">
+      <div class="col-md-12">
+        <span class="badge badge-primary my-2 f-14 formBadge width">Historique des transactions</span>
+      </div>
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <div class="text-right m-b-10">
+            <button class="btn btn-warning" (click)="onPrinter()"  type="button">
+              Imprimer <i class="feather icon-printer"></i>
+            </button>
+          </div>
+          <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>LIBELLE</th>
+              <th>DÉBIT</th>
+              <th>CRÉDIT</th>
+              <th>SOLDE</th>
+              <!-- <th>DATE</th> -->
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of listing; let i=index">
+              <td> #{{ i + 1 }} </td>
+              <td> {{ item?.date| date: "d MMMM y" : '' : 'fr-FR'  }} </td>
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">{{ item?.libelle }}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">{{ item?.debit |number}} {{global.device}}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.credit |number}} {{global.device}}</p>
+              </td>
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16"> {{ item?.soldeNew |number}} {{global.device}}</p>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <!-- TABLEAU DES Historiques des transactions END -->
+</div>

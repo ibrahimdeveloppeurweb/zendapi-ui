@@ -1,0 +1,171 @@
+<div class="col-md-12" *ngIf="type === 'FACTURE_PROPRIETAIRE'">
+  <span class="badge badge-secondary mb-4 f-14 width">
+    LISTE DES BONS DES FACTURES PROPRIÉTAIRE
+  </span>
+  
+  <app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive">
+      <table *ngIf="etat" datatable [dtOptions]="dtOptions"
+        class="table table-sm table-striped table-bordered nowrap table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Prestataires</th>
+            <th *ngIf="mode == 'SYNDIC'">Syndic</th>
+            <th *ngIf="mode == 'LOCATIVE'">Bien</th>
+            <th *ngIf="construction">Intervention</th>
+            <th>Libellé facture</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>État</th>
+            <th>Montant TTC</th>
+            <th>Montant Payé</th>
+            <th>Montant Restant</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of invoiceOwners">
+            <!-- PRESTATAIRES -->
+            <td class="align-middle">
+              <div *ngIf="getTotalProviders(item) > 0">
+                <span class="badge badge-info badge-pill mb-1">
+                  {{ getTotalProviders(item) }} prestataire(s)
+                </span>
+                <br>
+                <small class="text-muted">{{ getProviderNames(item) }}</small>
+              </div>
+              <span *ngIf="getTotalProviders(item) === 0" class="text-muted">
+                Aucun prestataire
+              </span>
+            </td>
+
+            <!-- SYNDIC -->
+            <td *ngIf="mode == 'SYNDIC'" class="align-middle">
+              <span class="text-primary">{{ item?.trustee?.nom }}</span><br>
+              <span *ngIf="item?.houseCo || item?.homeCo">
+                Lot : {{ item?.houseCo?.nom }} {{ item?.homeCo?.nom }}<br />
+              </span>
+              <span *ngIf="item?.infrastructure != null">
+                Infrastructure : {{ item?.infrastructure?.nom }}<br />
+              </span>
+            </td>
+
+            <!-- BIEN (MODE LOCATIVE) -->
+            <td *ngIf="mode == 'LOCATIVE'" class="align-middle">
+              <span *ngIf="item?.house">
+                Bien : {{ item?.house?.searchableTitle }}
+              </span>
+            </td>
+
+            <!-- INTERVENTION -->
+            <td *ngIf="construction && item?.trustee == null" class="align-middle">
+              <p class="m-0 d-inline-block align-middle font-16">
+                Intervention : <span class="text-primary">{{ item?.construction?.searchableTitle }}</span> <br />
+                Bien : {{ item?.construction?.rental ? item?.construction?.rental?.libelle : item?.construction?.house?.searchableTitle }}
+              </p>
+            </td>
+            <td *ngIf="construction && item?.trustee != null" class="align-middle">
+              <span class="text-primary">{{ item?.construction?.searchableTitle }}</span><br />
+            </td>
+
+            <!-- LIBELLÉ -->
+            <td class="align-middle">
+              <span>{{ item?.libelle || 'N/A' }}</span>
+            </td>
+
+            <!-- TYPE -->
+            <td class="align-middle">
+              <span class="badge badge-info">
+                {{ getConsolidatedType(item) }}
+              </span>
+            </td>
+
+            <!-- DATE -->
+            <td class="align-middle">
+              {{ item.createdAt | date: "d MMMM y " : '' : 'fr-FR' }}
+            </td>
+
+            <!-- ÉTAT -->
+            <td class="align-middle">
+              <span class="badge" [ngClass]="{
+                'badge-danger' : item?.etat === 'INVALIDE',
+                'badge-success' : item?.etat === 'VALIDE'
+              }">
+                {{ validation(item?.etat) }}
+              </span>
+            </td>
+
+            <!-- MONTANT HT -->
+               <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                    <span class="text-success font-weight-blod">{{ item?.montant|number }} {{ global.device
+                        }}</span>
+                </p>
+                </td>
+                <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-success font-weight-blod">{{ item?.montantPaye|number }} {{
+                            global.device
+                            }}</span>
+                    </p>
+                </td>
+                <td class="align-middle">
+                    <p class="m-0 d-inline-block align-middle font-16">
+                        <span class="text-success font-weight-blod">{{ (item?.montant - item?.montantPaye)
+                            |number }} {{ global.device
+                            }}</span>
+                    </p>
+                </td>
+
+            <!-- ACTIONS -->
+            <td class="table-action">
+              <button *ngxPermissionsOnly="'QUOTE:SHOW'" (click)="showInvoiceOwner(item)" 
+                type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                <i class="fas fa-eye"></i>
+              </button>
+
+              <ng-template ngxPermissionsOnly="QUOTE:EDIT">
+                <button (click)="editInvoiceOwner(item)" type="button"
+                  class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                  <i class="feather icon-edit-2"></i>
+                </button>
+              </ng-template>
+
+              <ng-template ngxPermissionsOnly="QUOTE:VALIDATE">
+                <button *ngIf="item?.etat === 'INVALIDE'" (click)="validateInvoiceOwner(item)" 
+                  type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Valider">
+                  <i class="fas fa-check"></i>
+                </button>
+              </ng-template>
+
+              <ng-template ngxPermissionsOnly="QUOTE:PRINTER:SHOW">
+                <button  (click)="printerInvoiceOwner(item)" 
+                  type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+              </ng-template>
+
+              <button *ngxPermissionsOnly="'QUOTE:DELETE'" type="button" (click)="delete(item)"
+                class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                <i class="feather icon-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <!-- Calcul dynamique du colspan en fonction des colonnes visibles -->
+            <td [attr.colspan]="getColspanCount()" 
+              class="font-weight-bold text-right">
+              TOTAL HT
+            </td>
+            <td class="font-weight-bold text-warning">
+              {{ total | number }} {{ global.device }}
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </app-card>
+</div>

@@ -1,0 +1,25 @@
+<router-outlet>
+  <app-loading></app-loading>
+</router-outlet>
+
+
+<ng-template #content let-modal>
+	<div class="modal-body">
+		<div class="text-center ">
+			<h2>Nouvelle Fonctionnalité Disponible !</h2>
+		</div>
+		<div class="d-flex text-center justify-content-center mt-2 mb-2">
+			<img src="./../assets/images/upgrade.jpg" alt="" width="200" height="200">
+		</div>
+		<div class="d-flex text-center justify-content-center ">
+			<p class="mt-4">
+				Bonjour Administrateur, nous sommes ravis de vous annoncer que la nouvelle fonctionnalité
+				pour la gestion du portefeuille de votre agence est désormais disponible sur ZenAPI.
+				Cliquez sur le bouton ci-dessous pour configurer votre portefeuille.'
+			</p>
+		</div>
+		<div class="d-flex text-center justify-content-center ">
+			<button (click)="upgradeModal(); modal.close('ferme')" class="btn btn-success">Configuré maintenant </button>
+		</div>
+	</div>
+</ng-template>

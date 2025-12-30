@@ -1,0 +1,107 @@
+<ng-template [ngxPermissionsOnly]="['INFRASTRUCTURE:TRUSTEE:LIST']">
+<app-card [hidHeader]="true" cardClass="card-datatable">
+    <div class="table-responsive m-0">
+        <table datatable [dtOptions]="dtOptions" class="table table-striped m-0">
+            <thead class="thead-light">
+                <tr>
+                    <th>Infrastructure</th>
+                    <th>Syndic</th>
+                    <th>Hauteur/Surface</th>
+                    <th>Etat/Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of infrastructures">
+                    <td>
+                        <span class="text-black">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <span class="text-black d-block">
+                                        {{item?.code}}
+                                    </span>
+                                    <span class="text-black d-block">
+                                        {{item?.nom}}
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="text-black">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <span class="text-black d-block">
+                                        {{item?.trustee?.code}}
+                                    </span>
+                                    <span class="text-black d-block">
+                                        {{item?.trustee?.nom}}
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="text-black">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <span class="text-black d-block">
+                                        Hauteur : {{item?.hauteur | number}} m
+                                    </span>
+                                    <span class="text-black d-block">
+                                        Superficie :{{item?.superficie | number}} m²
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="text-black">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <span class="text-black d-block">
+                                        Etat :
+                                        <span *ngIf="item?.etat === 'EN SERVICE'" class="badge badge-success">En service</span>
+                                        <span *ngIf="item?.etat === 'HORS SERVICE'" class="badge badge-danger">Hors service</span>
+                                    </span>
+                                    <span class="text-black d-block">
+                                        Type : {{item?.type}}
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                    </td>
+                    <td>
+                      <ng-template [ngxPermissionsOnly]="['INFRASTRUCTURE:TRUSTEE:SHOW']">
+                        <button (click)="showInfrastructure(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                      </ng-template>
+                      <ng-template [ngxPermissionsOnly]="['INFRASTRUCTURE:TRUSTEE:EDIT']">
+                        <button (click)="editInfrastructure(item)" type="button"class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                            <i class="feather icon-edit-2"></i>
+                        </button>
+                      </ng-template>
+                      <ng-template [ngxPermissionsOnly]="['INFRASTRUCTURE:PRINTER:SHOW']">
+                        <button (click)="printInfrastructure(item)" type="button"class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                            <i class="feather icon-printer"></i>
+                        </button>
+                      </ng-template>
+                      <ng-template [ngxPermissionsOnly]="['INFRASTRUCTURE:TRUSTEE:DELETE']">
+                        <button (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                            <i class="feather icon-trash"></i>
+                        </button>
+                      </ng-template>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</app-card>
+</ng-template>
+
+<ng-template [ngxPermissionsExcept]="['INFRASTRUCTURE:TRUSTEE:LIST']">
+  <div class="col-md-12">
+    <app-no-droit [title]="'liste des infrastructures'"></app-no-droit>
+  </div>
+</ng-template>

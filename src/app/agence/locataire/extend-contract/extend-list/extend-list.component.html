@@ -1,0 +1,95 @@
+<div class="col-sm-12">
+    <app-card [hidHeader]="true" cardClass="card-datatable">
+      <div class="table-responsive">
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+          <tr>
+            <th>Locative</th>
+            <th>Locataire</th>
+            <th>Contrat</th>
+            <th>Etat</th>
+            <th>Date</th>
+            <th>Date fin</th>
+            <th>Montant</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of extends">
+              <td class="align-middle">
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.contract?.rental?.libelle}}</span> <br />
+                  Superficie : {{item?.invoice?.shortContract?.rental?.superficie}} m² - {{item?.invoice?.shortContract?.rental.piece}} pièce(s): <br />
+                  Propriétaire : {{item?.invoice?.shortContract?.rental?.house?.owner?.nom}}
+                </p>
+              </td>
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.contract?.tenant?.searchableTitle}}</span> <br />
+                  Type : {{item?.contract?.tenant?.type}}<br />
+                  Telephone : {{item?.contract?.tenant?.telephone}}
+                </p>
+              </td>
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.contract?.libelle}}</span>
+                </p>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="{
+                'badge-success' : item.etat === 'ACTIF',
+                'badge-warning' : item.etat === 'INACTIF',
+                'badge-danger' : item.etat === 'EXPIRER'
+                }">{{item.etat}}</span>
+              </td>
+              <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+              <td>{{item?.dateFinN|date: "d MMMM" : '' : 'fr-FR'}}</td>
+              <td>
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-warning">{{item?.invoice?.montant|number}} {{global.device}}</span>
+                </p>
+              </td>
+              <td class="table-action">
+                <div class="overlay-edit">
+                  <button (click)="show(item)" type="button" class="btn btn-icon btn-secondary ml-1"
+                    ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="RENEW:EDIT">
+                    <button  *ngIf="item.etat ==='INACTIF'" (click)="edit(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                      ngbTooltip="Modifier">
+                      <i class="feather icon-edit-2"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template ngxPermissionsOnly="RENEW:ACTIVATE">
+                    <button *ngIf="item.etat ==='INACTIF'" (click)="activate(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Activer">
+                      <i class="fas fa-check"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template ngxPermissionsOnly="RENEW:PRINTER:SHOW">
+                    <button (click)="printer(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                      ngbTooltip="Imprimer">
+                      <i class="feather icon-printer"></i>
+                    </button>
+                  </ng-template>
+                  <ng-template ngxPermissionsOnly="RENEW:DELETE">
+                    <button type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="7" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-warning"> {{total | number}} {{global.device}}</td>
+              <td *ngIf="action"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </app-card>
+  </div>
+  

@@ -1,0 +1,22 @@
+<div class="modal-body">
+    <div class="col-md-12">
+        <h6>Veuillez donner votre avis afin d'améliorer votre application...</h6>
+        <div class="rating">
+            <div class="stars">
+                <i class="{{ i >= 1 ? 'fa fa-star gold' : 'fa fa-star'}}" (click)="onStar(1)"></i>
+                <i class="{{ i >= 2 ? 'fa fa-star gold' : 'fa fa-star'}}" (click)="onStar(2)"></i>
+                <i class="{{ i >= 3 ? 'fa fa-star gold' : 'fa fa-star'}}" (click)="onStar(3)"></i>
+                <i class="{{ i >= 4 ? 'fa fa-star gold' : 'fa fa-star'}}" (click)="onStar(4)"></i>
+                <i class="{{ i >= 5 ? 'fa fa-star gold' : 'fa fa-star'}}" (click)="onStar(5)"></i>
+            </div>
+        </div>
+        <div class="col text-center mt-2">
+            <button class="btn btn-sm btn-warning btn-inline" (click)="onClose()"> 
+                Notez plus tard <i class="fas fa-sign-out-alt"></i>
+            </button>
+            <button class="btn btn-sm btn-success btn-inline ml-1" (click)="onSubmit()"> 
+                Noter <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,523 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ title }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <aw-wizard #wizard class="arc-wizard">
+                <aw-wizard-step stepTitle="Création">
+                    <div class="row">
+                        <span class="badge badge-secondary my-2 f-14 width"> INFORMATIONS SUR LE LOT </span>
+                    </div>
+                    <div class="form-group">
+                        <div class="row mb-2">
+                            <!-- <div class="col-md-3">
+                                <div class="position-relative form-group">
+                                    <label>Syndic <span class="asterix">*</span></label>
+                                    <app-entity-finder [class]="'Trustee'" [namespace]="'Trustee'" [groups]="['trustee']"
+                                    [required]="true" [selected]="currentSyndic" [disabled]="edit"
+                                    (uuid)="setSyndicUuid($event)">
+                                    </app-entity-finder>
+                                </div>
+                            </div> -->
+                            <div class="col-md-3">
+                                <div class="position-relative form-group">
+                                    <label for="syndic">Syndic <span class="asterix">*</span></label>
+                                    <select (ngModelChange)="setSyndicUuid($event)" class="form-control" id="syndic" formControlName="syndic"
+                                        [ngClass]="{'is-invalid': submit && f.syndic.errors,'is-valid': submit && f.syndic.valid}">
+                                        <option *ngFor="let item of syndics" [ngValue]="item.uuid">{{item.nom}}</option>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="submit && f.syndic.errors">
+                                        <div *ngIf="f.syndic.errors.required">{{required.novide}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="numLotHidden" class="col-md-3">
+                                <div class="position-relative form-group">
+                                    <label for="nom">Numéro de lot <span class="asterix">*</span></label>
+                                    <input formControlName="nom" type="text" class="form-control" [ngClass]="{
+                                        'is-invalid': submit && f.nom.errors,'is-valid': submit && f.nom.valid}" placeholder="Numéro du lot">
+                                    <div class="invalid-feedback" *ngIf="submit && f.nom.errors">
+                                      <div *ngIf="f.nom.errors.required">{{required.novide}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="position-relative form-group">
+                                    <label for="type">Type de lot ? <span class="asterix">*</span></label>
+                                    <select (ngModelChange)="onChangeTantiemeResidence($event)" class="form-control" id="type" formControlName="type" [ngClass]="{
+                                        'is-invalid': submit && f.type.errors,'is-valid': submit && f.type.valid}">
+                                        <option *ngFor="let item of types" [ngValue]="item.value">{{item.label}}</option>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                                        <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3" *ngIf="f.type.value !== 'VERTICAL' && f.type.value !== null">
+                                <label>Catégorie de lot <span class="asterix">*</span></label>
+                                <select class="form-control" id="categorie" formControlName="categorie"
+                                    [ngClass]="{'is-invalid': submit && f.categorie.errors}">
+                                    <optgroup *ngFor="let item of typeRows" [label]="item.label">
+                                        <option *ngFor="let row of item.type" [value]="row.value">{{row.label}}</option>
+                                    </optgroup>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="submit && f.categorie.errors">
+                                    <div *ngIf="f.categorie.errors.required">{{required.novide}}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3" *ngIf="f.type.value !== 'VERTICAL'">
+                                <div class="position-relative form-group">
+                                    <label>Co-propriétaire <span class="asterix">*</span></label>    
+                                    <select   class="form-control" id="owner" formControlName="owner"
+                                        [ngClass]="{'is-invalid': submit && f.owner.errors,'is-valid': submit && f.owner.valid}">
+                                        <option *ngFor="let item of owners" [ngValue]="item.uuid">{{item.nom}}</option>
+                                    </select>
+                                   
+                                    <!-- <ng-select  [readonly]="edit" [required]="true" id="owner" formControlName="owner" (change)="setOwnerUuid($event)" [(ngModel)]="ownerSelected" >
+                                        <ng-option *ngFor="let item of owners" [value]="item.uuid">{{item?.nom}}</ng-option>
+                                      </ng-select> -->
+
+                                    <!-- <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true" [label]="'Propriétaire'"
+                                    (uuid)="setOwnerUuid($event)" [selected]="ownerSelected"
+                                    [placeholder]="'Selectionez un propriétaire'">
+                                    </app-entity-finder> -->
+                                </div>
+                            </div>
+                            <div class="col-md-3" *ngIf="edit === false && f.type.value === 'VERTICAL'">
+                                <div class="position-relative form-group">
+                                    <label for="nbrAppartements">Nombre de lots ? <span class="asterix">*</span></label>
+                                    <input (ngModelChange)="onChangeAppartement()" formControlName="nbrAppartements" type="number"
+                                    class="form-control" [ngClass]="{'is-invalid': submit && f.nbrAppartements.errors,'is-valid': submit && f.nbrAppartements.valid}" placeholder="Nombre de biens ?">
+                                    <div class="invalid-feedback" *ngIf="submit && f.nbrAppartements.errors">
+                                        <div *ngIf="f.nbrAppartements.errors.required">{{required.novide}}</div>
+                                        <div *ngIf="f.nbrAppartements.errors.pattern">{{required.nolettre}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3" *ngIf="edit === true && f.type.value === 'VERTICAL'">
+                                <div class="position-relative form-group">
+                                    <label for="nbrAppartements" *ngIf="advance === false">Nombre de lots Actuels</label>
+                                    <label for="nbrAppartements" *ngIf="advance === true">Nombre de lots ?</label>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input *ngIf="advance === false" formControlName="visuel" type="number" class="form-control" placeholder="Nombre de lots Actuels" disabled>
+                                                <input *ngIf="advance === true" (ngModelChange)="onChangeAppartement()" formControlName="nbrAppartements" type="number"
+                                                class="form-control" [ngClass]="{'is-invalid': submit && f.nbrAppartements.errors,'is-valid': submit && f.nbrAppartements.valid}" placeholder="Nombre de biens ?">
+                                                <div class="input-group-append bg-default" (click)="natureChange()">
+                                                    <span class="input-group-text">
+                                                        <i class="feather icon-edit-2"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-md-{{f.type.value === 'VERTICAL' ? 4 : 3}}" *ngIf="f.type.value === 'VERTICAL'">
+                                <div class="position-relative form-group">
+                                    <label for="numerotation">Type de numérotation <span class="asterix">*</span></label>
+                                    <select (change)="onChangeNumerotation()" class="form-control" id="numerotation" formControlName="numerotation">
+                                        <option *ngFor="let item of numerotationRow" [value]="item.value">{{item.label}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-{{f.type.value === 'VERTICAL' ? 4 : 3}}">
+                                <div class="position-relative form-group">
+                                    <label for="superficie">Superfice (m²)</label>
+                                    <input formControlName="superficie" type="number" class="form-control" [ngClass]="{
+                                        'is-invalid': submit && f.superficie.errors,'is-valid': submit && f.superficie.valid}" placeholder="Superfice (m²)">
+                                    <div class="invalid-feedback" *ngIf="submit && f.superficie.errors">
+                                        <div *ngIf="f.superficie.errors.pattern">{{required.nolettre}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="col-md-3" *ngIf="f.type.value !== 'VERTICAL'">
+                                <div class="position-relative form-group">
+                                    <label for="nbrPiece">Nombre de pièce</label>
+                                    <input formControlName="nbrPiece" type="number" class="form-control" [ngClass]="{
+                                        'is-invalid': submit && f.nbrPiece.errors,'is-valid': submit && f.nbrPiece.valid}" placeholder="Nombre de pièce">
+                                    <div class="invalid-feedback" *ngIf="submit && f.nbrPiece.errors">
+                                        <div *ngIf="f.nbrPiece.errors.pattern">{{required.nolettre}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3" *ngIf="f.type.value !== 'VERTICAL'">
+                                <div class="position-relative form-group">
+                                    <label for="numPorte">Numéro de porte </label>
+                                    <input formControlName="numPorte" id="numPorte" type="text" class="form-control" placeholder="Numéro de porte">
+                                </div>
+                            </div>
+                            <!-- <div class="col-md-3" *ngIf="f.type.value === 'HORIZONTAL'">
+                                <div class="position-relative form-group">
+                                    <label for="nbrPiece">Nombre de pièce</label>
+                                    <input formControlName="nbrPiece" type="number" class="form-control" [ngClass]="{
+                                        'is-invalid': submit && f.nbrPiece.errors,'is-valid': submit && f.nbrPiece.valid}" placeholder="Nombre de pièce">
+                                    <div class="invalid-feedback" *ngIf="submit && f.nbrPiece.errors">
+                                        <div *ngIf="f.nbrPiece.errors.pattern">{{required.nolettre}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3" *ngIf="f.type.value === 'HORIZONTAL'">
+                                <div class="position-relative form-group">
+                                    <label for="numPorte">Numéro de porte </label>
+                                    <input formControlName="numPorte" id="numPorte" type="text" class="form-control" placeholder="Numéro de porte">
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div *ngIf="showMilliemes" class="card card-box">
+                        <div *ngIf="f.type.value !== 'VERTICAL'" class="row">
+                            <span class="badge badge-secondary my-2 mx-3 f-14 width"> VALEUR DES MILLIÈMES </span>
+                        </div>
+                        <div *ngIf="f.type.value !== 'VERTICAL'" class="row mb-2">
+                            <table class="table m-0">
+                                <thead>
+                                  <tr>
+                                    <td><span *ngIf="edit && !isBudgetValide" style="font-size: 11px;line-height: 0.5;height: 7px;padding-left: 20px;" class="text-danger">Attention: En modifiant les tantièmes, vous devrez actualiser le budget pour le rendre conforme à cette modification et actualiser les appels de charges.</span></td>
+                                  </tr>
+                                </thead>
+                                <tbody formArrayName="tantiemes">
+                                    <tr *ngFor="let item of tantieme.controls; let j=index" [formGroupName]="j">
+                                        <td class="text-center  long-text" style="width: 50%;">
+                                            <label>{{ item?.get('libelle').value }}</label>
+                                        </td>
+                                        <td style="width: 50%;">
+                                            <input *ngIf="isBudgetValide" disabled (input)="onChangeTantiemeHorizontal($event.target.value, item, item.get('valeur'), j)" type="number" min="0" id="valeur" formControlName="valeur" class="form-control"  placeholder="{{item?.get('libelle').value}}">
+                                            <input *ngIf="!isBudgetValide" (input)="onChangeTantiemeHorizontal($event.target.value, item, item.get('valeur'), j)" type="number" min="0" id="valeur" formControlName="valeur" class="form-control"  placeholder="{{item?.get('libelle').value}}">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!-- DETAILS SUPLEMENTAIRES -->
+                    <div class="text-center my-2">
+                        <button type="button" class="btn btn-dark" (click)="voir = !voir">
+                            <span *ngIf="voir === false">Voir détails supplementaires</span>
+                            <span *ngIf="voir === true">Fermer détails supplementaires</span>
+                        </button>
+                    </div>
+                    <div *ngIf="voir" class="p-2">
+                        <div class="row">
+                            <span class="badge badge-secondary my-2 f-14 width">DETAILS SUPLEMENTAIRES </span>
+                        </div>
+                        <div class="form-group">
+                            <div class="row mb-2">
+                                <div class="col-md-3" *ngIf="f.type.value !== 'VERTICAL'">
+                                    <div class="position-relative form-group">
+                                        <label for="nbrPiece">Nombre de pièce</label>
+                                        <input formControlName="nbrPiece" id="nbrPiece" type="number" class="form-control"placeholder="Nombre de pièce">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="nbrParking">Nombre de parking</label>
+                                        <input formControlName="nbrParking" id="nbrParking" type="number" class="form-control"placeholder="Nombre de parking">
+                                    </div>
+                                </div>
+                                <div class="col-md-3" *ngIf="f.type.value !== 'VERTICAL'">
+                                    <div class="position-relative form-group">
+                                        <label for="salleEau">Nombre de salle d'eau</label>
+                                        <input formControlName="salleEau" id="salleEau" type="number" class="form-control"placeholder="Nombre de salle d'eau">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="nbrNiveau">Nombre de niveau</label>
+                                        <input formControlName="nbrNiveau" id="nbrNiveau" type="number" class="form-control" placeholder="Nombre de niveau">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="jardin">Jardin ?</label>
+                                        <select class="form-control" id="jardin" formControlName="jardin">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="piscine">Piscine ?</label>
+                                        <select class="form-control" id="piscine" formControlName="piscine">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="angle">A l'angle ?</label>
+                                        <select class="form-control" id="angle" formControlName="angle">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="pres_eau">Près de l'eau ?</label>
+                                        <select class="form-control" id="presEau" formControlName="presEau">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3" *ngIf="f.presEau.value">
+                                    <div class="position-relative form-group">
+                                        <label for="distanceEau">Distance de l'eau (m) ?</label>
+                                        <input formControlName="distanceEau" type="number" class="form-control" [ngClass]="{
+                                            'is-invalid': submit && f.distanceEau.errors,'is-valid': submit && f.distanceEau.valid}" placeholder="Distance de l'eau">
+                                        <div class="invalid-feedback" *ngIf="submit && f.distanceEau.errors">
+                                            <div *ngIf="f.distanceEau.errors.pattern">{{required.nolettre}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="piedsEau">Pieds dans l'eau ?</label>
+                                        <select class="form-control" id="piedsEau" formControlName="piedsEau">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="bordureVoie">Bordure de grande voie ?</label>
+                                        <select class="form-control" id="bordureVoie" formControlName="bordureVoie">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3" *ngIf="f.bordureVoie.value">
+                                    <div class="position-relative form-group">
+                                        <label for="distanceRoute">Distance de la route (m) ?</label>
+                                        <input formControlName="distanceRoute" type="number" class="form-control" [ngClass]="{
+                                            'is-invalid': submit && f.distanceRoute.errors,'is-valid': submit && f.distanceRoute.valid}" placeholder="Distance de la route">
+                                        <div class="invalid-feedback" *ngIf="submit && f.distanceRoute.errors">
+                                            <div *ngIf="f.distanceRoute.errors.pattern">{{required.nolettre}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="terreFerme">Terre ferme ?</label>
+                                        <select class="form-control" id="terreFerme" formControlName="terreFerme">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="basFond">Bas fond ?</label>
+                                        <select class="form-control" id="basFond" formControlName="basFond">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="ecole">Ecole a proximité ?</label>
+                                        <select class="form-control" id="ecole" formControlName="ecole">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative form-group">
+                                        <label for="marche">Marché a proximité ?</label>
+                                        <select class="form-control" id="marche" formControlName="marche">
+                                            <option *ngFor="let item of boolRow" [ngValue]="item.value">{{item.label}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row mb-2">
+                            <div class="flex-grow-0" style="min-width: 30%">
+                                <app-image-uploader (filesd)="loadfile($event)" (imageUploaded)="setParam('photoUuid',$event)"
+                                [photo]="copropriete ? copropriete.photo : null "></app-image-uploader>
+                            </div>
+                            <div class="col-md">
+                                <label>Pièces et documents à joindre</label>
+                                <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                                [path]="'bien'" [etat]="edit ? 'edit': 'add'" [folder]="edit && copropriete ? copropriete?.folder : null">
+                                </app-folder-uploader>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 centered-content" *ngIf="f.nbrAppartements.value > 0">
+                        <div class="btn-group mt-10">
+                            <button type="button" class="btn btn-primary" awNextStep>
+                                Suivant <i class="feather icon-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </aw-wizard-step>
+
+                <aw-wizard-step stepTitle="Lot(s)" *ngIf="f.type.value === 'VERTICAL' && f.nbrAppartements.value > 0">
+                    <!-- DETAILS CONCERNANT LES BIENS DU COPROPRIETE -->
+                    <div class="row">
+                        <span class="badge badge-secondary my-2 f-14 width">
+                            DETAILS CONCERNANT LES BIENS
+                        </span>
+                    </div>
+                    <div formArrayName="appartements">
+                        <!-- LABEL DU TABLEAU DES APPARTEMENTS -->
+                        <div class="form-group" *ngFor="let locat of appartement.controls; let i = index" [formGroupName]="i">
+                          <div class="border border-dark rounded p-2">
+                            <div class="row mb-2">
+                                <div class="col" *ngIf="f.numerotation.value != 2">
+                                <label>Numérotation <span class="asterix">*</span></label>
+                                <select (change)="onChangeNum(locat)" class="form-control" id="numerotation{{i}}"
+                                    formControlName="numerotation" [ngClass]="{
+                                    'is-invalid': submit && locat.get('numerotation').errors,
+                                    'is-valid': submit && locat.get('numerotation').valid
+                                    }">
+                                    <option *ngFor="let item of numRow" [label]="item">{{item}}</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="submit && locat.get('numerotation').errors">
+                                    <div *ngIf="locat.get('numerotation').errors.required">{{required.novide}}</div>
+                                </div>
+                                </div>
+                                <div class="col">
+                                    <label>N° Porte <span class="asterix">*</span></label>
+                                    <input type="text" formControlName="porte" class="form-control" id="porte{{i}}" [ngClass]="{
+                                        'is-invalid': submit && locat.get('porte').errors,
+                                        'is-valid': submit && locat.get('porte').valid
+                                    }" placeholder="N° Porte">
+                                    <div class="invalid-feedback" *ngIf="submit && locat.get('porte').errors">
+                                        <div *ngIf="locat.get('porte').errors.required">{{required.novide}}</div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                <label>Lot <span class="asterix">*</span></label>
+                                <input type="text" formControlName="lot" class="form-control" id="lot{{i}}" [ngClass]="{
+                                'is-invalid': submit && locat.get('lot').errors,
+                                'is-valid': submit && locat.get('lot').valid
+                                }" placeholder="Lot">
+                                <div class="invalid-feedback" *ngIf="submit && locat.get('lot').errors">
+                                <div *ngIf="locat.get('lot').errors.required">{{required.novide}}</div>
+                                </div>
+                                </div>
+                                <div class="col">
+                                <label>Nombre de pièce <span class="asterix">*</span></label>
+                                <input type="number" formControlName="piece" class="form-control"
+                                id="piece{{i}}" [ngClass]="{
+                                'is-invalid': submit && locat.get('piece').errors,
+                                'is-valid': submit && locat.get('piece').valid
+                                }" placeholder="Pièce">
+                                <div class="invalid-feedback" *ngIf="submit && locat.get('piece').errors">
+                                <div *ngIf="locat.get('piece').errors.required">{{required.novide}}</div>
+                                <div *ngIf="locat.get('piece').errors.pattern">{{required.nolettre}}</div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <label>Catégorie de lot <span class="asterix">*</span></label>
+                                    <select class="form-control" id="type{{i}}" formControlName="type"
+                                    [ngClass]="{
+                                    'is-invalid': submit && locat.get('type').errors,
+                                    'is-valid': submit && locat.get('type').valid
+                                    }">
+                                    <optgroup *ngFor="let item of typeRow" [label]="item.label">
+                                    <option *ngFor="let row of item.type" [value]="row.value">{{row.label}}</option>
+                                    </optgroup>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="submit && locat.get('type').errors">
+                                    <div *ngIf="locat.get('type').errors.required">{{required.novide}}</div>
+                                    </div>
+                                    </div>
+                                <div class="col">
+                                <label>Superficie (m²) <span class="asterix">*</span></label>
+                                <input type="number" formControlName="superficie" class="form-control"
+                                id="superficie{{i}}" [ngClass]="{
+                                'is-invalid': submit && locat.get('superficie').errors,
+                                'is-valid': submit && locat.get('superficie').valid
+                                }" placeholder="Superficie">
+                                <div class="invalid-feedback" *ngIf="submit && locat.get('superficie').errors">
+                                <div *ngIf="locat.get('superficie').errors.required">{{required.novide}}</div>
+                                <div *ngIf="locat.get('superficie').errors.pattern">{{required.nolettre}}</div>
+                                </div>
+                                </div>
+                                <div class="col">
+                                <label>Propriétaire <span class="asterix">*</span></label>
+                                <select *ngIf="!edit" (change)="setOwnerItemUuid($event)" formControlName="owner" class="form-control"
+                                    id="owner" 
+                                    [ngClass]="{'is-invalid': submit && f.owner.errors,'is-valid': submit && f.owner.valid}">
+                                    <option value="null" selected> Selectionnez un propriétaire</option>
+                                    <option *ngFor="let item of owners" [value]="item?.uuid">{{item?.nom}}</option>
+                                </select>
+
+<!-- 
+                                <ng-select  [readonly]="edit" [required]="true" id="owner" formControlName="owner" (change)="setOwnerItemUuid($event, locat)" [(ngModel)]="currentOwnerItem" >
+                                    <ng-option *ngFor="let item of owners" [value]="item.uuid">{{item?.nom}}</ng-option>
+                                  </ng-select> -->
+
+
+                                <!-- <app-entity-finder [class]="'Owner'" [groups]="['owner']"
+                                [required]="true" [selected]="currentOwnerItem"
+                                (uuid)="setOwnerItemUuid($event, locat)">
+                                </app-entity-finder> -->
+                                </div>
+                            </div>
+                            <div *ngIf="showMilliemes" class="card card-box">
+                                <div class="p-0">
+                                    <span class="badge badge-secondary f-14 width"> VALEUR DES MILLIÈMES </span>
+                                </div>
+                                <div class="row mb-2">
+                                    <table class="table m-0">
+                                        <tbody formArrayName="tantieme">
+                                            <tr *ngFor="let t of locat.get('tantieme').controls; let j = index" [formGroupName]="j">
+                                                <td class="text-center" style="width: 50%;">
+                                                    <label>{{t?.value?.libelle}}</label>
+                                                </td>
+                                                <td style="width: 50%;">
+                                                    <input *ngIf="isBudgetValide" type="number" disabled id="valeur{{i}}{{j}}" formControlName="valeur" class="form-control" (input)="onChangeTantiemeVertical($event.target.value, locat, t.get('valeur'), i)" placeholder="Valeur du millième - {{t?.value?.libelle}}">
+                                                    <input *ngIf="!isBudgetValide" type="number" id="valeur{{i}}{{j}}" formControlName="valeur" class="form-control" (input)="onChangeTantiemeVertical($event.target.value, locat, t.get('valeur'), i)" placeholder="Valeur du millième - {{t?.value?.libelle}}">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <!-- <table class="table m-0" *ngIf="edit === true">
+                                        <tbody>
+                                            gdsgkhjhfs
+                                            <tr *ngFor="let t of tantiemess; let j = index" [formGroupName]="j">
+                                                <td class="text-center" style="width: 50%;">
+                                                    <label>{{t?.type}}</label>
+                                                </td>
+                                                <td style="width: 50%;">
+                                                    <input type="number" id="valeur{{i}}" formControlName="valeur" class="form-control" (input)="onChangeTantiemeVertical($event.target.value, locat, t.valeur, i)" placeholder="Valeur du millième - {{t?.type}}">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table> -->
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 centered-content">
+                        <div class="btn-group mt-10">
+                            <button type="button" class="btn btn-warning" awPreviousStep>
+                                <i class="feather icon-arrow-left"></i> Précédent
+                            </button>
+                        </div>
+                    </div>
+                </aw-wizard-step>
+            </aw-wizard>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="onClose()" type="button" class="btn btn-secondary text-left button-radius" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary button-radius">
+        Enregistrer <i class="feather icon-save p-1"></i>
+        </button>
+    </div>
+</form>

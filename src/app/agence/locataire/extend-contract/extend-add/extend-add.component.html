@@ -1,0 +1,229 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modal.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-4">
+                    <app-entity-finder 
+                        [class]="'Tenant'" 
+                        [groups]="['tenant']" 
+                        [required]="true"
+                        [label]="'Locataire'" 
+                        (uuid)="setTenantUuid($event)"
+                        [selected]="tenantSelected"
+                        [disabled]="true" 
+                        [placeholder]="'Selectionez un locataire'">
+                    </app-entity-finder>
+                    <div class="invalid-feedback" *ngIf="submit && f.tenant.errors">
+                        <div *ngIf="f.tenant.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label for="contract">Contract <span class="asterix">*</span></label>
+                    <input class="form-control" type="text" id="contract" [value]="contract?.libelle" disabled>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label for="contract">Date d'entrée <span class="asterix">*</span></label>
+                    <input class="form-control" type="text" id="contract" [value]="contract?.dateEntr | date: 'd MMMM y h:mm:ss' : '' : 'fr-FR'" disabled>
+                </div>
+
+                <div class="col-md-4 mb-2">
+                    <label for="contract">Date de fin précédente <span class="asterix">*</span></label>
+                    <input class="form-control" type="text" id="contract" [value]="contract?.dateFin | date: 'd MMMM y h:mm:ss' : '' : 'fr-FR'" disabled>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label for="dateFinN">Nouvelle date de fin <span class="asterix">*</span></label>
+                    <input 
+                        (change)="onChangeDate()"
+                        type="datetime-local" 
+                        formControlName="dateFinN"
+                        class="form-control" 
+                        id="dateFinN" 
+                        [ngClass]="{'is-invalid': submit && f.dateFinN.errors, 'is-valid': submit && f.dateFinN.valid}"
+                    />
+                    <div class="invalid-feedback" *ngIf="submit && f.dateFinN.errors">
+                        <div *ngIf="f.dateFinN.errors.required">{{required.novide}}</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label for="date">Date </label>
+                    <input type="date" formControlName="date" class="form-control" id="date"/>
+                </div>
+
+                <div class="col-md-4 mb-2">
+                    <label for="echeance">Date d'echéance </label>
+                    <input type="date" formControlName="echeance" class="form-control" id="echeance"/>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label for="montant">Montant</label>
+                    <input type="number" formControlName="montant" class="form-control" id="montant" placeholder="Montant">
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label for="montantN">Nouveau montant du contrat</label>
+                    <input type="number" formControlName="montantN" class="form-control bold text-danger" id="montantN" placeholder="Nouveau montant du contrat" disabled>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <span class="badge badge-secondary my-2 f-14 width">
+                        AJOUTER DES OPTIONS SUR CETTE FACTURE
+                    </span>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <div formArrayName="options">
+                            <!-- LABEL DU TABLEAU DES OPTIONS -->
+                            <div class="form-group" *ngIf="option.length > 0">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Désignation <span class="asterix">*</span></label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Prix unitaire <span class="asterix">*</span></label>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label>Qté <span class="asterix">*</span></label>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label>TVA</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Remise</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Total</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" *ngFor="let opt of option.controls; let i=index" [formGroupName]="i">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <input type="text" formControlName="libelle" class="form-control p-2" id="libelle{{i}}"
+                                        [ngClass]="{
+                                            'is-invalid': submit && opt.get('libelle').errors,
+                                            'is-valid': submit && opt.get('libelle').valid
+                                        }" placeholder="Désignation">
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('libelle').errors">
+                                            <div *ngIf="opt.get('libelle').errors.required">{{required.novide}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input (change)="onChangeTotal()" type="number" formControlName="prix" class="form-control"
+                                            id="prix{{i}}" [ngClass]="{
+                                                'is-invalid': submit && opt.get('prix').errors,
+                                                'is-valid': submit && opt.get('prix').valid
+                                            }" placeholder="Prix unitaire">
+                                            <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                                            <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                                        </div>
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('prix').errors">
+                                            <div *ngIf="opt.get('prix').errors.required">{{required.novide}}</div>
+                                            <div *ngIf="opt.get('prix').errors.pattern">{{required.nolettre}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <input (change)="onChangeTotal()" type="number" formControlName="qte" class="form-control"
+                                        id="qte{{i}}" [ngClass]="{
+                                            'is-invalid': submit && opt.get('qte').errors,
+                                            'is-valid': submit && opt.get('qte').valid
+                                        }" placeholder="Quantité" readonly>
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('qte').errors">
+                                            <div *ngIf="opt.get('qte').errors.required">{{required.novide}}</div>
+                                            <div *ngIf="opt.get('qte').errors.pattern">{{required.nolettre}}</div>
+                                            <div *ngIf="opt.get('qte').errors.pattern">{{required.positive}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <input (change)="onChangeTotal()" type="number" formControlName="tva" class="form-control p-2"
+                                        id="tva{{i}}" [ngClass]="{
+                                            'is-invalid': submit && opt.get('tva').errors,
+                                            'is-valid': submit && opt.get('tva').valid
+                                        }" placeholder="TVA">
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('tva').errors">
+                                            <div *ngIf="opt.get('tva').errors.pattern">{{required.nolettre}}</div>
+                                            <div *ngIf="opt.get('tva').errors.pattern">{{required.positive}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input (change)="onChangeTotal()" type="number" formControlName="remise" class="form-control"
+                                        id="remise{{i}}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="number" formControlName="total" class="form-control p-2" id="total{{i}}"
+                                        step="0.01" placeholder="TOTAL" readonly>
+                                        <div class="invalid-feedback" *ngIf="submit && opt.get('total').errors">
+                                            <div *ngIf="opt.get('total').errors.pattern">{{required.nolettre}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button (click)="onDeleteOption(opt)" type="button" class="btn btn-icon btn-danger">
+                                            <i class="feather icon-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2 d-flex flex-row-reverse">
+                            <button (click)="onAddOption()" type="button" class="btn btn-primary">
+                                Ajouter <i class="feather icon-plus"></i>
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table class="table table-responsive invoice-table invoice-total">
+                                    <tbody>
+                                        <tr>
+                                            <th>TOTAL HT :</th>
+                                            <td>{{ totalHT | number }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>TOTAL REMISE :</th>
+                                            <td>{{ totalRemise | number }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>TOTAL TVA :</th>
+                                            <td>{{ totalTva | number }}</td>
+                                        </tr>
+                                        <tr class="text-info">
+                                            <td>
+                                                <hr />
+                                                <h2 class="text-primary m-r-10">TOTAL :</h2>
+                                            </td>
+                                            <td>
+                                                <hr />
+                                                <h2 class="text-success">{{ totalTTC | number }}</h2>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+            Fermer <i class="feather icon-x-circle"></i>
+        </button>
+        <button (click)="form.reset()" type="button" class="btn btn-warning">
+            Vider <i class="fas fa-broom"></i>
+        </button>
+        <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+            Enregistrer <i class="feather icon-save"></i>
+        </button>
+    </div>
+</form>
+  

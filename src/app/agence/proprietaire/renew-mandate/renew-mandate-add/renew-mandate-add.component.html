@@ -1,0 +1,202 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR LE BIEN CONCERNE -->
+      <div class="row">
+        <span class="badge badge-warning my-2 f-14 width">
+          DETAILS CONCERNANT LE BIEN
+        </span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-6">
+            <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true"
+                [label]="'Proprietaire'" (uuid)="setOwnerUuid($event)"
+                [selected]="ownerSelected"
+                [disabled]="edit" [placeholder]="'Selectionez un proprietaire'">
+            </app-entity-finder>
+            <div class="invalid-feedback" *ngIf="submit && f.owner.errors">
+              <div *ngIf="f.owner.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-6" *ngIf="!edit">
+            <div *ngIf="loading" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <label for="mandate">Mandat <span class="asterix">*</span></label>
+            <select [attr.disabled]="mandates.length > 0 ? null : true"
+              (change)="setMandateUuid($event)" formControlName="mandate" class="form-control" id="mandate"
+              [ngClass]="{
+              'is-invalid': submit && f.mandate.errors,
+              'is-valid': submit && f.mandate.valid
+              }">
+              <option [value]="null" selected>Selectionnez un mandat</option>
+              <option *ngFor="let item of mandates" [value]="item.uuid">{{item.libelle}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.mandate.errors">
+              <div *ngIf="f.mandate.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-6" *ngIf="edit">
+            <label for="contract">Mandat <span class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-secondary"
+            [value]="libelle" readonly>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="f.mandate.value">
+        <!-- DETAILS SUR LE BIEN MANDAT -->
+        <div class="row">
+          <span class="badge badge-warning my-2 f-14 width">
+            DETAILS SUR LE MANDAT
+          </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <label for="type">Type de mandat</label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+                formControlName="type" readonly>
+            </div>
+            <div class="col-md-4">
+              <label for="pDateD">Date de debut </label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold" value="{{f.pDateD.value |date: 'd MMMM y' : '' : 'fr-FR'}}" readonly>
+            </div>
+            <div class="col-md-4">
+              <label for="pDateF">Date de fin </label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold" value="{{f.pDateF.value |date: 'd MMMM y' : '' : 'fr-FR'}}" readonly>
+            </div>
+            <div class="col-md-4">
+              <label for="pCommission">Commission (%)</label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold" formControlName="pCommission" readonly>
+            </div>
+            <div class="col-md-4" *ngIf="f.type.value === 'VENTE'">
+              <label for="pMontantCom">Montant commission </label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold" formControlName="pMontantCom" readonly>
+            </div>
+            <div class="col-md-4" *ngIf="f.type.value === 'VENTE'">
+              <label for="pValeur">Montant de vente</label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold" formControlName="pValeur" readonly>
+            </div>
+            <div class="col-md-4" *ngIf="f.type.value === 'LOCATION'">
+              <label for="pTaxe">Impôt au charge</label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold" formControlName="pTaxe" readonly>
+            </div>
+            <div class="col-md-4" *ngIf="f.type.value === 'LOCATION'">
+              <label for="pTaxeCommission">Déduire commission </label>
+              <input type="text" class="form-control p-2 text-uppercase font-weight-bold" formControlName="pTaxeCommission" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAILS SUR LE RENOUVELLEMENT -->
+        <div class="row">
+          <span class="badge badge-warning my-2 f-14 width">
+            DETAILS SUR LE RENOUVELLEMENT
+          </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+              <label for="date">Date d'opération <span class="asterix">*</span></label>
+              <input type="date" class="form-control" formControlName="date" id="Date">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="dateD">Date de debut <span class="asterix">*</span></label>
+              <input type="date" class="form-control" (change)="onChangeDate()" formControlName="dateD" id="dateD">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="dateF">Date de fin <span class="asterix">*</span></label>
+              <input type="date" class="form-control" (change)="onChangeDate()" formControlName="dateF" id="dateF">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="facturation">Type Facturation <span class="asterix">*</span></label>
+              <select class="form-control"
+                      id="facturation" formControlName="facturation" [ngClass]="{
+                'is-invalid': submit && f.facturation.errors,
+                'is-valid': submit && f.facturation.valid
+              }">
+                <option *ngFor="let item of facturationRow" [ngValue]="item.value">{{item.label}}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submit && f.facturation.errors">
+                <div *ngIf="f.facturation.errors.required">{{required.novide}}</div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label for="commission">{{ f.facturation?.value == 'PRC' ? 'Commission (%)' : 'Commission (XOF)'}} <span class="asterix">*</span></label>
+              <input (change)="onChangeTotal('commission')" formControlName="commission" id="commission" type="number"
+                     class="form-control" [ngClass]="{
+              'is-invalid': submit && f.commission.errors,
+              'is-valid': submit && f.commission.valid
+              }" placeholder="Commission (%)">
+              <div class="invalid-feedback" *ngIf="submit && f.commission.errors">
+                <div *ngIf="f.commission.errors.required">{{required.novide}}</div>
+                <div *ngIf="f.commission.errors.pattern">{{required.positive}}</div>
+              </div>
+            </div>
+              <div class="col-md-4" *ngIf="f.type.value === 'VENTE'">
+                <label for="montantCom">Montant commission </label>
+                <input type="number" (change)="onChangeTotal('montantCom')" step="1000" class="form-control" formControlName="montantCom" id="montantCom" class="form-control"
+                       [ngClass]="{ 'is-invalid': submit && f.montantCom.errors, 'is-valid': submit && f.montantCom.valid }">
+
+                <div class="invalid-feedback" *ngIf="submit && f.montantCom.errors">
+                  <div *ngIf="f.montantCom.errors.required">{{required.novide}}</div>
+                  <div *ngIf="f.montantCom.errors.pattern">{{required.positive}}</div>
+                </div>
+              </div>
+              <div class="col-md-4" *ngIf="f.type.value === 'VENTE'">
+                <label for="valeur">Montant de vente </label>
+                <input type="number" step="1000" (change)="onChangeTotal('valeur')" class="form-control" formControlName="valeur" id="valeur"
+                       [ngClass]="{ 'is-invalid': submit && f.valeur.errors, 'is-valid': submit && f.valeur.valid }">
+                <div class="invalid-feedback" *ngIf="submit && f.valeur.errors">
+                  <div *ngIf="f.valeur.errors.required">{{required.novide}}</div>
+                  <div *ngIf="f.valeur.errors.pattern">{{required.positive}}</div>
+                </div>
+              </div>
+              <div class="col-md-4" *ngIf="f.type.value === 'LOCATION'">
+                <label for="taxe">Impôt au charge </label>
+                <select class="form-control" id="taxe" formControlName="taxe">
+                  <option *ngFor="let item of taxeRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+              <div class="col-md-4" *ngIf="f.type.value === 'LOCATION'">
+                <label for="taxeCommission">Déduire commission </label>
+                <select class="form-control" id="taxeCommission" formControlName="taxeCommission">
+                  <option *ngFor="let item of commissionRow" [ngValue]="item.value">{{item.label}}</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row" *ngIf="f.type.value === 'VENTE'">
+            <div class="col-md-6"></div>
+            <div class="col-md-6">
+              <label for="total">MONTANT TOTAL DE LA COMMISSION</label>
+              <input [value]="f.montantCom.value | number" id="total" type="text" readonly
+              class="form-control text-lg-right p-4 text-warning text-h-danger font-weight-bold formBadgeLarge" >
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

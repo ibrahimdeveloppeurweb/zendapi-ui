@@ -1,0 +1,23 @@
+<ul class="navbar-nav ml-auto">
+  <li>
+    <div class="dropdown drp-user" ngbDropdown placement="auto">
+      <a href="javascript:" ngbDropdownToggle data-toggle="dropdown">
+        <i class="icon feather icon-user"></i>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right profile-notification" ngbDropdownMenu>
+        <div class="pro-head">
+          <!-- <img class="img-radius" [src]="'http://127.0.0.1:8000/uploads/696341a3-fa3c-4e99-b33d-1952f3ead11c_ZenAPIDEMO/user/ai4oavqkk.jpeg'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/> -->
+          <img *ngIf="user?.sexe === 'Masculin'" class="img-radius" [src]="user?.photo ? publicUrl + '/' + user?.photo : 'assets/images/avatar-default.png'"  onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+          <img *ngIf="user?.sexe === 'Féminin'" class="img-radius" [src]="user?.photo ? publicUrl + '/' + user?.photo : 'assets/images/avatar-mlle.jpeg'"  onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+          <span>{{ user?.civilite }} {{ user?.nom }}</span>
+        </div>
+        <ul class="pro-body">
+          <li><a (click)="profil()" class="dropdown-item"><i class="feather icon-user"></i> Mon profil</a></li>
+          <li><a (click)="editPassword()" class="dropdown-item"><i class="fas fa-key"></i> Modifier mot de passe</a></li>
+          <li><a (click)="lock()" class="dropdown-item"><i class="feather icon-lock"></i> Verouiller votre session</a></li>
+          <li><a (click)="logout()" class="dropdown-item"><i class="feather icon-log-out"></i> Me déconnecter</a></li>
+        </ul>
+      </div>
+    </div>
+  </li>
+</ul>

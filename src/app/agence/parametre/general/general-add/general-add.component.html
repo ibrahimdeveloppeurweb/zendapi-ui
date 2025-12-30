@@ -1,0 +1,230 @@
+<div class="card mb-3">
+  <div class="card-header d-flex">
+    <div class="p-2">
+      <h4><i class="fa fa-cog"></i> Paramètres généraux</h4>
+    </div>
+    <div class="ml-auto p-2">
+      <ng-template ngxPermissionsOnly="SETTING:AGENCY">
+        <button (click)="editGeneral(true)" *ngIf="!edit" type="button"
+          class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+          <i class="feather icon-edit-2"></i>
+        </button>
+        <button (click)="editGeneral(false)" *ngIf="edit" type="button"
+          class="btn btn-icon btn-danger ml-1" ngbTooltip="Fermer">
+          <i class="feather icon-x-circle"></i>
+        </button>
+      </ng-template>
+    </div>
+  </div>
+  <div class="card-body p-3">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="width alert" [ngClass]="{
+          'alert-success' : general?.nbrSms >= 1000 && general?.nbrSms >= 701,
+          'alert-primary' : general?.nbrSms <= 700 && general?.nbrSms >= 401,
+          'alert-warning' : general?.nbrSms <= 400 && general?.nbrSms >= 101,
+          'alert-danger' : general?.nbrSms <= 100
+          }" role="alert">
+          <span *ngIf="general?.nbrSms >= 1000 && general?.nbrSms >= 701">Vous disposez de <span class="alert-link"> {{ general?.nbrSms }}</span> SMS.</span>
+          <span *ngIf="general?.nbrSms <= 700 && general?.nbrSms >= 401">Vous disposez encore de <span class="alert-link"> {{ general?.nbrSms }}</span> SMS.</span>
+          <span *ngIf="general?.nbrSms <= 400 && general?.nbrSms >= 101">Vous disposez maintenant de <span class="alert-link"> {{ general?.nbrSms }}</span> SMS. Pensez déjà à vous recharger !</span>
+          <span *ngIf="general?.nbrSms <= 100 && general?.nbrSms > 0">Attention ! Vous disposez maintenant de <span class="alert-link"> {{ general?.nbrSms }}</span> SMS. Veuillez vous approcher de votre fournisseur afin de vous créditer !</span>
+          <span *ngIf="general?.nbrSms === 0">Attention ! Vous disposez d'aucun SMS. Veuillez vous approcher de votre fournisseur afin de vous créditer !</span>
+        </div>
+      </div>
+      <div class="row"><span class="badge badge-primary my-2 f-14 width">{{title}}</span></div>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        <div class="col-md-12">
+          <div class="form-group">
+            <div class="row mb-2">
+              <div class="col-md-4">
+                <label for="nom">Type d'usage</label>
+                <select [attr.disabled]="!edit ? edit : null" nom="type" id="type" formControlName="type"
+                  class="form-control">
+                  <option [value]="'ENTREPRISE'">ENTREPRISE</option>
+                  <option [value]="'PARTICULIER'">PARTICULIER</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="responsable">
+                  {{ f.type.value === 'PARTICULIER' ? 'Nom et prénoms' : 'Responsable' }}
+                </label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="responsable"
+                  [class]="!edit ? 'form-control p-2' : 'form-control'" id="responsable"
+                  placeholder="{{ f.type.value === 'PARTICULIER' ? 'Nom et prénoms' : 'Responsable' }}">
+              </div>
+              <div class="col-md-4">
+                <label for="nom">
+                  {{ f.type.value === 'PARTICULIER' ? 'Nom à afficher' : 'Agence' }}
+                </label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="nom" [class]="!edit ? 'form-control p-2' : 'form-control'"
+                  id="nom" placeholder="{{ f.type.value === 'PARTICULIER' ? 'Nom à afficher' : 'Agence' }}">
+              </div>
+              <div class="col-md-4">
+                <label for="nom">Agrée ?</label>
+                <select [attr.disabled]="!edit ? edit : null" nom="agree" id="agree" formControlName="agree"
+                  class="form-control">
+                  <option [ngValue]="false">NON</option>
+                  <option [ngValue]="true">OUI</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="secteur">Secteur d'activité</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="secteur"
+                  id="secteur" placeholder="Secteur d'activité" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="contact">Contact</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="contact"
+                  id="contact" placeholder="Contact" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="email">E-mail</label>
+                <input [attr.disabled]="!edit ? edit : null" type="email" formControlName="email"
+                  id="email" placeholder="E-mail" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="nrc">Numéro registre de commerce</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="nrc"
+                  id="nrc" placeholder="N°NRC" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="ncc">Numéro compte contribuable</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="ncc"
+                  id="ncc" placeholder="N°NCC" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="adresse">Adresse postale</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="adresse"
+                  id="adresse" placeholder="Adresse postale" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="faxe">Fax</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="faxe"
+                  id="faxe" placeholder="Fax" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="domicile">
+                  {{ f.type.value === 'PARTICULIER' ? 'Domicile' : 'Siège' }}
+                </label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="domicile" [class]="!edit ? 'form-control p-2' : 'form-control'"
+                  id="domicile" placeholder="{{ f.type.value === 'PARTICULIER' ? 'Domicile' : 'Siège' }}">
+              </div>
+              <div class="col-md-4">
+                <label for="nom">Pays</label>
+                <app-entity-finder [class]="'Country'" [namespace]="'Extra'" [groups]="['country']"
+                 [selected]="countrySelected" [disabled]="!edit" (uuid)="setCountryUuid($event)">
+                </app-entity-finder>
+              </div>
+              <div class="col-md-4">
+                <label for="ville">Ville</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="ville"
+                  id="ville" placeholder="Ville" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="commune">Commune</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="commune"
+                  id="commune" placeholder="Commune" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="quartier">Quartier</label>
+                <input [attr.disabled]="!edit ? edit : null" type="text" formControlName="quartier"
+                  id="quartier" placeholder="Quartier" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="capital">Capital</label>
+                <input [attr.disabled]="!edit ? edit : null" type="number" formControlName="capital"
+                  id="capital" placeholder="Capital" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="impot">Impot foncier</label>
+                <input [attr.disabled]="!edit ? edit : null" type="number" formControlName="impot"
+                  id="impot" placeholder="Impot foncier" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+              <div class="col-md-4">
+                <label for="dateG">Date génération avis écheance</label>
+                <select [attr.disabled]="!edit ? edit : null" name="dateG" id="dateG" formControlName="dateG"
+                  class="form-control">
+                  <option *ngFor="let item of dateGRow" [ngValue]="item.value">{{ item.label }}</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="etat">Notification</label>
+                <select [attr.disabled]="!edit ? edit : null" name="etat" id="etat" formControlName="etat"
+                  class="form-control">
+                  <option [value]="'ACTIVE'">ACTIVE</option>
+                  <option [value]="'DESACTIVE'">DESACTIVE</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="paiement">Autoriser les paiements via Mobile</label>
+                <select [attr.disabled]="!edit ? edit : null" name="paiement" id="paiement" formControlName="paiement"
+                  class="form-control">
+                  <option *ngFor="let item of paiementRow" [value]="item.value">{{ item.label }}</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="tva">TVA (%)</label>
+                <input [attr.disabled]="!edit ? edit : null" type="number" formControlName="tva"
+                  id="tva" placeholder="Tva" [class]="!edit ? 'form-control p-2' : 'form-control'">
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-6">
+                <label for="entete">ENTETE DE DOCUMENT</label>
+                <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="entete"
+                  formControlName="entete" rows="3"></textarea>
+              </div>
+              <div class="col-md-6">
+                <label for="piedPage">PIEDS DE DOCUMENT</label>
+                <textarea [attr.disabled]="!edit ? edit : null" class="form-control border border p-2" id="piedPage"
+                  formControlName="piedPage" rows="3"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="d-flex align-items-start mb-2">
+                <div class="d-flex flex-column align-items-center flex-grow-0" style="min-width: 45%; margin-right: 200px;">
+                  <div class="flex-grow-0" style="width: 100%; height: 100%;">
+                    <span class="badge badge-primary mb-1">AJOUTER UNE PHOTO DE PROFIL</span>
+                    <app-image-uploader
+                      (filesd)="loadfile($event)"
+                      (editFile)="editFile($event)"
+                      [maxSize]="2"
+                      (imageUploaded)="setParam('photoUuid', $event)"
+                      [photo]="general ? general?.photo : null"
+                      [message]="'Sélectionner une photo'">
+                    </app-image-uploader>
+                   </div>
+                </div>
+
+                <!-- Carreau pour la signature -->
+                <div class="d-flex flex-column align-items-center flex-grow-0" style="min-width: 45%;">
+                  <div class="flex-grow-0" style="width: 100%;">
+                    <span class="badge badge-primary mb-1">AJOUTER VOTRE SIGNATURE</span>
+                    <app-image-uploader
+                      (editFile)="editFileS($event)"
+                      (filesd)="loadfileSignature($event)"
+                      [maxSize]="2"
+                      (imageUploaded)="setParam('signatureUuid', $event)"
+                      [photo]="general ? general?.signature?.photo : null"
+                      [message]="'Sélectionner une image en png'">
+                    </app-image-uploader>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      <div class="modal-footer" *ngIf="edit">
+        <button *ngxPermissionsOnly="'SETTING:AGENCY'" type="submit" class="btn btn-primary">
+          Enregistrer <i class="feather icon-save"></i>
+        </button>
+      </div>
+    </div>
+    </form>
+  </div>
+</div>

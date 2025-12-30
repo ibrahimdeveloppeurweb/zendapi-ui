@@ -1,0 +1,133 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="table-responsive">
+    <table class="width mb-4">
+      <tbody>
+        <tr class="border-bottom-success">
+          <td></td>
+          <td colspan="3" class="text-right font-weight-bold"></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="border border-success">
+          <td colspan="3" class="font-weight-bold font-size-secondary">SOLDE INITIALE</td>
+          <td class="font-weight-bold font-size-secondary text-right">{{ day?.soldeI | number }} {{global.device}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered nowrap table-hover">
+      <thead>
+        <tr class="text-left">
+          <th>DATE</th>
+          <th>LIBELLE</th>
+          <th>RECETTE</th>
+          <th>DEPENSE</th>
+          <th>SOLDE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-left font-weight-bold"> {{ day?.createdAt |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> REPPORT A NOUVEAU </td>
+          <td class="text-right font-weight-bold"> {{ day?.soldeI | number}} {{global.device}} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold"></td>
+        </tr>
+        <tr *ngFor="let supplyEntr of suppliesEntr  ; let i = index">
+          <td class="text-left font-weight-bold"> {{ supplyEntr?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ supplyEntr?.libelle }} </td>
+          <td class="text-right font-weight-bold"> {{ supplyEntr?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold">{{ supplyEntr?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let supplySort of suppliesSort  ; let i = index">
+          <td class="text-left font-weight-bold"> {{ supplySort?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ supplySort?.libelle }} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold"> {{ supplySort?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold">{{ supplySort?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let paymentEntr of paymentsEntr  ; let i = index">
+          <td class="text-left font-weight-bold"> {{ paymentEntr?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ paymentEntr?.libelle }} </td>
+          <td class="text-right font-weight-bold"> {{ paymentEntr?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold">{{ paymentEntr?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let paymentSort of paymentsSort  ; let i = index">
+          <td class="text-left font-weight-bold"> {{ paymentSort?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ paymentSort?.libelle }} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold"> {{ paymentSort?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold">{{ paymentSort?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let paymentCEntr of paymentsCustEntr  ; let i = index">
+          <td class="text-left font-weight-bold"> {{ paymentCEntr?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ paymentCEntr?.libelle }} </td>
+          <td class="text-right font-weight-bold"> {{ paymentCEntr?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold">{{ paymentCEntr?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let paymentCSort of paymentsCustSort  ; let i = index">
+          <td class="text-left font-weight-bold"> {{ paymentCSort?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ paymentCSort?.libelle }} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold"> {{ paymentCSort?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold">{{ paymentCSort?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let paymentF of paymentsF  ; let i = index">
+          <td class="text-left font-weight-bold"> {{ paymentF?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ paymentF?.libelle }} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold"> {{ paymentF?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold">{{ paymentF?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let fund of funds ; let i = index">
+          <td class="text-left font-weight-bold"> {{ fund?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ fund?.libelle }} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold">{{ fund?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold">{{ fund?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let spent of spents ; let i = index">
+          <td class="text-left font-weight-bold"> {{ spent?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ spent?.libelle }} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold">{{ spent?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold">{{ spent?.solde | number }} {{global.device}} </td>
+        </tr>
+        <tr *ngFor="let rever of revers  ; let i = index">
+          <td class="text-left font-weight-bold"> {{ rever?.date |date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</td>
+          <td class="text-left font-weight-bold"> {{ rever?.libelle }} </td>
+          <td class="text-right font-weight-bold"></td>
+          <td class="text-right font-weight-bold"> {{ rever?.montant | number }} {{global.device}} </td>
+          <td class="text-right font-weight-bold">{{ rever?.solde | number }} {{global.device}} </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" class="font-weight-bold text-right font-size-table">TOAL</td>
+          <td class="text-right font-weight-bold font-size-table"> {{ totalR | number }} {{global.device}}</td>
+          <td class="text-right font-weight-bold font-size-table"> {{ totalD | number }} {{global.device}}</td>
+          <td class="text-right font-weight-bold font-size-table"> {{ soldeF | number }} {{global.device}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <button (click)="onEnd(day)" type="button" class="btn btn-success">
+    Cloturer <i class="fas fa-sign-in-alt"></i>
+  </button>
+</div>

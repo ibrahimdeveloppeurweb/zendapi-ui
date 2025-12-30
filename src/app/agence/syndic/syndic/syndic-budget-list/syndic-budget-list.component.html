@@ -1,0 +1,140 @@
+<div class="row justify-content-center">
+
+  <!-- LISTE DES BUDGETS -->
+  <div class="width list-budget">
+    <ng-template [ngxPermissionsOnly]="['BUDGET:LIST']">
+      <div class="col-md-12" *ngIf="type === 'BUDGET'">
+        <app-no-data [title]="'Aucun budget trouvé'" *ngIf="type === 'BUDGET' && budgets.length === 0"></app-no-data>
+        <div class="card card-box rounded border-0" *ngIf="budgets && budgets.length > 0">
+          <div class="card-body p-3">
+            <div class="table-responsive m-0">
+              <table datatable [dtOptions]="dtOptions" class="table table-hover text-nowrap m-0 table-with-100-percent">
+                <thead>
+                  <tr>
+                    <th>Année d'exercice</th>
+                    <th>Syndic</th>
+                    <th>Etat</th>
+                    <th>Statut</th>
+                    <th>Budget</th>
+                    <th>Charges réelles</th>
+                    <th>Ecart</th>
+                    <th>Crée le</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of budgets; index as i">
+                    <td>
+                      <span class="text-uppercase cursor-pointer badge badge-warning">
+                        ANNÉE D'EXERCICE {{item?.anneeEx}}
+                      </span>
+                    </td>
+                    <td style="cursor: pointer;">
+                      <span class="cursor-pointer" (click)="show(item,'SHOW')">
+                        <p class="m-0 d-inline-block align-middle font-16">
+                            <span class="text-primary">{{item?.trustee?.nom}}</span> <br />
+                            {{item?.trustee?.searchableDetail}}
+                        </p>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge badge-{{
+                        item?.etat === 'CLOTURE' ? 'danger' :
+                        item?.etat === 'VALIDE' ? 'success' :
+                        item?.etat === 'ATTENTE' ? 'warning' :
+                        item?.etat === 'BROUILLON' ? 'info' :
+                        item?.etat === 'EN COURS' ? 'primary' : 'info'
+                      }}">{{item?.etat}}</span>
+                    </td>
+                    <td>
+                      <span class="badge badge-{{
+                        item?.statut === 'ACTIF' ? 'success' :
+                        item?.statut === 'TERMINE' ? 'danger' : 'info'
+                      }}">{{item?.statut}}</span>
+                    </td>
+                    <td><span class="text-warning">{{(item?.valide != 0 ? item?.valide : item?.prevu)|number}}</span>  {{global.device}}</td>
+                    <td><span class="text-danger">{{item?.charges|number}}</span>  {{global.device}}</td>
+                    <td><span class="text-info">{{item?.ecart|number}}</span>  {{global.device}}</td>
+                    <td>{{item.createdAt|date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'}}</td>
+                    <td class="text-center">
+
+                      <button placement="auto" ngbTooltip="Plus d'infos"
+                        class="btn btn-icon btn-secondary ml-1" type="button" (click)="show(item,'SHOW')">
+                        <span class="btn-wrapper--icon"><i class="fas fa-eye"></i></span>
+                      </button>
+
+                      <button *ngIf="item?.etat === 'VALIDE' " placement="auto" ngbTooltip="Clôturer le budget"
+                        class="btn btn-icon btn-danger ml-1" type="button" (click)="validation(item,'CLOTURE')">
+                        <span class="btn-wrapper--icon"><i class="feather icon-check-circle"></i></span>
+                      </button>
+
+                      <button *ngIf="item?.etat === 'EN COURS'" (click)="validation(item,'VALIDE')" placement="auto"
+                        ngbTooltip="Valider le budget" class="btn btn-icon btn-success  ml-1" type="button">
+                        <span class="btn-wrapper--icon"><i class="fas fa-check"></i></span>
+                      </button>
+
+                      <button placement="auto"  *ngIf="item?.etat != 'CLOTURE'" ngbTooltip="Saisir le budget"
+                        class="btn btn-icon btn-info ml-1" type="button" (click)="show(item,'BROUILLON')">
+                        <span class="btn-wrapper--icon"><i class="fas fa-cash-register"></i></span>
+                      </button>
+                      <button *ngIf="item?.isDelete && item?.etat != 'CLOTURE'"  placement="auto" ngbTooltip="Modifier"
+                        class="btn btn-icon btn-primary  ml-1" type="button" (click)="edit(item,'MODIFIER')">
+                        <span class="btn-wrapper--icon"><i class="feather icon-edit-2"></i></span>
+                      </button>
+
+                      <button (click)="printerBudget(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                        ngbTooltip="Imprimer">
+                        <span class="btn-wrapper--icon"><i class="feather icon-printer"></i></span>
+                      </button>
+                      <button *ngIf="item?.isDelete && item?.etat != 'CLOTURE'" placement="auto"
+                        ngbTooltip="Supprimer" class="btn btn-icon btn-danger  ml-1" type="button"
+                        (click)="delete(item)">
+                        <span class="btn-wrapper--icon"><i class="feather icon-trash"></i></span>
+                      </button>
+                      <button *ngIf="item?.etat === 'VALIDE' && item?.trustee?.mode !== 'MONTANT_FIXE'" placement="auto" ngbTooltip="Générer les appels de charges généraux"
+                        class="btn btn-icon btn-info ml-1" type="button" (click)="generateFundsApeals(item, 'GENERAL')">
+                        <span class="btn-wrapper--icon"><i class="feather icon-refresh-cw"></i></span>
+                      </button>
+                      <button *ngIf="item?.etat === 'VALIDE' && item?.trustee?.mode !== 'MONTANT_FIXE'" placement="auto" ngbTooltip="Générer les appels de charges de réserve"
+                        class="btn btn-icon btn-success ml-1" type="button" (click)="generateFundsApeals(item, 'RESERVE')">
+                        <span class="btn-wrapper--icon"><i class="feather icon-refresh-cw"></i></span>
+                      </button>
+                      <button *ngIf="item?.etat === 'VALIDE' &&  item?.trustee?.mode === 'MONTANT_FIXE'" placement="auto" ngbTooltip="Générer les appels de charges"
+                        class="btn btn-icon btn-info ml-1" type="button" (click)="generateStaticFundsApeals(budget?.trustee?.uuid)">
+                        <span class="btn-wrapper--icon"><i class="feather icon-refresh-cw"></i></span>
+                      </button>
+
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template ngxPermissionsExcept="BUDGET:LIST" [ngxPermissionsOnly]="['BUDGET:LIST']">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'BUDGET'" [title]="'liste des budgets'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES TYPES DE CHARGE -->
+  <!-- <ng-template ngxPermissionsOnly="TYPELOAD:LIST"> -->
+  <div class="col-md-12" *ngIf="type === 'TYPE_LOAD'">
+    <app-no-data [title]="'Aucun type de charge trouvé'" *ngIf="typeLoads.length === 0"></app-no-data>
+  </div>
+  <app-type-load-list class="width" [typeLoads]="typeLoads"
+    *ngIf="type === 'TYPE_LOAD' && typeLoads && typeLoads.length > 0"></app-type-load-list>
+  <!-- </ng-template> -->
+
+  <!-- LISTE DES CATEGORIE DE CHARGE-->
+  <!-- <ng-template ngxPermissionsOnly="LOAD:CATEGORY:LIST"> -->
+  <div class="col-md-12" *ngIf="type === 'CATEGORY'">
+    <app-no-data [title]="'Aucune catgégorie de charge trouvée'" *ngIf="loadCategory.length === 0"></app-no-data>
+  </div>
+  <app-category-list class="width" [loadCategory]="loadCategory"
+    *ngIf="type === 'CATEGORY' && loadCategory && loadCategory.length > 0"></app-category-list>
+  <!-- </ng-template> -->
+</div>

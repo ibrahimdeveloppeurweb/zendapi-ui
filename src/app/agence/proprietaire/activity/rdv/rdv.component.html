@@ -1,0 +1,87 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="modal-body">
+        <div class="col-md-12">
+            <div class="form-group">
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label for="motif">Motif <span class="asterix"></span></label>
+                            <input type="text" formControlName="motif" class="form-control" id="motif"
+                            [ngClass]="{'is-invalid': submit && f.motif.errors,'is-valid': submit && f.motif.valid}" placeholder="Motif">
+                            <div class="invalid-feedback" *ngIf="submit && f.motif.errors">
+                                <div *ngIf="f.motif.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="position-relative form-group">
+                            <label for="lieu">Lieux <span class="asterix"></span></label>
+                            <input type="text" formControlName="lieu" class="form-control" id="lieu"
+                            [ngClass]="{'is-invalid': submit && f.lieu.errors,'is-valid': submit && f.lieu.valid}" placeholder="Lieux">
+                            <div class="invalid-feedback" *ngIf="submit && f.lieu.errors">
+                                <div *ngIf="f.lieu.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="position-relative form-group">
+                            <label for="date">Date <span class="asterix"></span></label>
+                            <input type="date" formControlName="date" class="form-control" id="date"
+                            [ngClass]="{'is-invalid': submit && f.date.errors,'is-valid': submit && f.date.valid}" placeholder="Date">
+                            <div class="invalid-feedback" *ngIf="submit && f.date.errors">
+                                <div *ngIf="f.date.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="position-relative form-group">
+                            <label for="heure">Heure <span class="asterix"></span></label>
+                            <input type="time" formControlName="heure" class="form-control" id="heure" atp-time-picker
+                            [ngClass]="{'is-invalid': submit && f.heure.errors,'is-valid': submit && f.heure.valid}" placeholder="Heure">
+                            <div class="invalid-feedback" *ngIf="submit && f.heure.errors">
+                                <div *ngIf="f.heure.errors.required">{{required.novide}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <div class="position-relative form-group">
+                            <label for="description">Description </label>
+                            <app-tinymce formControlName="description" id="description" #tinymce='tinymce' aria-placeholder="Contenu du message"></app-tinymce>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row mb-2">
+                    <div class="col-md">
+                        <label>Pièces et documents à joindre</label>
+                        <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)"
+                        [path]="'rdv'" [etat]="edit ? 'edit': 'add'" [folder]="edit && rend ? rend?.folder : null">
+                        </app-folder-uploader>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="onReset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,87 @@
+<div class="col-md-12">
+  <span *ngIf="lots && lots.length > 0" class="badge badge-info mb-4 f-14 width">
+    LISTE DES LOTS
+  </span>
+  <app-card *ngIf="lots && lots.length > 0" [hidHeader]="true" cardClass="card-datatable">
+    <div class="row">
+      <div class="table-responsive">
+        <table *ngIf="etat" datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Bien</th>
+              <th>Etat</th>
+              <th>Progression</th>
+              <th>Acquereur</th>
+              <th>Montant</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of lots">
+              <td class="align-middle">
+                <img [src]="item?.islet?.subdivision?.photoSrc ? item?.islet?.subdivision?.photoSrc : 'assets/images/promotion-default.jpg'" alt="{{item?.islet?.subdivision?.nom}}"
+                  title="{{item?.islet?.subdivision?.nom}}" class="rounded mr-2 ml-0" height="48" />
+                <p class="m-0 d-inline-block align-middle font-16">
+                  <span class="text-primary">Lot N°{{item?.numero}} Ilot N°{{item?.islet?.numero}}</span> <br />
+                  Superficie : {{item?.superficie}} m² <br />
+                  Lotisement : {{item?.islet?.subdivision?.nom}}
+                </p>
+              </td>
+              <td>
+                <span *ngIf="item?.espace" class="badge mr-1" [ngClass]="{ 'badge-danger' : item?.espace }">{{ 'ESPACE VERT' }}</span>
+                <span *ngIf="!item?.espace" class="badge" [ngClass]="{
+                  'badge-secondary' : item?.etat === 'INDISPONIBLE',
+                  'badge-warning' : item?.etat === 'RESERVE',
+                  'badge-danger' : item?.etat === 'VENDU',
+                  'badge-success' : item?.etat === 'DISPONIBLE'
+                  }">{{item?.etat}}</span>
+              </td>
+              <td>
+                <p *ngIf="item?.folderCustomer">
+                  <ngb-progressbar *ngIf="item?.folderCustomer?.prcEcheancier" type="primary" [showValue]="true" [value]="item?.folderCustomer?.prcEcheancier" ngbTooltip="Echéance"></ngb-progressbar>
+                  <ngb-progressbar *ngIf="item?.folderCustomer?.prcEtatA" type="primary" [showValue]="true" [value]="item?.folderCustomer?.prcEtatA" ngbTooltip="Etat d'avancement"></ngb-progressbar>
+                </p>
+                <span *ngIf="!item?.folderCustomer">INDEFINI</span>
+              </td>
+              <td><span class="font-weight-bold">{{item?.acquereur}} </span></td>
+              <td>
+                <span class="text-success font-weight-bold">{{item?.montant|number}} {{global.device}}</span>
+              </td>
+              <td class="table-action">
+                <button (click)="showLot(item)" type="button" class="btn btn-icon btn-secondary"
+                  ngbTooltip="Détails">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <!-- <button  (click)="visite3D(item)" type="button" class="btn btn-icon btn-success ml-1" ngbTooltip="Visite 3D">
+                  <i class="fas fa-cube"></i>
+                </button> -->
+                <ng-template ngxPermissionsOnly="LOT:EDIT">
+                  <button *ngIf="!item?.espace || item?.etat === 'DISPONIBLE'" (click)="editLot(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                    ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                </ng-template>
+                <button *ngxPermissionsOnly="'LOT:PRINTER:SHOW'" (click)="printerLot(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                  ngbTooltip="Imprimer">
+                  <i class="feather icon-printer"></i>
+                </button>
+                <ng-template ngxPermissionsOnly="LOT:DELETE">
+                  <button *ngIf="(!item?.espace || item?.etat === 'DISPONIBLE') && item?.isDelete" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                    <i class="feather icon-trash"></i>
+                  </button>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-success"> {{total | number}} {{global.device}}</td>
+              <td *ngIf="action"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </app-card>
+</div>

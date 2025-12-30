@@ -1,0 +1,144 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-warning my-2 f-14 width">
+          SELECTIONNER LE CONTRAT
+        </span>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <div class="row">
+                <div class="col-md-6">
+                  <label>Locataire <span class="asterix">*</span></label>
+                  <app-entity-finder [class]="'tenant'" [groups]="['tenant']" [required]="true"
+                    (uuid)="setTenantUuid($event)">
+                  </app-entity-finder>
+                </div>
+                <div class="col-md-6">
+                  <div *ngIf="isLoadingContract" class="spinner-container">
+                    <div class="spinner"></div>
+                  </div>
+
+                  <label for="contract">Contrat <span class="asterix">*</span></label>
+                  <select (change)="setContratUuid($event)" formControlName="contract" class="form-control"
+                    id="contract" [attr.disabled]="tenantUuid ? null : 'true'"
+                    [ngClass]="{'is-invalid': submit && f.contract.errors,'is-valid': submit && f.contract.valid}">
+                    <option value="null" selected> Selectionnez un contrat</option>
+                    <option *ngFor="let item of contracts" [value]="item.uuid">{{item.libelle}}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="submit && f.contract.errors">
+                    <div *ngIf="f.contract.errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFFICHAGE DES RESULATS DE LA RECHERCHE -->
+      <div *ngIf="f.contract.value">
+        <div class="row">
+          <span class="badge badge-warning my-2 f-14 width">
+            DETAILS CONCERNANT LA PENALITE
+          </span>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label>Locative</label>
+            <input type="text" readonly [value]="contract?.rental?.porte" class="form-control text-uppercase font-weight-bold text-warning">
+          </div>
+          <div class="col-md-3">
+            <label >Coût du loyer</label>
+            <input type="number" readonly [value]="contract?.loyer" class="form-control text-dangetext-uppercase font-weight-bold text-warning">
+          </div>
+          <div class="col-md-3">
+            <label >Jour limite de paiement</label>
+            <input type="number" readonly [value]="contract?.limite" class="form-control text-uppercase font-weight-bold text-warning">
+          </div>
+          <div class="col-md-3">
+            <label>Pénalité cas de retard %</label>
+            <input type="number" readonly [value]="contract?.prcRetard" class="form-control text-uppercase font-weight-bold text-warning">
+          </div>
+        </div>
+
+        <div formArrayName="penalities">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-4">
+                <label>Mois </label>
+              </div>
+              <div class="col-md-2">
+                <label>Loyer</label>
+              </div>
+              <div class="col-md-2">
+                <label>Charge</label>
+              </div>
+              <div class="col-md-3">
+                <label>Total</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" *ngFor="let item of penality.controls; let i=index" [formGroupName]="i">
+            <div class="row">
+              <div class="col-md-4">
+                <input type="date" class="form-control p-2" formControlName="mois" id="mois{{i}}" (change)="setRentUuid(item)"
+                  [ngClass]="{
+                  'is-invalid': submit && item.get('mois').errors,
+                  'is-valid': submit && item.get('mois').errors
+                  }">
+                <div class="invalid-feedback" *ngIf="submit && item.get('mois').errors">
+                  <div *ngIf="item.get('mois').errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <input type="number" class="form-control p-2" formControlName="loyer" id="loyer{{i}}" placeholder="Loyer">
+              </div>
+              <div class="col-md-2">
+                <input type="number" class="form-control p-2" formControlName="charge" id="charge{{i}}" placeholder="Charge">
+              </div>
+              <div class="col-md-3">
+                <input type="number" class="form-control p-2 text-danger font-weight-bold" formControlName="total" id="total{{i}}"
+                [ngClass]="{
+                  'is-invalid': submit && item.get('total').errors,
+                  'is-valid': submit && item.get('total').errors
+                  }" placeholder="Total">
+                <div class="invalid-feedback" *ngIf="submit && item.get('total').errors">
+                  <div *ngIf="item.get('total').errors.required">{{required.novide}}</div>
+                </div>
+              </div>
+              <div class="col-md-1">
+                <button [disabled]="edit" (click)="onDelete(item)" type="button" class="btn btn-danger">
+                  <i class="feather icon-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <button class="btn btn-msg-send btn-primary ml-auto"
+          (click)="addPenality()"type="button"> Ajouter <i class="fa fa-plus"></i></button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,82 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{title}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class="modal-body">
+    <div class="col-md-12">
+
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width"> SOLDE À L'ÉTAT ACTUEL</span>
+      </div>
+
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-3">
+            <label for="solde">Solde</label>
+            <input type="number" formControlName="solde" class="form-control" id="solde"
+              placeholder="Entrez votre solde">
+          </div>
+          <div class="col-md-3">
+            <label for="commission">Commission de l'agence</label>
+            <input type="number" formControlName="commission" class="form-control" id="commission"
+              placeholder="Commission de l'agence">
+          </div>
+          <div class="col-md-3">
+            <label for="caution">Caution</label>
+            <input type="number" formControlName="caution" class="form-control" id="caution" placeholder="Caution">
+          </div>
+          <div class="col-md-3">
+            <label for="tva">Tva sur commission</label>
+            <input type="number" formControlName="tva" class="form-control" id="tva" value="0"
+              placeholder="Tva sur commission">
+          </div>
+          <div class="col-md-3">
+            <label for="depense">Dépense</label>
+            <input type="number" formControlName="depense" class="form-control" id="depense" placeholder="Dépense">
+          </div>
+          <div class="col-md-3">
+            <label for="cie">Caution CIE/SODECI</label>
+            <input type="number" formControlName="cie" class="form-control" id="cie" placeholder="Caution CIE/SODECI">
+          </div>
+          <div class="col-md-3">
+            <label for="honoraire">Honoraire agence</label>
+            <input type="number" formControlName="honoraire" class="form-control" id="Honoraire agence"
+              placeholder="Honoraire agence">
+          </div>
+          <div class="col-md-3">
+            <label for="timbres">Timbres fiscaux</label>
+            <input type="number" formControlName="timbres" class="form-control" id="timbres"
+              placeholder="Caution CIE/SODECI">
+          </div>
+          <div class="col-md-3">
+            <label for="droit">Droit d'enregistrement</label>
+            <input type="number" formControlName="droit" class="form-control" id="droit"
+              placeholder="Droit d'enregistrement">
+          </div>
+          <div class="col-md-3">
+            <label for="frais">Frais de dossiers</label>
+            <input type="number" formControlName="frais" class="form-control" id="frais"
+              placeholder="Frais de dossiers">
+          </div>
+          <div class="col-md-3">
+            <label for="fraisA">Frais d'assurance</label>
+            <input type="number" formControlName="fraisA" class="form-control" id="fraisA"
+              placeholder="Frais d'assurance">
+          </div>
+          <div class="col-md-3">
+            <label for="autres">Autres fonds</label>
+            <input type="number" formControlName="autres" class="form-control" id="autres" placeholder="Autres fonds">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>

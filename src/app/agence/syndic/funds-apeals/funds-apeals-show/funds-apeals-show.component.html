@@ -1,0 +1,251 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modale.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="col-md-12">
+        <div class="alert-primary mb-1">
+            <div class="col-md-12 mt-2 text-center">
+                <span class="bold">
+                    {{fundsApeal?.libelle}}
+                </span>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row py-2 item-condominium">
+                    <div class="col-md-5">
+                        <span>
+                          Lot :
+                        </span>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="bold">
+                          {{fundsApeal?.numLot}}
+                        </span>
+                    </div>
+                </div>
+                <div class="row py-2">
+                    <div class="col-md-5">
+                        <span>
+                          Nom :
+                        </span>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="bold">
+                            {{fundsApeal?.owner?.nom}}
+                        </span>
+                    </div>
+                </div>
+                <div class="row py-2 item-condominium">
+                    <div class="col-md-5">
+                        <span>
+                          Statut :
+                        </span>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="bold">
+                            <span *ngIf="fundsApeal?.etat === 'ATTENTE'" class="badge badge-warning">En attente</span>
+                            <span *ngIf="fundsApeal?.etat === 'EN COURS'" class="badge badge-info">En cours</span>
+                            <span *ngIf="fundsApeal?.etat === 'VALIDE'" class="badge badge-success">Validé</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row py-2">
+                    <div class="col-md-5">
+                        <span>
+                          Porte :
+                        </span>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="bold">
+                          {{fundsApeal?.numPorte}}
+                        </span>
+                    </div>
+                </div>
+                <div class="row py-2 item-condominium">
+                    <div class="col-md-5">
+                        <span>
+                          Type :
+                        </span>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="bold">
+                            {{fundsApeal?.owner?.type}}
+                        </span>
+                    </div>
+                </div>
+                <div class="row py-2">
+                    <div class="col-md-5">
+                        <span>
+                          Période :
+                        </span>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="bold">
+                            {{fundsApeal?.periode}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row py-2">
+                  <div class="col-md-5">
+                      <span>
+                        Date de création : <br />
+                      </span>
+                  </div>
+                  <div class="col-md-7">
+                      <span class="bold">
+                        {{fundsApeal?.createdAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}<br />
+                      </span>
+                  </div>
+                </div>
+                <div class="row py-2 item-condominium">
+                  <div class="col-md-5">
+                      <span>
+                        Créer par
+                      </span>
+                  </div>
+                  <div class="col-md-7">
+                      <span class="bold">
+                        {{fundsApeal?.create}}
+                      </span>
+                  </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row py-2 item-condominium">
+                  <div class="col-md-5">
+                      <span>
+                        Date de modification : <br />
+                      </span>
+                  </div>
+                  <div class="col-md-7">
+                      <span class="bold">
+                        {{fundsApeal?.updatedAt| date: "d MMMM y 'à' H:mm:ss " : '' : 'fr-FR'}}<br />
+                      </span>
+                  </div>
+                </div>
+                <div class="row py-2">
+                  <div class="col-md-5">
+                      <span>
+                        Créer par
+                      </span>
+                  </div>
+                  <div class="col-md-7">
+                      <span class="bold">
+                        {{fundsApeal?.create}}
+                      </span>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <span class="badge badge-primary my-2 f-14 width"> OPTIONS APPELS DE CHARGES </span>
+        <app-card [hidHeader]="true" cardClass="card-datatable">
+            <div class="col-md-12">
+                <div class="table-responsive m-0">
+                    <table class="table table-hover table-striped text-nowrap m-0 table-with-100-percent">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Libellé millième</th>
+                                <th>Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of fundsApeal?.optionFundsApeals">
+                                <td><span>{{item?.libelle}}</span></td>
+                                <td><span>{{item?.montant | number}} XOF</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </app-card>
+
+        <span class="badge badge-primary my-2 f-14 width" *ngIf="showImpayers"> LISTE DES IMPAYERS </span>
+        <app-card [hidHeader]="true" cardClass="card-datatable" *ngIf="showImpayers">
+            <div class="col-md-12">
+                <div class="table-responsive m-0">
+                    <table class="table table-hover table-striped text-nowrap m-0 table-with-100-percent">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Libellé</th>
+                                <th>Montant</th>
+                                <th>Montant payé</th>
+                                <th>Montant restant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of impayers">
+                                <td><span>{{item?.libelle}}</span></td>
+                                <td><span>{{item?.montant | number}} XOF</span></td>
+                                <td><span>{{item?.payer | number}} XOF</span></td>
+                                <td><span>{{item?.reste | number}} XOF</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </app-card>
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="card card-box" style="width: 70%">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td class="text-primary bold" style="font-size: 18px;">MONTANT CHARGE :</td>
+                        <td class="text-right text-primary bold" style="font-size: 18px;">{{fundsApeal?.montant | number}} XOF</td>
+                    </tr>
+                    <tr>
+                        <td class="text-success bold" style="font-size: 18px;">MONTANT PAYÉ :</td>
+                        <td class="text-right text-success bold" style="font-size: 18px;">{{fundsApeal?.payer | number}} XOF</td>
+                    </tr>
+                    <tr>
+                        <td class="text-danger bold" style="font-size: 18px;">MONTANT RESTANT :</td>
+                        <td class="text-right text-danger bold" style="font-size: 18px;">{{fundsApeal?.reste | number}} XOF</td>
+                    </tr>
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+        <!-- <div class="alert-danger mb-1">
+            <div class="col-md-12 mt-2">
+                <h3 class="bold text-left">Reste :
+                </h3>
+                <h3 class="bold text-right">{{fundsApeal?.reste | number}} XOF
+                </h3>
+            </div>
+        </div>
+        <div class="alert-success mb-1">
+            <div class="col-md-12 mt-2 text-right">
+                <h3 class="bold">
+                    {{fundsApeal?.payer | number}} XOF
+                </h3>
+            </div>
+        </div>
+        <div class="alert-primary mb-1">
+            <div class="col-md-12 mt-2 text-right">
+                <h3 class="bold">
+                    {{fundsApeal?.montant | number}} XOF
+                </h3>
+            </div>
+        </div> -->
+    </div>
+</div>
+<div class="modal-footer">
+    <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="printerFundsApeal(fundsApeal)" class="btn btn-warning">
+      Imprimer <i class="feather icon-printer"></i>
+  </button>
+</div>

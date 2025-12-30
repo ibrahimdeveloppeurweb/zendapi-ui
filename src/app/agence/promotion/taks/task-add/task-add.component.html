@@ -1,0 +1,57 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onPlaning()">
+    <div class="modal-body">
+      <div class="col-md-12">
+        <div class="row">
+          <span class="badge badge-warning my-2 f-14  width">
+            SELECTIONNER LES MAISONS ET LE TYPE DE CHANTIER
+          </span>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                    <label for="islet">Maison <span class="asterix">*</span></label> 
+                    <ng-select [multiple]="true" formControlName="home"  [(ngModel)]="selectedHomes" class="mt-2">
+                        <ng-option *ngFor="let home of homes" [value]="home.uuid" >{{home?.searchableTitle}}</ng-option>
+                    </ng-select>
+                </div>
+                <div class="col-md-6">
+                  <label for="islet">Modèle de chantier<span class="asterix">*</span></label>
+                  <select  formControlName="worksite" class="form-control" id="worksite" 
+                    [ngClass]="{
+                      'is-invalid': submit && f.worksite.errors,
+                      'is-valid': submit && f.worksite.valid
+                    }">
+                    <option [value]="null" selected>Selectionnez un lot </option>
+                    <option *ngFor="let item of worksites" [value]="item.uuid">{{item.searchableTitle}}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="submit && f.worksite.errors">
+                    <div *ngIf="f.worksite.errors.required">{{required.novide}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" class="btn btn-primary">
+        Planning  <i class="fa fa-calendar"></i>
+      </button>
+    </div>
+  </form>

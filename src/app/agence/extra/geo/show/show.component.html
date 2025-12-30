@@ -1,0 +1,260 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body" *ngIf="subdivision">
+    <div class="d-flex">
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Code : </span>
+                <span class="title-result-show">{{islet?.code}}</span>
+            </p>
+            <p>
+                <span class="title-show">Numero : </span>
+                <span class="title-result-show">Ilot N°{{islet?.numero}}</span>
+            </p>
+            <p>
+                <span class="title-show">Lotissement : </span>
+                <span class="title-result-show">{{islet?.subdivision?.nom}}</span>
+            </p>
+            <p>
+                <span class="title-show">Superficie (m²) : </span>
+                <span class="title-result-show">{{islet?.superficie}} m²</span>
+            </p>
+        </div>
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Nombre de lot : </span>
+                <span class="title-result-show">{{ islet?.nbrLot }} Lot(s)</span>
+            </p>
+            <p>
+                <span class="title-show">Etat : </span>
+                <span class="title-result-show">
+                    <span class="badge" [ngClass]="{
+              'badge-danger' : islet.espace,
+              'badge-success' : !islet.espace
+              }">
+                        {{islet.espace ? 'ESPACE VERT' : 'ILOT DISPONIBLE'}}
+                    </span>
+                </span>
+            </p>
+            <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{ islet?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                    }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ islet?.create }}</span>
+            </p>
+            <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ islet?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                    }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ islet?.update }}</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>N°Lot</th>
+                    <th>Etat</th>
+                    <th>Acquereur</th>
+                    <th>Superficie</th>
+                    <th>Montant</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of islet?.lots">
+                    <td>
+                        <p class="m-0 d-inline-block align-middle font-16">Lot N°{{item?.numero}}</p>
+                    </td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                'badge-secondary' : item.etat === 'INDISPONIBLE',
+                'badge-success' : item.etat === 'DISPONIBLE',
+                'badge-warning' : item.etat === 'RESERVE',
+                'badge-danger' : item.etat === 'VENDU'
+                }">{{item.etat}}</span>
+                    </td>
+                    <td>{{item?.acquereur}}</td>
+                    <td>{{item?.superficie}} m²</td>
+                    <td><span class="font-weight-bold">{{item?.montant|number}} {{global.device}}</span></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="font-weight-bold text-right">TOTAL</td>
+                    <td class="font-weight-bold">{{total | number }} {{global.device}}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<div class="modal-body" *ngIf="islet">
+    <div class="d-flex">
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Code : </span>
+                <span class="title-result-show">{{islet?.code}}</span>
+            </p>
+            <p>
+                <span class="title-show">Numero : </span>
+                <span class="title-result-show">Ilot N°{{islet?.numero}}</span>
+            </p>
+            <p>
+                <span class="title-show">Lotissement : </span>
+                <span class="title-result-show">{{islet?.subdivision?.nom}}</span>
+            </p>
+            <p>
+                <span class="title-show">Superficie (m²) : </span>
+                <span class="title-result-show">{{islet?.superficie}} m²</span>
+            </p>
+        </div>
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Nombre de lot : </span>
+                <span class="title-result-show">{{ islet?.nbrLot }} Lot(s)</span>
+            </p>
+            <p>
+                <span class="title-show">Etat : </span>
+                <span class="title-result-show">
+                    <span class="badge" [ngClass]="{
+              'badge-danger' : islet.espace,
+              'badge-success' : !islet.espace
+              }">
+                        {{islet.espace ? 'ESPACE VERT' : 'ILOT DISPONIBLE'}}
+                    </span>
+                </span>
+            </p>
+            <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{ islet?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                    }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ islet?.create }}</span>
+            </p>
+            <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ islet?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR'
+                    }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ islet?.update }}</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>N°Lot</th>
+                    <th>Etat</th>
+                    <th>Acquereur</th>
+                    <th>Superficie</th>
+                    <th>Montant</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of islet?.lots">
+                    <td>
+                        <p class="m-0 d-inline-block align-middle font-16">Lot N°{{item?.numero}}</p>
+                    </td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                'badge-secondary' : item.etat === 'INDISPONIBLE',
+                'badge-success' : item.etat === 'DISPONIBLE',
+                'badge-warning' : item.etat === 'RESERVE',
+                'badge-danger' : item.etat === 'VENDU'
+                }">{{item.etat}}</span>
+                    </td>
+                    <td>{{item?.acquereur}}</td>
+                    <td>{{item?.superficie}} m²</td>
+                    <td><span class="font-weight-bold">{{item?.montant|number}} {{global.device}}</span></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="font-weight-bold text-right">TOTAL</td>
+                    <td class="font-weight-bold">{{total | number }} {{global.device}}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<div class="modal-body" *ngIf="lot">
+    <div class="d-flex">
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Code : </span>
+                <span class="title-result-show">{{lot?.code}}</span>
+            </p>
+            <p>
+                <span class="title-show">Numero : </span>
+                <span class="title-result-show">Lot N°{{lot?.numero}}</span>
+            </p>
+            <p>
+                <span class="title-show">Lotissement : </span>
+                <span class="title-result-show">{{lot?.islet?.subdivision?.nom}}</span>
+            </p>
+            <p>
+                <span class="title-show">Ilot : </span>
+                <span class="title-result-show">{{lot?.islet?.searchableTitle}}</span>
+            </p>
+            <p>
+                <span class="title-show">Montant : </span>
+                <span class="title-result-show">{{lot?.superficie}} XOF</span>
+            </p>
+        </div>
+        <!-- COL GAUCHE -->
+        <div class="flex-fill">
+            <p>
+                <span class="title-show">Superficie (m²) : </span>
+                <span class="title-result-show">{{lot?.superficie}} m²</span>
+            </p>
+            <p>
+                <span class="title-show">ACQUEREUR : </span>
+                <span class="title-result-show">{{ lot?.acquereur ? lot?.acquereur : "PAS D'ACQUEREUR" }} Lot(s)</span>
+            </p>
+            <p>
+                <span class="title-show">Etat : </span>
+                <span class="title-result-show">
+                    <span class="badge" [ngClass]="{
+                        'badge-success' : lot.etat === 'DISPONIBLE',
+                        'badge-danger' : lot.etat === 'VENDU',
+                        'badge-primary' : lot.etat === 'RESERVE',
+                        'badge-secondary' : lot.etat === 'INDISPONIBLE'
+                        }">
+                        {{lot?.etat}}
+                    </span>
+                </span>
+            </p>
+            <p>
+                <span class="title-show">Crée le : </span>
+                <span class="title-result-show">{{ lot?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ lot?.create }}</span>
+            </p>
+            <p>
+                <span class="title-show">Modifié le : </span>
+                <span class="title-result-show">{{ lot?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+                <span class="title-show ml-5"> Par : </span>
+                <span class="title-result-show">{{ lot?.update }}</span>
+            </p>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+    </button>
+</div>

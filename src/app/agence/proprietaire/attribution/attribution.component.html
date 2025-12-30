@@ -1,0 +1,66 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{title}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+    <div class="modal-body">
+      <div class="col-md-12">
+        <!-- DETAILS SUR LE BIEN CONCERNE -->
+        <div class="row">
+          <span class="badge badge-secondary my-2 f-14 width">
+            DETAILS SUR LE BIEN CONCERNE
+          </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md-4">
+              <app-entity-finder [class]="'Owner'" [groups]="['owner']" [required]="true" [label]="'Propriétaire'"
+                (uuid)="setOwnerUuid($event)" [selected]="ownerSelected" 
+                [placeholder]="'Selectionez un propriétaire'">
+              </app-entity-finder>
+            </div>
+            <div class="col-md-8">
+              <div *ngIf="isLoadingHouse" class="spinner-container">
+                <div class="spinner"></div>
+              </div>
+              <label for="house">Biens concerné <span class="asterix">*</span></label>
+              <ng-select [multiple]="true" class="form-control" formControlName="house" [ngClass]="{
+                  'is-invalid': submit && f.house.errors, 'is-valid': submit && f.house.valid }">
+                  <ng-option *ngFor="let item of houses" [value]="item?.uuid" >{{item?.nom}}</ng-option>
+              </ng-select>
+              <!-- <div class="invalid-feedback" *ngIf="submit && f.house.errors">
+                <div *ngIf="f.house.errors.required">{{required.novide}}</div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+  
+        <div class="row">
+          <span class="badge badge-secondary my-2 f-14 width"> ATTRIBUTION DES AGENTS </span>
+        </div>
+        <div class="form-group">
+          <div class="row mb-2">
+            <div class="col-md mt-4">
+              <dual-list (destinationChange)="setData()" [sort]="keepSorted" [source]="source" [key]="key" [display]="display" [filter]="true"
+                [(destination)]="confirmed" height="265px" [format]="format" [disabled]="disabled">
+              </dual-list>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="onClose()" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+        Fermer <i class="feather icon-x-circle"></i>
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning">
+        Vider <i class="fas fa-broom"></i>
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        Enregistrer <i class="feather icon-save"></i>
+      </button>
+    </div>
+  </form>
+  

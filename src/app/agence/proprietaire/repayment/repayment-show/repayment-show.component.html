@@ -1,0 +1,424 @@
+<div class="modal-header"> <h5 class="modal-title">{{title}}</h5> <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modale.close('ferme')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+  <div class="col-md-12">
+    <div class="d-flex" *ngIf="repayment?.type === 'VENTE'">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Proprietaire: </span>
+          <span class="title-result-show">{{ repayment?.owner?.searchableTitle }}</span>
+        </p>
+        <p>
+          <span class="title-show">Dossier : </span>
+          <span class="title-result-show">{{ repayment?.folder?.libelle }}</span>
+        </p>
+        <p>
+          <span class="title-show">Client : </span>
+          <span class="title-result-show">{{ repayment?.folder?.customer?.searchableTitle }}</span>
+        </p>
+        <p>
+          <span class="title-show">Etat : </span>
+          <span class="title-result-show">
+            <span *ngIf="repayment.etat" class="badge " [ngClass]="{
+              'badge-success' : repayment.etat === 'VALIDE',
+              'badge-danger' : repayment.etat === 'INVALIDE'
+            }">{{validation(repayment.etat)}}</span>
+          </span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Pourcentage comission : </span>
+          <span class="title-result-show">{{ repayment?.prcCom}} %</span>
+        </p>
+        <p>
+          <span class="title-show">Montant Commission : </span>
+          <span class="title-result-show">{{ repayment?.commission |number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Montant Financement: </span>
+          <span class="title-result-show">{{ repayment?.montantFunding | number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Frais de dossier : </span>
+          <span class="title-result-show">{{ repayment?.folder?.frais | number }} {{ global.device }}</span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{ repayment?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ repayment?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ repayment?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ repayment?.update }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="d-flex"  *ngIf="repayment?.type === 'LOCATION'">
+      <!-- COL GAUCHE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Proprietaire: </span>
+          <span class="title-result-show">{{ repayment?.owner?.searchableTitle }}</span>
+        </p>
+        <p>
+          <span class="title-show">Bien: </span>
+          <span class="title-result-show">{{ repayment?.house?.nom }}</span>
+        </p>
+        <p>
+          <span class="title-show">Filtrer par : </span>
+          <span class="title-result-show">{{ repayment?.filtre }}</span>
+        </p>
+        <p>
+          <span class="title-show">Date debut : </span>
+          <span class="title-result-show">{{ repayment?.dateD| date: "d MMMM y" : '' : 'fr-FR' }}</span>
+        </p>
+        <p>
+          <span class="title-show">Date fin : </span>
+          <span class="title-result-show">{{ repayment?.dateF| date: "d MMMM y" : '' : 'fr-FR' }}</span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Etat : </span>
+          <span class="title-result-show">
+            <span *ngIf="repayment.etat" class="badge "
+              [ngClass]="{
+                'badge-success' : repayment.etat === 'VALIDE',
+                'badge-danger' : repayment.etat === 'INVALIDE'
+              }">{{validation(repayment.etat)}}</span>
+          </span>
+        </p>
+        <p>
+          <span class="title-show">Loyer net : </span>
+          <span class="title-result-show">{{ repayment?.loyer |number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Commission : </span>
+          <span class="title-result-show">{{ repayment?.commission |number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Tva honoraire : </span>
+          <span class="title-result-show">{{ repayment?.tva |number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Impot foncier : </span>
+          <span class="title-result-show">{{ repayment?.impot | number }} {{ global.device }}</span>
+        </p>
+      </div>
+      <!-- COL DROITE -->
+      <div class="flex-fill">
+        <p>
+          <span class="title-show">Montant : </span>
+          <span class="title-result-show">{{ repayment?.montant | number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Montant Financement: </span>
+          <span class="title-result-show">{{ repayment?.montantFunding | number }} {{ global.device }}</span>
+        </p>
+        <p>
+          <span class="title-show">Crée le : </span>
+          <span class="title-result-show">{{ repayment?.createdAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ repayment?.create }}</span>
+        </p>
+        <p>
+          <span class="title-show">Modifié le : </span>
+          <span class="title-result-show">{{ repayment?.updatedAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ repayment?.update }}</span>
+        </p>
+        <p>
+          <span class="title-show">Validé le : </span>
+          <span class="title-result-show">{{ repayment?.validateAt| date: "d MMMM y 'à' h:mm:ss" : '' : 'fr-FR' }}</span>
+          <span class="title-show ml-5"> Par : </span>
+          <span class="title-result-show">{{ repayment?.validate }}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="comment" class="title-show">Commentaire :</label>
+      <textarea class="form-control" [readonly]="true" formControlName="comment" name="comment" id="comment">{{ repayment?.comment }}</textarea>
+    </div>
+
+    <div *ngIf="repayment?.type === 'LOCATION' && repayment?.optionInvoiceRepayments?.length > 0">
+      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">DETAILS SUR LES FACTURES</span>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Locative</th>
+              <th>Libelle</th>
+              <th>Loyer net</th>
+              <th>Charges</th>
+              <th>Comission</th>
+              <th>TVA honoraire</th>
+              <th>Impot foncier</th>
+              <th>montant</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of repayment?.optionInvoiceRepayments">
+              <td>{{ item?.invoice?.contract?.rental?.libelle }}</td>
+              <td>{{ item?.invoice?.libelle  }}</td>
+              <td>{{ item?.loyer | number}} {{global.device}} </td>
+              <td>{{ (item?.invoice?.type === 'ENTREE' ? item?.invoice?.contract?.charge * item?.invoice?.contract?.moisAvance : item?.invoice?.contract?.charge) | number}} {{global.device}} </td>
+              <td>{{ item?.commission | number}} {{global.device}} </td>
+              <td>{{ item?.tva | number}} {{global.device}} </td>
+              <td>{{ item?.impot | number}} {{global.device}} </td>
+              <td>{{ item?.montant | number}} {{global.device}} </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.loyer | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ getTotalCharges() | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.commission | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.tva | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.impot | number}} {{global.device}}</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.montant | number}} {{global.device}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Caution affichée sur une seule ligne -->
+    <div *ngIf="repayment?.type === 'LOCATION' && getTotalCaution() > 0">
+      <span class="badge badge-info my-2 mr-1 f-14 formBadge width">CAUTION REÇUE</span>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <tbody>
+            <tr>
+              <td class="font-weight-bold">CAUTION (payée une seule fois)</td>
+              <td class="text-right font-weight-bold text-success">{{ getTotalCaution() | number}} {{global.device}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="repayment?.type === 'VENTE' && repayment?.folder?.houses?.length > 0">
+      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">DETAILS SUR LES BIENS</span>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Bien</th>
+              <th>Prix U.</th>
+              <th>Qte</th>
+              <th>Tva</th>
+              <th>Remise</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of repayment?.folder?.houses">
+              <td>{{item?.libelle }}</td>
+              <td>{{item?.prix | number }} {{global.device}}</td>
+              <td>{{item?.qte }}</td>
+              <td>{{item?.tva }} %</td>
+              <td>{{item?.remise }}</td>
+              <td>{{item.total | number}} {{global.device}} </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.folder?.montantBien | number}} {{global.device}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="repayment?.type === 'VENTE' && repayment?.paymentCustomers.length > 0">
+      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">DETAILS SUR LES PAIEMENTS</span>
+      <app-alert type="warning"  dismiss="true">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        Au premier reversement les frais son retirer du total des paiements.
+      </app-alert>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+          <tr>
+            <th>Date</th>
+            <th>Reverser</th>
+            <th>Montant total</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of repayment?.paymentCustomers">
+              <td>{{item?.date|date: "d MMMM y" : '' : 'fr-FR'}}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                'badge-success' : item.reverse === 'OUI',
+                'badge-danger' : item.reverse === 'NON'
+                }">{{ item.reverse }}</span> <br /></td>
+              <td><p class="m-0 d-inline-block align-middle font-16"><span class="text-warning">{{item?.montant | number}} {{global.device}}</span> <br /></p></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.aReverser | number}} {{global.device}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="repayment?.optionFundings.length > 0">
+      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">DETAILS SUR LES FINANCEMENTS</span>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+          <tr>
+            <th>Période</th>
+            <th>Libellé</th>
+            <th>Montant</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of repayment?.optionFundings">
+              <td>{{ item?.periode }}</td>
+              <td>{{ item.libelle }}</td>
+              <td><p class="m-0 d-inline-block align-middle font-16"><span class="text-warning">{{item?.mensualite | number}} {{global.device}}</span> <br /></p></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.montantOptionFunding | number}} {{global.device}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="repayment?.spents.length > 0">
+      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">DETAILS SUR LES DÉPENSES</span>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+          <tr>
+            <th>Désignation</th>
+            <th>Montant</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of repayment?.spents">
+              <td>{{ item.motif }}</td>
+              <td><p class="m-0 d-inline-block align-middle font-16"><span class="text-warning">{{item?.montant | number}} {{global.device}}</span> <br /></p></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="font-weight-bold font-size-40 text-right">TOTAL</td>
+              <td class="font-weight-bold font-size-40 text-danger"> {{ repayment?.montantSpent | number}} {{global.device}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="repayment?.options.length > 0">
+      <span class="badge badge-secondary my-2 mr-1 f-14 formBadge width">DETAILS SUR LES OPTIONS</span>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered nowrap table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Désignation</th>
+              <th>Prix u.</th>
+              <th>Qte</th>
+              <th>Tva</th>
+              <th>Remise</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of repayment?.options">
+              <td><p class="m-0 d-inline-block align-middle font-16">{{item?.libelle}}</p></td>
+              <td>
+                <p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.prix|number}} {{global.device}}</span></p>
+              </td>
+              <td>{{item?.qte}}</td>
+              <td>{{item?.tva}} %</td>
+              <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{item?.remise|number}} {{global.device}}</span></td>
+              <td><p class="m-0 d-inline-block align-middle font-30"><span class="font-weight-blod">{{(item?.total)|number}} {{global.device}}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-responsive invoice-table invoice-total">
+          <tbody>
+            <tr>
+              <th>TOTAL HT : </th>
+              <td> {{ repayment?.montantHt? repayment?.montantHt : 0 | number }} {{global.device}}</td>
+            </tr>
+            <tr>
+              <th>TOTAL REMISE : </th>
+              <td> {{ repayment?.montantRemise? repayment?.montantRemise : 0 | number }} {{global.device}}</td>
+            </tr>
+            <tr>
+              <th>TOTAL TVA : </th>
+              <td> {{ repayment?.montantTva ? repayment?.montantTva : 0 | number }} {{global.device}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <table class="width">
+      <tbody>
+        <tr class="border-bottom-success">
+          <td></td>
+          <td colspan="5" class="text-right font-weight-bold"></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="border border-success">
+          <td colspan="5" class="font-weight-bold font-size-default">TOTAL</td>
+          <td class="font-weight-bold font-size-default text-right">{{ repayment?.montant | number }} {{global.device}}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template ngxPermissionsOnly="REPAYMENT:EDIT">
+    <button *ngIf="repayment?.etat === 'INVALIDE'" (click)="editRepayment(repayment)" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <button *ngxPermissionsOnly="'REPAYMENT:PRINTER:SHOW'" (click)="printerRepayment(repayment)"class="btn btn-warning" ngbTooltip="Imprimer le décompte">
+    Imprimer <i class="feather icon-printer"></i>
+  </button>
+  <ng-template ngxPermissionsOnly="REPAYMENT:INVOICE:PRINTER:SHOW">
+    <button *ngIf="repayment?.etat === 'VALIDE'" (click)="printerInvoiceRepayment(repayment?.invoice)"class="btn btn-info" ngbTooltip="Imprimer la facture">
+      Imprimer <i class="feather icon-printer"></i>
+    </button>
+  </ng-template>
+</div>
+
+

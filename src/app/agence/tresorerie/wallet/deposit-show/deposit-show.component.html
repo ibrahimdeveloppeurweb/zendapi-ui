@@ -1,0 +1,113 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modale.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="d-flex">
+    <!-- COL GAUCHE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Référence : </span>
+        <span class="title-result-show"> {{deposit?.code}} </span>
+      </p>
+      <p>
+        <span class="title-show">Proprietaire : </span>
+        <span class="title-result-show"> {{deposit?.owner?.nom}} </span>
+      </p>
+      <p>
+        <span class="title-show">Date : </span>
+        <span class="title-result-show">établie le {{deposit?.date | date:'dd/MM/yyyy'}}</span>
+      </p>
+
+    </div>
+
+    <!-- COL DROITE -->
+    <div class="flex-fill">
+      <p>
+        <span class="title-show">Tresorerie : </span>
+        <span class="title-result-show">{{ deposit?.treasury?.type }}</span>
+      </p>
+      <p>
+        <span class="title-show">Mode de paiement : </span>
+        <span class="title-result-show">{{ deposit?.mode }}</span>
+      </p>
+      <p *ngIf="deposit?.mode !== 'ESPECE'">
+        <span class="title-show">N° de transaction : </span>
+        <span class="title-result-show">{{ deposit?.owner?.telephone }}</span>
+      </p>
+
+      <p>
+        <span class="title-show">Etat: </span>
+        <span class="badge title-show" [ngClass]="{
+            'badge-danger' : deposit?.etat === 'INVALIDE',
+            'badge-success' : deposit?.etat === 'VALIDE'
+            }">{{validation(deposit?.etat)}}
+        </span>
+        <span class="ml-2 badge " [ngClass]="{
+            'badge-light-success' : deposit?.status === 'CONFIRMER',
+            'badge-light-danger' : deposit?.status === 'ATTENTE'
+            }"><small>{{confirmation(deposit?.status)}}</small></span>
+      </p>
+    </div>
+  </div>
+
+
+  <table class="mb-2 width">
+    <tbody>
+      <tr class="border-bottom-success">
+        <td></td>
+        <td colspan="5" class="text-right font-weight-bold"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="border border-success">
+        <td colspan="5" class="font-weight-bold font-size-default">MONTANT </td>
+        <td class="font-weight-bold font-size-default text-right">{{ deposit?.montant | number }} {{global.device}}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="row mb-2">
+    <div class="col-md">
+      <span class="badge badge-success mb-4 f-14 width">FICHE DE DOSSIER</span>
+      <div class="row">
+        <div [ngClass]="file ? 'col-md-4' : 'col-md-12'">
+          <app-folder-uploader [maxSize]="3" [folder]="deposit?.folder" (click)="showFile(deposit?.folder)"
+            [etat]="'show'" [allowFileUpload]="false" [allowDownload]="true">
+          </app-folder-uploader>
+        </div>
+        <div [ngClass]="file ? 'col-md-8' : ''" *ngIf="file">
+          <div class="row">
+            <div class="col-sm-12 mb-2">
+              <button (click)="closeViewer()" type="button" class="btn btn-secondary m-1">
+                <i class="fa fa-arrow-alt-circle-left"></i> Fermer
+              </button>
+            </div>
+          </div>
+          <ngx-doc-viewer [url]="file" viewer="url" style="width:100%;height: 64vh;">
+          </ngx-doc-viewer>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button (click)="modale.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+    Fermer <i class="feather icon-x-circle"></i>
+  </button>
+  <ng-template ngxPermissionsOnly="DEPOSIT:EDIT">
+    <button *ngIf="deposit?.etat === 'INVALIDE'" (click)="editdeposit(payment)" type="button" class="btn btn-primary">
+      Modifier <i class="feather icon-edit-2"></i>
+    </button>
+  </ng-template>
+  <ng-template ngxPermissionsOnly="DEPOSIT:PRINTER:SHOW">
+    <button *ngIf="deposit?.etat === 'VALIDE'" (click)="printerdeposit(payment)" class="btn btn-warning">
+      Imprimer <i class="feather icon-printer"></i>
+    </button>
+  </ng-template>
+</div>

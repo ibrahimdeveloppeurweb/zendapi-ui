@@ -1,0 +1,58 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="onClose()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <span class="badge badge-primary my-2 f-14 width"></span>
+      </div>
+      <div class="form-group">
+        <div class="row mb-2">
+          <div class="col-md-12">
+            <label for="type">Type bien <span class="asterix">*</span></label>
+            <select class="form-control" id="type" formControlName="type"
+                [ngClass]="{'is-invalid': submit && f.type.errors,'is-valid': submit && f.type.valid}">
+                <option *ngFor="let item of typeRow" [ngValue]="item.value">{{item.label}}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="submit && f.type.errors">
+                <div *ngIf="f.type.errors.required">{{required.novide}}</div>
+            </div>
+        </div>
+          <div class="col-md-12">
+            <label for="libelle">Libellé <span class="asterix">*</span></label>
+            <input type="text" formControlName="libelle" class="form-control" id="libelle"
+              [ngClass]="{
+                'is-invalid': submit && f.libelle.errors,
+                'is-valid': submit && f.libelle.valid
+              }"
+              [placeholder]="'Libellé'">
+            <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+              <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <label for="description">Description</label>
+            <textarea type="text" formControlName="description" class="form-control" id="description"
+              [placeholder]="'Description'"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr class="m-0">
+  <div class="modal-footer">     
+      <button (click)="onClose()" type="button" class="btn btn-secondary" data-dismiss="modal">
+        <i class="ion-md-close-circle"></i> Fermer
+      </button>
+      <button (click)="form.reset()" type="button" class="btn btn-warning mx-2">
+        <i class="ion-md-brush"></i> Vider
+      </button>
+      <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+        <i class="ion-md-save"></i> Enregistrer
+      </button>
+  </div>
+</form>

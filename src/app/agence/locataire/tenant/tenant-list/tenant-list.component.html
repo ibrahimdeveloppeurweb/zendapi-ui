@@ -1,0 +1,680 @@
+<div class="row justify-content-center">
+  <!-- FILTRE DE RECHERCHE -->
+  <div class="width btn-filter-tenant">
+    <ng-template [ngxPermissionsOnly]="['TENANT:LIST', 'CONTRACT:LIST', 'TERMINATE:LIST', 'RENT:LIST', 'PENALITY:LIST', 'INVENTORY:LIST', 'PAYMENT:LIST', 'NOTICE:LIST', 'RENEW:LIST']">
+      <app-filter class="width"
+        [user]="true"
+        [userTitle]="userTitle"
+
+        [name]="name"
+        [nameTitle]="nameTitle"
+        [nameType]="nameType"
+        [nameClass]="nameClass"
+        [nameNamespace]="nameNamespace"
+        [nameGroups]="nameGroups"
+
+        [autre]="autre"
+        [autreTitle]="autreTitle"
+        [autreType]="autreType"
+        [autreClass]="autreClass"
+        [autreNamespace]="autreNamespace"
+        [autreGroups]="autreGroups"
+
+        [bien]="bien"
+        [bienTitle]="bienTitle"
+        [bienType]="bienType"
+        [bienClass]="bienClass"
+        [bienNamespace]="bienNamespace"
+        [bienGroups]="bienGroups"
+
+        [libelle]="libelle"
+        [libelleTitle]="libelleTitle"
+        [libelleType]="libelleType"
+        [libelleClass]="libelleClass"
+        [libelleNamespace]="libelleNamespace"
+        [libelleGroups]="libelleGroups"
+
+        [etat]="true"
+        [etatRow]="etatRow"
+        [etatTitle]="etatTitle"
+        [categorie]="true"
+        [categorieRow]="categorieRow"
+        [categorieTitle]="categorieTitle"
+        [dateD]="true"
+        [dateF]="true"
+        [create]="true"
+        [min]="min"
+        [minTitle]="minTitle"
+        [max]="max"
+        [maxTitle]="maxTitle"
+        [ordre]="true"
+        [code]="true"
+        [count]="true"
+        [type]="true"
+        [typeRow]="typeRow" (typeEvent)="onChangeLoad($event)" (filterEvent)="onFilter($event)">
+      </app-filter>
+    </ng-template>
+  </div>
+  <ng-template [ngxPermissionsExcept]="['TENANT:LIST', 'CONTRACT:LIST', 'TERMINATE:LIST', 'RENT:LIST', 'PENALITY:LIST', 'INVENTORY:LIST', 'PAYMENT:LIST', 'NOTICE:LIST', 'RENEW:LIST']">
+    <div class="col-md-12">
+      <app-no-droit [title]="'locataire'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- BOUTONS DE GESTION -->
+  <div class="col-sm-12 mb-4 btn-all-tenant">
+
+    <div class="width alert alert-warning" role="alert">
+      <p><b>Bonjour chers utilisateurs, </b></p>
+      <p>Nous vous informons qu'une mise à jour a été effectuée. Désormais, toutes les actions se trouvent regroupées sous le bouton "Ajouter". Veuillez cliquer sur ce bouton pour effectuer toutes vos créations.</p>
+    </div>
+    <!--<div class="first">
+      <div class="second">
+        <div class="btn-tenant">
+          <div *ngxPermissionsOnly="['TENANT:NEW']" class="btn-group m-1" ngbDropdown ngbTooltip="Cliquez ici pour ajouter un locataire">
+            <button class="btn btn-primary" ngbDropdownToggle type="button">
+              Ajouter un locataire <i class="feather icon-user"></i>
+            </button>
+            <div ngbDropdownMenu>
+              <a class="dropdown-item" (click)="addTenant('PARTICULIER')">PARTICULIER</a>
+              <a class="dropdown-item" (click)="addTenant('ENTREPRISE')">ENTREPRISE</a>
+            </div>
+          </div>
+        </div>
+        <div class="btn-contract">
+          <div *ngxPermissionsOnly="['CONTRACT:NEW', 'RENEW:NEW', 'TERMINATE:NEW']" class="btn-group m-1" ngbDropdown
+          ngbTooltip="Cliquez ici pour ajouter un contrat">
+            <button class="btn btn-secondary m-1" ngbDropdownToggle type="button">
+              Contrat <i class="feather icon-file-text"></i>
+            </button>
+            <div ngbDropdownMenu>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['CONTRACT:NEW']" class="dropdown-item" (click)="addContract()">Ajouter</a>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['TERMINATE:NEW']" class="dropdown-item" (click)="addShortContract()">Court-terme</a>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['RENEW:NEW']" class="dropdown-item" (click)="renewContract()">Renouveller</a>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['TERMINATE:NEW']" class="dropdown-item" (click)="addTerminate()">Résilier</a>
+            </div>
+          </div>
+        </div>
+        <div class="btn-inventory">
+          <button *ngxPermissionsOnly="['INVENTORY:NEW']" (click)="addInventory()" type="button" class="btn btn-info m-1"
+          ngbTooltip="Cliquez ici pour ajouter un etat des lieux">
+            Renseigner un état des lieux <i class="feather icon-list"></i>
+          </button>
+        </div>
+        <div class="btn-invoice">
+          <div *ngxPermissionsOnly="['INVOICE:NEW']" class="btn-group m-1" ngbDropdown ngbTooltip="Cliquez ici pour ajouter une facture">
+            <button type="button" class="btn btn-warning m-1" ngbDropdownToggle type="button">
+              Factures <i class="feather icon-package"></i>
+            </button>
+            <div ngbDropdownMenu>
+              <a *ngxPermissionsOnly="['RENT:NEW']" class="dropdown-item" (click)="addRent()">Loyer</a>
+              <a *ngxPermissionsOnly="['PENALITY:NEW']" class="dropdown-item" (click)="addPenality()">Pénalité</a>
+              <a *ngxPermissionsOnly="['INVOICE:NEW']" class="dropdown-item" (click)="addInvoice()">Autre</a>
+            </div>
+          </div>
+        </div>
+         <div class="btn-paymentTenant" data-hint="" data-hintposition="top-right">
+        <div class="btn-paymentTenant">
+          <button *ngxPermissionsOnly="['PAYMENT:NEW']" (click)="addPayement()" type="button" class="btn btn-success m-1"
+          ngbTooltip="Cliquez ici pour ajouter un paiement">
+            Enregistrer un paiement <i class="feather icon-credit-card"></i>
+          </button>
+        </div>
+      </div>
+    </div>-->
+    <div class="btn-group float-right btn-outil-tenant" ngbDropdown>
+      <a class="btn btn-info mr-1" (click)="addModelLieux()" ngbTooltip=" Model d'etat des lieux ">
+        Model d'etat des lieux
+        <i class="feather icon-list" ></i>
+      </a>
+      <a class="btn btn-secondary mr-1" (click)="onChangeView()" ngbTooltip="Cliquez ici pour changer de vue">
+        <i class="feather icon-grid" *ngIf="view"></i>
+        <i class="fas fa-table" *ngIf="!view"></i>
+      </a>
+      <div class="btn-tenant">
+          <div class="btn-group mr-1" ngbDropdown ngbTooltip="Cliquez ici pour ajouter">
+            <button class="btn btn-primary" ngbDropdownToggle type="button">
+              Ajouter<i class="fas-fa-plus"></i>
+            </button>
+            <div ngbDropdownMenu>
+              <a class="dropdown-item" (click)="addTenant('PARTICULIER')"><i class="feather icon-user"></i> Locataire particulier</a>
+              <a class="dropdown-item" (click)="addTenant('ENTREPRISE')"><i class="fas fa-building"></i> Locataire entreprise</a>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['CONTRACT:NEW']" class="dropdown-item" (click)="addContract()"> <i class="feather icon-file-text"></i> Un contrat</a>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['TERMINATE:NEW']" class="dropdown-item" (click)="addShortContract()"> <i class="fas fa-file-alt"></i> Contrat à court-terme</a>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['CONTRACT:NEW']" class="dropdown-item" (click)="addGroupedContract()"> <i class="feather icon-file-text"></i> Contrat groupé</a>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['RENEW:NEW']" class="dropdown-item" (click)="renewContract()"><i class="fas fa-sync-alt"></i> Renouveller un contrat</a>
+              <a href="javascript:void(0)" *ngxPermissionsOnly="['TERMINATE:NEW']" class="dropdown-item" (click)="addTerminate()"><i class="fas fa-times-circle"></i> Résilier un contrat</a>
+              <a *ngxPermissionsOnly="['INVENTORY:NEW']"class="dropdown-item" (click)="addInventory()"><i class="feather icon-list"></i> Renseigner un état des lieux </a>
+              <a *ngxPermissionsOnly="['RENT:NEW']" class="dropdown-item" (click)="addRent()"><i class="feather icon-package"></i> Facture de loyer</a>
+              <a *ngxPermissionsOnly="['PENALITY:NEW']"class="dropdown-item" (click)="addPenality()"><i class="fas fa-exclamation-triangle"></i> Pénalité</a>
+              <a *ngxPermissionsOnly="['INVOICE:NEW']"class="dropdown-item" (click)="addInvoice()"><i class="fas fa-file"></i> Autre</a>
+              <a *ngxPermissionsOnly="['PAYMENT:NEW']"class="dropdown-item" (click)="addPayement()"><i class="feather icon-credit-card"></i> Enregistrer un paiement</a>
+            </div>
+          </div>
+        </div>
+
+      <button class="btn btn-warning" ngbDropdownToggle type="button">
+        Outils <i class="fas fa-tools"></i>
+      </button>
+      <div class="dropdown-menu-right" ngbDropdownMenu>
+        <a *ngxPermissionsOnly="['TENANT:PRINTER:LIST']" class="dropdown-item" (click)="onPrinter()" ngbTooltip="Cliquez ici pour imprimer le listing">
+          Imprimer <i class="feather icon-printer"></i>
+        </a>
+        <a class="dropdown-item" (click)="onExport()" ngbTooltip="Cliquez ici pour exporter le listing">
+          Exporter <i class="fa fa-file-excel"></i>
+        </a>
+        <a class="dropdown-item" [hidden]="visible" (click)="onImport()" ngbTooltip="Cliquez ici pour importer un fichier">
+          Importer <i class="feather icon-download"></i>
+        </a>
+        <a class="dropdown-item" [hidden]="visible" (click)="onModel()" ngbTooltip="Cliquez ici pour génerer un modèle">
+          Génerer <i class="feather icon-upload"></i>
+        </a>
+      </div>
+    </div>
+    <button (click)="addGenerate()" type="button" placement="left" class="btn btn-danger float-right mr-1 btn-generer-tenant"
+     ngbTooltip="Cliquez ici pour effectuer une génération">
+      Génération <i class="fas fa-undo-alt"></i>
+    </button>
+  </div>
+
+  <!-- LISTE DES LOCATAIRES -->
+  <div class="width list-tenant">
+    <ng-template ngxPermissionsOnly="TENANT:LIST">
+      <div class="col-md-12" *ngIf="type === 'LOCATAIRE' || type === 'ARCHIVE'">
+        <span class="badge badge-primary my-2 f-14 formBadge width">
+          {{type === 'LOCATAIRE' ? 'LISTE DES LOCATAIRES' : 'LISTE DES LOCATAIRES ARCHIVÉS'}}
+        </span>
+        <app-no-data class="width" [title]="'Aucun locataire trouvé'" *ngIf="tenants && tenants.length === 0"></app-no-data>
+      </div>
+      <div class="col-md-12" *ngIf="(type === 'LOCATAIRE' || type === 'ARCHIVE') && tenants && tenants.length > 0">
+        <div *ngIf="!view">
+          <div class="row">
+            <div class="col-md-6" *ngFor="let item of tenants">
+              <app-card [hidHeader]="true" cardClass="user-card user-card-1 mt-4" blockClass="pt-0">
+                <div class="user-about-block text-center">
+                  <div class="row align-items-end">
+                    <div class="col text-left pb-3">
+                      <span class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item?.type}}</span>
+                    </div>
+                    <div class="col">
+                      <img *ngIf="item?.type === 'PARTICULIER' && item?.sexe === 'Masculin'" class="img-radius img-fluid wid-80 hei-80" [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'" onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                      <img *ngIf="item?.type === 'PARTICULIER' && item?.sexe === 'Féminin'" class="img-radius img-fluid wid-80 hei-80" [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-mlle.jpeg'" onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'"/>
+                      <img *ngIf="item?.type === 'ENTREPRISE' && item?.photoSrc" class="img-radius img-fluid wid-80 hei-80" [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'" onerror="this.onerror=null; this.src='assets/images/avatar-default.png'"/>
+                      <i *ngIf="item?.type === 'ENTREPRISE' && !item?.photoSrc" class="fas fa-building fa-5x"></i>
+                    </div>
+                    <div class="col text-right pb-3">
+                      <span class="badge badge-{{ item?.etat === 'INACTIF' ? 'danger': ( item?.etat === 'AUCUN CONTRAT' ? 'warning' : 'success') }}">
+                        {{ item?.etat }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <a (click)="showTenant(item)" href="javascript:">
+                    <h4 class="mb-1 mt-3">{{item?.nom}}</h4>
+                    <p class="mb-3 text-muted">
+                      <b><i class="fas fa-qrcode"></i> {{ item?.code }}</b>
+                      <b class="m-4"><i class="feather icon-phone"></i>{{item?.telephone}}</b>
+                      <b class="m-4"><i class="feather icon-file-text"></i> {{ item?.nbrContrat }} Contract(s) actif(s)</b>
+                    </p>
+                    <p class="mb-3 text-muted">
+                      <ng-container *ngIf="item?.rentals?.length <= 2">
+                        <b class="m-4 d-flex flex-column" *ngFor="let item of item?.rentals">
+                          <span> {{ item }} </span>
+                        </b>
+                      </ng-container>
+                      <ng-container *ngIf="item?.rentals?.length > 2">
+                        <b class="m-4 d-flex flex-column">
+                          <span> Plus de (02) locatives </span>
+                        </b>
+                      </ng-container>
+                    </p>
+                    <p class="mb-1 text-muted">
+                      <b> {{ item?.type === 'ENTREPRISE' ? 'Siège social' : 'Domicile' }} : </b> {{ item.type === 'ENTREPRISE' ? item?.siegeSocial : item?.domicile }}
+                      <b class="m-4 text-danger font-weight-bold">{{ item?.impaye < 0 ? 'A REMBOURSER' : 'DOIT' }}: {{item?.impaye| number }} {{global.device}}</b>
+                    </p>
+                  </a>
+                </div>
+                <div class="text-right">
+                  <button *ngxPermissionsOnly="'TENANT:SHOW'" (click)="showTenant(item)" type="button" class="btn btn-icon btn-secondary" ngbTooltip="Détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="'TENANT:EDIT'" (click)="editTenant(item)" type="button" class="btn btn-icon btn-primary ml-1" ngbTooltip="Modifier">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button *ngxPermissionsOnly="'TENANT:PRINTER:SHOW'" (click)="printerTenant(item)" type="button" class="btn btn-icon btn-warning ml-1" ngbTooltip="Imprimer">
+                    <i class="feather icon-printer"></i>
+                  </button>
+                  <ng-template ngxPermissionsOnly="TENANT:DELETE">
+                    <button *ngIf="item?.isDelete" (click)="delete(item)" type="button" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                      <i class="feather icon-trash"></i>
+                    </button>
+                  </ng-template>
+                </div>
+              </app-card>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="view">
+          <app-card [hidHeader]="true" cardClass="card-datatable">
+            <div class="table-responsive" *ngIf="tenants && tenants.length > 0">
+              <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-bordered nowrap table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Référence</th>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Etat</th>
+                    <th>Doit</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of tenants">
+                    <td>{{item?.code}}</td>
+                    <td class="align-baseline">
+                      <img *ngIf="item?.type === 'PARTICULIER' && item?.sexe === 'Masculin'" class="img-radius img-fluid " [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'" onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" width="20%"/>
+                      <img *ngIf="item?.type === 'PARTICULIER' && item?.sexe === 'Féminin'" class="img-radius img-fluid " [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-mlle.jpeg'" onerror="this.onerror=null; this.src='assets/images/avatar-mlle.jpeg'" width="20%"/>
+                      <img *ngIf="item?.type === 'ENTREPRISE' && item?.photoSrc" class="img-radius img-fluid " [src]="item.photoSrc ? publicUrl+'/'+item.photoSrc : 'assets/images/avatar-default.png'" onerror="this.onerror=null; this.src='assets/images/avatar-default.png'" width="20%"/>
+                      <i *ngIf="item?.type === 'ENTREPRISE' && !item?.photoSrc" class="fas fa-building fa-5x"></i>
+                      <p class="m-2 d-inline-block align-middle font-16">
+                        <span class="text-primary">{{ item?.nom }}</span> <br />
+                        Émail : {{ item?.email ? item?.email : 'N/A' }} <br />
+                        Contact : {{ item?.telephone ? item?.telephone : 'N/A' }}
+                      </p>
+                    </td>
+                    <td>
+                      <span class="badge badge-{{ item.type === 'ENTREPRISE' ? 'info': 'secondary' }}">{{item?.type}}</span>
+                    </td>
+                    <td>
+                      <span class="badge badge-{{ item?.etat === 'INACTIF' ? 'danger': (item?.etat === 'AUCUN MANDAT' ? 'warning' : 'success') }}">
+                        {{ item?.etat }}
+                      </span>
+                    </td>
+                    <td class="align-middle">
+                      <span class="text-danger">{{item?.impaye|number}} {{global.device}}</span>
+                    </td>
+                    <td class="table-action">
+                      <button *ngxPermissionsOnly="'TENANT:SHOW'" (click)="showTenant(item)" type="button" class="btn btn-icon btn-secondary"
+                        ngbTooltip="Détails">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button *ngxPermissionsOnly="'TENANT:EDIT'" (click)="editTenant(item)" type="button" class="btn btn-icon btn-primary ml-1"
+                        ngbTooltip="Modifier">
+                        <i class="feather icon-edit-2"></i>
+                      </button>
+                      <button *ngxPermissionsOnly="'TENANT:PRINTER:SHOW'" (click)="printerTenant(item)" type="button" class="btn btn-icon btn-warning ml-1"
+                        ngbTooltip="Imprimer">
+                        <i class="feather icon-printer"></i>
+                      </button>
+                      <ng-template ngxPermissionsOnly="TENANT:DELETE">
+                        <button *ngIf="item?.etat === 'DISPONIBLE'" type="button" (click)="delete(item)" class="btn btn-icon btn-danger ml-1" ngbTooltip="Supprimer">
+                          <i class="feather icon-trash"></i>
+                        </button>
+                      </ng-template>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="font-weight-bold font-size-40 text-right">TOTAL</td>
+                    <td class="font-weight-bold font-size-40 text-warning"> {{totalImpaye | number}} {{global.device}}</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template ngxPermissionsExcept="TENANT:LIST" [ngxPermissionsOnly]="['CONTRACT:LIST', 'TERMINATE:LIST', 'RENT:LIST', 'PENALITY:LIST', 'INVENTORY:LIST', 'PAYMENT:LIST', 'NOTICE:LIST', 'RENEW:LIST']">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'LOCATAIRE'" [title]="'liste locataire'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES CONTRACTS -->
+  <ng-template ngxPermissionsOnly="CONTRACT:LIST">
+    <div class="col-md-12" *ngIf="type === 'CONTRAT'">
+      <span class="badge badge-secondary my-2 f-14 formBadge width">
+        LISTE DES CONTRATS
+      </span>
+      <app-no-data class="width" [title]="'Aucun contrat trouvé'" *ngIf="contracts && contracts.length === 0"></app-no-data>
+    </div>
+    <app-contract-list class="width" [contracts]="contracts" [locataire]="locataire" *ngIf="type === 'CONTRAT' && contracts && contracts.length > 0">
+    </app-contract-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="CONTRACT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'CONTRAT'" [title]="'liste contrat'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES RESILIATIONS -->
+  <ng-template ngxPermissionsOnly="TERMINATE:LIST">
+    <div class="col-md-12" *ngIf="type === 'RESILIATION'">
+      <span class="badge badge-secondary my-2 f-14 formBadge width">
+        LISTE DES RESILIATIONS DE CONTRAT
+      </span>
+      <app-no-data class="width" [title]="'Aucune résiliation de contrat trouvé'" *ngIf="terminates && terminates.length === 0"></app-no-data>
+    </div>
+    <app-terminate-list class="width" [terminates]="terminates" *ngIf="type === 'RESILIATION' && terminates && terminates.length > 0">
+    </app-terminate-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="TERMINATE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'RESILIATION'" [title]="'liste résiliation'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES LOYERS -->
+  <ng-template ngxPermissionsOnly="RENT:LIST">
+    <div class="col-md-12" *ngIf="type === 'LOYER'">
+      <span class="badge badge-warning my-2 f-14 formBadge width">
+        LISTE DES LOYERS
+      </span>
+      <app-no-data class="width" [title]="'Aucun loyer trouvé'" *ngIf="rents && rents.length === 0"></app-no-data>
+    </div>
+    <app-rent-list class="width" [rents]="rents" [locataire]="locataire" *ngIf="type === 'LOYER' && rents && rents.length > 0"></app-rent-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="RENT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'LOYER'" [title]="'liste loyer'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES PENALITES -->
+  <ng-template ngxPermissionsOnly="PENALITY:LIST">
+    <div class="col-md-12" *ngIf="type === 'PENALITE'">
+      <span class="badge badge-warning my-2 f-14 formBadge width">
+        LISTE DES PENALITES
+      </span>
+      <app-no-data class="width" [title]="'Aucune pénalité trouvée'" *ngIf="penalities && penalities.length === 0"></app-no-data>
+    </div>
+    <app-penality-list class="width" [penalities]="penalities" [locataire]="locataire" *ngIf="type === 'PENALITE' && penalities && penalities.length > 0">
+    </app-penality-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="PENALITY:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'PENALITE'" [title]="'liste pénalité'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES ETAT DES LIEUX -->
+  <ng-template ngxPermissionsOnly="INVENTORY:LIST">
+    <div class="col-md-12" *ngIf="type === 'ETAT'">
+      <span class="badge badge-info my-2 f-14 formBadge width">
+        LISTE DES ETATS DE LIEUX
+      </span>
+      <app-no-data class="width" [title]="'Aucun etat de lieux trouvé'" *ngIf="inventories && inventories.length === 0"></app-no-data>
+    </div>
+    <app-inventory-list class="width" [action]="true" [inventories]="inventories" [locataire]="locataire"
+      *ngIf="type === 'ETAT' && inventories && inventories.length > 0">
+    </app-inventory-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="INVENTORY:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'ETAT'" [title]="'liste état des lieux'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES PAYEMENTS -->
+  <ng-template ngxPermissionsOnly="PAYMENT:LIST">
+    <div class="col-md-12" *ngIf="type === 'PAIEMENT'">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES PAIEMENTS
+      </span>
+      <app-no-data class="width" [title]="'Aucun paiement trouvé'" *ngIf="payments && payments.length === 0"></app-no-data>
+    </div>
+    <app-payment-list class="width" [payments]="payments" [locataire]="locataire" *ngIf="type === 'PAIEMENT' && payments && payments.length > 0">
+    </app-payment-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="PAYMENT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'PAIEMENT'" [title]="'liste paiement'"></app-no-droit>
+    </div>
+  </ng-template>
+
+    <!-- LISTE DES RENOUVELLEMENTS DES PAYEMENTS -->
+    <!-- <ng-template ngxPermissionsOnly="RENEW:PAYMENT:LIST"> -->
+      <div class="col-md-12" *ngIf="type === 'RENOUVELLEMENT_PAIEMENT'">
+        <span class="badge badge-success my-2 f-14 formBadge width">
+          LISTE DES RENOUVELLEMENTS DES PAYEMENTS
+        </span>
+        <app-no-data class="width" [title]="'Aucun paiement trouvé'" *ngIf="renewPayments && renewPayments.length === 0"></app-no-data>
+      </div>
+      <app-renew-payment-list class="width" [payments]="renewPayments" [locataire]="locataire" *ngIf="type === 'RENOUVELLEMENT_PAIEMENT' && renewPayments && renewPayments.length > 0">
+      </app-renew-payment-list>
+    <!-- </ng-template> -->
+    <!-- <ng-template ngxPermissionsExcept="RENEW:PAYMENT:LIST">
+      <div class="col-md-12">
+        <app-no-droit *ngIf="type === 'RENOUVELLEMENT_PAIEMENT'" [title]="'liste paiement'"></app-no-droit>
+      </div>
+    </ng-template> -->
+
+  <!-- LISTE DES AVIS DECHEANCES -->
+  <ng-template ngxPermissionsOnly="NOTICE:LIST">
+    <div class="col-md-12" *ngIf="type === 'AVIS'">
+      <span class="badge badge-danger my-2 f-14 formBadge width">
+        LISTE DES AVIS D'ECHEANCES
+      </span>
+      <app-no-data class="width" [title]="'Aucun avis d échance trouvé'" *ngIf="notices && notices.length === 0"></app-no-data>
+    </div>
+    <app-notice-list class="width" [notices]="notices" [locataire]="locataire" *ngIf="type === 'AVIS' && notices && notices.length > 0">
+    </app-notice-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="NOTICE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'AVIS'" [title]="'liste avis d écheance'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES FACTURES DENTREE-->
+  <ng-template ngxPermissionsOnly="INVOICE:LIST">
+    <div class="col-md-12" *ngIf="type === 'ENTREE'">
+      <span class="badge badge-warning my-2 f-14 formBadge width">
+        LISTE DES FACTURES D'ENTREES
+      </span>
+      <app-no-data class="width" [title]="'Aucune facture trouvée'" *ngIf="invoices && invoices.length === 0"></app-no-data>
+    </div>
+    <app-entrance-invoice-list class="width" [invoices]="invoices" [locataire]="locataire" *ngIf="type === 'ENTREE' && invoices && invoices.length > 0">
+    </app-entrance-invoice-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="INVOICE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'ENTREE'" [title]="'liste facture d entrée'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES AUTRES FACTURES-->
+  <ng-template ngxPermissionsOnly="INVOICE:LIST">
+    <div class="col-md-12" *ngIf="type === 'AUTRE'">
+      <span class="badge badge-warning my-2 f-14 formBadge width">
+        {{ type === 'AUTRE' ? 'LISTE DES AUTRES FACTURES' : 'LISTE DES FACTURES DE RESILIATION'}}
+      </span>
+      <app-no-data class="width" [title]="'Aucune facture trouvée'" *ngIf="autres && autres.length === 0"></app-no-data>
+    </div>
+    <app-invoice-list class="width" [autres]="autres" [locataire]="locataire" *ngIf="type === 'AUTRE' && autres && autres.length > 0">
+    </app-invoice-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="INVOICE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'AUTRE'" [title]="'liste autre facture'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES FACTURES DE CONTRAT A COURT TERME -->
+  <ng-template ngxPermissionsOnly="INVOICE:LIST">
+    <div class="col-md-12" *ngIf="type === 'COURT-TERME'">
+      <span class="badge badge-warning my-2 f-14 formBadge width">
+        LISTE DES FACTURES DE CONTRAT A COURT TERME
+      </span>
+      <app-no-data class="width" [title]="'Aucune facture trouvée'" *ngIf="courtTermes && courtTermes.length === 0"></app-no-data>
+    </div>
+    <app-invoice-list class="width" [autres]="courtTermes" [locataire]="locataire" *ngIf="type === 'COURT-TERME' && courtTermes && courtTermes.length > 0">
+    </app-invoice-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="INVOICE:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'COURT-TERME'" [title]="'liste autre facture'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES RENOUVELLEMENTS-->
+  <ng-template ngxPermissionsOnly="RENEW:LIST">
+    <div class="col-md-12" *ngIf="type === 'RENEW'">
+      <span class="badge badge-success my-2 f-14 formBadge width">
+        LISTE DES RENOUVELLEMENTS
+      </span>
+      <app-no-data class="width" [title]="'Aucun renouvellement trouvé'" *ngIf="renews && renews.length === 0"></app-no-data>
+    </div>
+    <app-renew-contract-list class="width" [renews]="renews" [locataire]="locataire" *ngIf="type === 'RENEW' && renews && renews.length > 0">
+    </app-renew-contract-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="RENEW:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'RENEW'" [title]="'liste rénouvellement'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES CONTRACTS A COURT TERME-->
+  <ng-template ngxPermissionsOnly="CONTRACT:LIST">
+    <div class="col-md-12" *ngIf="type === 'SHORT_CONTRACT'">
+      <span class="badge badge-secondary my-2 f-14 formBadge width">
+        LISTE DES CONTRATS A COURT TERME
+      </span>
+      <app-no-data class="width" [title]="'Aucun contrat trouvé'" *ngIf="shortContracts && shortContracts.length === 0"></app-no-data>
+    </div>
+    <app-short-contract-list
+      class="width"
+      [locataire]="locataire"
+      [contracts]="shortContracts"
+      *ngIf="type === 'SHORT_CONTRACT' && shortContracts && shortContracts.length > 0">
+    </app-short-contract-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="CONTRACT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'SHORT_CONTRACT'" [title]="'liste contrat'"></app-no-droit>
+    </div>
+  </ng-template>
+
+  <!-- LISTE DES PROLONGEMENTS DE CONTRAT-->
+  <ng-template ngxPermissionsOnly="CONTRACT:LIST">
+    <div class="col-md-12" *ngIf="type === 'EXTEND'">
+      <span class="badge badge-secondary my-2 f-14 formBadge width">
+        LISTE DES PROLONGEMENTS DE CONTRAT
+      </span>
+      <app-no-data class="width" [title]="'Aucun contrat trouvé'" *ngIf="extends && extends.length === 0"></app-no-data>
+    </div>
+    <app-extend-list
+      class="width"
+      [locataire]="locataire"
+      [extends]="extends"
+      *ngIf="type === 'EXTEND' && extends && extends.length > 0">
+    </app-extend-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="CONTRACT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'EXTEND'" [title]="'liste prolongements'"></app-no-droit>
+    </div>
+  </ng-template>
+
+    <!-- LISTE DES FACTURES/ CONTRAT -->
+
+    <div class="col-md-12" *ngIf="type === 'FACTURE/CONTRAT'">
+      <span class="badge badge-primary my-2 f-14 formBadge width">
+        LISTE DES FACTURES/CONTRAT
+      </span>
+       <!-- <app-no-data class="width" [title]="'Aucun contrat trouvé'" *ngIf="extends && extends.length === 0"></app-no-data> -->
+      <app-card [hidHeader]="true" cardClass="card-datatable">
+        <div style="border: 1px, solid, rgb(236, 232, 232); border-radius: 2px;">
+          <div class="row p-2">
+            <div class="col-md-12">
+              <span class="badge badge-primary my-2 f-14 width"> LISTE DES FACTURES/CONTRAT </span>
+            </div>
+
+            <div class="col-md-12">
+              <ul class="nav nav-tabs profile-tabs nav-fill " id="tabShow" role="tablist">
+                <li class="nav-item text-black">
+                  <a class="nav-link" [ngClass]="{'active': this.activeTab === 'OUVERT'}"  id="faire-tab" data-toggle="tab" href="javascript:" role="tab"
+                    aria-controls="faire" aria-selected="true" (click)="onTabs('OUVERT')">
+                    <i class="fas fa-play text-primary"></i> A FAIRE({{ faire ? faire : 0 }})
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" [ngClass]="{'active': this.activeTab === 'EN COURS'}"  id="cours-tab" data-toggle="tab" href="javascript:" role="tab"
+                    aria-controls="cours" aria-selected="true" (click)="onTabs('EN COURS')">
+                    <i class="fas fa-spinner text-primary"></i> EN COURS({{ cours ? cours : 0 }})
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" [ngClass]="{'active': this.activeTab === 'FERME'}"  id="FERME-tab" data-toggle="tab" href="javascript:" role="tab"
+                    aria-controls="FERME" aria-selected="true" (click)="onTabs('FERME')">
+                    <i class="fas fa-star text-primary"></i> FERMER({{ ferme ? ferme : 0 }})
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- AFFICHAGE DU TABS -->
+          <div class="row p-4">
+            <div class="col-md-12 order-md-2">
+              <div class="tab-content" id="myTabContent">
+                <!-- Boucle sur les différents états -->
+                <div *ngFor="let tab of ['OUVERT', 'EN COURS', 'FERME']"
+                    class="tab-pane fade"
+                    [ngClass]="{'show active': activeTab === tab}"
+                    [id]="tab.toLowerCase().replace(' ', '-')"
+                    role="tabpanel"
+                    [attr.aria-labelledby]="tab.toLowerCase().replace(' ', '-') + '-tab'">
+
+                  <!-- Boucle sur les différentes vues -->
+                   <ng-container *ngIf="tickets?.length > 0">
+                      <ng-template *ngIf="view === 'TABLE'" [ngTemplateOutlet]="table"></ng-template>
+                      <ng-template *ngIf="view === 'CARD'" [ngTemplateOutlet]="card"></ng-template>
+                      <ng-template *ngIf="view === 'KABAN'" [ngTemplateOutlet]="kaban"></ng-template>
+                      <ng-template *ngIf="view === 'CALENDAR'" [ngTemplateOutlet]="calendar"></ng-template>
+                   </ng-container>
+                   <!-- Boucle sur les différentes vues -->
+                    <ng-container *ngIf="tickets?.length == 0">
+                      <div >
+                        <app-no-data [title]="'Aucun tickets trouvé'" *ngIf="tickets && tickets?.length === 0"></app-no-data>
+                      </div>
+
+                    </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+      <!-- LISTE DES MODELS D'ETAT DES LIEUX -->
+        <div class="col-md-12" *ngIf="type === 'INVENTORY_MODEL'">
+          <app-no-data [title]="'Aucun model d\'etat des lieux trouvé'" *ngIf="models.length === 0"></app-no-data>
+        </div>
+        <app-inventory-model-list class="width" [models]="models" *ngIf="type === 'INVENTORY_MODEL' && models && models.length > 0"></app-inventory-model-list>
+
+  <!-- LISTE DES CONTRACTS GROUPÉS -->
+  <ng-template ngxPermissionsOnly="CONTRACT:LIST">
+    <div class="col-md-12" *ngIf="type === 'GROUPED_CONTRACT'">
+      <span class="badge badge-secondary my-2 f-14 formBadge width">
+        LISTE DES CONTRATS GROUPÉS
+      </span>
+      <app-no-data class="width" [title]="'Aucun contrat groupé trouvé'" *ngIf="groupedContracts && groupedContracts.length === 0"></app-no-data>
+    </div>
+    <app-grouped-contract-list class="width" [contracts]="groupedContracts" [locataire]="locataire" *ngIf="type === 'GROUPED_CONTRACT' && groupedContracts && groupedContracts.length > 0">
+    </app-grouped-contract-list>
+  </ng-template>
+  <ng-template ngxPermissionsExcept="CONTRACT:LIST">
+    <div class="col-md-12">
+      <app-no-droit *ngIf="type === 'GROUPED_CONTRACT'" [title]="'liste contrats groupés'"></app-no-droit>
+    </div>
+  </ng-template>
+
+
+</div>

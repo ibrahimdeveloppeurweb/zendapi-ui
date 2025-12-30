@@ -1,0 +1,545 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{modalTitle}}</h5>
+  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+    (click)="modal.close('ferme')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onConfirme()">
+  <div class class="modal-body">
+    <div class="col-md-12">
+      <!-- DETAILS SUR L'INTERVENTION ET LE PRESTATAIRE -->
+      <div class="row">
+        <span class="badge badge-secondary my-2 f-14 width"> DETAILS SUR L'INTERVENTION </span>
+      </div>
+      <div class="form-group">
+        <div *ngIf="type === 'LOCATIVE'" class="row mb-2">
+          <div class="col-md-4">
+            <label>Intervention <span *ngIf="type === 'LOCATIVE'" class="asterix">*</span></label>
+            <app-entity-finder [class]="'Construction'" [groups]="['construction']" [required]="true"
+              [selected]="currentConstruction" [disabled]="this.edit" (uuid)="setConstructionUuid($event)">
+            </app-entity-finder>
+          </div>
+       
+     
+          <div class="col-md-4">
+            <label>Bien</label>
+            <input type="text" class="form-control p-2" readonly
+              value="{{ construction?.rental ? construction?.rental?.libelle : construction?.house?.searchableTitle  }}">
+          </div>
+          <div class="col-md-4">
+            <label>Durée </label>
+            <input type="text" class="form-control p-2" readonly
+              value="{{ construction ? timelapse(construction?.dateD, construction?.dateF) : '' }}">
+          </div>
+        </div>
+        <div *ngIf="type === 'SYNDIC'" class="row mb-2">
+          <div class="col-md-3">
+            <label>Fournisseur ou Prestataire <span class="asterix">*</span></label>
+            <app-entity-finder [class]="'Provider'" [groups]="['provider']" [required]="true"
+              [selected]="currentProvider" [disabled]="this.edit || !canChangeProvider" (uuid)="setProviderUuid($event)">
+            </app-entity-finder>
+          </div>
+          <div *ngIf="!f.construction.value" class="col-md-3">
+            <label>Syndic <span class="asterix">*</span></label>
+            <app-entity-finder [namespace]="'Trustee'" [class]="'Trustee'" [groups]="['trustee']" [required]="true"
+              [selected]="currentTrustee" [disabled]="this.edit" (uuid)="setTrusteeUuid($event)">
+            </app-entity-finder>
+          </div>
+
+          <div *ngIf="edit && !f.construction.value" class="col-md-3">
+            <label for="house">Lot</label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ (houseCo ? houseCo.nom: '') + ' ' + (homeCo? homeCo.nom : '') }}" readonly>
+          </div>
+          <div *ngIf="!edit && !f.construction.value" class="col-md-3">
+            <label for="home">Lot</label>
+            <ng-select (change)="onSelectCoproprieteChange($event)" formControlName="copropriete" [items]="coproprietes"
+              bindLabel="nomLot" [selectableGroup]="false" [groupBy]="groupingHelper" [groupValue]="groupValueHelper" [(ngModel)]="selectedCopriete">
+            </ng-select>
+          </div>
+          <div *ngIf="!edit && !f.construction.value" class="col-md-3">
+            <div *ngIf="isLoadingConstruction" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <label for="infrastructure">Infrastructure</label>
+            <select formControlName="infrastructure" class="form-control" id="infrastructure"
+              [attr.disabled]="f.trustee.value ? null : 'true'">
+              <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+              <option *ngIf="infrastructures.length > 0 && f.infrastructure.value" [ngValue]="null">Selectionnez une
+                villa ou un appartement</option>
+              <option *ngIf="infrastructures.length === 0 && f.infrastructure.value" [ngValue]="null">Ce Syndic ne
+                possède aucune villa ou appartement </option>
+              <option *ngFor="let infrastructure of infrastructures" [ngValue]="infrastructure.uuid">
+                {{infrastructure.nom}}</option>
+            </select>
+          </div>
+          <div *ngIf="edit && !f.construction.value" class="col-md-3">
+            <label for="infrastructure">Infrastructure<span class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ infrastructure ? infrastructure.nom : 'PAS D\'INFRASTRUCTURE'}}" readonly>
+          </div>
+          <div *ngIf="!edit" class="col-md-3">
+            <div *ngIf="isLoadingTypeLoad" class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <label for="ligneBudgetaire">Ligne Budgetaire <span *ngIf="!f.construction.value" class="asterix">*</span></label>
+            <select formControlName="ligneBudgetaire" class="form-control" id="ligneBudgetaire"
+              [attr.disabled]="f.trustee.value ? null : 'true'">
+              <option *ngIf="!f.trustee.value" [ngValue]="null">Selectionnez un syndic</option>
+              <option *ngIf="typeLoads.length > 0 && f.trustee.value" [ngValue]="null">Selectionnez un le Syndic
+              </option>
+              <option *ngIf="typeLoads.length === 0 && f.trustee.value" [ngValue]="null">Ce Syndic ne possède ligne
+                budgetaire </option>
+              <option *ngFor="let typeLoad of typeLoads" [ngValue]="typeLoad.uuid">{{typeLoad.typeLoad.searchableTitle}}</option>
+            </select>
+          </div>
+          <div *ngIf="edit" class="col-md-3">
+            <label for="ligneBudgetaire">Ligne Budgetaire <span *ngIf="!f.construction.value" class="asterix">*</span></label>
+            <input type="text" class="form-control p-2 text-uppercase font-weight-bold text-warning"
+              :value="{{ ligneBudgetaire ? ligneBudgetaire.typeLoad.libelle : 'PAS DE LIGNE BUDGETAIRE'}}" readonly>
+          </div>
+          <div class="col-md-3">
+            <label>Intervention </label>
+            <app-entity-finder [class]="'Construction'" [groups]="['construction']" [required]="false"
+              [selected]="currentConstruction" [disabled]="this.edit" (uuid)="setConstructionUuid($event)">
+            </app-entity-finder>
+          </div>
+       
+        </div>
+      </div>
+      <div class="row mb-2">
+          <div  class="col-md-6 mb-2">
+            <label for="libelle">Numero facture<span class="asterix">*</span></label>
+            <input formControlName="numero" class="form-control" id="numero" [ngClass]="{
+                'is-invalid': submit && f.numero.errors,
+                'is-valid': submit && f.numero .valid
+                }" placeholder="Numero facture">
+            <div class="invalid-feedback" *ngIf="submit && f.numero.errors">
+                <div *ngIf="f.numero.errors.required">{{required.novide}}</div>
+            </div>
+      </div>
+      <div  class="col-md-6 mb-2">
+            <label for="libelle">Libellé facture<span class="asterix">*</span></label>
+            <input formControlName="libelle" class="form-control" id="libelle" [ngClass]="{
+                'is-invalid': submit && f.libelle.errors,
+                'is-valid': submit && f.libelle .valid
+                }" placeholder="Libellé">
+            <div class="invalid-feedback" *ngIf="submit && f.libelle.errors">
+                <div *ngIf="f.libelle.errors.required">{{required.novide}}</div>
+            </div>
+      </div>
+      </div>
+      <div *ngIf="this.isBon && !edit" class="col-md-12 mb-2">
+            <label>Devis <span *ngIf="this.isBon" class="asterix">*</span></label>
+            <ng-select (change)="setDevisUuid($event)" formControlName="devis" class="form-control" id="devis" [(ngModel)]="devistSelected" >
+                  <ng-option *ngFor="let item of devisRow" [value]="item.uuid">{{item.libelle}}({{item.montant}})</ng-option>
+            </ng-select>
+      </div>
+    </div>
+    <div class="col-md-12">
+        
+      <!-- DETAILS SUR LES OPTIONS -->
+      <!-- <span class="badge badge-secondary my-2 f-14 width">DETAILS SUR LES DEVIS</span> -->
+        
+      <!-- BOUCLE SUR LES PRESTATAIRES -->
+      <div formArrayName="quotesPrestataires">
+        <div *ngFor="let prestataire of quotesPrestataires.controls; let prestataireIndex=index" 
+             [formGroupName]="prestataireIndex" class="mb-4">
+
+          <!-- CARD BOOTSTRAP -->
+          <div class="card shadow-sm">
+            <!-- EN-TÊTE DE LA CARD -->
+            <div class="card-header bg-primary text-white">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="mb-0 text-white">
+                    <i class="feather icon-file-text mr-2"></i>
+                    Prestataire #{{ prestataireIndex + 1 }} - {{ prestataire.get('provider')?.value || 'Non défini' }}
+                  </h5>
+                </div>
+                <div>
+                  <!-- Boutons d'action si nécessaire -->
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <!-- INFORMATIONS DU PRESTATAIRE -->
+              <div class="alert alert-light border-left border-primary border-5">
+                <!-- LIGNE 1 -->
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong class="text-uppercase">Libellé :</strong> 
+                      <span class="text-muted font-italic ml-2">{{ prestataire.get('libelle')?.value || 'ETANCHEITE' }}</span>
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong class="text-uppercase">Echéance :</strong> 
+                      <span class="text-muted font-italic ml-2">{{ prestataire.get('echeance')?.value | date:'d MMMM yyyy à HH:mm:ss' }}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <!-- LIGNE 2 -->
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong class="text-uppercase">Intervention :</strong> 
+                      <span class="text-muted font-italic ml-2">{{ construction?.libelle || 'ETANCHEITE' }}</span>
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong class="text-uppercase">Date :</strong> 
+                      <span class="text-muted font-italic ml-2">{{ prestataire.get('date')?.value | date:'d MMMM yyyy' }}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <!-- LIGNE 3 -->
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong class="text-uppercase">Fournisseur :</strong> 
+                      <span class="text-muted font-italic ml-2">{{ prestataire.get('provider')?.value || 'SANGA ABDOUL' }}</span>
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-2">
+                      <strong class="text-uppercase">Etat :</strong> 
+                      <span class="badge badge-success badge-pill ml-2 px-3 py-2">
+                        <i class="feather icon-check-circle mr-1"></i>VALIDE
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <!-- LIGNE 4 -->
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="mb-0">
+                      <strong class="text-uppercase">Type :</strong> 
+                      <span class="badge badge-info badge-pill text-uppercase ml-2 px-3 py-2">
+                        <i class="feather icon-tag mr-1"></i>{{ prestataire.get('type')?.value || 'FOURNITURE' }}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FORMULAIRE D'ÉDITION (collapse Bootstrap) -->
+              <div class="collapse" [id]="'editForm' + prestataireIndex">
+                <div class="alert alert-warning border-warning">
+                  <h6 class="alert-heading">
+                    <i class="feather icon-edit-2 mr-2"></i>Mode Édition
+                  </h6>
+                  <hr>
+                  <div class="row">
+                    <!-- CHAMP LIBELLÉ -->
+                    <div class="col-md-6 mb-3">
+                      <label for="libelle{{prestataireIndex}}" class="font-weight-bold">
+                        Libellé<span class="text-danger">*</span>
+                      </label>
+                      <input formControlName="libelle" class="form-control" id="libelle{{prestataireIndex}}" [ngClass]="{
+                          'is-invalid': submit && prestataire.get('libelle').errors,
+                          'is-valid': submit && prestataire.get('libelle').valid
+                        }" placeholder="Libellé du devis">
+                      <div class="invalid-feedback" *ngIf="submit && prestataire.get('libelle').errors">
+                        <div *ngIf="prestataire.get('libelle').errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+
+                    <!-- CHAMP TYPE -->
+                    <div *ngIf="!isBon" class="col-md-6 mb-3">
+                      <label for="type{{prestataireIndex}}" class="font-weight-bold">
+                        Type <span class="text-danger">*</span>
+                      </label>
+                      <select formControlName="type" class="form-control" id="type{{prestataireIndex}}" [ngClass]="{
+                          'is-invalid': submit && prestataire.get('type').errors,
+                          'is-valid': submit && prestataire.get('type').valid
+                        }">
+                        <option [ngValue]="null">Sélectionner un type</option>
+                        <option [value]="'FOURNITURE'">FOURNITURE</option>
+                        <option [value]="'PRESTATION'">PRESTATION</option>
+                        <option [value]="'FOURNITURE_PRESTATION'">FOURNITURE et PRESTATION</option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="submit && prestataire.get('type').errors">
+                        <div *ngIf="prestataire.get('type').errors.required">{{required.novide}}</div>
+                      </div>
+                    </div>
+
+                    <!-- CHAMP DATE DE DÉBUT -->
+                    <div class="col-md-6 mb-3">
+                      <label for="echeance{{prestataireIndex}}" class="font-weight-bold">
+                        Date de début <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i class="feather icon-calendar"></i></span>
+                        </div>
+                        <input formControlName="echeance" type="date" class="form-control" id="echeance{{prestataireIndex}}" [ngClass]="{
+                          'is-invalid': submit && prestataire.get('echeance').errors,
+                          'is-valid': submit && prestataire.get('echeance').valid
+                        }">
+                        <div class="invalid-feedback" *ngIf="submit && prestataire.get('echeance').errors">
+                          <div *ngIf="prestataire.get('echeance').errors.required">{{required.novide}}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- CHAMP DATE DE FIN -->
+                    <div class="col-md-6 mb-3">
+                      <label for="date{{prestataireIndex}}" class="font-weight-bold">
+                        Date de fin <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i class="feather icon-calendar"></i></span>
+                        </div>
+                        <input formControlName="date" class="form-control" id="date{{prestataireIndex}}" type="date" [ngClass]="{
+                          'is-invalid': submit && prestataire.get('date').errors,
+                          'is-valid': submit && prestataire.get('date').valid
+                        }">
+                        <div class="invalid-feedback" *ngIf="submit && prestataire.get('date').errors">
+                          <div *ngIf="prestataire.get('date').errors.required">{{required.novide}}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION OPTIONS -->
+              <div formArrayName="options" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="mb-0">
+                    <i class="feather icon-list text-primary mr-2"></i>
+                    <strong>Options du devis</strong>
+                    <span class="badge badge-secondary ml-2">{{ getOptions(prestataireIndex).length }}</span>
+                  </h6>
+                </div>
+
+                <!-- TABLEAU BOOTSTRAP avec colonne Total TTC unitaire -->
+                <div class="table-responsive" *ngIf="getOptions(prestataireIndex).length > 0">
+                  <table class="table table-bordered table-hover table-sm">
+                    <thead class="thead-light">
+                      <tr class="text-center">
+                        <th style="width: 18%;">
+                          <i class="feather icon-package mr-1"></i>Ressource
+                        </th>
+                        <th style="width: 10%;">
+                          <i class="feather icon-dollar-sign mr-1"></i>Prix unitaire
+                        </th>
+                        <th style="width: 10%;">
+                          <i class="feather icon-trending-up mr-1"></i>Prix majoré
+                        </th>
+                        <th style="width: 7%;">
+                          <i class="feather icon-hash mr-1"></i>Qté
+                        </th>
+                        <th style="width: 11%;">
+                          <i class="feather icon-calculator mr-1"></i>Total Unitaire
+                        </th>
+                        <th style="width: 11%;">
+                          <i class="feather icon-shopping-cart mr-1"></i>Total Majoré
+                        </th>
+                        <th style="width: 7%;">
+                          <i class="feather icon-percent mr-1"></i>TVA
+                        </th>
+                        <th style="width: 10%;">
+                          <i class="feather icon-scissors mr-1"></i>Remise
+                        </th>
+                        <th style="width: 16%;">
+                          <i class="feather icon-trending-up mr-1"></i>Différence
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let opt of getOptions(prestataireIndex).controls; let optionIndex=index" 
+                          [formGroupName]="optionIndex">
+                        <!-- Ressource -->
+                        <td>
+                          <ng-select formControlName="libelle"
+                            [addTag]="addProduct" [items]="products" [selectOnTab]="true" bindValue="libelle"
+                            bindLabel="libelle" labelForId="produit" (change)="onSelectChange(prestataireIndex, optionIndex, $event)">
+                            <ng-template ng-tag-tmp let-search="searchTerm">
+                              <b>Ajouter</b>: {{search}}
+                            </ng-template>
+                          </ng-select>
+                        </td>
+
+                        <!-- Prix unitaire (grisé) -->
+                        <td>
+                          <input type="number" formControlName="prix" min="0" step="0.01"
+                            class="form-control form-control-sm text-right bg-light"
+                            id="prix{{prestataireIndex}}_{{optionIndex}}" 
+                            readonly
+                            placeholder="0.00">
+                        </td>
+
+                        <!-- Prix majoré -->
+                        <td>
+                          <input (change)="onChangeTotal()" type="number" formControlName="prixMajore" min="0" step="0.01"
+                            class="form-control form-control-sm text-right"
+                            id="prixMajore{{prestataireIndex}}_{{optionIndex}}" 
+                            [ngClass]="{
+                              'is-invalid': submit && opt.get('prixMajore').errors
+                            }" 
+                            placeholder="0.00">
+                          <div class="invalid-feedback" *ngIf="submit && opt.get('prixMajore').errors">
+                            <div *ngIf="opt.get('prixMajore').errors.required">{{required.novide}}</div>
+                          </div>
+                        </td>
+
+                        <!-- Quantité -->
+                        <td>
+                          <input (change)="onChangeTotal()" type="number" formControlName="qte" min="1"
+                            class="form-control form-control-sm text-center"
+                            id="qte{{prestataireIndex}}_{{optionIndex}}" placeholder="1">
+                        </td>
+
+                        <!-- COLONNE 1 : Total Unitaire (Prix unitaire × Qté) -->
+                        <td class="bg-light">
+                          <input type="number" 
+                            [value]="(opt.get('prix').value || 0) * (opt.get('qte').value || 1)" 
+                            class="form-control form-control-sm text-right font-weight-bold" 
+                            readonly 
+                            placeholder="0.00">
+                        </td>
+
+                        <!-- COLONNE 2 : Total Majoré (Prix majoré × Qté) -->
+                        <td class="bg-light">
+                          <input type="number" 
+                            [value]="(opt.get('prixMajore').value || 0) * (opt.get('qte').value || 1)" 
+                            class="form-control form-control-sm text-right font-weight-bold" 
+                            readonly 
+                            placeholder="0.00">
+                        </td>
+
+                        <!-- TVA -->
+                        <td>
+                          <div class="input-group input-group-sm">
+                            <input (change)="onChangeTotal()" type="number" formControlName="tva" min="0" max="100" step="0.1"
+                              class="form-control text-center" placeholder="0">
+                          </div>
+                        </td>
+
+                        <!-- Remise -->
+                        <td>
+                          <input (change)="onChangeTotal()" type="number" formControlName="remise" min="0" step="0.01"
+                            class="form-control form-control-sm text-right" placeholder="0.00">
+                        </td>
+
+                        <!-- Total Final (Différence entre Total Majoré et Total Unitaire) -->
+                        <td class="">
+                          <input type="number" 
+                            [value]="((opt.get('prixMajore').value || 0) * (opt.get('qte').value || 1)) - ((opt.get('prix').value || 0) * (opt.get('qte').value || 1))" 
+                            class="form-control form-control-sm text-right font-weight-bold" 
+                            readonly 
+                            placeholder="0.00">
+                        </td>
+                      </tr>
+                    </tbody>
+
+                    <!-- SOUS-TOTAUX -->
+                    <tfoot class="font-weight-bold">
+                      <tr class="">
+                        <td colspan="8" class="text-right">MONTANT INITIAL :</td>
+                        <td class="text-right">{{ prestataire.get('montantInitialPrestataire')?.value | number }}</td>
+                      </tr>
+                      <tr class="">
+                        <td colspan="8" class="text-right">SOUS-TOTAL HT :</td>
+                        <td class="text-right">{{ prestataire.get('montantHt')?.value | number }}</td>
+                      </tr>
+                      
+                      <tr class="">
+                        <td colspan="8" class="text-right">DIFFÉRENCE TOTALE :</td>
+                        <td class="text-right">{{ prestataire.get('montantDifference')?.value | number }}</td>
+                      </tr>
+                      <tr class="">
+                        <td colspan="8" class="text-right">TVA :</td>
+                        <td class="text-right">{{ prestataire.get('montantTva')?.value | number }}</td>
+                      </tr>
+                      <tr class="table-success">
+                        <td colspan="8" class="text-right h6 mb-0">SOUS-TOTAL TTC :</td>
+                        <td class="text-right h6 mb-0 text-success">{{ prestataire.get('montant')?.value | number }}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Séparateur -->
+          <hr *ngIf="prestataireIndex < quotesPrestataires.length - 1" class="my-4">
+        </div>
+      </div>
+
+      <!-- TOTAUX -->
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-12">
+            <table class="table table-responsive invoice-table invoice-total">
+              <tbody>
+                <tr>
+                  <th>MONTANT INITIAL :</th>
+                  <td>{{ totalInitial | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL HT :</th>
+                  <td>{{ totalHT | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL DIFFÉRENCE :</th>
+                  <td>{{ totalDifference | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL REMISE :</th>
+                  <td>{{ totalRemise | number }}</td>
+                </tr>
+                <tr>
+                  <th>TOTAL TVA :</th>
+                  <td>{{ totalTva | number }}</td>
+                </tr>
+                <tr class="text-info">
+                  <td>
+                    <hr />
+                    <h2 class="text-primary m-r-10">TOTAL TTC :</h2>
+                  </td>
+                  <td>
+                    <hr />
+                    <h2 class="text-success">{{ totalTTC | number }}</h2>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="!isBon">
+        <div class="col-md">
+          <label>Pièces et documents à joindre</label>
+          <app-folder-uploader (filesd)="files($event)" (filesUploaded)="setParam('folderUuid',$event)" [path]="'invoiceOwner'"
+            [etat]="edit ? 'edit': 'add'" [folder]="edit && invoiceOwner ? invoiceOwner?.folder : null">
+          </app-folder-uploader>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('ferme')" type="button" class="btn btn-secondary text-left" data-dismiss="modal">
+      Fermer <i class="feather icon-x-circle"></i>
+    </button>
+    <button (click)="form.reset()" type="button" class="btn btn-warning">
+      Vider <i class="fas fa-broom"></i>
+    </button>
+    <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+      Enregistrer <i class="feather icon-save"></i>
+    </button>
+  </div>
+</form>
